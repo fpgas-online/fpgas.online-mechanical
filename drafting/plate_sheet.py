@@ -116,6 +116,17 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
             if best_score is not None and best_score < 100:
                 break
         cx, cy = best
+        # A label pushed away from its hole needs a leader, or in a cluster of
+        # holes a few millimetres apart the reader cannot tell which hole it
+        # belongs to.
+        gap = math.dist((px, py), (cx, cy)) - r - max(tw, th) / 2
+        if gap > 1.5:
+            ang = math.atan2(cy - py, cx - px)
+            c.line(px + (r + 1.0) * math.cos(ang),
+                   py + (r + 1.0) * math.sin(ang),
+                   cx - (max(tw, th) / 2 + 0.8) * math.cos(ang),
+                   cy - (max(tw, th) / 2 + 0.8) * math.sin(ang),
+                   w=style.W_THIN, colour=colour)
         c.text(cx, cy, text, size=style.T_LABEL, colour=colour, bold=True,
                anchor="middle", baseline="middle")
         obstacles.add_rect(cx - tw / 2, cy - th / 2, cx + tw / 2, cy + th / 2,
@@ -202,21 +213,23 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     for i, h in enumerate(spec.holes):
         if h.kind == "plate":
             continue
-        rows.append([labels[i], f"{h.x:.3f}", f"{h.y:.3f}", f"{h.dia:.2f}",
+        rows.append([labels[i], f"{h.x:.2f}", f"{h.y:.2f}", f"{h.dia:.2f}",
                      h.label.replace("+", ", ")])
     for n, s in enumerate(spec.slots, 1):
-        rows.append([f"S{n}", f"{s.x0:.3f} / {s.x1:.3f}",
-                     f"{s.y0:.3f} / {s.y1:.3f}",
-                     f"{s.width:.2f} slot", s.label.replace("+", ", ")])
+        # Two values because a slot has two end centres; the note below says so.
+        rows.append([f"S{n}", f"{s.x0:.2f} / {s.x1:.2f}",
+                     f"{s.y0:.2f} / {s.y1:.2f}",
+                     f"{s.width:.2f} wide slot", s.label.replace("+", ", ")])
     block = sheet.column_block(sheet.table_height("BOARD MOUNTING HOLES", len(rows)))
     sheet.table(block, "BOARD MOUNTING HOLES",
-                ["ID", "X", "Y", "SIZE", "USED BY"], rows,
+                ["ID", "X mm", "Y mm", "SIZE mm", "USED BY"], rows,
                 ["start", "end", "end", "end", "start"])
 
-    rows = [[labels[i], f"{spec.holes[i].x:.3f}", f"{spec.holes[i].y:.3f}",
+    rows = [[labels[i], f"{spec.holes[i].x:.2f}", f"{spec.holes[i].y:.2f}",
              f"{spec.holes[i].dia:.2f}"] for i in plate_ids]
     block = sheet.column_block(sheet.table_height("PLATE FIXING HOLES", len(rows)))
-    sheet.table(block, "PLATE FIXING HOLES", ["ID", "X", "Y", "DIA"], rows,
+    sheet.table(block, "PLATE FIXING HOLES",
+                ["ID", "X mm", "Y mm", "DIA mm"], rows,
                 ["start", "end", "end", "end"])
 
     notes = [
@@ -227,6 +240,8 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
         "The three PMOD envelopes are not machined features. They mark where "
         "the Pmod host pin fields end up, which is the same place for every "
         "board revision. That is the point of the plate.",
+        "A slot row gives two X and two Y values: the centres of its two ends. "
+        "Its length is those centres apart plus the slot width.",
     ] + list(spec.notes) + [
         "Fit the plate to its chassis before fitting a demo board: the plate "
         "fixings sit in the border, but the board overhangs part of it.",
@@ -268,14 +283,15 @@ def render_fitting_guide(*, drawing_no: str, date: str,
     rows_t = []
     for name, pl in PLACEMENTS.items():
         used = ", ".join(pl["shuttles"]) or "not yet shipped"
-        rows_t.append([name, used, f"{pl['dx']:.3f}", f"{pl['dy']:.3f}",
+        rows_t.append([name, used, f"{pl['dx']:.2f}", f"{pl['dy']:.2f}",
                        str(pl["pmod_count"]), str(pl["first_pmod_slot"])])
     # In the annotation column, not in a half-width cell: at a true 2.5 mm cap
     # height this table does not fit in half the drawing area.
     block = sheet.column_block(sheet.table_height("BOARD PLACEMENT ON THE PLATE",
                                                   len(rows_t)))
     sheet.table(block, "BOARD PLACEMENT ON THE PLATE",
-                ["REVISION", "SHUTTLES", "dX", "dY", "PMODS", "FIRST SLOT"],
+                ["REVISION", "SHUTTLES", "dX mm", "dY mm", "PMODS",
+                 "FIRST SLOT"],
                 rows_t, ["start", "start", "end", "end", "middle", "middle"])
 
     notes = [
@@ -341,5 +357,5 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
     c.text(cell.cx, view.y(0) - 6.0, f"{name}  ({shuttles})",
            size=style.T_SUBHEAD, anchor="middle", bold=True, face="sans")
     c.text(cell.cx, view.y(0) - 10.0,
-           f"board rev {pl['revision']}   offset X {dx:.3f}  Y {dy:.3f}",
+           f"board rev {pl['revision']}   offset X {dx:.2f}  Y {dy:.2f} mm",
            size=style.T_LABEL, anchor="middle", colour="#444444")

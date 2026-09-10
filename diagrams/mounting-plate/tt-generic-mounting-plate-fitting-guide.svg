@@ -102,7 +102,7 @@
 <line x1="41.4125" y1="45.325" x2="45.1125" y2="45.325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="43.2625" y1="47.175" x2="43.2625" y2="43.475" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <text x="69.75" y="91.75" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="middle" font-weight="bold">TT01-03  (TT01, TT02, TT03)</text>
-<text x="69.75" y="95.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev tt123-v2.2.6   offset X 19.760  Y 4.535</text>
+<text x="69.75" y="95.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev tt123-v2.2.6   offset X 19.76  Y 4.54 mm</text>
 <path d="M 147.5000 85.7500 L 211.0000 85.7500 A 2.0000 2.0000 0 0 0 213.0000 83.7500 L 213.0000 37.2500 A 2.0000 2.0000 0 0 0 211.0000 35.2500 L 147.5000 35.2500 A 2.0000 2.0000 0 0 0 145.5000 37.2500 L 145.5000 83.7500 A 2.0000 2.0000 0 0 0 147.5000 85.7500 L 211.0000 85.7500 Z" fill="none" stroke="#000000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
 <line x1="167.6625" y1="42.8875" x2="201.7775" y2="42.8875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
 <line x1="201.7775" y1="83.3875" x2="152.5275" y2="83.3875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
@@ -170,7 +170,7 @@
 <line x1="150.9125" y1="45.325" x2="154.6125" y2="45.325" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="152.7625" y1="47.175" x2="152.7625" y2="43.475" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="179.25" y="91.75" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="middle" font-weight="bold">TT04-05  (TT04, TT05)</text>
-<text x="179.25" y="95.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v1.2.2   offset X 11.055  Y 4.725</text>
+<text x="179.25" y="95.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v1.2.2   offset X 11.05  Y 4.72 mm</text>
 <path d="M 38.0000 172.7500 L 101.5000 172.7500 A 2.0000 2.0000 0 0 0 103.5000 170.7500 L 103.5000 124.2500 A 2.0000 2.0000 0 0 0 101.5000 122.2500 L 38.0000 122.2500 A 2.0000 2.0000 0 0 0 36.0000 124.2500 L 36.0000 170.7500 A 2.0000 2.0000 0 0 0 38.0000 172.7500 L 101.5000 172.7500 Z" fill="none" stroke="#000000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
 <line x1="42.8725" y1="131.1375" x2="89.6225" y2="131.1375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
 <line x1="89.6225" y1="170.1375" x2="42.8725" y2="170.1375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
@@ -234,7 +234,7 @@
 <line x1="41.4125" y1="132.325" x2="45.1125" y2="132.325" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="43.2625" y1="134.175" x2="43.2625" y2="130.475" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="69.75" y="178.75" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="middle" font-weight="bold">TT06-08  (TT06, TT07, TT08)</text>
-<text x="69.75" y="182.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v2.0.1   offset X 10.745  Y 5.225</text>
+<text x="69.75" y="182.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v2.0.1   offset X 10.74  Y 5.22 mm</text>
 <path d="M 147.5000 172.7500 L 211.0000 172.7500 A 2.0000 2.0000 0 0 0 213.0000 170.7500 L 213.0000 124.2500 A 2.0000 2.0000 0 0 0 211.0000 122.2500 L 147.5000 122.2500 A 2.0000 2.0000 0 0 0 145.5000 124.2500 L 145.5000 170.7500 A 2.0000 2.0000 0 0 0 147.5000 172.7500 L 211.0000 172.7500 Z" fill="none" stroke="#000000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
 <line x1="196.1" y1="169.865" x2="156.8" y2="169.865" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
 <line x1="155.2" y1="168.265" x2="155.2" y2="131.465" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
@@ -298,7 +298,7 @@
 <line x1="150.9125" y1="132.325" x2="154.6125" y2="132.325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="152.7625" y1="134.175" x2="152.7625" y2="130.475" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <text x="179.25" y="178.75" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="middle" font-weight="bold">v3.2  (no shipped shuttle yet)</text>
-<text x="179.25" y="182.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v3.2   offset X 19.400  Y 5.770</text>
+<text x="179.25" y="182.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v3.2   offset X 19.40  Y 5.77 mm</text>
 <path d="M 38.0000 259.7500 L 101.5000 259.7500 A 2.0000 2.0000 0 0 0 103.5000 257.7500 L 103.5000 211.2500 A 2.0000 2.0000 0 0 0 101.5000 209.2500 L 38.0000 209.2500 A 2.0000 2.0000 0 0 0 36.0000 211.2500 L 36.0000 257.7500 A 2.0000 2.0000 0 0 0 38.0000 259.7500 L 101.5000 259.7500 Z" fill="none" stroke="#000000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
 <line x1="45.7" y1="255.265" x2="45.7" y2="215.965" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
 <line x1="47.3" y1="214.365" x2="86.6" y2="214.365" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
@@ -362,70 +362,70 @@
 <line x1="41.4125" y1="219.325" x2="45.1125" y2="219.325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="43.2625" y1="221.175" x2="43.2625" y2="217.475" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <text x="69.75" y="265.75" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="middle" font-weight="bold">v3.3  (no shipped shuttle yet)</text>
-<text x="69.75" y="269.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v3.3   offset X 19.400  Y 5.770</text>
-<text x="240" y="18.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">BOARD PLACEMENT ON THE PLATE</text>
-<line x1="240" y1="19.9" x2="402" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<rect x="240" y="22.1" width="117.1922" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
-<text x="241.8" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">REVISION</text>
-<text x="261.993" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">SHUTTLES</text>
-<text x="303.1996" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">dX</text>
-<text x="315.6291" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">dY</text>
-<text x="325.5984" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">PMODS</text>
-<text x="345.4799" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">FIRST SLOT</text>
-<rect x="240" y="27.6556" width="117.1922" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="241.8" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT01-03</text>
-<text x="261.993" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT01, TT02, TT03</text>
-<text x="303.1996" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">19.760</text>
-<text x="315.6291" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">4.535</text>
-<text x="325.5984" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">2</text>
-<text x="345.4799" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">2</text>
-<rect x="240" y="33.2111" width="117.1922" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="241.8" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT04-05</text>
-<text x="261.993" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT04, TT05</text>
-<text x="303.1996" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">11.055</text>
-<text x="315.6291" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">4.725</text>
-<text x="325.5984" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">3</text>
-<text x="345.4799" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">1</text>
-<rect x="240" y="38.7667" width="117.1922" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="241.8" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT06-08</text>
-<text x="261.993" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT06, TT07, TT08</text>
-<text x="303.1996" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">10.745</text>
-<text x="315.6291" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">5.225</text>
-<text x="325.5984" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">3</text>
-<text x="345.4799" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">1</text>
-<rect x="240" y="44.3222" width="117.1922" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="241.8" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">v3.2</text>
-<text x="261.993" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">not yet shipped</text>
-<text x="303.1996" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">19.400</text>
-<text x="315.6291" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">5.770</text>
-<text x="325.5984" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">3</text>
-<text x="345.4799" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">1</text>
-<rect x="240" y="49.8778" width="117.1922" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="241.8" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">v3.3</text>
-<text x="261.993" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">not yet shipped</text>
-<text x="303.1996" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">19.400</text>
-<text x="315.6291" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">5.770</text>
-<text x="325.5984" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">3</text>
-<text x="345.4799" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">1</text>
-<line x1="260.193" y1="22.1" x2="260.193" y2="55.4333" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="290.6076" y1="22.1" x2="290.6076" y2="55.4333" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="304.9996" y1="22.1" x2="304.9996" y2="55.4333" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="317.4291" y1="22.1" x2="317.4291" y2="55.4333" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="333.7676" y1="22.1" x2="333.7676" y2="55.4333" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="240" y="64.9333" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
-<line x1="240" y1="66.3333" x2="402" y2="66.3333" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="240" y="71.0333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="245" y="71.0333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Each view shows one demo board revision sitting on the plate, with the holes that revision uses</text>
-<text x="245" y="75.5601" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">drawn solid and the rest greyed back.</text>
-<text x="240" y="81.0868" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="245" y="81.0868" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">dX and dY place the board: add them to a coordinate in that board&#x27;s own frame to get a plate</text>
-<text x="245" y="85.6136" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">coordinate.</text>
-<text x="240" y="91.1403" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="245" y="91.1403" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The TT01/02/03 board has only two Pmod hosts. They go on plate Pmod positions 2 and 3, which</text>
-<text x="245" y="95.6671" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">makes the plate 5.15 mm narrower than putting them on 1 and 2 would.</text>
-<text x="240" y="101.1938" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="245" y="101.1938" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All five revisions put their Pmod host pin fields on the same three positions, at the same height</text>
-<text x="245" y="105.7206" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">above the plate&#x27;s front edge.</text>
+<text x="69.75" y="269.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v3.3   offset X 19.40  Y 5.77 mm</text>
+<text x="240" y="21.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">BOARD PLACEMENT ON THE PLATE</text>
+<line x1="240" y1="22.9" x2="402" y2="22.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<rect x="240" y="25.1" width="121.608" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
+<text x="241.8" y="28.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">REVISION</text>
+<text x="261.993" y="28.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">SHUTTLES</text>
+<text x="304.499" y="28.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">dX mm</text>
+<text x="320.045" y="28.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">dY mm</text>
+<text x="330.0142" y="28.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">PMODS</text>
+<text x="349.8957" y="28.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">FIRST SLOT</text>
+<rect x="240" y="30.6556" width="121.608" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="241.8" y="34.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT01-03</text>
+<text x="261.993" y="34.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT01, TT02, TT03</text>
+<text x="304.499" y="34.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">19.76</text>
+<text x="320.045" y="34.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">4.54</text>
+<text x="330.0142" y="34.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">2</text>
+<text x="349.8957" y="34.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">2</text>
+<rect x="240" y="36.2111" width="121.608" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="241.8" y="39.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT04-05</text>
+<text x="261.993" y="39.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT04, TT05</text>
+<text x="304.499" y="39.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">11.05</text>
+<text x="320.045" y="39.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">4.72</text>
+<text x="330.0142" y="39.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">3</text>
+<text x="349.8957" y="39.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">1</text>
+<rect x="240" y="41.7667" width="121.608" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="241.8" y="45.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT06-08</text>
+<text x="261.993" y="45.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT06, TT07, TT08</text>
+<text x="304.499" y="45.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">10.74</text>
+<text x="320.045" y="45.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">5.22</text>
+<text x="330.0142" y="45.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">3</text>
+<text x="349.8957" y="45.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">1</text>
+<rect x="240" y="47.3222" width="121.608" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="241.8" y="51.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">v3.2</text>
+<text x="261.993" y="51.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">not yet shipped</text>
+<text x="304.499" y="51.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">19.40</text>
+<text x="320.045" y="51.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">5.77</text>
+<text x="330.0142" y="51.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">3</text>
+<text x="349.8957" y="51.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">1</text>
+<rect x="240" y="52.8778" width="121.608" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="241.8" y="56.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">v3.3</text>
+<text x="261.993" y="56.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">not yet shipped</text>
+<text x="304.499" y="56.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">19.40</text>
+<text x="320.045" y="56.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">5.77</text>
+<text x="330.0142" y="56.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">3</text>
+<text x="349.8957" y="56.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">1</text>
+<line x1="260.193" y1="25.1" x2="260.193" y2="58.4333" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="290.6076" y1="25.1" x2="290.6076" y2="58.4333" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="306.299" y1="25.1" x2="306.299" y2="58.4333" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="321.845" y1="25.1" x2="321.845" y2="58.4333" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="338.1834" y1="25.1" x2="338.1834" y2="58.4333" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="240" y="67.9333" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
+<line x1="240" y1="69.3333" x2="402" y2="69.3333" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="240" y="74.0333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="245" y="74.0333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Each view shows one demo board revision sitting on the plate, with the holes that revision uses</text>
+<text x="245" y="78.5601" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">drawn solid and the rest greyed back.</text>
+<text x="240" y="84.0868" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="245" y="84.0868" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">dX and dY place the board: add them to a coordinate in that board&#x27;s own frame to get a plate</text>
+<text x="245" y="88.6136" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">coordinate.</text>
+<text x="240" y="94.1403" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="245" y="94.1403" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The TT01/02/03 board has only two Pmod hosts. They go on plate Pmod positions 2 and 3, which</text>
+<text x="245" y="98.6671" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">makes the plate 5.15 mm narrower than putting them on 1 and 2 would.</text>
+<text x="240" y="104.1938" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="245" y="104.1938" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All five revisions put their Pmod host pin fields on the same three positions, at the same height</text>
+<text x="245" y="108.7206" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">above the plate&#x27;s front edge.</text>
 <rect x="240" y="234" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="240" y1="249" x2="405" y2="249" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="242.5" y="242.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">TT MOUNTING PLATE - BOARD FITTING GUIDE</text>

@@ -165,6 +165,21 @@ class Obstacles:
     def add_segment(self, x1, y1, x2, y2) -> None:
         self.segments.append((x1, y1, x2, y2))
 
+    def leader_hits(self, x1: float, y1: float, x2: float, y2: float,
+                    clearance: float = 1.0, samples: int = 14) -> int:
+        """How much of a leader from (x1,y1) to (x2,y2) runs over something.
+
+        Scoring only the balloon's own position lets its leader be routed
+        straight through the feature next door, which is what put balloon 4 on
+        the TT04 sheet across two neighbouring LEDs.
+        """
+        n = 0
+        for i in range(1, samples):
+            t = i / samples
+            n += min(self.hits(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t,
+                               clearance), 1)
+        return n
+
     def hits(self, cx: float, cy: float, r: float) -> int:
         n = 0
         for x0, y0, x1, y1 in self.rects:
@@ -214,10 +229,12 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
                 if not (bounds.x + BALLOON_R < cx < bounds.x1 - BALLOON_R
                         and bounds.y + BALLOON_R < cy < bounds.y1 - BALLOON_R):
                     continue
-                score = obstacles.hits(cx, cy, BALLOON_R + 1.6) * 100 + radius
+                score = (obstacles.hits(cx, cy, BALLOON_R + 1.6) * 100
+                         + obstacles.leader_hits(tx, ty, cx, cy) * 12
+                         + radius)
                 if best_score is None or score < best_score:
                     best, best_score = (cx, cy), score
-            if best_score is not None and best_score < 100:
+            if best_score is not None and best_score < 12:
                 break
         if best is None:
             best = (tx + 10.0, ty + 10.0)
@@ -369,6 +386,17 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     obstacles = Obstacles()
     for f in spec.features:
         obstacles.add_rect(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1), pad=0.8)
+    if overlay is not None:
+        # The phantom part is drawn on this view, so a balloon must keep off it
+        # too.  Its Pmod hosts are the parts that get in the way.
+        for p in overlay.pmods:
+            half_a, half_b = p.pin_span / 2 + 1.6, p.row_span / 2 + 1.6
+            if p.edge in ("bottom", "top"):
+                half_x, half_y = half_a, half_b
+            else:
+                half_x, half_y = half_b, half_a
+            obstacles.add_rect(*view.pt(p.cx - half_x, p.cy - half_y),
+                               *view.pt(p.cx + half_x, p.cy + half_y), pad=1.0)
     for h in spec.holes:
         obstacles.add_circle(*view.pt(h.x, h.y),
                              view.d(max(h.dia, h.keepout_dia or 0) / 2) + 1.0)
@@ -494,30 +522,40 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                 for i, h in enumerate(spec.holes, 1)]
         block = sheet.column_block(sheet.table_height("HOLE SCHEDULE", len(rows)))
         sheet.table(block, "HOLE SCHEDULE",
-                    ["ID", "X", "Y", "DIA", "KEEPOUT"], rows,
+                    ["ID", "X mm", "Y mm", "DIA mm", "KEEPOUT mm"], rows,
                     ["start", "end", "end", "end", "end"])
 
     if spec.pmods:
-        rows = [[p.label, p.designator, f"{p.cx:.2f}", f"{p.cy:.2f}",
-                 f"{p.pin1_x:.2f}", f"{p.pin1_y:.2f}"] for p in spec.pmods]
+        # Drop the designator column when it just repeats the port name, as it
+        # does on the Pmod HAT Adapter where both read JA, JB, JC.
+        show_ref = any(p.designator and p.designator != p.label
+                       for p in spec.pmods)
+        head = ["PORT"] + (["REF"] if show_ref else []) + \
+            ["EDGE", "CX mm", "CY mm", "PIN1 X mm", "PIN1 Y mm"]
+        align = ["start"] + (["start"] if show_ref else []) + \
+            ["start", "end", "end", "end", "end"]
+        rows = [[p.label] + ([p.designator] if show_ref else [])
+                + [p.edge, f"{p.cx:.2f}", f"{p.cy:.2f}",
+                   f"{p.pin1_x:.2f}", f"{p.pin1_y:.2f}"] for p in spec.pmods]
         block = sheet.column_block(sheet.table_height("PMOD HOST HEADERS", len(rows)))
-        sheet.table(block, "PMOD HOST HEADERS",
-                    ["PORT", "REF", "CX", "CY", "PIN1 X", "PIN1 Y"], rows,
-                    ["start", "start", "end", "end", "end", "end"])
+        sheet.table(block, "PMOD HOST HEADERS", head, rows, align)
 
     if schedule:
         block = sheet.column_block(sheet.table_height("FEATURE SCHEDULE", len(schedule)))
         sheet.table(block, "FEATURE SCHEDULE",
-                    ["#", "FEATURE", "X EXTENT", "Y EXTENT"], schedule,
+                    ["#", "FEATURE", "X EXTENT mm", "Y EXTENT mm"], schedule,
                     ["middle", "start", "end", "end"])
 
     if overlay is not None and overlay.pmods:
-        rows = [[p.label, f"{p.edge} edge", f"{p.cx:.2f}", f"{p.cy:.2f}"]
-                for p in overlay.pmods]
+        # Pin 1 is included here as well: it is what a plate has to register
+        # a mating peripheral against.
+        rows = [[p.label, f"{p.edge} edge", f"{p.cx:.2f}", f"{p.cy:.2f}",
+                 f"{p.pin1_x:.2f}", f"{p.pin1_y:.2f}"] for p in overlay.pmods]
         block = sheet.column_block(sheet.table_height("PMOD HAT ADAPTER HOSTS", len(rows)))
         sheet.table(block, "PMOD HAT ADAPTER HOSTS",
-                    ["PORT", "EDGE", "CX", "CY"], rows,
-                    ["start", "start", "end", "end"])
+                    ["PORT", "EDGE", "CX mm", "CY mm", "PIN1 X mm",
+                     "PIN1 Y mm"], rows,
+                    ["start", "start", "end", "end", "end", "end"])
 
     notes = [
         "All dimensions in millimetres. Datum is the lower-left corner of the "

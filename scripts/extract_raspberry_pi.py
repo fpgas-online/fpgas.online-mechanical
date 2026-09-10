@@ -148,7 +148,8 @@ MODELS = [
         kind="pdf", file="raspberry-pi-5-mechanical-drawing.pdf",
         width=85.0, height=56.0, corner_radius=3.0,
         hole_dia=2.70, hole_keepout=5.80, hole_tol=None,
-        hole_note="Hole diameter dimensioned on the drawing as o2.7; the keep-out circle is drawn and measures 5.80.",
+        hole_note="Hole diameter dimensioned on the drawing as \u00f82.7; the "
+                  "keep-out circle is drawn and measures 5.80.",
         hole_source=f"{DOC}/rpi5/raspberry-pi-5-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi5/raspberry-pi-5-mechanical-drawing.pdf",
         # Snapped from the measured 3.482 / 61.480, which are within the
@@ -261,7 +262,7 @@ def extract(model: dict) -> dict:
 
     holes = []
     if model.get("holes_from_source"):
-        for (x, y), dias in sorted(dxf_holes(path).items()):
+        for (x, y), dias in dxf_holes(path).items():
             holes.append(dict(x=x, y=y, dia=round(min(dias), 3),
                               keepout_dia=round(max(dias), 3), kind="mount"))
         if len(holes) != 4:
@@ -270,9 +271,15 @@ def extract(model: dict) -> dict:
         for x, y in STANDARD_HOLES:
             holes.append(dict(x=x, y=y, dia=model["hole_dia"],
                               keepout_dia=model["hole_keepout"], kind="mount"))
-    for x, y, d in model.get("aux_holes", []):
+    # One ordering for every model, bottom row first then left to right, so a
+    # hole ID means the same thing on every sheet.  The Pi 4B's come out of its
+    # DXF in a different order, which had MT2 and MT3 swapped against the rest.
+    holes.sort(key=lambda h: (h["y"], h["x"]))
+    for i, h in enumerate(holes, 1):
+        h["label"] = f"MT{i}"
+    for i, (x, y, d) in enumerate(model.get("aux_holes", []), 1):
         holes.append(dict(x=round(x, 3), y=round(y, 3), dia=d,
-                          keepout_dia=None, kind="aux"))
+                          keepout_dia=None, kind="aux", label=f"AUX{i}"))
 
     return dict(model=model, features=features, holes=holes, scale=scale)
 
@@ -308,7 +315,8 @@ BOARDS: dict[str, BoardSpec] = {}
 def render(rec: dict) -> str:
     m = rec["model"]
     holes = ",\n".join(
-        f"        Hole(x={h['x']}, y={h['y']}, dia={h['dia']}, kind={h['kind']!r}, "
+        f"        Hole(x={h['x']}, y={h['y']}, dia={h['dia']}, "
+        f"label={h['label']!r}, kind={h['kind']!r}, "
         f"keepout_dia={h['keepout_dia']}, tol={m.get('hole_tol')})"
         for h in rec["holes"])
     feats = ",\n".join(
@@ -318,7 +326,10 @@ def render(rec: dict) -> str:
 
     notes = ['"Connector outlines are the component body as drawn by '
              'Raspberry Pi Ltd, including any overhang past the board edge."',
-             repr(f"Mounting hole diameter: {m['hole_note']}")]
+             repr(f"Mounting hole diameter: {m['hole_note']}"),
+             repr("Hole IDs are assigned by this drawing, not by Raspberry Pi "
+                  "Ltd, and run bottom row first then left to right. The same "
+                  "ID means the same hole on every Raspberry Pi sheet here.")]
     if m.get("hole_keepout") is None:
         notes.append(repr(HAT_KEEPOUT_NOTE))
     if m.get("reduced"):
@@ -326,9 +337,10 @@ def render(rec: dict) -> str:
                      f'dimensions carry more uncertainty than the other models; '
                      f'the recovered plot scale was {rec["scale"]:.4f}."')
     if m.get("aux_holes"):
-        notes.append('"The two 3.0 mm holes are additional to the four M2.5 '
-                     'mounting holes, and sit 6.0 mm from the nearer mounting '
-                     'hole on the board diagonal."')
+        notes.append('"AUX1 and AUX2 are 3.0 mm holes additional to the four '
+                     'M2.5 mounting holes. Each sits 6.0 mm inboard of the '
+                     'mounting hole it shares an X coordinate with, and the '
+                     'pair are diagonally opposite each other."')
     if not m.get("holes_from_source"):
         notes.append('"Hole positions are the 3.5 mm inset and 58 x 49 mm '
                      'rectangle dimensioned on this model\'s own drawing."')

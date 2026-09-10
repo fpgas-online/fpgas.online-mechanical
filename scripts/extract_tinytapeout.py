@@ -169,6 +169,65 @@ def frame(board):
     return to_xy, to_box, (x1 - x0, y1 - y0)
 
 
+def _check_arc_passes_through(key: str, edge, point, tol: float = 0.02) -> None:
+    best = min(math.dist(point, p) for p in _sample_arc(*edge[1:], steps=180))
+    if best > tol:
+        raise SystemExit(
+            f"{key}: a resolved outline arc misses the point KiCad puts on it "
+            f"by {best:.3f} mm. It is curving the wrong way.")
+
+
+def _check_outline_extent(key: str, edges, width: float, height: float) -> None:
+    """The resolved outline must fill its own bounding box, and no more.
+
+    An arc resolved with the wrong direction or the wrong large-arc flag bulges
+    the opposite way, which shows up here immediately.  It is exactly the
+    mistake that turns rounded corners into scallops bitten out of the board,
+    and it looks plausible enough at screen size to survive a visual check.
+
+    Each arc is sampled rather than reasoned about: recovering a circle centre
+    from SVG-style parameters has its own sign trap, and sampling has none.
+    """
+    xs: list[float] = []
+    ys: list[float] = []
+    for e in edges:
+        if e[0] == "line":
+            xs += [e[1], e[3]]
+            ys += [e[2], e[4]]
+        else:
+            for px, py in _sample_arc(*e[1:]):
+                xs.append(px)
+                ys.append(py)
+    got_w, got_h = max(xs) - min(xs), max(ys) - min(ys)
+    if abs(got_w - width) > 0.02 or abs(got_h - height) > 0.02:
+        raise SystemExit(
+            f"{key}: the resolved outline spans {got_w:.3f} x {got_h:.3f} mm "
+            f"but the board is {width:.3f} x {height:.3f}. An arc is bulging "
+            f"the wrong way.")
+
+
+def _sample_arc(x1, y1, x2, y2, r, large, ccw, steps: int = 33):
+    """Points along an SVG-style arc, including both ends."""
+    dx, dy = x2 - x1, y2 - y1
+    half = math.hypot(dx, dy) / 2
+    off = math.sqrt(max(r * r - half * half, 0.0))
+    # Of the two candidate centres, the one that gives the requested sweep.
+    nx, ny = -dy / (2 * half), dx / (2 * half)
+    for sign in (1, -1):
+        cx = (x1 + x2) / 2 + sign * off * nx
+        cy = (y1 + y2) / 2 + sign * off * ny
+        a0 = math.atan2(y1 - cy, x1 - cx)
+        a2 = math.atan2(y2 - cy, x2 - cx)
+        span = (a2 - a0) % (2 * math.pi) if ccw else (a0 - a2) % (2 * math.pi)
+        if (span > math.pi) == bool(large):
+            break
+    out = []
+    for i in range(steps + 1):
+        a = a0 + (span if ccw else -span) * i / steps
+        out.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    return out
+
+
 def one(fps, ref):
     hits = [f for f in fps if f.reference == ref]
     if len(hits) != 1:
@@ -202,9 +261,22 @@ def extract(rev: dict) -> dict:
         ccw = ((a1 - a0) % (2 * math.pi)) < ((a2 - a0) % (2 * math.pi))
         swept = ((a2 - a0) % (2 * math.pi)) if ccw \
             else ((a0 - a2) % (2 * math.pi))
-        edges.append(("arc", round(a[0], 3), round(a[1], 3),
-                      round(b[0], 3), round(b[1], 3), round(r, 4),
-                      1 if swept > math.pi else 0, 1 if ccw else 0))
+        edge = ("arc", round(a[0], 3), round(a[1], 3),
+                round(b[0], 3), round(b[1], 3), round(r, 4),
+                1 if swept > math.pi else 0, 1 if ccw else 0)
+        # KiCad gives an explicit point on the arc.  Requiring the resolved arc
+        # to pass through it is the only check that catches a corner fillet
+        # resolved the wrong way round: such an arc curves into the corner
+        # rather than out of it, so it stays inside the board's bounding box
+        # and a bounding box check sees nothing wrong.
+        _check_arc_passes_through(rev["key"], edge, m)
+        edges.append(edge)
+    # An arc resolved with the wrong direction or the wrong large-arc flag
+    # bulges the opposite way, which shows up as the outline no longer filling
+    # its own bounding box.  Cheap to check, and it is exactly the mistake that
+    # turns rounded corners into scallops bitten out of the board.
+    _check_outline_extent(rev["key"], edges, w, h)
+
     radii = sorted({round(g.centre_radius()[2], 3) for g in arcs})
     corner_radius = radii[-1]
     profile_note = ""
@@ -327,6 +399,13 @@ def render(rec: dict) -> str:
             for f in rec["features"])
 
     used = ", ".join(rec["used_by"]) or "no shipped shuttle yet"
+    twins = ", ".join(rec["identical_to"])
+    identical_note = (
+        f"Geometrically identical to revision {twins}: the outline, mounting "
+        f"holes, Pmod hosts and every feature on this sheet are in the same "
+        f"place. Only the electrical design and the shuttle differ."
+        if twins else
+        "No other demo board revision shares this geometry.")
     return f'''
 BOARDS[{rec["key"]!r}] = BoardSpec(
     key={rec["key"]!r},
@@ -360,6 +439,7 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
+        {identical_note!r},
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
     ),
@@ -367,15 +447,35 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
 '''
 
 
+def geometry_signature(rec: dict):
+    """What makes two revisions the same board, mechanically."""
+    return (rec["width"], rec["height"], rec["corner_radius"],
+            tuple(sorted((h["x"], h["y"], h["dia"]) for h in rec["holes"])),
+            tuple(sorted((p["cx"], p["cy"]) for p in rec["pmods"])),
+            tuple(sorted((f["key"], f["x0"], f["y0"], f["x1"], f["y1"])
+                         for f in rec["features"])))
+
+
 def main() -> None:
     out = ROOT / "data" / "tinytapeout_boards.py"
+    records = [extract(rev) for rev in REVISIONS]
+    # Several revisions are byte-identical mechanically; say so on the sheet,
+    # so a reader can tell an identical board from a stale drawing.
+    by_sig: dict = {}
+    for rec in records:
+        by_sig.setdefault(geometry_signature(rec), []).append(rec["key"])
+    for rec in records:
+        twins = by_sig[geometry_signature(rec)]
+        rec["identical_to"] = [k for k in twins if k != rec["key"]]
+
     chunks = [HEADER]
-    for rev in REVISIONS:
-        rec = extract(rev)
+    for rec in records:
         chunks.append(render(rec))
         print(f"{rec['key']:14s} {rec['width']:7.2f} x {rec['height']:6.2f} mm  "
               f"R{rec['corner_radius']}  {len(rec['holes'])} holes  "
-              f"{len(rec['pmods'])} pmods  {len(rec['features'])} features")
+              f"{len(rec['pmods'])} pmods  {len(rec['features'])} features"
+              + (f"  == {', '.join(rec['identical_to'])}"
+                 if rec["identical_to"] else ""))
     out.write_text("".join(chunks))
     print(f"wrote {out}")
 

@@ -64,13 +64,18 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
     def box(r: Rect, radius: float = 0.0) -> None:
         c.rect(r.x, r.y, r.w, r.h, weight=style.W_OUTLINE, radius=radius)
 
+    # The body is an extrusion, so its corner radii belong to the cross
+    # section.  Only the end view shows them; the plan and the elevation are
+    # plain rectangles.  Drawing the radius on the plan as well, as this sheet
+    # used to, says the part is rounded in two directions at once.
     box(front)
-    box(plan, radius=o.corner_radius * scale)
+    box(plan)
     box(end, radius=o.corner_radius * scale)
 
+    # Captions above each view, so the space below stays free for dimensions.
     for r, name in ((front, "FRONT ELEVATION"), (plan, "PLAN"),
                     (end, "END VIEW, RJ45 END")):
-        c.text(r.cx, r.y - 8.0, name, size=style.T_LABEL, anchor="middle",
+        c.text(r.cx, r.y1 + 4.0, name, size=style.T_LABEL, anchor="middle",
                bold=True)
 
     # Features are given in plan coordinates: X along the length, Y across the
@@ -91,15 +96,18 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
             ey = end.cy - eh / 2
             c.rect(ex, ey, ew, eh, weight=style.W_COMPONENT,
                    colour=style.C_HIGHLIGHT, fill=style.C_FILL_LIGHT)
-            # Above the end view, so it stays clear of the view caption.
-            dims.linear(c, (ex, ey + eh), (ex + ew, ey + eh), 9.0,
-                        horizontal=True, value=f.y1 - f.y0)
+            # Aperture size and position in the end face, both of which a
+            # bracket has to clear.
+            dims.linear(c, (ex, ey), (ex + ew, ey), -14.0, horizontal=True,
+                        value=f.y1 - f.y0)
+            dims.linear(c, (ex, ey), (ex, ey + eh), -14.0, horizontal=False,
+                        value=eh / scale)
+            dims.linear(c, (end.x, ey), (end.x, end.y), -26.0,
+                        horizontal=False, value=(ey - end.y) / scale)
+            # Jack size and position along the body, in the plan.
             dims.linear(c, (plan.x + f.x0 * scale, plan.y1),
                         (plan.x + f.x1 * scale, plan.y1), 9.0,
                         horizontal=True, value=f.x1 - f.x0)
-            # Where along the body the jack sits, which is what a bracket or
-            # cradle actually has to place.  Below the plan, stacked under the
-            # overall length: above it would run into the view caption.
             dims.linear(c, (plan.x, plan.y), (plan.x + f.x0 * scale, plan.y),
                         -25.0, horizontal=True, value=f.x0)
 
@@ -109,8 +117,21 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                 horizontal=False, value=depth)
     dims.linear(c, (front.x1, front.y), (front.x1, front.y1), 14.0,
                 horizontal=False, value=height)
+    dims.linear(c, (end.x, end.y), (end.x1, end.y), -14.0, horizontal=True,
+                value=depth)
+    # Below the view, not above: the caption sits above and is wider than the
+    # view itself, so an upward leader runs straight through it.
+    dims.leader(c, (end.x1 - o.corner_radius * scale * 0.3,
+                    end.y + o.corner_radius * scale * 0.3),
+                (end.x1 + 9.0, end.y - 7.0),
+                f"R{o.corner_radius:.2f} nominal (4 places)")
+    dims.datum_marker(c, plan.x, plan.y, label="")
+    dims.leader(c, (plan.x, plan.y), (plan.x - 24.0, plan.y - 16.0),
+                "DATUM  X0 Y0", tail=2.0, anchor="end", dot=True)
 
-    sheet.projection_symbol(area.x1 - 26.0, area.y + 6.0)
+    # Beside the title block, where a reader looks for it.
+    sheet.projection_symbol(sheet.title_rect.x - 22.0,
+                            sheet.title_rect.y + 12.0)
 
     rows = [["Overall length", f"{length:.2f}"],
             ["Overall width", f"{depth:.2f}"],
@@ -124,7 +145,7 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                  f"{f.y0:.2f} to {f.y1:.2f}"] for f in spec.features]
         block = sheet.column_block(sheet.table_height("FEATURES (PLAN VIEW)", len(rows)))
         sheet.table(block, "FEATURES (PLAN VIEW)",
-                    ["FEATURE", "X EXTENT", "Y EXTENT"], rows,
+                    ["FEATURE", "X EXTENT mm", "Y EXTENT mm"], rows,
                     ["start", "end", "end"])
 
     notes = [
@@ -134,8 +155,11 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
         "the front elevation; the end view is the view from the RJ45 end, "
         "placed to the left of it.",
         "The RJ45 aperture drawn in the end view is a standard 8P8C jack "
-        "envelope positioned centrally, since the vendor does not dimension "
-        "it. Treat it as indicative to about +/-1.5 mm.",
+        "envelope, positioned centrally because the vendor does not dimension "
+        "it. Its size and position are indicative to about +/-1.5 mm; the body "
+        "envelope itself is the dimension to trust.",
+        "The corner radius is nominal. It is a cross-section feature of the "
+        "extrusion, so it appears in the end view only.",
     ] + list(spec.notes)
     block = sheet.column_block(min(sheet.column_remaining * 0.66, 104.0))
     sheet.notes(block, "NOTES", notes)

@@ -84,8 +84,10 @@ class Sheet:
         cw = self.COLUMN_WIDTH if column_width is None else column_width
         self.title_rect = Rect(self.frame.x1 - cw, self.frame.y, cw,
                                self.TITLE_HEIGHT)
+        # A little clear of the frame at the top, so the first section heading
+        # does not sit on the frame line.
         self.column = Rect(self.frame.x1 - cw, self.title_rect.y1 + 4.0,
-                           cw, self.frame.y1 - self.title_rect.y1 - 4.0)
+                           cw, self.frame.y1 - self.title_rect.y1 - 7.0)
         self.area = Rect(self.frame.x, self.frame.y,
                          self.frame.w - cw - 6.0, self.frame.h)
         self._column_cursor = self.column.y1

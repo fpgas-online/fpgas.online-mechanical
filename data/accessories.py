@@ -96,8 +96,8 @@ PMOD_HAT = BoardSpec(
     outline=Outline(width=HAT_WIDTH, height=HAT_HEIGHT_SMT,
                     corner_radius=HAT_CORNER_RADIUS),
     holes=tuple(
-        Hole(x=x, y=y, dia=HAT_HOLE_DIA, keepout_dia=6.2, label=f"M{i + 1}")
-        for i, (x, y) in enumerate(HAT_HOLES)
+        Hole(x=x, y=y, dia=HAT_HOLE_DIA, keepout_dia=6.2, label=f"MT{i + 1}")
+        for i, (x, y) in enumerate(sorted(HAT_HOLES, key=lambda p: (p[1], p[0])))
     ),
     pmods=(
         PmodHeader(key="ja", label="JA", designator="JA", edge="left",
