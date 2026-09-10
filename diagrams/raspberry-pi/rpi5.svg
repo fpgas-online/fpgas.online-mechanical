@@ -144,7 +144,7 @@
 <line x1="80.52" y1="107.408" x2="80.52" y2="98.292" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="80.52" y="110.3893" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 80.52 110.3893)">0</text>
 <line x1="84.02" y1="114.3173" x2="84.02" y2="96.542" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="84.02" y1="84.495" x2="84.02" y2="47.542" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="84.02" y1="84.495" x2="84.02" y2="47.742" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="84.02" y="119.7508" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 84.02 119.7508)">3.50</text>
 <line x1="108.12" y1="107.408" x2="108.12" y2="98.932" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="108.12" y="113.8228" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 108.12 113.8228)">27.60</text>
@@ -153,17 +153,17 @@
 <text x="142.02" y="113.8228" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 142.02 113.8228)">61.50</text>
 <line x1="71.52" y1="97.092" x2="79.32" y2="97.092" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="69.52" y="95.842" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">0</text>
-<line x1="59.0905" y1="93.592" x2="81.07" y2="93.592" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="59.0905" y1="93.592" x2="80.87" y2="93.592" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="57.0905" y="92.342" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">3.50</text>
-<line x1="71.52" y1="87.595" x2="80.92" y2="87.595" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="71.52" y1="87.595" x2="80.72" y2="87.595" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="69.52" y="86.345" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">9.50</text>
 <line x1="71.52" y1="80.662" x2="88.72" y2="80.662" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="69.52" y="79.412" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">16.43</text>
 <line x1="71.52" y1="57.802" x2="88.72" y2="57.802" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="69.52" y="56.552" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">39.29</text>
-<line x1="71.52" y1="50.588" x2="138.92" y2="50.588" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="71.52" y1="50.588" x2="138.72" y2="50.588" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="69.52" y="49.338" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">46.50</text>
-<line x1="71.52" y1="44.592" x2="81.07" y2="44.592" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="71.52" y1="44.592" x2="80.87" y2="44.592" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="69.52" y="43.342" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">52.50</text>
 <line x1="80.52" y1="125.1843" x2="80.52" y2="131.1843" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="165.52" y1="125.1843" x2="165.52" y2="131.1843" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>

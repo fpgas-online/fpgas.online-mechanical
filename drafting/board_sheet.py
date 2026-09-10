@@ -572,6 +572,48 @@ def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
                else "alphabetic", bold=True)
 
 
+def _clear_lane(view: View, host, edge: str, board: Rect,
+                blockers: list[tuple[float, float, float, float]]) -> float:
+    """Where to run the pin-field depth dimension for *host*, in sheet mm.
+
+    A lane parallel to the host's own edge, alongside the host, on which
+    nothing is drawn.  Candidates step outwards from the end of the pin field
+    in both directions, nearest first, so the dimension normally lands just
+    beyond the host and only moves further when something is in the way.
+    Falls back to the nearest candidate if every lane is blocked, which is
+    better than silently dropping the dimension.
+    """
+    along_edge = edge in ("bottom", "top")
+    centre = host.cx if along_edge else host.cy
+    half = host.pin_span / 2
+
+    def blocked(pos: float) -> bool:
+        lo, hi = (board.y, board.y1) if along_edge else (board.x, board.x1)
+        for x0, y0, x1, y1 in blockers:
+            a, b = (x0, x1) if along_edge else (y0, y1)
+            other0, other1 = (y0, y1) if along_edge else (x0, x1)
+            if a - 2.6 < pos < b + 2.6 and other1 > lo and other0 < hi:
+                return True
+        return False
+
+    first = None
+    for step in range(0, 16):
+        for direction in (1, -1):
+            model = centre + direction * (half + 4.0 + step * 1.5)
+            pos = view.x(model) if along_edge else view.y(model)
+            inside = (board.x + 2.0 < pos < board.x1 - 2.0 if along_edge
+                      else board.y + 2.0 < pos < board.y1 - 2.0)
+            if not inside:
+                continue
+            if first is None:
+                first = pos
+            if not blocked(pos):
+                return pos
+    return first if first is not None else (
+        view.x(centre + half + 4.0) if along_edge else
+        view.y(centre + half + 4.0))
+
+
 def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                  sheet_size: str = "A3", extra_notes: tuple[str, ...] = (),
                  force_scale: float | None = None,
@@ -799,28 +841,6 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                         text=label)
             leftmost -= 6.0 + style.T_DIM + 2.0
 
-    # The Pmod pin-field depth, dimensioned once per edge rather than folded
-    # into an ordinate chain.
-    for edge, group in by_edge.items():
-        outer = max(group, key=lambda p: p.cx if edge in ("bottom", "top")
-                    else p.cy)
-        if edge == "bottom":
-            x = view.x(outer.cx + outer.pin_span / 2 + 5.0)
-            dims.linear(c, (x, board.y), (x, view.y(outer.cy)), 0.0,
-                        horizontal=False, value=outer.cy)
-        elif edge == "top":
-            x = view.x(outer.cx + outer.pin_span / 2 + 5.0)
-            dims.linear(c, (x, view.y(outer.cy)), (x, board.y1), 0.0,
-                        horizontal=False, value=o.height - outer.cy)
-        elif edge == "left":
-            y = view.y(outer.cy + outer.pin_span / 2 + 5.0)
-            dims.linear(c, (board.x, y), (view.x(outer.cx), y), 0.0,
-                        horizontal=True, value=outer.cx)
-        else:
-            y = view.y(outer.cy + outer.pin_span / 2 + 5.0)
-            dims.linear(c, (view.x(outer.cx), y), (board.x1, y), 0.0,
-                        horizontal=True, value=o.width - outer.cx)
-
     # Witness lines break where they cross a drawn part, rather than running
     # through it.
     blockers = [(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1))
@@ -836,6 +856,34 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                          *view.pt(p.cx + hx, p.cy + hy)))
     blockers = [(min(b[0], b[2]), min(b[1], b[3]),
                  max(b[0], b[2]), max(b[1], b[3])) for b in blockers]
+
+    # The Pmod pin-field depth, dimensioned once per edge rather than folded
+    # into an ordinate chain.  It runs on a lane alongside the outermost host
+    # of that edge, chosen clear of every drawn part: fixed five millimetres
+    # out, it ran through mounting hole MT2 on the v3 boards and through MT3
+    # on the Pmod HAT Adapter.  The span is three or four millimetres and the
+    # value three times that, so the value cannot sit between the arrows; it
+    # is written along the lane on the inboard side, where the lane is clear
+    # by construction.  Outboard is where the host spacing dimension and the
+    # ordinate chain already are.
+    for edge, group in by_edge.items():
+        along = "cx" if edge in ("bottom", "top") else "cy"
+        outer = max(group, key=lambda p: getattr(p, along))
+        lane = _clear_lane(view, outer, edge, board, blockers)
+        if edge == "bottom":
+            dims.linear(c, (lane, board.y), (lane, view.y(outer.cy)), 0.0,
+                        horizontal=False, value=outer.cy, text_side="high")
+        elif edge == "top":
+            dims.linear(c, (lane, view.y(outer.cy)), (lane, board.y1), 0.0,
+                        horizontal=False, value=o.height - outer.cy,
+                        text_side="low")
+        elif edge == "left":
+            dims.linear(c, (board.x, lane), (view.x(outer.cx), lane), 0.0,
+                        horizontal=True, value=outer.cx, text_side="high")
+        else:
+            dims.linear(c, (view.x(outer.cx), lane), (board.x1, lane), 0.0,
+                        horizontal=True, value=o.width - outer.cx,
+                        text_side="low")
 
     x_extent = dims.ordinate_chain(
         c, [(view.x(v), f"{v:.2f}", view.y(f)) for v, f in xvals.items()],

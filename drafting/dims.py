@@ -250,6 +250,25 @@ def _seg(c: Canvas, fixed: float, a: float, b: float, vertical: bool, **kw):
         c.line(a, fixed, b, fixed, **kw)
 
 
+def _outside_own(pos: float, from_pos: float, out: int, horizontal: bool,
+                 blockers) -> float:
+    """Where a witness line anchored at a feature should actually begin.
+
+    Just outside whatever body contains the anchor, on the side the chain is
+    on, so the line leaves the part rather than starting inside it.
+    """
+    px, py = (pos, from_pos) if horizontal else (from_pos, pos)
+    edge = from_pos
+    for bx0, by0, bx1, by1 in blockers:
+        if not (bx0 <= px <= bx1 and by0 <= py <= by1):
+            continue
+        lo, hi = (by0, by1) if horizontal else (bx0, bx1)
+        near = hi if out > 0 else lo
+        if (near - edge) * out > 0:
+            edge = near
+    return edge + out * style.EXT_GAP
+
+
 def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
                    horizontal: bool, colour: str = style.C_DIM,
                    size: float = style.T_DIM, text_gap: float = 2.0,
@@ -313,7 +332,14 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
         # ISO 129-1 asks of an extension line.  Subtracting here instead put
         # the start on the far side, so the line ran back through the feature
         # it was meant to stop short of.
-        start = from_pos + out * style.EXT_GAP
+        #
+        # An anchor inside a body -- a Pmod host's pin field, say -- starts
+        # from that body's own edge.  Starting at the anchor put the first
+        # millimetres of the line inside the body, where the break logic then
+        # removed them, and the witness line for the Pmod hosts on the
+        # Raspberry Pi sheets ended in blank space six millimetres short of
+        # the pin field it was pointing at.
+        start = _outside_own(pos, from_pos, out, horizontal, blockers)
         if (end - start) * out <= 0:
             start = end - out * style.EXT_OVER
         if horizontal:
