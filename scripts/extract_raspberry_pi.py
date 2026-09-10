@@ -74,6 +74,17 @@ KEEPOUT_DESIGN_NOTE = (
 #: relative to each other.
 FEATURE_ORDER = ["gpio40", "usb_power", "ethernet", "usb_a_1", "usb_a_2"]
 
+#: What each number means, for the rows a board carries for parts it does not
+#: have.  Generic, because the same number is a micro-USB power input on one
+#: model and a USB-C one on another.
+FEATURE_NAMES = {
+    "gpio40": "40-pin GPIO header",
+    "usb_power": "Power input connector",
+    "ethernet": "Ethernet RJ45",
+    "usb_a_1": "USB type A, upper pair",
+    "usb_a_2": "USB type A, lower pair",
+}
+
 #: Features whose position is fixed by the Raspberry Pi HAT specification and
 #: so must be the same on every model.  Each model's own drawing is still read
 #: and the readings compared; agreeing within SHARED_TOL they are snapped to
@@ -318,6 +329,11 @@ from .schema import BoardSpec, Feature, Hole, Outline, Source
 
 BOARDS: dict[str, BoardSpec] = {}
 
+#: Feature numbers are fixed across the family: a number means the same part on
+#: every sheet.  A model that does not carry the part still gets a row, so a
+#: gap in a schedule reads as "not on this board" rather than as an omission.
+FEATURE_NUMBERS = __NUMBERS__
+
 '''
 
 
@@ -503,7 +519,10 @@ def main() -> None:
         records.append(rec)
     spreads = snap_shared(records)
 
-    chunks = [HEADER]
+    numbers = "{\n" + "".join(
+        f"    {i}: {FEATURE_NAMES[key]!r},\n"
+        for i, key in enumerate(FEATURE_ORDER, 1)) + "}"
+    chunks = [HEADER.replace("__NUMBERS__", numbers)]
     for rec in records:
         model = rec["model"]
         rec["shared_spreads"] = spreads

@@ -22,7 +22,9 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from data.accessories import (ACCESSORIES, GENERIC_POE, PMOD_HAT,  # noqa: E402
                               WAVESHARE_POE)
 from data.raspberry_pi_boards import BOARDS as RPI_BOARDS  # noqa: E402
+from data.raspberry_pi_boards import FEATURE_NUMBERS as RPI_NUMBERS  # noqa: E402
 from data.tinytapeout_boards import BOARDS as TT_BOARDS  # noqa: E402
+from data.tinytapeout_boards import FEATURE_NUMBERS as TT_NUMBERS  # noqa: E402
 from drafting.board_sheet import render_board  # noqa: E402
 from drafting.enclosure_sheet import render_enclosure  # noqa: E402
 from drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
@@ -139,7 +141,7 @@ def main() -> None:
     tt_dir.mkdir(parents=True, exist_ok=True)
     for n, (stem, spec) in enumerate(tt_sheets(), 1):
         sheet = render_board(spec, drawing_no=f"TT-DB-{n:02d}", date=DATE,
-                             extra_notes=TT_NOTES)
+                             extra_notes=TT_NOTES, family_numbers=TT_NUMBERS)
         path = tt_dir / f"tt-demo-board-{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
@@ -149,7 +151,8 @@ def main() -> None:
     for n, key in enumerate(RPI_ORDER, 1):
         spec = RPI_BOARDS[key]
         sheet = render_board(spec, drawing_no=f"RPI-{n:02d}", date=DATE,
-                             overlay=PMOD_HAT, extra_notes=RPI_NOTES)
+                             overlay=PMOD_HAT, extra_notes=RPI_NOTES,
+                             family_numbers=RPI_NUMBERS)
         path = rpi_dir / f"{slug(key)}.svg"
         sheet.canvas.save(str(path))
         made.append(path)

@@ -18,6 +18,22 @@ from .schema import BoardSpec, Feature, Hole, Outline, PmodHeader, Source
 
 BOARDS: dict[str, BoardSpec] = {}
 
+#: Feature numbers are fixed across the family: a number means the same part on
+#: every sheet.  A revision that does not carry the part still gets a row, so a
+#: gap in a schedule reads as "not on this board" rather than as an omission.
+FEATURE_NUMBERS = {
+    1: 'USB-C power / control',
+    2: '7-segment display',
+    3: 'First indicator LED',
+    4: 'Second indicator LED',
+    5: 'Third indicator LED',
+    6: 'Fourth indicator LED',
+    7: '8-way input DIP switch',
+    8: 'Side Pmod, first position',
+    9: 'Side Pmod, second position',
+    10: 'Side Pmod, third position',
+}
+
 
 BOARDS['tt123-v2.2.6'] = BoardSpec(
     key='tt123-v2.2.6',

@@ -51,6 +51,23 @@ SHUTTLE_SHEET = ("https://docs.google.com/spreadsheets/d/"
 FEATURE_ORDER = ["usb_power", "display7", "led1", "led2", "led3", "led4",
                  "dipsw", "side_pmod1", "side_pmod2", "side_pmod3"]
 
+#: What each number means, in words a reader can match against, for the rows a
+#: board has to carry for parts it does not have.  Generic, because the same
+#: number is "LED D1" on one revision and "LED D3" on another: the number
+#: identifies the position in the family's schedule, not the designator.
+FEATURE_NAMES = {
+    "usb_power": "USB-C power / control",
+    "display7": "7-segment display",
+    "led1": "First indicator LED",
+    "led2": "Second indicator LED",
+    "led3": "Third indicator LED",
+    "led4": "Fourth indicator LED",
+    "dipsw": "8-way input DIP switch",
+    "side_pmod1": "Side Pmod, first position",
+    "side_pmod2": "Side Pmod, second position",
+    "side_pmod3": "Side Pmod, third position",
+}
+
 REVISIONS = [
     dict(
         key="tt123-v2.2.6",
@@ -422,6 +439,11 @@ from .schema import BoardSpec, Feature, Hole, Outline, PmodHeader, Source
 
 BOARDS: dict[str, BoardSpec] = {}
 
+#: Feature numbers are fixed across the family: a number means the same part on
+#: every sheet.  A revision that does not carry the part still gets a row, so a
+#: gap in a schedule reads as "not on this board" rather than as an omission.
+FEATURE_NUMBERS = __NUMBERS__
+
 '''
 
 
@@ -534,7 +556,10 @@ def main() -> None:
         twins = by_sig[geometry_signature(rec)]
         rec["identical_to"] = [k for k in twins if k != rec["key"]]
 
-    chunks = [HEADER]
+    numbers = "{\n" + "".join(
+        f"    {i}: {FEATURE_NAMES[key]!r},\n"
+        for i, key in enumerate(FEATURE_ORDER, 1)) + "}"
+    chunks = [HEADER.replace('__NUMBERS__', numbers)]
     for rec in records:
         chunks.append(render(rec))
         print(f"{rec['key']:14s} {rec['width']:7.2f} x {rec['height']:6.2f} mm  "

@@ -703,8 +703,8 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
     o = spec.outline
     notes = [
         "All dimensions in millimetres. The datum symbol marks the origin: "
-        "the lower-left corner of the board outline, X right, Y up, viewed "
-        "from the component side.",
+        "the board's lower-left corner, X right, Y up, seen from the "
+        "component side.",
     ]
     if overlay is not None:
         notes.append(
@@ -721,8 +721,8 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
     if spec.pmods:
         notes.append(
             "The chain-double-dot rectangle at each Pmod host is the "
-            "connector body where it overhangs the board edge. Not a board "
-            "feature: it is what a peripheral and a bracket must clear.")
+            "connector body where it overhangs the edge: what a peripheral "
+            "and a bracket must clear.")
     if spec.pmods or (overlay is not None and overlay.pmods):
         notes.append(
             "Pmod host coordinates are given to three decimals, unlike the "
@@ -767,15 +767,11 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
                 "FEATURE SCHEDULE gives the extents.")
     if o.profile_note:
         notes.append(o.profile_note)
-    numbers = [f.number for f in spec.features if f.number]
-    if numbers and numbers != list(range(1, len(numbers) + 1)):
-        gaps = [n for n in range(1, max(numbers)) if n not in numbers]
+    if any(f.number for f in spec.features):
         notes.append(
-            "Feature numbers are fixed across this family, so a number means "
-            "the same part on every sheet. This board has no "
-            f"{'number' if len(gaps) == 1 else 'numbers'} "
-            f"{', '.join(str(n) for n in gaps)}, so the schedule skips "
-            f"{'it' if len(gaps) == 1 else 'them'}.")
+            "Feature numbers are fixed across this family, so a number "
+            "means the same part on every sheet. A part this board does not "
+            "carry still has a row, marked as such.")
     if not spec.tolerance:
         # Say where the general tolerance comes from.  It is a board house's
         # usual figures, not something any source here states, and on sheets
@@ -969,7 +965,8 @@ def _clear_lane(view: View, host, edge: str, board: Rect,
 def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                  sheet_size: str = "A3", extra_notes: tuple[str, ...] = (),
                  force_scale: float | None = None,
-                 overlay: BoardSpec | None = None) -> Sheet:
+                 overlay: BoardSpec | None = None,
+                 family_numbers: dict[int, str] | None = None) -> Sheet:
     """Build a complete drawing sheet for *spec* and return it."""
     o = spec.outline
 
@@ -1187,11 +1184,21 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     order = sorted(range(len(spec.features)),
                    key=lambda i: -(spec.features[i].width * spec.features[i].height))
     # The number a feature carries is its own, not its position in the list,
-    # so it means the same part on every sheet of the family.
-    for n, f in enumerate(spec.features, 1):
-        schedule.append([str(f.number or n), f.label,
-                         f"{f.x0:.2f} to {f.x1:.2f}",
-                         f"{f.y0:.2f} to {f.y1:.2f}"])
+    # so it means the same part on every sheet of the family.  Every number
+    # the family uses gets a row, including the ones this board does not
+    # carry: a schedule that jumps from 6 to 8 reads as a mistake, and the
+    # reader has no way to find out what 7 would have been.
+    present = {f.number or n: f for n, f in enumerate(spec.features, 1)}
+    for number in sorted(set(present) | set(family_numbers or {})):
+        f = present.get(number)
+        if f is None:
+            schedule.append([str(number),
+                             f"{family_numbers[number]} - not on this board",
+                             "-", "-"])
+        else:
+            schedule.append([str(number), f.label,
+                             f"{f.x0:.2f} to {f.x1:.2f}",
+                             f"{f.y0:.2f} to {f.y1:.2f}"])
     for i in order:
         f = spec.features[i]
         items.append(_Ballooned(str(f.number or i + 1), view.pt(f.cx, f.cy),
