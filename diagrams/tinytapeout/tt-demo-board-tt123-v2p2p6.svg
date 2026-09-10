@@ -132,8 +132,8 @@
 <polygon points="114.1,145.6575 117.1,146.5575 117.1,144.7575" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <polygon points="136.96,145.6575 133.96,144.7575 133.96,146.5575" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <text x="125.53" y="143.9482" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">22.86</text>
-<line x1="147.11" y1="132.3425" x2="146.31" y2="132.3425" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="147.11" y1="127.8775" x2="146.31" y2="127.8775" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="147.11" y1="132.3425" x2="148.31" y2="132.3425" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="147.11" y1="127.8775" x2="148.31" y2="127.8775" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="148.31" y1="132.3425" x2="148.31" y2="127.8775" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <polygon points="148.31,132.3425 147.41,135.3425 149.21,135.3425" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <polygon points="148.31,127.8775 149.21,124.8775 147.41,124.8775" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>

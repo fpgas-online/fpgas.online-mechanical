@@ -167,9 +167,12 @@ WAVESHARE_POE = BoardSpec(
     features=(
         Feature(key="rj45_in", label="RJ45 PoE input, in the end plate",
                 kind="ethernet", x0=86.5, y0=6.3, x1=102.5, y1=23.3,
+                z0=5.9, z1=18.9,
                 note="Centred in the 29.6 x 24.8 mm end plate; the opening "
                      "size and position are scaled from the vendor photo, "
-                     "+/-1.5 mm.", tol=1.5),
+                     "+/-1.5 mm. The 13.0 mm aperture height is the same "
+                     "measurement taken in Z, so 5.9 mm of end plate remains "
+                     "above and below it.", tol=1.5),
         Feature(key="cable_exit", label="Output cable exit",
                 kind="connector", x0=0.0, y0=11.8, x1=3.0, y1=17.8,
                 note="Captive lead ending in an RJ45 male plug and a USB-C "
@@ -208,8 +211,11 @@ GENERIC_POE = BoardSpec(
     features=(
         Feature(key="rj45_in", label="RJ45 PoE input, moulded into the body",
                 kind="ethernet", x0=64.0, y0=6.5, x1=80.0, y1=23.5,
+                z0=5.5, z1=18.5,
                 note="Position and size derived from vendor photographs, "
-                     "+/-2 mm.", tol=2.0),
+                     "+/-2 mm. The 13.0 mm aperture height is the same "
+                     "measurement taken in Z, centred in the 24.0 mm end "
+                     "face.", tol=2.0),
         Feature(key="cable_exit", label="Output cable exit",
                 kind="connector", x0=0.0, y0=12.0, x1=3.0, y1=18.0,
                 note="Captive lead ending in an RJ45 male plug and a micro-USB "

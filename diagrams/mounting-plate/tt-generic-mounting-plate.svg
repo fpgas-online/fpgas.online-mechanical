@@ -137,8 +137,8 @@
 <text x="118.61" y="114.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle">PMOD 2</text>
 <rect x="135.12" y="117.1" width="12.7" height="5.8" fill="none" stroke="#a00000" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <text x="141.47" y="114.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle">PMOD 3</text>
-<line x1="95.75" y1="121.2" x2="95.75" y2="139" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="118.61" y1="121.2" x2="118.61" y2="139" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="95.75" y1="121.2" x2="95.75" y2="137" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="118.61" y1="121.2" x2="118.61" y2="137" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="95.75" y1="137" x2="118.61" y2="137" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <polygon points="95.75,137 92.75,136.1 92.75,137.9" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <polygon points="118.61,137 121.61,137.9 121.61,136.1" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>

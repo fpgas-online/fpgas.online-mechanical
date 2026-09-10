@@ -24,7 +24,8 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
            text: str | None = None, places: int = 2, value: float | None = None,
            colour: str = style.C_DIM, size: float = style.T_DIM,
            extension: bool = True, flip_text: bool = False,
-           text_offset: float = 0.0, ext_start: float | None = None) -> None:
+           text_offset: float = 0.0, ext_start: float | None = None,
+           text_side: str | None = None) -> None:
     """Dimension between two sheet points, offset perpendicular to their span.
 
     *offset* is signed: positive puts the dimension line above a horizontal
@@ -35,6 +36,14 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
     An overall dimension placed outside an ordinate chain would otherwise run
     its extension lines from the part all the way out, straight through the
     ordinate labels on the way.
+
+    *text_side* is "low" or "high" and says which end a value too wide for its
+    span is written beyond: "low" past the left or bottom end, "high" past the
+    right or top.  ISO 129-1 puts such a value outside the extension lines, and
+    which side has room is something only the caller knows -- in a stack of
+    dimensions the space on one side is taken by the next dimension's extension
+    lines.  Left unset, the value stays centred on its span, which is right
+    when nothing is stacked beneath it.
     """
     (x1, y1), (x2, y2) = p1, p2
     if horizontal is None:
@@ -44,18 +53,22 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
         dy = offset
         line_y = max(y1, y2) + dy if dy >= 0 else min(y1, y2) + dy
         a, b = (min(x1, x2), line_y), (max(x1, x2), line_y)
-        if extension:
-            for x, y in ((x1, y1), (x2, y2)):
-                sign = 1 if line_y > y else -1
-                start = y + style.EXT_GAP * sign if ext_start is None \
-                    else ext_start
-                c.line(x, start, x, line_y + style.EXT_OVER * sign,
-                       w=style.W_THIN, colour=colour)
         span = abs(x2 - x1)
         shown = span if value is None else value
         label = text if text is not None else _fmt(shown, places)
         tw = style.text_width(label, size)
         inside = span > tw + 2 * style.ARROW_LEN + 2.0
+        if extension:
+            for x, y in ((x1, y1), (x2, y2)):
+                sign = 1 if line_y > y else -1
+                start = y + style.EXT_GAP * sign if ext_start is None \
+                    else ext_start
+                # A value too wide for its span sits on the far side of the
+                # dimension line, and the extension lines stop at the line
+                # rather than overshooting into it.
+                over = 0.0 if not inside else style.EXT_OVER
+                c.line(x, start, x, line_y + over * sign,
+                       w=style.W_THIN, colour=colour)
         c.line(a[0], line_y, b[0], line_y, w=style.W_THIN, colour=colour)
         if inside:
             c.arrow(a[0], line_y, 180, colour=colour)
@@ -68,32 +81,45 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
                    w=style.W_THIN, colour=colour)
             c.line(b[0], line_y, b[0] + style.ARROW_LEN * 2.2, line_y,
                    w=style.W_THIN, colour=colour)
-            # Still centred on its own span: pushed out past an arrowhead it
-            # reads as dimensioning the next gap along.
+            # Centred on its own span unless the caller says which side has
+            # room.  Centred, it reads unambiguously but can be crossed by a
+            # neighbouring dimension's extension lines; beyond a stub, the two
+            # inward arrows still tie it to the right pair of extension lines.
             tx = (a[0] + b[0]) / 2
         # Clear of the line by the gap, with the descender allowed for: the
         # baseline is not the bottom of the text.
         below = style.DIM_TEXT_GAP + style.descender(size)
+        # Which side of the line the feature is on.  A label that does not fit
+        # between the arrows goes on the other side, clear of the extension
+        # lines running up to the dimension line.
+        anchor = "middle"
+        if not inside and text_side:
+            stub = style.ARROW_LEN * 2.2 + 1.4
+            if text_side == "low":
+                tx, anchor = a[0] - stub, "end"
+            else:
+                tx, anchor = b[0] + stub, "start"
         ty = line_y + below + text_offset
         if flip_text:
             ty = line_y - below - style.text_height(size) - text_offset
-        c.text(tx, ty, label, size=size, colour=colour, anchor="middle")
+        c.text(tx, ty, label, size=size, colour=colour, anchor=anchor)
     else:
         dx = offset
         line_x = max(x1, x2) + dx if dx >= 0 else min(x1, x2) + dx
         lo, hi = min(y1, y2), max(y1, y2)
-        if extension:
-            for x, y in ((x1, y1), (x2, y2)):
-                sign = 1 if line_x > x else -1
-                start = x + style.EXT_GAP * sign if ext_start is None \
-                    else ext_start
-                c.line(start, y, line_x + style.EXT_OVER * sign, y,
-                       w=style.W_THIN, colour=colour)
         span = hi - lo
         shown = span if value is None else value
         label = text if text is not None else _fmt(shown, places)
         tw = style.text_width(label, size)
         inside = span > tw + 2 * style.ARROW_LEN + 2.0
+        if extension:
+            for x, y in ((x1, y1), (x2, y2)):
+                sign = 1 if line_x > x else -1
+                start = x + style.EXT_GAP * sign if ext_start is None \
+                    else ext_start
+                over = 0.0 if not inside else style.EXT_OVER
+                c.line(start, y, line_x + over * sign, y,
+                       w=style.W_THIN, colour=colour)
         c.line(line_x, lo, line_x, hi, w=style.W_THIN, colour=colour)
         if inside:
             c.arrow(line_x, lo, -90, colour=colour)
@@ -111,11 +137,18 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
         # out towards the dimension line and has to be cleared as well.
         aside = (style.DIM_TEXT_GAP + style.text_height(size) / 2
                  + style.descender(size) / 2)
+        anchor = "middle"
+        if not inside and text_side:
+            stub = style.ARROW_LEN * 2.2 + 1.4
+            if text_side == "low":
+                ty, anchor = lo - stub, "end"
+            else:
+                ty, anchor = hi + stub, "start"
         tx = line_x - aside - text_offset
         if flip_text:
             tx = line_x + aside + text_offset
         # Vertical dimension text reads from the right, per ISO 129-1.
-        c.text(tx, ty, label, size=size, colour=colour, anchor="middle",
+        c.text(tx, ty, label, size=size, colour=colour, anchor=anchor,
                rotate=90)
 
 

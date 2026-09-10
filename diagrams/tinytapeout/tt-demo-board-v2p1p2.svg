@@ -154,16 +154,16 @@
 <line x1="157.925" y1="58.7725" x2="162.532" y2="41.579" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="163.3602" cy="38.4881" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
 <text x="163.3602" y="37.2381" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">5</text>
-<line x1="106.73" y1="130.4975" x2="106.73" y2="149.0775" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="129.59" y1="130.4975" x2="129.59" y2="149.0775" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="106.73" y1="130.4975" x2="106.73" y2="147.0775" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="129.59" y1="130.4975" x2="129.59" y2="147.0775" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="106.73" y1="147.0775" x2="129.59" y2="147.0775" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <polygon points="106.73,147.0775 103.73,146.1775 103.73,147.9775" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <polygon points="129.59,147.0775 132.59,147.9775 132.59,146.1775" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <line x1="100.13" y1="147.0775" x2="106.73" y2="147.0775" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="129.59" y1="147.0775" x2="136.19" y2="147.0775" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="118.16" y="145.3682" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">22.86 TYP</text>
-<line x1="162.6" y1="133.0725" x2="161.8" y2="133.0725" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="162.6" y1="129.2975" x2="161.8" y2="129.2975" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="162.6" y1="133.0725" x2="163.8" y2="133.0725" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="162.6" y1="129.2975" x2="163.8" y2="129.2975" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="163.8" y1="133.0725" x2="163.8" y2="129.2975" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <polygon points="163.8,133.0725 162.9,136.0725 164.7,136.0725" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <polygon points="163.8,129.2975 164.7,126.2975 162.9,126.2975" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>

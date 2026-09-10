@@ -100,6 +100,12 @@ class Feature:
     note: str = ""
     tol: float | None = None
     designator: str = ""
+    #: Height above the seating plane, for a feature that also shows in an end
+    #: view: the lower and upper edge of its aperture.  Only the enclosure
+    #: sheets use these, and only for a feature in an end face.  Left None on a
+    #: bare board, where the plan view says everything.
+    z0: float | None = None
+    z1: float | None = None
 
     @property
     def width(self) -> float:

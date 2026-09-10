@@ -51,6 +51,19 @@ def _pick_scale(length: float, depth: float, height: float,
     return 1.0, "1:1"
 
 
+def _ref_tol(spec) -> str:
+    """How good the REF dimensions on this sheet are, read from the data.
+
+    Written out rather than quoted from memory: the two splitters are scaled
+    from different photographs and are not equally good.
+    """
+    tols = sorted({f.tol for f in spec.features if f.tol})
+    if not tols:
+        return "the general tolerance"
+    return " to ".join(f"+/-{t:.1f} mm" for t in (tols[0], tols[-1])) \
+        if tols[0] != tols[-1] else f"+/-{tols[0]:.1f} mm"
+
+
 def _enclosure_text(spec) -> tuple[list[str], list[str]]:
     """The sheet's notes and sources, built before the sheet exists."""
     notes = [
@@ -60,10 +73,11 @@ def _enclosure_text(spec) -> tuple[list[str], list[str]]:
         "First-angle projection. The plan is the view from above, placed below "
         "the front elevation; the end view is the view from the RJ45 end, "
         "placed to the left of it.",
-        "The RJ45 aperture drawn in the end view is a standard 8P8C jack "
-        "envelope, positioned centrally because the vendor does not dimension "
-        "it. Its size and position are indicative to about +/-1.5 mm; the body "
-        "envelope itself is the dimension to trust.",
+        "The RJ45 aperture in the end view is a standard 8P8C jack envelope, "
+        "placed centrally because the vendor does not dimension it. Every "
+        "dimension marked REF is scaled from vendor photographs, is good to "
+        "about " + _ref_tol(spec) + ", and is not for inspection. The body "
+        "envelope is the dimension to trust.",
         "The corner radius is nominal. It belongs to the body cross-section, "
         "so it appears in the end view only.",
     ] + list(spec.notes)
@@ -128,6 +142,11 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
     # Features are given in plan coordinates: X along the length, Y across the
     # depth.  Project each onto the plan, and onto the end view where it sits
     # in an end face.
+    #
+    # The overall dimensions sit at the bottom of each view's dimension stack,
+    # so where a feature adds dimensions above them, they move down to clear.
+    plan_stack = -14.0
+    end_stack = -14.0
     for f in spec.features:
         px = plan.x + f.x0 * scale
         py = plan.y + f.y0 * scale
@@ -135,36 +154,66 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT,
                fill=style.C_FILL_LIGHT)
         if f.kind == "ethernet":
+            if f.z0 is None or f.z1 is None:
+                raise SystemExit(
+                    f"{spec.key}: feature {f.key} is drawn in the end view, "
+                    "so it needs z0 and z1; the end view will not invent an "
+                    "aperture height")
             # The RJ45 is in the end plate, so it also shows in the end view,
             # where its aperture is what a bracket has to clear.
             ex = end.x + f.y0 * scale
             ew = (f.y1 - f.y0) * scale
-            eh = 13.0 * scale
-            ey = end.cy - eh / 2
+            ey = end.y + f.z0 * scale
+            eh = (f.z1 - f.z0) * scale
             c.rect(ex, ey, ew, eh, weight=style.W_COMPONENT,
                    colour=style.C_HIGHLIGHT, fill=style.C_FILL_LIGHT)
             # Aperture size and position in the end face, both of which a
-            # bracket has to clear.
-            dims.linear(c, (ex, ey), (ex + ew, ey), -14.0, horizontal=True,
-                        value=f.y1 - f.y0)
-            dims.linear(c, (ex, ey), (ex, ey + eh), -14.0, horizontal=False,
-                        value=eh / scale)
-            dims.linear(c, (end.x, ey), (end.x, end.y), -26.0,
-                        horizontal=False, value=(ey - end.y) / scale)
-            # Jack size and position along the body, in the plan.
-            dims.linear(c, (plan.x + f.x0 * scale, plan.y1),
-                        (plan.x + f.x1 * scale, plan.y1), 9.0,
-                        horizontal=True, value=f.x1 - f.x0)
+            # bracket has to clear.  Every one of these is scaled off a
+            # photograph rather than measured, so it is marked REF: not for
+            # inspection.  The figure it is good to is in a note, because
+            # spelling the tolerance out on each dimension makes the text
+            # wider than the feature it dimensions.
+            ap = " REF" if f.tol else ""
+            # One stack per axis, all measured off the same corner of the end
+            # view and ordered shortest first, so a reader works outwards from
+            # the aperture instead of picking between two baselines.
+            # Size nearest the view, then location, then the overall: that is
+            # the usual order and, here, the only one that works.  Every value
+            # is wider than the span it belongs to, so each is written beyond
+            # the extension lines rather than between them, and the size and
+            # location values are sent to opposite ends so they do not meet in
+            # the corner below the view.
+            dims.linear(c, (ex, ey), (ex + ew, ey), (end.y - 14.0) - ey,
+                        horizontal=True, text=f"{f.y1 - f.y0:.2f}{ap}",
+                        text_side="high")
+            dims.linear(c, (end.x, end.y), (ex, end.y), -25.0,
+                        horizontal=True, text=f"{f.y0:.2f}{ap}",
+                        text_side="low")
+            dims.linear(c, (ex, ey), (ex, ey + eh), (end.x - 14.0) - ex,
+                        horizontal=False, text=f"{f.z1 - f.z0:.2f}{ap}",
+                        text_side="high")
+            dims.linear(c, (end.x, end.y), (end.x, ey), -25.0,
+                        horizontal=False, text=f"{f.z0:.2f}{ap}",
+                        text_side="low")
+            end_stack = -36.0
+            # Jack size and position along the body, in the plan.  All three
+            # plan dimensions go below the view in one stack, shortest first,
+            # so a reader reads outwards from the part.
+            dims.linear(c, (plan.x + f.x0 * scale, plan.y),
+                        (plan.x + f.x1 * scale, plan.y), -14.0,
+                        horizontal=True, text=f"{f.x1 - f.x0:.2f}{ap}",
+                        text_side="high")
             dims.linear(c, (plan.x, plan.y), (plan.x + f.x0 * scale, plan.y),
-                        -25.0, horizontal=True, value=f.x0)
+                        -25.0, horizontal=True, text=f"{f.x0:.2f}{ap}")
+            plan_stack = -36.0
 
-    dims.linear(c, (plan.x, plan.y), (plan.x1, plan.y), -14.0,
+    dims.linear(c, (plan.x, plan.y), (plan.x1, plan.y), plan_stack,
                 horizontal=True, value=length)
     dims.linear(c, (plan.x, plan.y), (plan.x, plan.y1), -14.0,
                 horizontal=False, value=depth)
     dims.linear(c, (front.x1, front.y), (front.x1, front.y1), 14.0,
                 horizontal=False, value=height)
-    dims.linear(c, (end.x, end.y), (end.x1, end.y), -14.0, horizontal=True,
+    dims.linear(c, (end.x, end.y), (end.x1, end.y), end_stack, horizontal=True,
                 value=depth)
     # Below the view, not above: the caption sits above and is wider than the
     # view itself, so an upward leader runs straight through it.
