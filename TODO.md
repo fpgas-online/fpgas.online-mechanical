@@ -10,9 +10,9 @@ phantom Pmod host JC; that is a physical overlap, not a placement fault, and
 ## 1. Data collection  -- DONE
 - [x] Tiny Tapeout: identify every mechanically distinct demo board revision
 - [x] Tiny Tapeout: extract outline / holes / Pmods / USB-C / 7-seg / LEDs from KiCad
-- [x] Raspberry Pi: download official mechanical drawings (3B, 3B+, 3A+, 4B, 5)
+- [x] Raspberry Pi: download official mechanical drawings (3B, 3B+, 4B, 5)
 - [x] Raspberry Pi: extract outline / holes / USB / Ethernet from DXF
-- [x] Raspberry Pi: extract Pi 5 and Pi 3A+ geometry from vector PDF
+- [x] Raspberry Pi: extract Pi 5 geometry from vector PDF
 - [x] Digilent Pmod interface specification header geometry
 - [x] Digilent Pmod HAT Adapter geometry (photogrammetry, +/-0.75 mm)
 - [x] Waveshare 25 W PoE -> USB-C splitter dimensions
@@ -27,7 +27,7 @@ phantom Pmod host JC; that is a physical overlap, not a placement fault, and
 
 ## 3. Diagrams  -- DONE
 - [x] Tiny Tapeout demo boards, 8 sheets, one per production revision
-- [x] Raspberry Pi 3A+ / 3B / 3B+ / 4B / 5
+- [x] Raspberry Pi 3B / 3B+ / 4B / 5  (the 3A+ was dropped on request)
 - [x] Raspberry Pi + Digilent Pmod HAT Adapter overlay, on every Pi sheet
 - [x] Digilent Pmod HAT Adapter on its own
 - [x] Generic PoE -> micro-USB splitter

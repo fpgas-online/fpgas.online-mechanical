@@ -14,7 +14,7 @@ each sheet lists its sources.
 | Directory | Contents |
 |-----------|----------|
 | `diagrams/tinytapeout/` | 8 sheets, one per Tiny Tapeout demo board revision |
-| `diagrams/raspberry-pi/` | 5 sheets: Pi 3A+, 3B, 3B+, 4B, 5, each with a Digilent Pmod HAT Adapter overlaid |
+| `diagrams/raspberry-pi/` | 4 sheets: Pi 3B, 3B+, 4B, 5, each with a Digilent Pmod HAT Adapter overlaid |
 | `diagrams/accessories/` | Pmod HAT Adapter, and two PoE splitters as three-view envelope drawings |
 | `diagrams/mounting-plate/` | The generic mounting plate, plus a fitting guide |
 | `diagrams/previews/` | Small renders of every sheet, for the grid below |
@@ -27,8 +27,10 @@ Each sheet is written as SVG, PDF and PNG, plus a small preview. A3, mostly
 
 ## The sheets
 
-Each thumbnail links to the PDF. The same sheet is also there as SVG
-and as a full-resolution PNG.
+<!-- sheets:begin -->
+
+Each thumbnail links to the PDF. The same sheet is also there as SVG and as
+a full-resolution PNG.
 
 ### Tiny Tapeout demo boards
 
@@ -46,13 +48,13 @@ and as a full-resolution PNG.
 
 ### Raspberry Pi, with a Digilent Pmod HAT Adapter overlaid
 
-| <a href="diagrams/raspberry-pi/rpi3aplus.pdf"><img src="diagrams/previews/rpi3aplus.png" width="270" alt="RPI-01 Raspberry Pi 3 Model A+"></a> | <a href="diagrams/raspberry-pi/rpi3b.pdf"><img src="diagrams/previews/rpi3b.png" width="270" alt="RPI-02 Raspberry Pi 3 Model B"></a> | <a href="diagrams/raspberry-pi/rpi3bplus.pdf"><img src="diagrams/previews/rpi3bplus.png" width="270" alt="RPI-03 Raspberry Pi 3 Model B+"></a> |
+| <a href="diagrams/raspberry-pi/rpi3b.pdf"><img src="diagrams/previews/rpi3b.png" width="270" alt="RPI-01 Raspberry Pi 3 Model B"></a> | <a href="diagrams/raspberry-pi/rpi3bplus.pdf"><img src="diagrams/previews/rpi3bplus.png" width="270" alt="RPI-02 Raspberry Pi 3 Model B+"></a> | <a href="diagrams/raspberry-pi/rpi4b.pdf"><img src="diagrams/previews/rpi4b.png" width="270" alt="RPI-03 Raspberry Pi 4 Model B"></a> |
 |---|---|---|
-| **RPI-01** Raspberry Pi 3 Model A+<br>65 x 56 mm | **RPI-02** Raspberry Pi 3 Model B<br>85 x 56 mm | **RPI-03** Raspberry Pi 3 Model B+<br>85 x 56 mm |
+| **RPI-01** Raspberry Pi 3 Model B<br>85 x 56 mm | **RPI-02** Raspberry Pi 3 Model B+<br>85 x 56 mm | **RPI-03** Raspberry Pi 4 Model B<br>85 x 56 mm |
 
-| <a href="diagrams/raspberry-pi/rpi4b.pdf"><img src="diagrams/previews/rpi4b.png" width="270" alt="RPI-04 Raspberry Pi 4 Model B"></a> | <a href="diagrams/raspberry-pi/rpi5.pdf"><img src="diagrams/previews/rpi5.png" width="270" alt="RPI-05 Raspberry Pi 5"></a> |  |
+| <a href="diagrams/raspberry-pi/rpi5.pdf"><img src="diagrams/previews/rpi5.png" width="270" alt="RPI-04 Raspberry Pi 5"></a> |  |  |
 |---|---|---|
-| **RPI-04** Raspberry Pi 4 Model B<br>85 x 56 mm | **RPI-05** Raspberry Pi 5<br>85 x 56 mm |  |
+| **RPI-04** Raspberry Pi 5<br>85 x 56 mm |  |  |
 
 ### Accessories
 
@@ -66,12 +68,14 @@ and as a full-resolution PNG.
 |---|---|---|
 | **TT-MP-01** TT Generic Mounting Plate<br>Accepts every demo board revision, Pmod hosts fixed in place | **TT-MP-02** TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses |  |
 
+<!-- sheets:end -->
+
 ## Regenerating
 
 ```sh
 make fetch     # download the upstream sources into tmp/, once
 make data      # re-extract the mechanical database from them
-make check     # render every sheet, then run the three checks
+make check     # render every sheet, refresh the grid, then run the checks
 ```
 
 Rebuilding is deterministic: re-running the whole pipeline leaves the SVGs,
@@ -124,8 +128,8 @@ script fails, rather than quietly emitting a wrong dimension.
   commit each shuttle was produced from. Board outline, mounting holes, Pmod
   host pin fields, USB connector, seven-segment display and LEDs.
 - **Raspberry Pi**: from Raspberry Pi Ltd's own drawings. The Pi 3B, 3B+ and 4B
-  have layered DXF; the Pi 5 is a 1:1 vector PDF; the Pi 3A+ is a reduced PDF
-  whose plot scale is recovered from the mounting hole rectangle.
+  have layered DXF; the Pi 5 is a vector PDF whose plot scale is recovered from
+  the mounting hole rectangle and checked to be 1:1 rather than assumed.
 - **Digilent Pmod HAT Adapter**: Digilent publish no mechanical drawing, DXF,
   STEP or board file for it. The three Pmod host positions were measured
   photogrammetrically from Digilent's own top view, with scale and origin set

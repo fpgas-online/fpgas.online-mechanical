@@ -115,48 +115,6 @@ BOARDS['rpi3bplus'] = BoardSpec(
     ),
 )
 
-BOARDS['rpi3aplus'] = BoardSpec(
-    key='rpi3aplus',
-    title='Raspberry Pi 3 Model A+',
-    subtitle='65 x 56 mm',
-    family="raspberrypi",
-    front_edge="top",
-    outline=Outline(width=65.0, height=56.0,
-                    corner_radius=3.0),
-    holes=(
-        Hole(x=3.5, y=3.5, dia=2.75, label='MT1', kind='mount', keepout_dia=None, tol=None),
-        Hole(x=61.5, y=3.5, dia=2.75, label='MT2', kind='mount', keepout_dia=None, tol=None),
-        Hole(x=3.5, y=52.5, dia=2.75, label='MT3', kind='mount', keepout_dia=None, tol=None),
-        Hole(x=61.5, y=52.5, dia=2.75, label='MT4', kind='mount', keepout_dia=None, tol=None),
-    ),
-    features=(
-        Feature(key='gpio40', label='40-pin GPIO header', kind='header',
-                x0=7.08, y0=50.04, x1=57.96, y1=54.96),
-        Feature(key='usb_a_1', label='USB 2.0 type A (single)', kind='usb_a',
-                x0=53.28, y0=24.96, x1=67.56, y1=38.04),
-        Feature(key='usb_power', label='micro-USB power input', kind='usb_power',
-                x0=6.84, y0=-0.605, x1=14.4, y1=4.68),
-        Feature(key='hdmi', label='HDMI type A', kind='connector',
-                x0=24.72, y0=-1.51, x1=39.24, y1=10.635),
-        Feature(key='av', label='3.5 mm A/V jack', kind='connector',
-                x0=50.04, y0=-0.017, x1=57.0, y1=12.48),
-    ),
-    tolerance='reduced-source plot, see note: +/-0.5 typical',
-    sources=(
-        Source(label="Mechanical drawing", ref='https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf',
-               note="Raspberry Pi Ltd"),
-        Source(label="Mounting holes", ref='https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf',
-               note="Carried over from the Pi 3 Model B drawing; the 3A+ gives neither a hole size nor a tolerance, so the Model B's +/-0.05 is not repeated."),
-    ),
-    notes=(
-        "Connector outlines are the component body as drawn by Raspberry Pi Ltd, overhang past the board edge included.",
-        'Hole IDs are assigned by this drawing, bottom row first then left to right, and mean the same thing on every Raspberry Pi sheet here.',
-        "Design mounting hole keep-outs to 6.2 mm diameter on every model. That is what the Raspberry Pi HAT mechanical specification (github.com/raspberrypi/hats) requires around each hole, and it is the largest of the figures the individual models publish. The KEEPOUT column gives what this model's own drawing shows, which is not always anything.",
-        'The source drawing is a reduced plot, not 1:1. Its scale was recovered from the mounting hole rectangle as 1.0685 and applied. Residual error over the 85 mm width is a few tenths of a millimetre, so treat every dimension on this sheet as +/-0.5 rather than the +/-0.20 the other models carry.',
-        "Hole positions are the 3.5 mm inset and 58 x 49 mm rectangle dimensioned on this model's drawing.",
-    ),
-)
-
 BOARDS['rpi4b'] = BoardSpec(
     key='rpi4b',
     title='Raspberry Pi 4 Model B',

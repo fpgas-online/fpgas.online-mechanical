@@ -7,7 +7,6 @@ Sources, all from Raspberry Pi Ltd and downloaded into ``tmp/rpi``:
 Pi 3B, 3B+    layered DXF (BOARD_OUTLINE / PARTS_TOP / SILK_TOP / ...)
 Pi 4B         layered DXF, and the only one whose DXF carries the holes
 Pi 5          1:1 vector PDF plot on A4
-Pi 3A+        vector PDF plot, reduced to fit the sheet
 ============  ==========================================================
 
 Fetch them with ``scripts/fetch_raspberry_pi.sh``.
@@ -50,7 +49,6 @@ STANDARD_HOLES = [(3.5, 3.5), (61.5, 3.5), (3.5, 52.5), (61.5, 52.5)]
 #   Pi 3B+   no hole note and no keep-out on its drawing.  Same outline, same
 #            hole pattern, and a byte-identical BOARD_OUTLINE and hole geometry
 #            in its DXF, so the Pi 3B figure is carried over and said to be.
-#   Pi 3A+   same, carried over from the Pi 3B.
 #   Pi 4B    the DXF carries the holes on layer 0: 2.70 hole, 6.00 keep-out.
 #   Pi 5     the drawing dimensions the hole as "o2.7"; the keep-out circle is
 #            drawn and measures 5.80.
@@ -112,26 +110,6 @@ MODELS = [
         ],
     ),
     dict(
-        key="rpi3aplus", title="Raspberry Pi 3 Model A+", subtitle="65 x 56 mm",
-        kind="pdf", file="raspberry-pi-3-a-plus-mechanical-drawing.pdf",
-        width=65.0, height=56.0, corner_radius=3.0,
-        hole_dia=2.75, hole_keepout=None, hole_tol=None,
-        hole_note="Carried over from the Pi 3 Model B drawing; the 3A+ gives "
-                  "neither a hole size nor a tolerance, so the Model B's "
-                  "+/-0.05 is not repeated.",
-        hole_source=f"{DOC}/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf",
-        drawing=f"{DOC}/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf",
-        reduced=True,
-        tolerance="reduced-source plot, see note: +/-0.5 typical",
-        parts=[
-            ("gpio40", "40-pin GPIO header", "header", (32.5, 52.5), (50.8, 5.0)),
-            ("usb_a_1", "USB 2.0 type A (single)", "usb_a", (60.4, 31.5), (14.3, 13.1)),
-            ("usb_power", "micro-USB power input", "usb_power", (10.6, 2.05), (7.5, 5.31)),
-            ("hdmi", "HDMI type A", "connector", (32.0, 4.57), (14.5, 12.15)),
-            ("av", "3.5 mm A/V jack", "connector", (53.5, 6.25), (7.0, 12.5)),
-        ],
-    ),
-    dict(
         key="rpi4b", title="Raspberry Pi 4 Model B", subtitle="85 x 56 mm",
         kind="dxf", file="raspberry-pi-4-mechanical-drawing.dxf",
         width=85.0, height=56.0, corner_radius=3.0,
@@ -174,6 +152,21 @@ MODELS = [
         ],
     ),
 ]
+
+
+#: How far a recovered plot scale may sit from 1.000 and still be a 1:1 plot.
+#: The Pi 5's PDF measures 1.00002; a fit-to-page reduction measures 1.068.
+SCALE_TOLERANCE = 0.002
+
+
+def is_reduced(scale: float) -> bool:
+    """Whether a source plot was reduced to fit its sheet.
+
+    Read from the measurement rather than from a per-model flag.  A flag has
+    to be remembered: set from the scale, a reduced source added later cannot
+    be described as a true 1:1 plot by a sheet that never noticed.
+    """
+    return abs(scale - 1.0) > SCALE_TOLERANCE
 
 
 def dxf_rects(path: Path):
@@ -262,7 +255,9 @@ def extract(model: dict) -> dict:
 
     features = []
     for key, label, kind, centre, size in model["parts"]:
-        tol_pos, tol_size = (3.5, 2.0) if model.get("reduced") else (2.5, 1.2)
+        # A reduced plot carries a few tenths of residual error, so the
+        # matcher has to be looser on it than on a 1:1 source.
+        tol_pos, tol_size = (3.5, 2.0) if is_reduced(scale) else (2.5, 1.2)
         x0, y0, x1, y1 = pick(rects, key, centre, size, tol_pos, tol_size)
         features.append(dict(key=key, label=label, kind=kind,
                              x0=x0, y0=y0, x1=x1, y1=y1))
@@ -348,7 +343,7 @@ def render(rec: dict) -> str:
             f"The hole diameter tolerance in the schedule, +/-{m['hole_tol']} "
             "mm, is quoted from this model's own drawing and governs in place "
             "of the hole diameter figure in the general tolerance block."))
-    if m.get("reduced"):
+    if is_reduced(rec["scale"]):
         notes.append(repr(
             "The source drawing is a reduced plot, not 1:1. Its scale was "
             f"recovered from the mounting hole rectangle as {rec['scale']:.4f} "

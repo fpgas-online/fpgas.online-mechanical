@@ -29,6 +29,7 @@ data:
 diagrams:
 	$(DRAW) python scripts/generate_diagrams.py
 	$(UV) --with ezdxf python scripts/export_plate_dxf.py
+	$(DRAW) python scripts/update_readme.py
 
 ## check: the three things that have caught real defects
 check: diagrams

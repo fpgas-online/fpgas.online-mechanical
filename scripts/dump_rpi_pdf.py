@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Dump mechanical features from a 1:1 vector Raspberry Pi drawing PDF.
 
-Raspberry Pi Ltd publish DXF drawings for some models but only PDF for others
-(Pi 5, Pi 3A+).  Those PDFs are 1:1 scale vector drawings, so they are usable as
-CAD data: one PDF point is 1/72 inch and the drawing is true size on the sheet.
+Raspberry Pi Ltd publish DXF drawings for some models but only PDF for others,
+the Pi 5 among them.  Such a PDF is a vector drawing, so it is usable as CAD
+data -- one PDF point is 1/72 inch -- provided its plot scale is recovered
+rather than assumed, because some of these sheets are fit-to-page reductions.
 
 The board origin is recovered from the four mounting-hole circles, whose centres
 are known to sit 3.5 mm in from the left, bottom and top edges with 58 x 49 mm
@@ -58,8 +59,9 @@ def find_origin(page):
     Every Raspberry Pi from the Model B onwards places four mounting holes on a
     58 x 49 mm rectangle whose lower-left corner sits 3.5 mm in from the left
     and bottom edges.  Finding that rectangle pins down both where the board is
-    on the sheet and what scale the drawing was plotted at -- the Pi 5 sheet is
-    a true 1:1 plot, but the Pi 3A+ sheet is a fit-to-page reduction.
+    on the sheet and what scale the drawing was plotted at.  The Pi 5 sheet
+    measures 1.00002 and is a true 1:1 plot; others published by the same
+    company are fit-to-page reductions, so it is measured, never assumed.
 
     Returns ``(ox, oy, scale)`` where ``scale`` multiplies sheet millimetres to
     give real millimetres.

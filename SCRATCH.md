@@ -80,7 +80,7 @@ All source data is now in `data/`:
 |------|----------|------------|
 | `data/schema.py` | frozen dataclasses, coordinate convention | no |
 | `data/tinytapeout_boards.py` | 8 Tiny Tapeout demo board revisions | yes, from KiCad |
-| `data/raspberry_pi_boards.py` | Pi 3A+, 3B, 3B+, 4B, 5 | yes, from DXF/PDF |
+| `data/raspberry_pi_boards.py` | Pi 3B, 3B+, 4B, 5 | yes, from DXF/PDF |
 | `data/accessories.py` | Pmod spec, Pmod HAT Adapter, 2 PoE splitters | no, hand-curated |
 
 ## Sources found so far
@@ -137,7 +137,7 @@ now 301-redirects to `pip.raspberrypi.com`, so `curl -L` is required.
 - Pi 3B, Pi 3B+, Pi 4B: **DXF available** -- layered
   (`BOARD_OUTLINE`, `PARTS_TOP`, `PINS_TOP`, `SILK_TOP`, ...). This is by far
   the best source: exact geometry plus silkscreen reference designators.
-- Pi 3A+, Pi 5: PDF only. The Pi 5 drawing is 1:1 vector on A4, so the geometry
+- Pi 5: PDF only. That drawing is 1:1 vector on A4, so the geometry
   can be lifted out of the PDF content stream.
 
 ### Digilent Pmod
@@ -497,3 +497,13 @@ Drawing review, round 4, all findings acted on:
   crossing one with a leader cost more than covering a feature.  Three
   obstacle classes now split position from route: the board outline, the
   witness lines, and a balloon's own feature.
+
+## Dropped
+
+- **Raspberry Pi 3 Model A+**, at the user's request.  It was the only source
+  in the package that was a reduced plot rather than a 1:1 one, so removing it
+  left the reduced-plot handling unreachable.  Rather than delete that
+  handling, the test for it now comes from the recovered scale instead of a
+  per-model flag: a flag has to be remembered, and a reduced source added later
+  would otherwise be described as 1:1 by a sheet that never noticed.  The
+  Raspberry Pi sheets renumbered from RPI-01..05 to RPI-01..04.
