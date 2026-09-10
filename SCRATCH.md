@@ -45,10 +45,16 @@ Everything asked for exists and is committed:
 
 Each sheet as SVG, PDF and PNG.  A3, 1:1 except the fitting guide at 1:2.
 
+Layout, after the reviews: view top-left with its dimensions below and left,
+schedules in the right-hand column, notes and sources in a band across the
+bottom that flows into columns and can spill into whatever the schedules leave
+at the foot of the column.
+
 Automated checks, all passing:
 
-- `scripts/check_sheets.py` -- text collisions, lines through text,
+- `scripts/check_sheets.py` -- text collisions, lines running through text,
   out-of-frame content, anything under the 2.5 mm ISO 3098 cap-height floor.
+  Every one of these classes caught a real defect at least once.
 - `scripts/verify_mounting_plate.py` -- every revision's fasteners fit, every
   Pmod host lands on its plate position, no board overhangs, connector faces
   clear the plate front edge.
