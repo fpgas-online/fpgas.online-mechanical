@@ -38,11 +38,14 @@ Status key: `[ ]` not started, `[~]` in progress, `[x]` done.
 ## 5. Review
 - [x] Sub-agent code review, round 1 -- acted on
 - [x] Sub-agent mechanical drawing review, round 1 -- acted on
-- [~] Sub-agent review, round 2
+- [x] Sub-agent code review, round 2 -- acted on
+- [~] Sub-agent mechanical drawing review, round 2
 - [x] Automated sheet checker (`scripts/check_sheets.py`): text collisions,
       out-of-frame content, text under the 2.5 mm ISO 3098 floor
 - [x] Automated arc check in the extractor: a resolved arc must pass through
       the point KiCad puts on it
+- [x] `scripts/verify_mounting_plate.py`: proves the finished plate accepts
+      every revision, with a real M3 fastener clearance check
 
 ## 6. Repository
 - [x] README explaining what is here and how the numbers were obtained

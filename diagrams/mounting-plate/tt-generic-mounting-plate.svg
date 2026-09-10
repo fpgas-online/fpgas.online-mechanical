@@ -41,6 +41,12 @@
 <text x="10" y="47.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
 <text x="410" y="47.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
 <path d="M 61.0000 139.0000 L 188.0000 139.0000 A 4.0000 4.0000 0 0 0 192.0000 135.0000 L 192.0000 42.0000 A 4.0000 4.0000 0 0 0 188.0000 38.0000 L 61.0000 38.0000 A 4.0000 4.0000 0 0 0 57.0000 42.0000 L 57.0000 135.0000 A 4.0000 4.0000 0 0 0 61.0000 139.0000 L 188.0000 139.0000 Z" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 71.9380 128.7227 L 72.4980 128.9727 A 1.7000 1.7000 0 0 1 71.1120 132.0773 L 70.5520 131.8273 A 1.7000 1.7000 0 0 1 71.9380 128.7227 Z" fill="#ffffff" stroke="#a00000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="68.825" y1="130.4" x2="74.225" y2="130.4" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="71.525" y1="133.1" x2="71.525" y2="127.7" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<path d="M 69.5953 58.8644 L 70.1553 56.6144 A 1.7000 1.7000 0 0 1 73.4547 57.4356 L 72.8947 59.6856 A 1.7000 1.7000 0 0 1 69.5953 58.8644 Z" fill="#ffffff" stroke="#a00000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="68.825" y1="58.15" x2="74.225" y2="58.15" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="71.525" y1="60.85" x2="71.525" y2="55.45" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="80.455" cy="57.222" r="1.7" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
 <line x1="77.555" y1="57.222" x2="83.355" y2="57.222" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="80.455" y1="60.122" x2="80.455" y2="54.322" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
@@ -121,20 +127,10 @@
 <line x1="150" y1="46.465" x2="150" y2="39.765" stroke="#006060" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="152.3948" y1="45.1613" x2="154.2701" y2="46.7637" stroke="#006060" stroke-width="0.25" stroke-linecap="round"/>
 <text x="156.5538" y="47.465" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#006060" text-anchor="middle" font-weight="bold">P6</text>
-<path d="M 71.9380 128.7227 L 72.4980 128.9727 A 1.7000 1.7000 0 0 1 71.1120 132.0773 L 70.5520 131.8273 A 1.7000 1.7000 0 0 1 71.9380 128.7227 Z" fill="#ffffff" stroke="#a00000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<line x1="68.825" y1="130.4" x2="74.225" y2="130.4" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="71.525" y1="133.1" x2="71.525" y2="127.7" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="71.525" cy="130.4" r="0.7" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="71.525" y1="130.4" x2="58.525" y2="139.4" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="58.525" y1="139.4" x2="57.025" y2="139.4" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="55.825" y="138.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="end">S1</text>
-<path d="M 69.5953 58.8644 L 70.1553 56.6144 A 1.7000 1.7000 0 0 1 73.4547 57.4356 L 72.8947 59.6856 A 1.7000 1.7000 0 0 1 69.5953 58.8644 Z" fill="#ffffff" stroke="#a00000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<line x1="68.825" y1="58.15" x2="74.225" y2="58.15" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="71.525" y1="60.85" x2="71.525" y2="55.45" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="71.525" cy="58.15" r="0.7" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="71.525" y1="58.15" x2="58.525" y2="67.15" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="58.525" y1="67.15" x2="57.025" y2="67.15" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="55.825" y="66.25" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="end">S2</text>
+<line x1="73.792" y1="128.4658" x2="75.619" y2="126.9071" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="77.8895" y="123.72" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">S1</text>
+<line x1="74.4102" y1="60.6612" x2="76.4833" y2="62.4656" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="78.7345" y="63.175" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">S2</text>
 <rect x="89.4" y="127.1" width="12.7" height="5.8" fill="none" stroke="#a00000" stroke-width="0.25" stroke-dasharray="3,1.5,0.8,1.5"/>
 <text x="95.75" y="126.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle">PMOD 1</text>
 <rect x="112.26" y="127.1" width="12.7" height="5.8" fill="none" stroke="#a00000" stroke-width="0.25" stroke-dasharray="3,1.5,0.8,1.5"/>

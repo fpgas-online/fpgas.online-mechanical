@@ -214,6 +214,25 @@ Code review, round 1:
 - The SVG large-arc flag hardcoded to 0.
 - Hole clustering on the plate could average three coincident positions.
 
+Code review, round 2:
+
+- **Ordinate witness lines started on the far side of the feature** and ran
+  back through it: the extension gap was subtracted where it should have been
+  added.
+- The identical-geometry signature compared bounding boxes but not the outline
+  profile.
+- An unused non-centred mode in `View.fit` mis-placed any view whose bounding
+  box did not start at zero.
+
+Self-check, `scripts/verify_mounting_plate.py`:
+
+- **The plate had a real defect.**  Two revisions want a fastener 0.613 mm
+  apart and the merge rule put one 3.40 mm hole at their midpoint, leaving an
+  M3 shank 0.307 mm off centre in a hole with 0.200 mm of play.  The screw does
+  not go in for either board.  Two positions may share a hole only when the
+  hole's own clearance swallows the offset, which for 3.40 mm on M3 is 0.40 mm.
+  That pair is now a slot; the tightest clearance anywhere is +0.144 mm.
+
 Drawing review, round 1:
 
 - **Text was sized by em, not cap height.**  ISO 3098 specifies lettering by

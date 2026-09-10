@@ -64,10 +64,46 @@ _LABEL_DIRS = [(1, 1), (1, -1), (-1, 1), (-1, -1), (1, 0), (-1, 0),
                (0, 1), (0, -1)]
 
 
+def place_label(c: Canvas, obstacles: Obstacles, anchor: tuple[float, float],
+                clear: float, text: str, colour: str) -> None:
+    """Put *text* near *anchor*, in the first spot free of *obstacles*.
+
+    Draws a short leader when the label ends up far enough away that which
+    feature it belongs to would otherwise be a guess.
+    """
+    px, py = anchor
+    tw = style.text_width(text, style.T_LABEL, bold=True)
+    th = style.text_height(style.T_LABEL)
+    best, best_score = None, None
+    for radius in (clear + 2.2, clear + 5.0, clear + 8.0, clear + 12.0):
+        for dx, dy in _LABEL_DIRS:
+            cx = px + dx * (radius + tw / 2)
+            cy = py + dy * (radius + th / 2)
+            score = obstacles.hits(cx, cy, max(tw, th) / 2) * 100 + radius
+            if best_score is None or score < best_score:
+                best, best_score = (cx, cy), score
+        if best_score is not None and best_score < 100:
+            break
+    cx, cy = best
+    gap = math.dist((px, py), (cx, cy)) - clear - max(tw, th) / 2
+    if gap > 1.5:
+        ang = math.atan2(cy - py, cx - px)
+        c.line(px + (clear + 1.0) * math.cos(ang),
+               py + (clear + 1.0) * math.sin(ang),
+               cx - (max(tw, th) / 2 + 0.8) * math.cos(ang),
+               cy - (max(tw, th) / 2 + 0.8) * math.sin(ang),
+               w=style.W_THIN, colour=colour)
+    c.text(cx, cy, text, size=style.T_LABEL, colour=colour, bold=True,
+           anchor="middle", baseline="middle")
+    obstacles.add_rect(cx - tw / 2, cy - th / 2, cx + tw / 2, cy + th / 2,
+                       pad=0.8)
+
+
 def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
                      labels: dict[int, str] | None = None,
                      highlight: set[int] | None = None,
-                     extra: Obstacles | None = None) -> None:
+                     extra: Obstacles | None = None,
+                     slot_labels: dict[int, str] | None = None) -> None:
     """Draw the holes, and place their labels so they do not collide.
 
     Several holes on this plate sit five millimetres apart, so a fixed label
@@ -102,35 +138,17 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
         dims.centre_mark(c, px, py, r, colour=colour, over=1.2)
         if not (labels and i in labels) or faint:
             continue
-        text = labels[i]
-        tw = style.text_width(text, style.T_LABEL, bold=True)
-        th = style.text_height(style.T_LABEL)
-        best, best_score = None, None
-        for radius in (r + 2.2, r + 5.0, r + 8.0):
-            for dx, dy in _LABEL_DIRS:
-                cx = px + dx * (radius + tw / 2)
-                cy = py + dy * (radius + th / 2)
-                score = obstacles.hits(cx, cy, max(tw, th) / 2) * 100 + radius
-                if best_score is None or score < best_score:
-                    best, best_score = (cx, cy), score
-            if best_score is not None and best_score < 100:
-                break
-        cx, cy = best
-        # A label pushed away from its hole needs a leader, or in a cluster of
-        # holes a few millimetres apart the reader cannot tell which hole it
-        # belongs to.
-        gap = math.dist((px, py), (cx, cy)) - r - max(tw, th) / 2
-        if gap > 1.5:
-            ang = math.atan2(cy - py, cx - px)
-            c.line(px + (r + 1.0) * math.cos(ang),
-                   py + (r + 1.0) * math.sin(ang),
-                   cx - (max(tw, th) / 2 + 0.8) * math.cos(ang),
-                   cy - (max(tw, th) / 2 + 0.8) * math.sin(ang),
-                   w=style.W_THIN, colour=colour)
-        c.text(cx, cy, text, size=style.T_LABEL, colour=colour, bold=True,
-               anchor="middle", baseline="middle")
-        obstacles.add_rect(cx - tw / 2, cy - th / 2, cx + tw / 2, cy + th / 2,
-                           pad=0.8)
+        place_label(c, obstacles, (px, py), r, labels[i], colour)
+
+    # Slot labels go through the same placer, so they cannot land on the datum
+    # marker or the ordinate chain the way a fixed offset did.
+    for i, sl in enumerate(spec.slots):
+        if not (slot_labels and i in slot_labels):
+            continue
+        mx, my = view.pt((sl.x0 + sl.x1) / 2, (sl.y0 + sl.y1) / 2)
+        half = view.d(max(abs(sl.x1 - sl.x0), abs(sl.y1 - sl.y0)) / 2
+                      + sl.width / 2)
+        place_label(c, obstacles, (mx, my), half, slot_labels[i], BOARD_HOLE)
 
 
 def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet:
@@ -165,12 +183,11 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     for a, b in (((0, 0), (o.width, 0)), ((o.width, 0), (o.width, o.height)),
                  ((o.width, o.height), (0, o.height)), ((0, o.height), (0, 0))):
         edge.add_segment(*view.pt(*a), *view.pt(*b))
-    draw_plate_holes(c, view, spec, labels, extra=edge)
-    for n, sl in enumerate(spec.slots, 1):
+    for sl in spec.slots:
         draw_slot(c, view, sl)
-        mx, my = view.pt((sl.x0 + sl.x1) / 2, (sl.y0 + sl.y1) / 2)
-        dims.leader(c, (mx, my), (mx - 13.0, my - 9.0), f"S{n}",
-                    colour=BOARD_HOLE, tail=1.5, anchor="end", dot=True)
+    draw_plate_holes(c, view, spec, labels, extra=edge,
+                     slot_labels={i: f"S{i + 1}"
+                                  for i in range(len(spec.slots))})
 
     # The Pmod host grid is the reason the plate exists, so it is drawn and
     # dimensioned even though it is not a machined feature.
