@@ -22,6 +22,12 @@ from PIL import Image
 PNG_DPI = 150
 CROP_PX_PER_MM = 8.0
 
+#: Width of a README preview, in pixels.  Twice the width GitHub shows a cell
+#: of a three-column table at, so the thumbnails stay sharp on a high-density
+#: display without carrying a full-resolution sheet into every page load: the
+#: real PNGs are close to a megabyte each.
+PREVIEW_WIDTH = 640
+
 
 def to_pdf(svg: Path) -> Path:
     out = svg.with_suffix(".pdf")
@@ -34,6 +40,16 @@ def to_pdf(svg: Path) -> Path:
 def to_png(svg: Path, dpi: float = PNG_DPI, out: Path | None = None) -> Path:
     out = out or svg.with_suffix(".png")
     subprocess.run(["inkscape", "--export-type=png", f"--export-dpi={dpi}",
+                    f"--export-filename={out}", str(svg)],
+                   check=True, capture_output=True)
+    return out
+
+
+def to_preview(svg: Path, out: Path, width: int = PREVIEW_WIDTH) -> Path:
+    """Render *svg* small, for the README's preview grid."""
+    out.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["inkscape", "--export-type=png",
+                    f"--export-width={width}",
                     f"--export-filename={out}", str(svg)],
                    check=True, capture_output=True)
     return out

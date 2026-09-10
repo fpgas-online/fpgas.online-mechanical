@@ -17,11 +17,54 @@ each sheet lists its sources.
 | `diagrams/raspberry-pi/` | 5 sheets: Pi 3A+, 3B, 3B+, 4B, 5, each with a Digilent Pmod HAT Adapter overlaid |
 | `diagrams/accessories/` | Pmod HAT Adapter, and two PoE splitters as three-view envelope drawings |
 | `diagrams/mounting-plate/` | The generic mounting plate, plus a fitting guide |
+| `diagrams/previews/` | Small renders of every sheet, for the grid below |
 | `data/` | The mechanical database. Two modules are generated; the rest is hand-curated with per-value provenance |
 | `scripts/` | Extractors, the plate designer, and the generator |
 | `drafting/` | A small 2D drafting library that renders a `BoardSpec` as an ISO-style sheet |
 
-Each sheet is written as SVG, PDF and PNG. A3, mostly 1:1.
+Each sheet is written as SVG, PDF and PNG, plus a small preview. A3, mostly
+1:1: the board sheets are 1:1 so an A3 print can be laid on the board.
+
+## The sheets
+
+Each thumbnail links to the PDF. The same sheet is also there as SVG
+and as a full-resolution PNG.
+
+### Tiny Tapeout demo boards
+
+| <a href="diagrams/tinytapeout/tt-demo-board-tt123-v2p2p6.pdf"><img src="diagrams/previews/tt-demo-board-tt123-v2p2p6.png" width="270" alt="TT-DB-01 Tiny Tapeout TT01/02/03 Demo Board"></a> | <a href="diagrams/tinytapeout/tt-demo-board-v1p2p2.pdf"><img src="diagrams/previews/tt-demo-board-v1p2p2.png" width="270" alt="TT-DB-02 Tiny Tapeout 4+ Demo Board"></a> | <a href="diagrams/tinytapeout/tt-demo-board-v1p2p3.pdf"><img src="diagrams/previews/tt-demo-board-v1p2p3.png" width="270" alt="TT-DB-03 Tiny Tapeout 4+ Demo Board"></a> |
+|---|---|---|
+| **TT-DB-01** Tiny Tapeout TT01/02/03 Demo Board<br>mpw-mb1 rev 2.2.6 | **TT-DB-02** Tiny Tapeout 4+ Demo Board<br>tinytapeout-demo rev 1.2.2 | **TT-DB-03** Tiny Tapeout 4+ Demo Board<br>tinytapeout-demo rev 1.2.3 |
+
+| <a href="diagrams/tinytapeout/tt-demo-board-v2p0p1.pdf"><img src="diagrams/previews/tt-demo-board-v2p0p1.png" width="270" alt="TT-DB-04 Tiny Tapeout 06+ Demo Board"></a> | <a href="diagrams/tinytapeout/tt-demo-board-v2p1p0.pdf"><img src="diagrams/previews/tt-demo-board-v2p1p0.png" width="270" alt="TT-DB-05 Tiny Tapeout 06+ Demo Board"></a> | <a href="diagrams/tinytapeout/tt-demo-board-v2p1p2.pdf"><img src="diagrams/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-06 Tiny Tapeout 06+ Demo Board"></a> |
+|---|---|---|
+| **TT-DB-04** Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.0.1 | **TT-DB-05** Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.1.0 | **TT-DB-06** Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.1.2 |
+
+| <a href="diagrams/tinytapeout/tt-demo-board-v3p2.pdf"><img src="diagrams/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-07 Tiny Tapeout Demo Board v3"></a> | <a href="diagrams/tinytapeout/tt-demo-board-v3p3.pdf"><img src="diagrams/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-08 Tiny Tapeout Demo Board v3"></a> |  |
+|---|---|---|
+| **TT-DB-07** Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.2 | **TT-DB-08** Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.3 |  |
+
+### Raspberry Pi, with a Digilent Pmod HAT Adapter overlaid
+
+| <a href="diagrams/raspberry-pi/rpi3aplus.pdf"><img src="diagrams/previews/rpi3aplus.png" width="270" alt="RPI-01 Raspberry Pi 3 Model A+"></a> | <a href="diagrams/raspberry-pi/rpi3b.pdf"><img src="diagrams/previews/rpi3b.png" width="270" alt="RPI-02 Raspberry Pi 3 Model B"></a> | <a href="diagrams/raspberry-pi/rpi3bplus.pdf"><img src="diagrams/previews/rpi3bplus.png" width="270" alt="RPI-03 Raspberry Pi 3 Model B+"></a> |
+|---|---|---|
+| **RPI-01** Raspberry Pi 3 Model A+<br>65 x 56 mm | **RPI-02** Raspberry Pi 3 Model B<br>85 x 56 mm | **RPI-03** Raspberry Pi 3 Model B+<br>85 x 56 mm |
+
+| <a href="diagrams/raspberry-pi/rpi4b.pdf"><img src="diagrams/previews/rpi4b.png" width="270" alt="RPI-04 Raspberry Pi 4 Model B"></a> | <a href="diagrams/raspberry-pi/rpi5.pdf"><img src="diagrams/previews/rpi5.png" width="270" alt="RPI-05 Raspberry Pi 5"></a> |  |
+|---|---|---|
+| **RPI-04** Raspberry Pi 4 Model B<br>85 x 56 mm | **RPI-05** Raspberry Pi 5<br>85 x 56 mm |  |
+
+### Accessories
+
+| <a href="diagrams/accessories/digilent-pmod-hat-adapter.pdf"><img src="diagrams/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-01 Digilent Pmod HAT Adapter"></a> | <a href="diagrams/accessories/waveshare-poe-usbc.pdf"><img src="diagrams/previews/waveshare-poe-usbc.png" width="270" alt="ACC-02 Waveshare PoE Splitter 25 W, Type-C"></a> | <a href="diagrams/accessories/generic-poe-microusb.pdf"><img src="diagrams/previews/generic-poe-microusb.png" width="270" alt="ACC-03 Generic PoE splitter to micro-USB"></a> |
+|---|---|---|
+| **ACC-01** Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header | **ACC-02** Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body | **ACC-03** Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body |
+
+### Mounting plate
+
+| <a href="diagrams/mounting-plate/tt-generic-mounting-plate.pdf"><img src="diagrams/previews/tt-generic-mounting-plate.png" width="270" alt="TT-MP-01 TT Generic Mounting Plate"></a> | <a href="diagrams/mounting-plate/tt-generic-mounting-plate-fitting-guide.pdf"><img src="diagrams/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-02 TT Mounting Plate Fitting Guide"></a> |  |
+|---|---|---|
+| **TT-MP-01** TT Generic Mounting Plate<br>Accepts every demo board revision, Pmod hosts fixed in place | **TT-MP-02** TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses |  |
 
 ## Regenerating
 
@@ -40,7 +83,10 @@ Four checks run over the output, and each has caught a real defect:
 - `check_sheets.py` re-reads the generated SVGs, recomputes every text bounding
   box from the same font metrics the layout used, and reports text that
   collides, has a line running through it, falls outside the frame, or drops
-  below the 2.5 mm ISO 3098 floor. It found the notes block printing over the
+  below the 2.5 mm ISO 3098 floor. It also checks that every sheet appears in
+  the preview grid in this file and that every reference in it resolves, so
+  adding a sheet cannot silently leave the grid showing the wrong set. It
+  found the notes block printing over the
   sources heading on four Raspberry Pi sheets, a datum leader running back
   through its own text, and overall dimension extension lines crossing the
   ordinate labels.

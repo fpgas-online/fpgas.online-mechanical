@@ -111,11 +111,14 @@ def main() -> None:
     print(f"{len(made)} sheets written")
 
     if not args.no_raster:
-        from render_svg import to_pdf, to_png
+        from render_svg import to_pdf, to_png, to_preview
+        previews = OUT / "previews"
         for path in made:
             to_pdf(path)
             to_png(path)
-        print(f"{len(made)} sheets converted to PDF and PNG")
+            to_preview(path, previews / f"{path.stem}.png")
+        print(f"{len(made)} sheets converted to PDF and PNG, "
+              f"with previews in {previews.relative_to(ROOT)}/")
 
 
 if __name__ == "__main__":

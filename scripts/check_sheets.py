@@ -170,6 +170,32 @@ def vertical_rules(svg_lines) -> list[tuple[float, float, float]]:
     return out
 
 
+def check_readme_previews() -> list[str]:
+    """Every sheet shown in the README, and every reference resolving.
+
+    The preview grid names each sheet by hand, so adding or renaming one
+    silently leaves the README showing the wrong set or a broken image.
+    """
+    import re
+    readme = ROOT / "README.md"
+    if not readme.exists():
+        return ["README.md is missing"]
+    text = readme.read_text()
+    refs = set(re.findall(r'src="([^"]+)"', text)
+               + re.findall(r'href="([^"]+)"', text))
+    problems = [f"README refers to {r}, which does not exist"
+                for r in sorted(refs) if not (ROOT / r).exists()]
+    previews = {f"diagrams/previews/{p.name}"
+                for p in (ROOT / "diagrams" / "previews").glob("*.png")}
+    for missing in sorted(previews - refs):
+        problems.append(f"{missing} is generated but not shown in README.md")
+    for svg in sorted((ROOT / "diagrams").rglob("*.svg")):
+        want = f"diagrams/previews/{svg.stem}.png"
+        if want not in previews:
+            problems.append(f"{svg.stem} has no preview; run generate_diagrams")
+    return problems
+
+
 def main() -> int:
     sheets = sorted((ROOT / "diagrams").rglob("*.svg"))
     if not sheets:
@@ -228,6 +254,11 @@ def main() -> int:
                 print(f"    ... and {len(problems) - 14} more")
         else:
             print(f"{name}: clean ({len(items)} text elements)")
+    readme = check_readme_previews()
+    for line in readme:
+        print(f"README: {line}")
+    total += len(readme)
+
     print(f"\n{total} problem(s) across {len(sheets)} sheets")
     # A non-zero exit, so `make check` actually fails.  Printing the problems
     # and exiting 0 meant a build could go green with fifty collisions on it.
