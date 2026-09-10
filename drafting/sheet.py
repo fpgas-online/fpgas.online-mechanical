@@ -334,10 +334,10 @@ class Sheet:
             if title:
                 items.append(("heading", title, size))
             for n, line in enumerate(lines, 1):
-                items.append(("line", (n, line), size))
+                items.append(("line", (n, line), size, title))
 
         def height(item, width):
-            kind, payload, size = item
+            kind, payload, size = item[0], item[1], item[2]
             if kind == "heading":
                 return self.HEADING_HEIGHT
             return self.notes_height(width, "", [payload[1]], size)
@@ -346,7 +346,7 @@ class Sheet:
         y = columns[0].y1
         i = 0
         while i < len(items):
-            kind, payload, size = items[i]
+            kind, payload, size = items[i][0], items[i][1], items[i][2]
             # Measured against the column it is about to go in, so a wide
             # column does not reserve the height a narrow one would need and
             # leave a gap.
@@ -362,6 +362,13 @@ class Sheet:
                         "or shorten them rather than letting them run off the "
                         "sheet")
                 y = columns[col].y1
+                # A block spilling into a new column repeats its heading, or a
+                # note ends up floating with nothing to say what it belongs to.
+                if kind == "line" and len(items[i]) > 3 and items[i][3]:
+                    hh = self.HEADING_HEIGHT
+                    self.heading(Rect(columns[col].x, y - hh, columns[col].w,
+                                      hh), f"{items[i][3]} (continued)")
+                    y -= hh
                 continue
             here = columns[col]
             if kind == "heading":
