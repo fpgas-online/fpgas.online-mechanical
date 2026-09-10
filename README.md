@@ -41,38 +41,27 @@ a full-resolution PNG.
 <b>TT-DB-01</b> Tiny Tapeout TT01/02/03 Demo Board<br>mpw-mb1 rev 2.2.6
 </td>
 <td width="33%" valign="top" align="center">
-<a href="diagrams/tinytapeout/tt-demo-board-v1p2p2.pdf"><img src="diagrams/previews/tt-demo-board-v1p2p2.png" width="270" alt="TT-DB-02 Tiny Tapeout 4+ Demo Board"></a><br>
-<b>TT-DB-02</b> Tiny Tapeout 4+ Demo Board<br>tinytapeout-demo rev 1.2.2
+<a href="diagrams/tinytapeout/tt-demo-board-v1p2p2-v1p2p3.pdf"><img src="diagrams/previews/tt-demo-board-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-02 Tiny Tapeout 4+ Demo Board"></a><br>
+<b>TT-DB-02</b> Tiny Tapeout 4+ Demo Board<br>tinytapeout-demo rev 1.2.2 and 1.2.3
 </td>
 <td width="33%" valign="top" align="center">
-<a href="diagrams/tinytapeout/tt-demo-board-v1p2p3.pdf"><img src="diagrams/previews/tt-demo-board-v1p2p3.png" width="270" alt="TT-DB-03 Tiny Tapeout 4+ Demo Board"></a><br>
-<b>TT-DB-03</b> Tiny Tapeout 4+ Demo Board<br>tinytapeout-demo rev 1.2.3
+<a href="diagrams/tinytapeout/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="diagrams/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-03 Tiny Tapeout 06+ Demo Board"></a><br>
+<b>TT-DB-03</b> Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.0.1 and 2.1.0
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="diagrams/tinytapeout/tt-demo-board-v2p0p1.pdf"><img src="diagrams/previews/tt-demo-board-v2p0p1.png" width="270" alt="TT-DB-04 Tiny Tapeout 06+ Demo Board"></a><br>
-<b>TT-DB-04</b> Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.0.1
+<a href="diagrams/tinytapeout/tt-demo-board-v2p1p2.pdf"><img src="diagrams/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-04 Tiny Tapeout 06+ Demo Board"></a><br>
+<b>TT-DB-04</b> Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.1.2
 </td>
 <td width="33%" valign="top" align="center">
-<a href="diagrams/tinytapeout/tt-demo-board-v2p1p0.pdf"><img src="diagrams/previews/tt-demo-board-v2p1p0.png" width="270" alt="TT-DB-05 Tiny Tapeout 06+ Demo Board"></a><br>
-<b>TT-DB-05</b> Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.1.0
+<a href="diagrams/tinytapeout/tt-demo-board-v3p2.pdf"><img src="diagrams/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-05 Tiny Tapeout Demo Board v3"></a><br>
+<b>TT-DB-05</b> Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.2 (ETR)
 </td>
 <td width="33%" valign="top" align="center">
-<a href="diagrams/tinytapeout/tt-demo-board-v2p1p2.pdf"><img src="diagrams/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-06 Tiny Tapeout 06+ Demo Board"></a><br>
-<b>TT-DB-06</b> Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.1.2
+<a href="diagrams/tinytapeout/tt-demo-board-v3p3.pdf"><img src="diagrams/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-06 Tiny Tapeout Demo Board v3"></a><br>
+<b>TT-DB-06</b> Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.3
 </td>
-</tr>
-<tr>
-<td width="33%" valign="top" align="center">
-<a href="diagrams/tinytapeout/tt-demo-board-v3p2.pdf"><img src="diagrams/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-07 Tiny Tapeout Demo Board v3"></a><br>
-<b>TT-DB-07</b> Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.2 (ETR)
-</td>
-<td width="33%" valign="top" align="center">
-<a href="diagrams/tinytapeout/tt-demo-board-v3p3.pdf"><img src="diagrams/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-08 Tiny Tapeout Demo Board v3"></a><br>
-<b>TT-DB-08</b> Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.3
-</td>
-<td width="33%"></td>
 </tr>
 </table>
 

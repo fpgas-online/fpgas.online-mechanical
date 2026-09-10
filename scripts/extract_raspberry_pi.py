@@ -266,6 +266,8 @@ def extract(model: dict) -> dict:
             f"{model['key']}: {', '.join(unknown)} not in FEATURE_ORDER; "
             "decide where they belong in the schedule")
     features.sort(key=lambda f: FEATURE_ORDER.index(f["key"]))
+    for f in features:
+        f["number"] = FEATURE_ORDER.index(f["key"]) + 1
 
     holes = []
     if model.get("holes_from_source"):
@@ -335,7 +337,8 @@ def render(rec: dict) -> str:
         for h in rec["holes"])
     feats = ",\n".join(
         f"        Feature(key={f['key']!r}, label={f['label']!r}, kind={f['kind']!r},\n"
-        f"                x0={f['x0']}, y0={f['y0']}, x1={f['x1']}, y1={f['y1']})"
+        f"                x0={f['x0']}, y0={f['y0']}, x1={f['x1']}, y1={f['y1']},\n"
+        f"                number={f['number']})"
         for f in rec["features"])
 
     # The hole note is provenance, so it goes in SOURCES under "Mounting

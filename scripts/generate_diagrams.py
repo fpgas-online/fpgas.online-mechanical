@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -36,10 +37,9 @@ TT_ORDER = ["tt123-v2.2.6", "v1.2.2", "v1.2.3", "v2.0.1", "v2.1.0", "v2.1.2",
 RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
 
 TT_NOTES = (
-    "The Pmod host headers along the lower edge are what a mounting plate has "
-    "to register against. Their 22.86 mm pitch is identical on every Tiny "
-    "Tapeout demo board revision, but their distance from the lower board edge "
-    "and their absolute position along it are not.",
+    "The Pmod host headers along the lower edge are what a mounting plate "
+    "registers against. Their 22.86 mm pitch is the same on every revision; "
+    "their distance from the lower edge and their position along it are not.",
 )
 
 RPI_NOTES = (
@@ -55,6 +55,79 @@ def slug(key: str) -> str:
     return key.replace(".", "p").replace("_", "-")
 
 
+def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
+    """One sheet per distinct board geometry, not one per revision.
+
+    Several revisions differ only electrically: v1.2.2 and v1.2.3 are the same
+    board mechanically, as are v2.0.1 and v2.1.0.  Issuing a separate sheet for
+    each meant two drawings a reader had to compare to discover they were
+    identical, which the sheets themselves then said in a note.  They are
+    merged instead, and the sheet names every revision and shuttle it covers.
+
+    The data keeps every revision: it is a database of what was built, and the
+    plate is designed against individual revisions.  Only the drawing set is
+    merged.
+    """
+    groups: list[list[str]] = []
+    seen: dict = {}
+    for key in TT_ORDER:
+        sig = _geometry(TT_BOARDS[key])
+        if sig in seen:
+            groups[seen[sig]].append(key)
+        else:
+            seen[sig] = len(groups)
+            groups.append([key])
+
+    out = []
+    for keys in groups:
+        first = TT_BOARDS[keys[0]]
+        if len(keys) == 1:
+            out.append((slug(keys[0]), first))
+            continue
+        revs = [TT_BOARDS[k] for k in keys]
+        # Every revision's own board file is cited, each at its own commit,
+        # and the shuttle mapping is merged into one entry.
+        sources = [s for r in revs for s in r.sources
+                   if s.label == "KiCad board file"]
+        shuttles = tuple(sh for r in revs for sh in r.used_by)
+        # The shuttle mapping note names the shuttles this SHEET covers, not
+        # the ones its first revision covers: merged, it carried "used by:
+        # TT04" on a sheet that is also the TT05 board.
+        for src in first.sources:
+            if src.label == "KiCad board file":
+                continue
+            if src.label == "Shuttle mapping":
+                src = replace(src, note="used by: " + ", ".join(shuttles))
+            sources.append(src)
+        covered = " and ".join(r.subtitle.split(" rev ")[-1] for r in revs)
+        notes = tuple(n for n in first.notes
+                      if not n.startswith("Geometrically identical"))
+        notes += (
+            f"This sheet covers revisions {covered}. They are the same board "
+            "mechanically: the generator compares outline, holes, Pmod hosts "
+            "and every feature before merging them. Only the electrical "
+            "design and the shuttle differ.",)
+        spec = replace(
+            first,
+            key="+".join(keys),
+            subtitle=f"tinytapeout-demo rev {covered}",
+            used_by=shuttles,
+            sources=tuple(sources),
+            notes=notes,
+        )
+        out.append(("-".join(slug(k) for k in keys), spec))
+    return out
+
+
+def _geometry(b) -> tuple:
+    """What makes two revisions the same board, mechanically."""
+    o = b.outline
+    return (o.width, o.height, o.corner_radius, o.thickness, o.edges,
+            tuple((h.x, h.y, h.dia, h.label) for h in b.holes),
+            tuple((p.cx, p.cy, p.pin1_x, p.pin1_y, p.label) for p in b.pmods),
+            tuple(sorted((f.key, f.x0, f.y0, f.x1, f.y1) for f in b.features)))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-raster", action="store_true")
@@ -64,11 +137,10 @@ def main() -> None:
 
     tt_dir = OUT / "tinytapeout"
     tt_dir.mkdir(parents=True, exist_ok=True)
-    for n, key in enumerate(TT_ORDER, 1):
-        spec = TT_BOARDS[key]
+    for n, (stem, spec) in enumerate(tt_sheets(), 1):
         sheet = render_board(spec, drawing_no=f"TT-DB-{n:02d}", date=DATE,
                              extra_notes=TT_NOTES)
-        path = tt_dir / f"tt-demo-board-{slug(key)}.svg"
+        path = tt_dir / f"tt-demo-board-{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
 

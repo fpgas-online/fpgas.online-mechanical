@@ -25,7 +25,7 @@ from data.accessories import GENERIC_POE, PMOD_HAT, WAVESHARE_POE  # noqa: E402
 from data.mounting_plate import PLATE                              # noqa: E402
 from data.raspberry_pi_boards import BOARDS as RPI                 # noqa: E402
 from data.tinytapeout_boards import BOARDS as TT                   # noqa: E402
-from generate_diagrams import RPI_ORDER, TT_ORDER, slug            # noqa: E402
+from generate_diagrams import RPI_ORDER, slug, tt_sheets          # noqa: E402
 
 BEGIN = "<!-- sheets:begin -->"
 END = "<!-- sheets:end -->"
@@ -42,9 +42,8 @@ def groups() -> list[tuple[str, str, list[tuple[str, str, str, str]]]]:
     """Each family: its heading, its directory, and its sheets in order."""
     return [
         ("Tiny Tapeout demo boards", "tinytapeout",
-         [(f"TT-DB-{n:02d}", f"tt-demo-board-{slug(k)}",
-           TT[k].title, TT[k].subtitle)
-          for n, k in enumerate(TT_ORDER, 1)]),
+         [(f"TT-DB-{n:02d}", f"tt-demo-board-{stem}", spec.title, spec.subtitle)
+          for n, (stem, spec) in enumerate(tt_sheets(), 1)]),
         ("Raspberry Pi, with a Digilent Pmod HAT Adapter overlaid",
          "raspberry-pi",
          [(f"RPI-{n:02d}", slug(k), RPI[k].title, RPI[k].subtitle)

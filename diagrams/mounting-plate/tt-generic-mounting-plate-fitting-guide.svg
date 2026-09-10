@@ -495,16 +495,16 @@
 <line x1="287.5476" y1="68.5333" x2="287.5476" y2="101.8667" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="111.3667" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
 <line x1="243" y1="112.7667" x2="405" y2="112.7667" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<line x1="243" y1="117.3667" x2="263" y2="117.3667" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
-<text x="266" y="118.6167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate edge</text>
-<circle cx="253" cy="122.1667" r="1.7" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
-<line x1="250.1" y1="122.1667" x2="255.9" y2="122.1667" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="253" y1="125.0667" x2="253" y2="119.2667" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="266" y="123.4167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole or slot this revision uses</text>
-<line x1="243" y1="126.9667" x2="263" y2="126.9667" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<text x="266" y="128.2167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Holes it does not use, and its board outline</text>
-<line x1="243" y1="131.7667" x2="263" y2="131.7667" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<text x="266" y="133.0167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USB-C connector on this revision</text>
+<line x1="243" y1="117.2667" x2="263" y2="117.2667" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="266" y="118.5167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate edge</text>
+<circle cx="253" cy="121.8667" r="1.7" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
+<line x1="250.1" y1="121.8667" x2="255.9" y2="121.8667" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="253" y1="124.7667" x2="253" y2="118.9667" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="266" y="123.1167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole or slot this revision uses</text>
+<line x1="243" y1="126.4667" x2="263" y2="126.4667" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="127.7167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Holes it does not use, and its board outline</text>
+<line x1="243" y1="131.0667" x2="263" y2="131.0667" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="132.3167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USB-C connector on this revision</text>
 <text x="24" y="200.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
 <line x1="24" y1="201.9" x2="125.5" y2="201.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="24" y="206.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>

@@ -50,8 +50,8 @@ KIND_LABEL = {
 # sheet the deepest dimension still cleared the notes band by ten millimetres,
 # which is space the notes need more than the view does.
 VIEW_MARGIN_SIDE = 46.0
-VIEW_MARGIN_TOP = 26.0
-VIEW_MARGIN_BOTTOM = 32.0
+VIEW_MARGIN_TOP = 20.0
+VIEW_MARGIN_BOTTOM = 30.0
 
 #: How far the overall width and height dimensions sit off the board edge.
 #: They are the only things on the top and right edges, so they can be close.
@@ -618,7 +618,7 @@ def _pcb_material(o) -> str:
 # 4.8 for 2.5 mm capitals: 2.3 mm of leading, which is comfortable for a
 # list of one-line entries and gives the notes back a few millimetres of
 # column on the fullest sheets.
-LEGEND_ROW = 4.8
+LEGEND_ROW = 4.6
 # Long enough to show a full period of the longest dash pattern: at 14 mm the
 # chain-dot and the chain-double-dot samples were indistinguishable, which
 # defeats the point of a legend.
@@ -642,7 +642,7 @@ LEGEND_STYLES = {
 
 
 def legend_height(rows: int) -> float:
-    return Sheet.HEADING_HEIGHT + rows * LEGEND_ROW + 1.0
+    return Sheet.HEADING_HEIGHT + rows * LEGEND_ROW + 0.5
 
 
 def draw_legend(sheet: Sheet, entries: list[tuple[str, str]]) -> None:
@@ -729,10 +729,9 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
             "rest of this sheet. Rounded to two, adjacent hosts print 22.85 "
             "apart and contradict the 22.86 pitch dimensioned here.")
         notes.append(
-            "Port names differ by family: JA, JB, JC after Digilent here and "
-            "on the adapter; by signal direction on the demo boards; PMOD 1 "
-            "to 3 on the plate sheets, which number positions. TT-MP-02 maps "
-            "them.")
+            "Port names differ by family: JA, JB, JC on the adapter and "
+            "Raspberry Pi sheets, by signal direction on the demo boards, "
+            "PMOD 1 to 3 on the plate sheets. TT-MP-02 maps them.")
     if o.thickness:
         nominal = _nominal_thickness(o)
         if nominal is not None:
@@ -768,6 +767,15 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
                 "FEATURE SCHEDULE gives the extents.")
     if o.profile_note:
         notes.append(o.profile_note)
+    numbers = [f.number for f in spec.features if f.number]
+    if numbers and numbers != list(range(1, len(numbers) + 1)):
+        gaps = [n for n in range(1, max(numbers)) if n not in numbers]
+        notes.append(
+            "Feature numbers are fixed across this family, so a number means "
+            "the same part on every sheet. This board has no "
+            f"{'number' if len(gaps) == 1 else 'numbers'} "
+            f"{', '.join(str(n) for n in gaps)}, so the schedule skips "
+            f"{'it' if len(gaps) == 1 else 'them'}.")
     if not spec.tolerance:
         # Say where the general tolerance comes from.  It is a board house's
         # usual figures, not something any source here states, and on sheets
@@ -1178,13 +1186,15 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     # early stops a small feature's balloon taking the only good spot.
     order = sorted(range(len(spec.features)),
                    key=lambda i: -(spec.features[i].width * spec.features[i].height))
+    # The number a feature carries is its own, not its position in the list,
+    # so it means the same part on every sheet of the family.
     for n, f in enumerate(spec.features, 1):
-        schedule.append([str(n), f.label,
+        schedule.append([str(f.number or n), f.label,
                          f"{f.x0:.2f} to {f.x1:.2f}",
                          f"{f.y0:.2f} to {f.y1:.2f}"])
     for i in order:
         f = spec.features[i]
-        items.append(_Ballooned(str(i + 1), view.pt(f.cx, f.cy),
+        items.append(_Ballooned(str(f.number or i + 1), view.pt(f.cx, f.cy),
                                 _feature_anchors(view, f), feature_rect[i]))
     place_balloons(items, obstacles, balloon_bounds, c,
                    position_only=edge_only)

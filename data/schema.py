@@ -100,6 +100,11 @@ class Feature:
     note: str = ""
     tol: float | None = None
     designator: str = ""
+    #: The number this feature carries in the schedule and on its balloon.
+    #: Fixed per family rather than counted off, so a given number means the
+    #: same part on every sheet of that family; a revision that does not carry
+    #: the part leaves its number unused.  None falls back to position.
+    number: int | None = None
     #: Height above the seating plane, for a feature that also shows in an end
     #: view: the lower and upper edge of its aperture.  Only the enclosure
     #: sheets use these, and only for a feature in an end face.  Left None on a

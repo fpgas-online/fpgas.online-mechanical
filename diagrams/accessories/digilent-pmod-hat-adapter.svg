@@ -266,86 +266,85 @@
 <line x1="340.2417" y1="98.3" x2="340.2417" y2="114.9667" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="124.4667" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
 <line x1="243" y1="125.8667" x2="405" y2="125.8667" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<line x1="243" y1="130.4667" x2="263" y2="130.4667" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
-<text x="266" y="131.7167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline</text>
-<line x1="243" y1="135.2667" x2="263" y2="135.2667" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
-<text x="266" y="136.5167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Component body, scheduled</text>
-<line x1="243" y1="140.0667" x2="263" y2="140.0667" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<text x="266" y="141.3167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod connector body, hole keep-out</text>
-<line x1="243" y1="144.8667" x2="263" y2="144.8667" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="263,144.8667 260,143.9667 260,145.7667" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="266" y="146.1167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
-<text x="24" y="144.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
-<line x1="24" y1="145.9" x2="125.5" y2="145.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="24" y="150.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="28.542" y="150.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All dimensions in millimetres. The datum symbol marks the</text>
-<text x="28.542" y="155.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">origin: the lower-left corner of the board outline, X right, Y up,</text>
-<text x="28.542" y="159.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">viewed from the component side.</text>
-<text x="24" y="165.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="28.542" y="165.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DERIVED DIMENSIONS. Digilent publish no mechanical</text>
-<text x="28.542" y="169.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">drawing, DXF, STEP or board file for this product. Pmod host</text>
-<text x="28.542" y="174.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">positions were measured photogrammetrically and are good</text>
-<text x="28.542" y="178.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">to about +/-0.75 mm.</text>
-<text x="24" y="184.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="28.542" y="184.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">JA and JB face out of the left edge, JC out of the lower edge. All</text>
-<text x="28.542" y="188.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">three are right-angle hosts: the connector body overhangs the</text>
-<text x="28.542" y="193.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board edge by roughly 3 mm and the through-hole field sits</text>
-<text x="28.542" y="197.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">about 9.4 mm in from it, so a mating Pmod peripheral plugs in</text>
-<text x="28.542" y="202.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">from outside that edge.</text>
-<text x="24" y="207.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="28.542" y="207.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">JA and JB are snapped to the 22.86 mm host spacing the</text>
-<text x="28.542" y="212.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod Interface Specification mandates; they measured 23.18</text>
-<text x="28.542" y="216.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm apart, inside the measurement uncertainty.</text>
-<text x="24" y="222.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
-<text x="28.542" y="222.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The board outline, corner radii and mounting holes are the</text>
-<text x="28.542" y="227.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi HAT specification&#x27;s, which this board conforms</text>
-<text x="28.542" y="231.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">to, and carry that specification&#x27;s figures. Only the Pmod host</text>
-<text x="28.542" y="236.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">positions are derived.</text>
-<text x="24" y="241.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
-<text x="28.542" y="241.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The chain-double-dot rectangle at each Pmod host is the</text>
-<text x="28.542" y="246.135" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">connector body where it overhangs the board edge. Not a</text>
-<text x="28.542" y="250.6617" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board feature: it is what a peripheral and a bracket must</text>
-<text x="28.542" y="255.1885" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">clear.</text>
-<text x="24" y="260.7152" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
-<text x="28.542" y="260.7152" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host coordinates are given to three decimals, unlike the</text>
-<text x="28.542" y="265.242" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">rest of this sheet. Rounded to two, adjacent hosts print 22.85</text>
-<text x="28.542" y="269.7687" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">apart and contradict the 22.86 pitch dimensioned here.</text>
-<text x="133.5" y="144.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
-<line x1="133.5" y1="145.9" x2="235" y2="145.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="133.5" y="150.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">8.</text>
-<text x="138.042" y="150.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Port names differ by family: JA, JB, JC after Digilent here and</text>
-<text x="138.042" y="155.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">on the adapter; by signal direction on the demo boards; PMOD</text>
-<text x="138.042" y="159.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1 to 3 on the plate sheets, which number positions. TT-MP-02</text>
-<text x="138.042" y="164.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">maps them.</text>
-<text x="133.5" y="169.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">9.</text>
-<text x="138.042" y="169.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Generated from the listed sources and not checked by a</text>
-<text x="138.042" y="174.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">second party: there is no CHECKED field because nobody has</text>
-<text x="138.042" y="178.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">signed it.</text>
-<text x="133.5" y="185.2872" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="133.5" y1="186.6872" x2="235" y2="186.6872" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="133.5" y="191.3872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="138.042" y="191.3872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi HAT mechanical specification:</text>
-<text x="138.042" y="195.914" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://github.com/raspberrypi/hats hat-board-mechanical.pdf</text>
-<text x="138.042" y="200.4407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">- 65 x 56.0 or 65 x 56.5 mm (56.5 for an SMT 40-way header),</text>
-<text x="138.042" y="204.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3 mm corner radii, four 2.75 mm holes 3.5 mm in from the</text>
-<text x="138.042" y="209.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">edges on a 58 x 49 mm rectangle.</text>
-<text x="133.5" y="215.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="138.042" y="215.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod Interface Specification 1.2.0:</text>
-<text x="138.042" y="219.5477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/_media/reference/pmod/</text>
-<text x="138.042" y="224.0745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pmod-interface-specification-1_2_0.pdf - Digilent, revised 5</text>
-<text x="138.042" y="228.6012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">October 2017. Host ports on a common board edge are</text>
-<text x="138.042" y="233.128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">spaced .90 in (22.86 mm) centre to centre; pins are on a .10</text>
-<text x="138.042" y="237.6547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">in (2.54 mm) grid in both axes.</text>
-<text x="133.5" y="243.1815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="138.042" y="243.1815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline:</text>
-<text x="138.042" y="247.7082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/add-ons/pmod-hat/start -</text>
-<text x="138.042" y="252.235" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent state width 65 mm, length 56.5 mm.</text>
-<text x="133.5" y="257.7617" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="138.042" y="257.7617" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host positions:</text>
-<text x="138.042" y="262.2885" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/_media/reference/add-ons/</text>
-<text x="138.042" y="266.8152" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pmod-hat/pmod-hat-adapter-top-1000.png - Measured from</text>
-<text x="138.042" y="271.342" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent&#x27;s official top view by scripts/measure_pmod_hat.py.</text>
-<text x="138.042" y="275.8687" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent publish no dimensioned drawing for this board.</text>
+<line x1="243" y1="130.3667" x2="263" y2="130.3667" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="266" y="131.6167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline</text>
+<line x1="243" y1="134.9667" x2="263" y2="134.9667" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
+<text x="266" y="136.2167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Component body, scheduled</text>
+<line x1="243" y1="139.5667" x2="263" y2="139.5667" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="140.8167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod connector body, hole keep-out</text>
+<line x1="243" y1="144.1667" x2="263" y2="144.1667" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="263,144.1667 260,143.2667 260,145.0667" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="266" y="145.4167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
+<text x="24" y="148.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
+<line x1="24" y1="149.9" x2="125.5" y2="149.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="24" y="154.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="28.542" y="154.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All dimensions in millimetres. The datum symbol marks the</text>
+<text x="28.542" y="159.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">origin: the lower-left corner of the board outline, X right, Y up,</text>
+<text x="28.542" y="163.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">viewed from the component side.</text>
+<text x="24" y="169.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="28.542" y="169.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DERIVED DIMENSIONS. Digilent publish no mechanical</text>
+<text x="28.542" y="173.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">drawing, DXF, STEP or board file for this product. Pmod host</text>
+<text x="28.542" y="178.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">positions were measured photogrammetrically and are good</text>
+<text x="28.542" y="182.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">to about +/-0.75 mm.</text>
+<text x="24" y="188.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="28.542" y="188.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">JA and JB face out of the left edge, JC out of the lower edge. All</text>
+<text x="28.542" y="192.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">three are right-angle hosts: the connector body overhangs the</text>
+<text x="28.542" y="197.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board edge by roughly 3 mm and the through-hole field sits</text>
+<text x="28.542" y="201.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">about 9.4 mm in from it, so a mating Pmod peripheral plugs in</text>
+<text x="28.542" y="206.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">from outside that edge.</text>
+<text x="24" y="211.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="28.542" y="211.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">JA and JB are snapped to the 22.86 mm host spacing the</text>
+<text x="28.542" y="216.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod Interface Specification mandates; they measured 23.18</text>
+<text x="28.542" y="220.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm apart, inside the measurement uncertainty.</text>
+<text x="24" y="226.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
+<text x="28.542" y="226.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The board outline, corner radii and mounting holes are the</text>
+<text x="28.542" y="231.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi HAT specification&#x27;s, which this board conforms</text>
+<text x="28.542" y="235.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">to, and carry that specification&#x27;s figures. Only the Pmod host</text>
+<text x="28.542" y="240.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">positions are derived.</text>
+<text x="24" y="245.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
+<text x="28.542" y="245.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The chain-double-dot rectangle at each Pmod host is the</text>
+<text x="28.542" y="250.135" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">connector body where it overhangs the board edge. Not a</text>
+<text x="28.542" y="254.6617" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board feature: it is what a peripheral and a bracket must</text>
+<text x="28.542" y="259.1885" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">clear.</text>
+<text x="24" y="264.7152" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
+<text x="28.542" y="264.7152" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host coordinates are given to three decimals, unlike the</text>
+<text x="28.542" y="269.242" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">rest of this sheet. Rounded to two, adjacent hosts print 22.85</text>
+<text x="28.542" y="273.7687" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">apart and contradict the 22.86 pitch dimensioned here.</text>
+<text x="133.5" y="148.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<line x1="133.5" y1="149.9" x2="235" y2="149.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="133.5" y="154.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">8.</text>
+<text x="138.042" y="154.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Port names differ by family: JA, JB, JC on the adapter and</text>
+<text x="138.042" y="159.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi sheets, by signal direction on the demo boards,</text>
+<text x="138.042" y="163.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">PMOD 1 to 3 on the plate sheets. TT-MP-02 maps them.</text>
+<text x="133.5" y="169.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">9.</text>
+<text x="138.042" y="169.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Generated from the listed sources and not checked by a</text>
+<text x="138.042" y="173.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">second party: there is no CHECKED field because nobody has</text>
+<text x="138.042" y="178.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">signed it.</text>
+<text x="133.5" y="184.7605" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
+<line x1="133.5" y1="186.1605" x2="235" y2="186.1605" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="133.5" y="190.8605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="138.042" y="190.8605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi HAT mechanical specification:</text>
+<text x="138.042" y="195.3872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://github.com/raspberrypi/hats hat-board-mechanical.pdf</text>
+<text x="138.042" y="199.914" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">- 65 x 56.0 or 65 x 56.5 mm (56.5 for an SMT 40-way header),</text>
+<text x="138.042" y="204.4407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3 mm corner radii, four 2.75 mm holes 3.5 mm in from the</text>
+<text x="138.042" y="208.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">edges on a 58 x 49 mm rectangle.</text>
+<text x="133.5" y="214.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="138.042" y="214.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod Interface Specification 1.2.0:</text>
+<text x="138.042" y="219.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/_media/reference/pmod/</text>
+<text x="138.042" y="223.5477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pmod-interface-specification-1_2_0.pdf - Digilent, revised 5</text>
+<text x="138.042" y="228.0745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">October 2017. Host ports on a common board edge are</text>
+<text x="138.042" y="232.6012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">spaced .90 in (22.86 mm) centre to centre; pins are on a .10</text>
+<text x="138.042" y="237.128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">in (2.54 mm) grid in both axes.</text>
+<text x="133.5" y="242.6547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="138.042" y="242.6547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline:</text>
+<text x="138.042" y="247.1815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/add-ons/pmod-hat/start -</text>
+<text x="138.042" y="251.7082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent state width 65 mm, length 56.5 mm.</text>
+<text x="133.5" y="257.235" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="138.042" y="257.235" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host positions:</text>
+<text x="138.042" y="261.7617" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/_media/reference/add-ons/</text>
+<text x="138.042" y="266.2885" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pmod-hat/pmod-hat-adapter-top-1000.png - Measured from</text>
+<text x="138.042" y="270.8152" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent&#x27;s official top view by scripts/measure_pmod_hat.py.</text>
+<text x="138.042" y="275.342" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent publish no dimensioned drawing for this board.</text>
 <rect x="243" y="237" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="243" y1="252" x2="408" y2="252" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="245.5" y="245.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">DIGILENT PMOD HAT ADAPTER</text>

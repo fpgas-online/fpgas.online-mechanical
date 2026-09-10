@@ -81,6 +81,7 @@ All source data is now in `data/`:
 | `data/schema.py` | frozen dataclasses, coordinate convention | no |
 | `data/tinytapeout_boards.py` | 8 Tiny Tapeout demo board revisions | yes, from KiCad |
 | `data/raspberry_pi_boards.py` | Pi 3B/3B+ (one sheet), 4B, 5 | yes, from DXF/PDF |
+| sheets vs data | the data keeps every revision; the drawing set has one sheet per distinct geometry | |
 | `data/accessories.py` | Pmod spec, Pmod HAT Adapter, 2 PoE splitters | no, hand-curated |
 
 ## Sources found so far
@@ -534,3 +535,16 @@ Drawing review, round 4, all findings acted on:
   the Pi 5's PDF read 0.060 mm out, which is plot noise; the readings are
   checked against a tolerance and snapped, and the sheets say so rather than
   presenting a shared number as though each drawing had stated it.
+
+- **One sheet per distinct geometry, not per revision.**  v1.2.2 and v1.2.3
+  are the same board mechanically, as are v2.0.1 and v2.1.0, so eight demo
+  board sheets became six.  The data still carries all eight: it is a database
+  of what was built, and the plate is designed against individual revisions.
+  Only the drawing set is merged, and the generator compares outline, holes,
+  Pmod hosts and every feature before merging two revisions rather than taking
+  a note's word for it.
+- **Feature numbers are fixed per family**, so a number means the same part on
+  every sheet of that family.  On the demo boards that leaves gaps, because
+  the revisions with a fourth LED have no DIP switch and the ones with a DIP
+  switch have no fourth LED; a note names the numbers each board skips.  The
+  Raspberry Pi family has no gaps, so the same mechanism is invisible there.

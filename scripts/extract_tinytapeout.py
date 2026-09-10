@@ -42,6 +42,15 @@ SHUTTLE_SHEET = ("https://docs.google.com/spreadsheets/d/"
                  "1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/"
                  "edit?gid=1250963370")
 
+#: The number each feature carries in the schedule and on its balloon, fixed
+#: across the whole demo board family so that a number means the same part on
+#: every sheet.  A revision that does not carry a part leaves its number
+#: unused: the boards with a fourth LED have no DIP switch and the boards with
+#: a DIP switch have no fourth LED, so numbering them off each sheet's own
+#: list made 6 mean one thing on half the set and another on the rest.
+FEATURE_ORDER = ["usb_power", "display7", "led1", "led2", "led3", "led4",
+                 "dipsw", "side_pmod1", "side_pmod2", "side_pmod3"]
+
 REVISIONS = [
     dict(
         key="tt123-v2.2.6",
@@ -364,6 +373,18 @@ def extract(rev: dict) -> dict:
         add(ref, f"side_pmod{n}", f"Side Pmod {ref} (not fitted)", "header",
             note="Footprint present but marked do-not-populate.")
 
+    # Fixed numbers, not positions.  An unknown key stops the extraction
+    # rather than sorting to the front, so adding a part is a decision about
+    # where it belongs in the family's numbering.
+    unknown = [f["key"] for f in features if f["key"] not in FEATURE_ORDER]
+    if unknown:
+        raise SystemExit(
+            f"{rev['key']}: {', '.join(unknown)} not in FEATURE_ORDER; "
+            "decide what number they carry across the family")
+    features.sort(key=lambda f: FEATURE_ORDER.index(f["key"]))
+    for f in features:
+        f["number"] = FEATURE_ORDER.index(f["key"]) + 1
+
     return dict(
         key=rev["key"], title=rev["title"], subtitle=rev["subtitle"],
         used_by=list(rev["used_by"]),
@@ -428,7 +449,7 @@ def render(rec: dict) -> str:
             f"        Feature(key={f['key']!r}, label={f['label']!r}, kind={f['kind']!r},\n"
             f"                designator={f['designator']!r}, x0={f['x0']}, y0={f['y0']}, "
             f"x1={f['x1']}, y1={f['y1']},\n"
-            f"                note={f['note']!r})"
+            f"                note={f['note']!r}, number={f['number']})"
             for f in rec["features"])
 
     used = ", ".join(rec["used_by"]) or "no shipped shuttle yet"
@@ -476,9 +497,8 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators, taken from the "
-        "KiCad file, not assigned by this drawing. They are not in any "
-        "particular positional order.",
+        "Hole IDs are the board's own reference designators from the KiCad "
+        "file, not assigned by this drawing, and are in no positional order.",
         {identical_note!r},
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
