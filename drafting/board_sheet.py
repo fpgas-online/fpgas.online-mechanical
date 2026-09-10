@@ -55,8 +55,27 @@ BALLOON_OFFSET = 13.0
 
 @dataclass
 class _Ballooned:
+    """A feature to balloon, and where its leader may touch it.
+
+    ``tips`` holds the candidate anchor points in order of preference, the
+    feature centre first.  A leader dot may sit anywhere on the feature it
+    points at, and on a crowded board that freedom is what stops a leader
+    having to cross a neighbour: on the Raspberry Pi 3 sheets the micro-USB
+    power connector sits directly under the phantom Pmod host JC, so every
+    leader anchored at its centre crossed the host's pin field.
+    """
+
     label: str
     tip: tuple[float, float]
+    tips: tuple[tuple[float, float], ...] = ()
+    #: The obstacle rectangle this balloon's own feature contributes, if any.
+    #: A leader has to start on its feature, so scoring it against that
+    #: feature charges every leader for something it cannot avoid, and the
+    #: balloon ends up wedged into whatever gap is nearest.
+    own: tuple[float, float, float, float] | None = None
+
+    def anchors(self) -> tuple[tuple[float, float], ...]:
+        return self.tips or (self.tip,)
 
 
 def outline_path(c: Canvas, view: View, spec: BoardSpec, *,
@@ -156,23 +175,32 @@ def draw_pmod(c: Canvas, view: View, p, spec: BoardSpec) -> None:
                weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT)
 
 
+#: How much worse it is to touch one kind of obstacle than another.  A
+#: component outline is a soft obstacle: a leader crossing one is untidy but a
+#: reader still follows it.  Another balloon, its text or its leader is a hard
+#: one: two of those on top of each other cannot be read at all.
+SOFT = 1.0
+HARD = 6.0
+
+
 class Obstacles:
-    """Everything a balloon must not land on."""
+    """Everything a balloon must not land on, each with a weight."""
 
     def __init__(self) -> None:
-        self.rects: list[tuple[float, float, float, float]] = []
-        self.circles: list[tuple[float, float, float]] = []
-        self.segments: list[tuple[float, float, float, float]] = []
+        self.rects: list[tuple[float, float, float, float, float]] = []
+        self.circles: list[tuple[float, float, float, float]] = []
+        self.segments: list[tuple[float, float, float, float, float]] = []
 
-    def add_rect(self, x0, y0, x1, y1, pad: float = 0.0) -> None:
+    def add_rect(self, x0, y0, x1, y1, pad: float = 0.0,
+                 weight: float = SOFT) -> None:
         self.rects.append((min(x0, x1) - pad, min(y0, y1) - pad,
-                           max(x0, x1) + pad, max(y0, y1) + pad))
+                           max(x0, x1) + pad, max(y0, y1) + pad, weight))
 
-    def add_circle(self, cx, cy, r) -> None:
-        self.circles.append((cx, cy, r))
+    def add_circle(self, cx, cy, r, weight: float = SOFT) -> None:
+        self.circles.append((cx, cy, r, weight))
 
-    def add_segment(self, x1, y1, x2, y2) -> None:
-        self.segments.append((x1, y1, x2, y2))
+    def add_segment(self, x1, y1, x2, y2, weight: float = SOFT) -> None:
+        self.segments.append((x1, y1, x2, y2, weight))
 
     def crossings(self, x1: float, y1: float, x2: float, y2: float) -> int:
         """How many recorded segments a proposed leader actually crosses.
@@ -185,42 +213,51 @@ class Obstacles:
         def side(ax, ay, bx, by, px, py):
             return (bx - ax) * (py - ay) - (by - ay) * (px - ax)
 
-        n = 0
-        for ax, ay, bx, by in self.segments:
+        n = 0.0
+        for ax, ay, bx, by, w in self.segments:
             d1 = side(x1, y1, x2, y2, ax, ay)
             d2 = side(x1, y1, x2, y2, bx, by)
             d3 = side(ax, ay, bx, by, x1, y1)
             d4 = side(ax, ay, bx, by, x2, y2)
             if ((d1 > 0) != (d2 > 0)) and ((d3 > 0) != (d4 > 0)):
-                n += 1
+                n += w
         return n
 
     def leader_hits(self, x1: float, y1: float, x2: float, y2: float,
-                    clearance: float = 1.0, samples: int = 14) -> int:
+                    clearance: float = 1.0, samples: int = 14) -> float:
         """How much of a leader from (x1,y1) to (x2,y2) runs over something.
 
         Scoring only the balloon's own position lets its leader be routed
         straight through the feature next door, which is what put balloon 4 on
-        the TT04 sheet across two neighbouring LEDs.
+        the TT04 sheet across two neighbouring LEDs.  Each sample counts the
+        heaviest thing under it, so a leader crossing a balloon costs more than
+        one crossing a connector outline.
         """
-        n = 0
+        n = 0.0
         for i in range(1, samples):
             t = i / samples
-            n += min(self.hits(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t,
-                               clearance), 1)
+            n += self.hits(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t,
+                           clearance, worst=True)
         return n
 
-    def hits(self, cx: float, cy: float, r: float) -> int:
-        n = 0
-        for x0, y0, x1, y1 in self.rects:
+    def hits(self, cx: float, cy: float, r: float,
+             worst: bool = False) -> float:
+        """Weight of the obstacles a disc of radius *r* at (cx,cy) touches.
+
+        With *worst*, the heaviest single obstacle rather than their sum, which
+        is what a point sample along a leader wants: overlapping outlines are
+        one obstruction, not three.
+        """
+        n = 0.0
+        for x0, y0, x1, y1, w in self.rects:
             if cx + r > x0 and cx - r < x1 and cy + r > y0 and cy - r < y1:
-                n += 1
-        for ox, oy, orr in self.circles:
+                n = max(n, w) if worst else n + w
+        for ox, oy, orr, w in self.circles:
             if math.hypot(cx - ox, cy - oy) < r + orr:
-                n += 1
-        for x1, y1, x2, y2 in self.segments:
+                n = max(n, w) if worst else n + w
+        for x1, y1, x2, y2, w in self.segments:
             if _point_segment_distance(cx, cy, x1, y1, x2, y2) < r:
-                n += 1
+                n = max(n, w) if worst else n + w
         return n
 
 
@@ -235,11 +272,77 @@ def _point_segment_distance(px, py, x1, y1, x2, y2) -> float:
 #: Candidate balloon offsets, tried in order: close and to the side first,
 #: then further out.  Angles start at "up and right" and go round.
 _ANGLES = [i * 15 for i in range(24)]
-_RADII = [9.0, 12.5, 16.5, 21.0, 27.0, 34.0]
+# A small board with several connectors and a phantom HAT over it has no room
+# left inside its own outline: on the Raspberry Pi 3A+ every position within
+# 34 mm of a feature landed on something.  The longer radii let a balloon step
+# off the view into the clear margin, which is where a drawing would put it
+# anyway.  The search stops at the first radius that yields a clean spot, so
+# the extra reach costs nothing on an uncrowded sheet.
+_RADII = [9.0, 12.5, 16.5, 21.0, 27.0, 34.0, 42.0, 52.0, 64.0]
+
+#: A leader that clears everything scores only its own length, so anything
+#: above the longest clean leader means it is running over something.
+CLEAN_SCORE = _RADII[-1] * 2.0 + 1.0
+
+#: What an off-centre leader dot has to save before it is worth taking.
+TIP_PENALTY = 45.0
+
+
+def _ordinate_values(spec: BoardSpec, overlay: BoardSpec | None
+                     ) -> tuple[dict[float, float], dict[float, float]]:
+    """The X and Y ordinate values, each with the feature it comes from.
+
+    Each entry carries the feature's other-axis coordinate too, so its witness
+    line can start at the feature rather than at a board edge.  This is worked
+    out before anything is drawn, because the witness lines are obstacles the
+    balloons have to keep off and the balloons go on the sheet first.
+
+    A host on a horizontal edge is located along that edge by its X, one on a
+    vertical edge by its Y: that is the coordinate a mating peripheral cares
+    about, and a host goes into that chain only.  Putting its depth into the
+    other chain landed a value within a third of a millimetre of a mounting
+    hole's, so the two witness lines printed as one and neither label could be
+    tied to a line.  The depth gets its own dimension instead.
+    """
+    xvals: dict[float, float] = {}
+    yvals: dict[float, float] = {}
+
+    def note_x(x, y):
+        key = round(x, 3)
+        xvals[key] = (max(xvals.get(key, y), y) if spec.front_edge == "top"
+                      else min(xvals.get(key, y), y))
+
+    def note_y(y, x):
+        key = round(y, 3)
+        yvals[key] = min(yvals.get(key, x), x)
+
+    for h in spec.holes:
+        note_x(h.x, h.y)
+        note_y(h.y, h.x)
+    for p in list(spec.pmods) + list(overlay.pmods if overlay else ()):
+        if p.edge in ("bottom", "top"):
+            note_x(p.cx, p.cy)
+        else:
+            note_y(p.cy, p.cx)
+    return xvals, yvals
+
+
+def _feature_anchors(view: View, f) -> tuple[tuple[float, float], ...]:
+    """Where a leader may touch feature *f*, best first.
+
+    The centre first, then the midpoints of the four quadrants.  Everything
+    stays well inside the outline, so the dot always reads as belonging to
+    this feature and not to whatever is next to it.
+    """
+    qx, qy = f.width / 4.0, f.height / 4.0
+    return tuple(view.pt(f.cx + dx, f.cy + dy) for dx, dy in
+                 ((0.0, 0.0), (-qx, 0.0), (qx, 0.0), (0.0, -qy), (0.0, qy),
+                  (-qx, -qy), (qx, -qy), (-qx, qy), (qx, qy)))
 
 
 def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
-                   bounds: Rect, c: Canvas, passes: int = 4) -> None:
+                   bounds: Rect, c: Canvas, passes: int = 12,
+                   position_only: Obstacles | None = None) -> None:
     """Put each balloon near its feature, clear of everything else.
 
     A single greedy sweep is very order-sensitive: whichever balloon is placed
@@ -250,22 +353,45 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
     a couple of passes on drawings this size.
     """
     placed: list[tuple[float, float] | None] = [None] * len(items)
+    anchor: list[tuple[float, float]] = [it.tip for it in items]
 
-    def scene(skip: int) -> Obstacles:
+    def scene(skip: int, route: bool = False) -> Obstacles:
+        """The obstacle set for one balloon.
+
+        With *route*, the set a leader is scored against rather than the one
+        the balloon itself is scored against.  The two differ in what a line
+        may cross but a disc may not sit on: the board outline, which a leader
+        crosses as a matter of course, and the balloon's own feature, where
+        every leader has to start.
+        """
         o = Obstacles()
-        o.rects = list(obstacles.rects)
+        own = items[skip].own
+        o.rects = [r for r in obstacles.rects if not (route and r == own)]
         o.circles = list(obstacles.circles)
         o.segments = list(obstacles.segments)
+        if not route and position_only is not None:
+            o.rects += position_only.rects
+            o.circles += position_only.circles
+            o.segments += position_only.segments
         for k, pos in enumerate(placed):
             if pos is None or k == skip:
                 continue
-            o.add_circle(pos[0], pos[1], BALLOON_R + 2.0)
-            o.add_segment(items[k].tip[0], items[k].tip[1], pos[0], pos[1])
+            o.add_circle(pos[0], pos[1], BALLOON_R + 2.0, weight=HARD)
+            o.add_segment(anchor[k][0], anchor[k][1], pos[0], pos[1],
+                          weight=HARD)
         return o
 
-    def best_spot(index: int) -> tuple[float, float]:
-        tx, ty = items[index].tip
-        world = scene(index)
+    def best_for_tip(world: Obstacles, route: Obstacles,
+                     tip: tuple[float, float]):
+        """Cheapest balloon position for a leader anchored at *tip*.
+
+        *world* scores where the balloon may sit and *route* what its leader
+        may cross.  They differ by one rectangle: the balloon's own feature.
+        The balloon must still keep off it, or it hides what it labels, but
+        the leader has to start there, so charging the leader for it prices in
+        something no placement can avoid.
+        """
+        tx, ty = tip
         best, best_score = None, None
         for radius in _RADII:
             for ang in _ANGLES:
@@ -275,28 +401,64 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
                 if not (bounds.x + BALLOON_R < cx < bounds.x1 - BALLOON_R
                         and bounds.y + BALLOON_R < cy < bounds.y1 - BALLOON_R):
                     continue
-                # Landing on something is worst; crossing a leader is next; a
-                # long leader is a real cost too, or a balloon will travel
-                # halfway across the view to dodge a crossing it could have
-                # avoided by moving a few millimetres.
-                score = (world.hits(cx, cy, BALLOON_R + 2.0) * 100
-                         + world.crossings(tx, ty, cx, cy) * 60
-                         + world.leader_hits(tx, ty, cx, cy) * 30
+                # Landing on something is worst by a wide margin: a balloon
+                # covers what it is meant to point at, while a leader merely
+                # runs across it.  Priced any closer together, a balloon parks
+                # on its own connector rather than stepping out to the clear
+                # margin, which is where a drawing would put it.  Leader
+                # length is a real cost too, or a balloon travels halfway
+                # across the view to dodge a crossing it could have avoided by
+                # moving a few millimetres.
+                score = (world.hits(cx, cy, BALLOON_R + 2.0) * 200
+                         + route.crossings(tx, ty, cx, cy) * 60
+                         + route.leader_hits(tx, ty, cx, cy) * 30
                          + radius * 2.0)
                 if best_score is None or score < best_score:
                     best, best_score = (cx, cy), score
             if best_score is not None and best_score < radius * 2.0 + 1:
                 break
-        return best or (tx + 10.0, ty + 10.0)
+        return best, best_score
+
+    def best_spot(index: int) -> tuple[tuple[float, float], tuple[float, float]]:
+        item = items[index]
+        world = scene(index)
+        route = scene(index, route=True)
+        tips = item.anchors()
+        pos, score = best_for_tip(world, route, tips[0])
+        tip = tips[0]
+        # Moving the dot off the centre of a feature is legitimate but it is
+        # not free: an off-centre dot is slightly harder to associate with its
+        # feature, so it has to buy a real improvement, and the whole search is
+        # skipped when the centre already gives a clean leader.
+        if score is not None and score > CLEAN_SCORE:
+            for alt in tips[1:]:
+                apos, ascore = best_for_tip(world, route, alt)
+                if apos is None:
+                    continue
+                if score is None or ascore + TIP_PENALTY < score:
+                    pos, score, tip = apos, ascore + TIP_PENALTY, alt
+        return tip, pos or (tip[0] + 10.0, tip[1] + 10.0)
 
     for i in range(len(items)):
-        placed[i] = best_spot(i)
-    for _ in range(passes):
-        for i in range(len(items)):
-            placed[i] = best_spot(i)
+        anchor[i], placed[i] = best_spot(i)
+    # Coordinate descent: each sweep re-places every balloon against the
+    # others' current positions.  The sweep direction alternates, because a
+    # one-way sweep always lets the last balloon win and can leave the first
+    # one's leader lying under a balloon that moved after it was placed.  It
+    # stops as soon as a sweep changes nothing, which is the fixed point.
+    order = list(range(len(items)))
+    for n in range(passes):
+        moved = False
+        for i in (order if n % 2 == 0 else order[::-1]):
+            was = (anchor[i], placed[i])
+            anchor[i], placed[i] = best_spot(i)
+            if (anchor[i], placed[i]) != was:
+                moved = True
+        if not moved:
+            break
 
-    for item, pos in zip(items, placed):
-        dims.balloon(c, item.tip, pos, item.label, radius=BALLOON_R)
+    for item, tip, pos in zip(items, anchor, placed):
+        dims.balloon(c, tip, pos, item.label, radius=BALLOON_R)
 
 
 def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None) -> float:
@@ -484,12 +646,32 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                                   if p.body_y1 > p.body_y0]
                      + [view.y(f.y0) for f in spec.features])
     dim_left = min([board.x] + [view.x(f.x0) for f in spec.features])
-    balloon_bounds = Rect(dim_left, dim_bottom,
-                          sheet.area.x1 - dim_left, sheet.area.y1 - dim_bottom)
+
+    # How far the dimensions will reach below and to the left, worked out
+    # before anything is placed.  A Pmod spacing dimension goes in first, then
+    # the ordinate chain nine millimetres below that.
+    horiz_edges = len({p.edge for p in spec.pmods if p.edge in ("bottom", "top")
+                       and len([q for q in spec.pmods if q.edge == p.edge]) > 1})
+    vert_edges = len({p.edge for p in spec.pmods if p.edge in ("left", "right")
+                      and len([q for q in spec.pmods if q.edge == p.edge]) > 1})
+    step = 6.0 + style.T_DIM + 2.0
+    chain_y = dim_bottom - horiz_edges * step - 9.0
+    chain_x = dim_left - vert_edges * step - 9.0
+
+    # Balloons may use the strip between the view and the ordinate chain.
+    # The witness lines crossing it are already reserved as obstacles, and on
+    # a board like the Raspberry Pi 5, whose micro-HDMI connectors sit under
+    # the Pmod HAT's host JC, that strip is the only clear space a leader from
+    # those connectors can reach without being ruled across the host.
+    balloon_bounds = Rect(chain_x + 4.0, chain_y + 4.0,
+                          sheet.area.x1 - chain_x - 4.0,
+                          sheet.area.y1 - chain_y - 4.0)
 
     obstacles = Obstacles()
-    for f in spec.features:
+    feature_rect: dict[int, tuple[float, float, float, float]] = {}
+    for i, f in enumerate(spec.features):
         obstacles.add_rect(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1), pad=0.8)
+        feature_rect[i] = obstacles.rects[-1]
     # The radius callout is drawn after the balloons but occupies its space
     # regardless, so reserve it now.
     if o.corner_radius:
@@ -512,19 +694,30 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                 half_x, half_y = half_a, half_b
             else:
                 half_x, half_y = half_b, half_a
+            # Hard: the phantom host is the whole reason this overlay is on
+            # the sheet, and a leader ruled across its pin field hides the one
+            # thing the reader came for.
             obstacles.add_rect(*view.pt(p.cx - half_x, p.cy - half_y),
-                               *view.pt(p.cx + half_x, p.cy + half_y), pad=1.0)
+                               *view.pt(p.cx + half_x, p.cy + half_y), pad=1.0,
+                               weight=HARD)
+            # The label's own box, sized to the text.  Reserving the pin
+            # field's full height for a two-letter label walled off the
+            # diagonal every leader from the lower-left corner wanted to take,
+            # and pushed those leaders across the pin fields instead.
             lw = style.text_width(p.label, style.T_LABEL, bold=True)
+            lh = style.T_LABEL
             lx0, ly0 = view.pt(p.cx - half_x, p.cy - half_y)
             lx1, ly1 = view.pt(p.cx + half_x, p.cy + half_y)
+            mx, my = (lx0 + lx1) / 2, (ly0 + ly1) / 2
             if p.edge == "left":
-                obstacles.add_rect(lx1, ly0, lx1 + lw + 3.0, ly1, pad=1.0)
+                obstacles.add_rect(lx1, my - lh / 2, lx1 + lw + 3.0,
+                                   my + lh / 2, pad=1.0, weight=HARD)
             elif p.edge == "right":
-                obstacles.add_rect(lx0 - lw - 3.0, ly0, lx0, ly1, pad=1.0)
+                obstacles.add_rect(lx0 - lw - 3.0, my - lh / 2, lx0,
+                                   my + lh / 2, pad=1.0, weight=HARD)
             else:
-                mid = (lx0 + lx1) / 2
-                obstacles.add_rect(mid - lw / 2, ly1, mid + lw / 2,
-                                   ly1 + style.T_LABEL + 3.0, pad=1.0)
+                obstacles.add_rect(mx - lw / 2, ly1, mx + lw / 2,
+                                   ly1 + lh + 3.0, pad=1.0, weight=HARD)
     for h in spec.holes:
         obstacles.add_circle(*view.pt(h.x, h.y),
                              view.d(max(h.dia, h.keepout_dia or 0) / 2) + 1.0)
@@ -532,11 +725,27 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         if p.body_x1 > p.body_x0:
             obstacles.add_rect(*view.pt(p.body_x0, p.body_y0),
                                *view.pt(p.body_x1, p.body_y1), pad=0.8)
-    # The board edge itself: a balloon straddling it reads badly.
+    # The board outline.  A balloon straddling it breaks the one line on the
+    # sheet a reader traces first, so it is hard; but a leader crossing it is
+    # how a balloon in the margin points at a part on the board, so it is not
+    # charged for at all.
+    edge_only = Obstacles()
     for edge in ((0, 0, o.width, 0), (o.width, 0, o.width, o.height),
                  (o.width, o.height, 0, o.height), (0, o.height, 0, 0)):
-        obstacles.add_segment(*view.pt(edge[0], edge[1]),
-                              *view.pt(edge[2], edge[3]))
+        edge_only.add_segment(*view.pt(edge[0], edge[1]),
+                              *view.pt(edge[2], edge[3]), weight=HARD)
+
+    # The ordinate witness lines are drawn after the balloons but stand in
+    # their way all the same: a balloon sitting on one reads as though it
+    # belonged to the dimension, so they are reserved now.  They run from the
+    # feature they locate out to the dimension band.
+    xvals, yvals = _ordinate_values(spec, overlay)
+    for v, f in xvals.items():
+        obstacles.add_segment(view.x(v), view.y(f), view.x(v),
+                              balloon_bounds.y, weight=HARD)
+    for v, f in yvals.items():
+        obstacles.add_segment(view.x(f), view.y(v), balloon_bounds.x,
+                              view.y(v), weight=HARD)
 
     items: list[_Ballooned] = []
     schedule: list[list[str]] = []
@@ -550,8 +759,10 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                          f"{f.y0:.2f} to {f.y1:.2f}"])
     for i in order:
         f = spec.features[i]
-        items.append(_Ballooned(str(i + 1), view.pt(f.cx, f.cy)))
-    place_balloons(items, obstacles, balloon_bounds, c)
+        items.append(_Ballooned(str(i + 1), view.pt(f.cx, f.cy),
+                                _feature_anchors(view, f), feature_rect[i]))
+    place_balloons(items, obstacles, balloon_bounds, c,
+                   position_only=edge_only)
 
     # --- dimensions ---------------------------------------------------------
     lowest, leftmost = dim_bottom, dim_left
@@ -583,41 +794,6 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                         leftmost - 6.0 - view.x(p0.cx), horizontal=False,
                         text=label)
             leftmost -= 6.0 + style.T_DIM + 2.0
-
-    # Each ordinate entry carries the feature's other-axis coordinate too, so
-    # its witness line can start at the feature rather than at a board edge.
-    xvals: dict[float, float] = {}
-    yvals: dict[float, float] = {}
-
-    def note_x(x, y):
-        xvals[round(x, 3)] = max(xvals.get(round(x, 3), y), y) \
-            if spec.front_edge == "top" else min(xvals.get(round(x, 3), y), y)
-
-    def note_y(y, x):
-        yvals[round(y, 3)] = min(yvals.get(round(y, 3), x), x)
-
-    for h in spec.holes:
-        note_x(h.x, h.y)
-        note_y(h.y, h.x)
-    # A host on a horizontal edge is located along that edge by its X, one on a
-    # vertical edge by its Y: that is the coordinate a mating peripheral cares
-    # about.  The board's own hosts also get their depth in from the edge
-    # dimensioned, since that is what a plate has to clear.
-    # A Pmod host goes into the chain that locates it along its edge, and only
-    # that one.  Putting its depth into the other chain landed a value within
-    # a third of a millimetre of a mounting hole's, so the two witness lines
-    # printed as one and neither label could be tied to a line.  The depth gets
-    # its own dimension instead.
-    for p in spec.pmods:
-        if p.edge in ("bottom", "top"):
-            note_x(p.cx, p.cy)
-        else:
-            note_y(p.cy, p.cx)
-    for p in (overlay.pmods if overlay else ()):
-        if p.edge in ("bottom", "top"):
-            note_x(p.cx, p.cy)
-        else:
-            note_y(p.cy, p.cx)
 
     # The Pmod pin-field depth, dimensioned once per edge rather than folded
     # into an ordinate chain.

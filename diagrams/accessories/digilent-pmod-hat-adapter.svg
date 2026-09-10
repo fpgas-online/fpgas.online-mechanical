@@ -99,13 +99,13 @@
 <line x1="150.525" y1="57.25" x2="156.475" y2="57.25" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="153.5" y1="60.225" x2="153.5" y2="54.275" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="124.5" cy="56.75" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="124.5" y1="56.75" x2="116.5284" y2="86.5005" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="115.7002" cy="89.5915" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="115.7002" y="88.3415" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">1</text>
+<line x1="124.5" y1="56.75" x2="124.5" y2="50.95" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="124.5" cy="47.75" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="124.5" y="46.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">1</text>
 <circle cx="143.25" cy="102.5" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="143.25" y1="102.5" x2="143.25" y2="71.7" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="143.25" cy="68.5" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="143.25" y="67.25" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">2</text>
+<line x1="143.25" y1="102.5" x2="143.25" y2="93.2" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="143.25" cy="90" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="143.25" y="88.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">2</text>
 <line x1="100.2" y1="93.32" x2="84" y2="93.32" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="100.2" y1="70.46" x2="84" y2="70.46" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="86" y1="93.32" x2="86" y2="70.46" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
