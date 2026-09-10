@@ -50,8 +50,12 @@ KIND_LABEL = {
 # sheet the deepest dimension still cleared the notes band by ten millimetres,
 # which is space the notes need more than the view does.
 VIEW_MARGIN_SIDE = 46.0
-VIEW_MARGIN_TOP = 18.0
-VIEW_MARGIN_BOTTOM = 40.0
+VIEW_MARGIN_TOP = 26.0
+VIEW_MARGIN_BOTTOM = 32.0
+
+#: How far the overall width and height dimensions sit off the board edge.
+#: They are the only things on the top and right edges, so they can be close.
+OVERALL_GAP = 9.0
 
 BALLOON_R = 3.2
 BALLOON_STEP = 8.4
@@ -1128,6 +1132,29 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         edge_only.add_segment(*view.pt(edge[0], edge[1]),
                               *view.pt(edge[2], edge[3]), weight=HARD)
 
+    # The overall dimensions are drawn after the balloons, along the top and
+    # right edges, so they are reserved now.  The value is hard -- a leader
+    # ruled through "56.00" is as unreadable as a balloon parked on it -- but
+    # the line either side of it is position only.  Reserving the whole band
+    # against leaders as well boxed the balloons into the board's interior,
+    # because a leader from a part near the top or right had to cross a band
+    # to reach any space at all.
+    band = style.T_DIM + style.descender(style.T_DIM) + style.DIM_TEXT_GAP
+    for value, horizontal in ((o.width, True), (o.height, False)):
+        half = style.text_width(f"{value:.2f}", style.T_DIM) / 2
+        if horizontal:
+            mid = (board.x + board.x1) / 2
+            lo, hi = board.y1 + OVERALL_GAP - 1.0, board.y1 + OVERALL_GAP + band
+            edge_only.add_rect(board.x, lo, board.x1, hi, pad=1.2, weight=HARD)
+            obstacles.add_rect(mid - half, lo, mid + half, hi,
+                               pad=1.2, weight=HARD)
+        else:
+            mid = (board.y + board.y1) / 2
+            lo, hi = board.x1 + OVERALL_GAP - band, board.x1 + OVERALL_GAP + 1.0
+            edge_only.add_rect(lo, board.y, hi, board.y1, pad=1.2, weight=HARD)
+            obstacles.add_rect(lo, mid - half, hi, mid + half,
+                               pad=1.2, weight=HARD)
+
     # The ordinate witness lines are drawn after the balloons but stand in
     # their way all the same: a balloon sitting on one reads as though it
     # belonged to the dimension, so they are reserved now.  They run from the
@@ -1253,14 +1280,17 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         board.x, leftmost - 9.0, horizontal=False,
         zero_pos=board.y, zero_from=board.x, blockers=blockers)
 
-    # Extension lines start outside the ordinate labels, not at the board, so
-    # they do not run through them on the way out.
-    dims.linear(c, (board.x, board.y), (board.x1, board.y),
-                x_extent - 6.0 - board.y, horizontal=True, value=o.width,
-                ext_start=x_extent - 2.0)
-    dims.linear(c, (board.x, board.y), (board.x, board.y1),
-                y_extent - 6.0 - board.x, horizontal=False, value=o.height,
-                ext_start=y_extent - 2.0)
+    # The overall dimensions go on the edges the ordinate chains do not use:
+    # width across the top, height up the right.  Stacked outside the chains
+    # below and left, they had to clear the chain, its labels and the Pmod
+    # spacing dimension, which put the overall size of the board thirty
+    # millimetres away from the board.  On these edges they sit close in, with
+    # short extension lines, which is where a reader looks for them.
+    del x_extent, y_extent
+    dims.linear(c, (board.x, board.y1), (board.x1, board.y1), OVERALL_GAP,
+                horizontal=True, value=o.width)
+    dims.linear(c, (board.x1, board.y), (board.x1, board.y1), OVERALL_GAP,
+                horizontal=False, value=o.height)
     # The datum sits in the busiest corner of the sheet, so its label goes out
     # on a leader into the empty wedge below and left of the ordinate chains
     # rather than next to the marker.
