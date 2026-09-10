@@ -439,6 +439,9 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
+        "Hole IDs are the board's own reference designators, taken from the "
+        "KiCad file, not assigned by this drawing. They are not in any "
+        "particular positional order.",
         {identical_note!r},
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",

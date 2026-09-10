@@ -40,143 +40,143 @@
 <line x1="405" y1="81.75" x2="415" y2="81.75" stroke="#888888" stroke-width="0.25" stroke-linecap="round"/>
 <text x="10" y="47.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
 <text x="410" y="47.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
-<path d="M 83.5000 117.0350 L 142.5000 117.0350 A 3.0000 3.0000 0 0 0 145.5000 114.0350 L 145.5000 63.5350 A 3.0000 3.0000 0 0 0 142.5000 60.5350 L 83.5000 60.5350 A 3.0000 3.0000 0 0 0 80.5000 63.5350 L 80.5000 114.0350 A 3.0000 3.0000 0 0 0 83.5000 117.0350 L 142.5000 117.0350 Z" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6,1.6,1.2,1.6"/>
-<circle cx="88.63" cy="84.095" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="84.095" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="88.63" cy="81.555" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="81.555" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="88.63" cy="79.015" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="79.015" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="88.63" cy="76.475" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="76.475" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="88.63" cy="73.935" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="73.935" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="88.63" cy="71.395" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="71.395" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<rect x="87.33" y="70.095" width="5.14" height="15.3" fill="none" stroke="#7a7a7a" stroke-width="0.35"/>
-<text x="94.47" y="76.495" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a7a7a" text-anchor="start" font-weight="bold">JA</text>
-<circle cx="88.63" cy="106.955" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="106.955" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="88.63" cy="104.415" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="104.415" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="88.63" cy="101.875" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="101.875" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="88.63" cy="99.335" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="99.335" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="88.63" cy="96.795" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="96.795" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="88.63" cy="94.255" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="91.17" cy="94.255" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<rect x="87.33" y="92.955" width="5.14" height="15.3" fill="none" stroke="#7a7a7a" stroke-width="0.35"/>
-<text x="94.47" y="99.355" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a7a7a" text-anchor="start" font-weight="bold">JB</text>
-<circle cx="101.75" cy="108.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="101.75" cy="106.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="104.29" cy="108.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="104.29" cy="106.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="106.83" cy="108.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="106.83" cy="106.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="109.37" cy="108.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="109.37" cy="106.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="111.91" cy="108.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="111.91" cy="106.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="114.45" cy="108.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<circle cx="114.45" cy="106.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<rect x="100.45" y="105.065" width="15.3" height="5.14" fill="none" stroke="#7a7a7a" stroke-width="0.35"/>
-<text x="108.1" y="103.065" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a7a7a" text-anchor="middle" font-weight="bold">JC</text>
-<rect x="87.6" y="62.035" width="50.8" height="5" fill="none" stroke="#333333" stroke-width="0.25"/>
-<rect x="147.15" y="63.53" width="21.35" height="15.51" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
-<rect x="151" y="82.785" width="17.5" height="13.82" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
-<rect x="150.8" y="101.465" width="17.7" height="13.92" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
-<rect x="87.375" y="110.885" width="8.65" height="7.4" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
-<rect x="102.9" y="110.515" width="7.2" height="7.95" fill="none" stroke="#333333" stroke-width="0.25"/>
-<rect x="116.4" y="110.515" width="7.2" height="7.95" fill="none" stroke="#333333" stroke-width="0.25"/>
-<rect x="131" y="104.535" width="7" height="12.5" fill="none" stroke="#333333" stroke-width="0.25"/>
-<path d="M 83.5000 117.0350 L 162.5000 117.0350 A 3.0000 3.0000 0 0 0 165.5000 114.0350 L 165.5000 64.0350 A 3.0000 3.0000 0 0 0 162.5000 61.0350 L 83.5000 61.0350 A 3.0000 3.0000 0 0 0 80.5000 64.0350 L 80.5000 114.0350 A 3.0000 3.0000 0 0 0 83.5000 117.0350 L 162.5000 117.0350 Z" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="84" cy="113.535" r="3" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
-<circle cx="84" cy="113.535" r="1.35" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
-<line x1="81.05" y1="113.535" x2="86.95" y2="113.535" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="84" y1="116.485" x2="84" y2="110.585" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="142" cy="113.535" r="3" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
-<circle cx="142" cy="113.535" r="1.35" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
-<line x1="139.05" y1="113.535" x2="144.95" y2="113.535" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="142" y1="116.485" x2="142" y2="110.585" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="84" cy="64.535" r="3" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
-<circle cx="84" cy="64.535" r="1.35" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
-<line x1="81.05" y1="64.535" x2="86.95" y2="64.535" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="84" y1="67.485" x2="84" y2="61.585" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="142" cy="64.535" r="3" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
-<circle cx="142" cy="64.535" r="1.35" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
-<line x1="139.05" y1="64.535" x2="144.95" y2="64.535" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="142" y1="67.485" x2="142" y2="61.585" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="157.825" cy="71.285" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="157.825" y1="71.285" x2="128.0745" y2="79.2566" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="124.9835" cy="80.0848" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="124.9835" y="78.8348" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">2</text>
-<circle cx="113" cy="64.535" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="113" y1="64.535" x2="120.9716" y2="34.7845" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="121.7998" cy="31.6935" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="121.7998" y="30.4435" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">1</text>
-<circle cx="159.65" cy="108.425" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="159.65" y1="108.425" x2="190.45" y2="108.425" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="193.65" cy="108.425" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="193.65" y="107.175" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">4</text>
-<circle cx="159.75" cy="89.695" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="159.75" y1="89.695" x2="190.55" y2="89.695" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="193.75" cy="89.695" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="193.75" y="88.445" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">3</text>
-<circle cx="134.5" cy="110.785" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="134.5" y1="110.785" x2="143.4" y2="95.3697" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="145" cy="92.5985" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="145" y="91.3485" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">8</text>
-<circle cx="91.7" cy="114.585" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="91.7" y1="114.585" x2="107.1" y2="87.9114" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="108.7" cy="85.1401" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="108.7" y="83.8901" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">5</text>
-<circle cx="106.5" cy="114.49" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="106.5" y1="114.49" x2="118.4" y2="93.8786" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="120" cy="91.1073" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="120" y="89.8573" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">6</text>
-<circle cx="120" cy="114.49" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="120" y1="114.49" x2="135.4" y2="87.8164" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="137" cy="85.0451" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="137" y="83.7951" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">7</text>
-<line x1="80.5" y1="118.235" x2="80.5" y2="127.465" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="80.5" y="131.965" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 80.5 131.965)">0</text>
-<line x1="84" y1="65.735" x2="84" y2="134.3743" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="84" y="138.8743" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 84 138.8743)">3.50</text>
-<line x1="108.1" y1="108.835" x2="108.1" y2="127.465" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="108.1" y="131.965" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 108.1 131.965)">27.60</text>
-<line x1="142" y1="65.735" x2="142" y2="127.465" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="142" y="131.965" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 142 131.965)">61.50</text>
-<line x1="79.3" y1="117.035" x2="71.5" y2="117.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="69.5" y="115.785" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">0</text>
-<line x1="82.8" y1="113.535" x2="59.0705" y2="113.535" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="57.0705" y="112.285" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">3.50</text>
-<line x1="88.7" y1="100.605" x2="71.5" y2="100.605" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="69.5" y="99.355" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">16.43</text>
-<line x1="88.7" y1="77.745" x2="71.5" y2="77.745" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="69.5" y="76.495" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">39.29</text>
-<line x1="82.8" y1="64.535" x2="71.5" y2="64.535" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="69.5" y="63.285" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">52.50</text>
-<line x1="80.5" y1="147.7413" x2="80.5" y2="153.7413" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="165.5" y1="147.7413" x2="165.5" y2="153.7413" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="80.5" y1="151.7413" x2="165.5" y2="151.7413" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="80.5,151.7413 83.5,152.6413 83.5,150.8413" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="165.5,151.7413 162.5,150.8413 162.5,152.6413" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="123" y="150.8413" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">85.00</text>
-<line x1="48.2035" y1="117.035" x2="42.2035" y2="117.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="48.2035" y1="61.035" x2="42.2035" y2="61.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="44.2035" y1="117.035" x2="44.2035" y2="61.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="44.2035,117.035 45.1035,114.035 43.3035,114.035" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="44.2035,61.035 43.3035,64.035 45.1035,64.035" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="43.3035" y="89.035" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 43.3035 89.035)">56.00</text>
-<circle cx="80.5" cy="117.035" r="2" fill="none" stroke="#004c99" stroke-width="0.25"/>
-<path d="M 80.5 117.035 L 82.5 117.035 A 2.0 2.0 0 0 1 80.5 115.035 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 80.5 117.035 L 78.5 117.035 A 2.0 2.0 0 0 1 80.5 119.035 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="164.6,61.935 167.5977,61.0275 166.6032,59.5272" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<line x1="164.6" y1="61.935" x2="173.5" y2="56.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="173.5" y1="56.035" x2="178.5" y2="56.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="179.7" y="55.135" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start">R3.00 (4 places), board outline</text>
+<path d="M 83.5000 109.0350 L 142.5000 109.0350 A 3.0000 3.0000 0 0 0 145.5000 106.0350 L 145.5000 55.5350 A 3.0000 3.0000 0 0 0 142.5000 52.5350 L 83.5000 52.5350 A 3.0000 3.0000 0 0 0 80.5000 55.5350 L 80.5000 106.0350 A 3.0000 3.0000 0 0 0 83.5000 109.0350 L 142.5000 109.0350 Z" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6,1.6,1.2,1.6"/>
+<circle cx="88.63" cy="76.095" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="76.095" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="88.63" cy="73.555" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="73.555" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="88.63" cy="71.015" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="71.015" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="88.63" cy="68.475" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="68.475" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="88.63" cy="65.935" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="65.935" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="88.63" cy="63.395" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="63.395" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<rect x="87.33" y="62.095" width="5.14" height="15.3" fill="none" stroke="#7a7a7a" stroke-width="0.35"/>
+<text x="94.47" y="68.495" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a7a7a" text-anchor="start" font-weight="bold">JA</text>
+<circle cx="88.63" cy="98.955" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="98.955" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="88.63" cy="96.415" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="96.415" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="88.63" cy="93.875" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="93.875" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="88.63" cy="91.335" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="91.335" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="88.63" cy="88.795" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="88.795" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="88.63" cy="86.255" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="91.17" cy="86.255" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<rect x="87.33" y="84.955" width="5.14" height="15.3" fill="none" stroke="#7a7a7a" stroke-width="0.35"/>
+<text x="94.47" y="91.355" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a7a7a" text-anchor="start" font-weight="bold">JB</text>
+<circle cx="101.75" cy="100.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="101.75" cy="98.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="104.29" cy="100.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="104.29" cy="98.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="106.83" cy="100.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="106.83" cy="98.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="109.37" cy="100.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="109.37" cy="98.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="111.91" cy="100.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="111.91" cy="98.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="114.45" cy="100.905" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<circle cx="114.45" cy="98.365" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
+<rect x="100.45" y="97.065" width="15.3" height="5.14" fill="none" stroke="#7a7a7a" stroke-width="0.35"/>
+<text x="108.1" y="95.065" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a7a7a" text-anchor="middle" font-weight="bold">JC</text>
+<rect x="87.6" y="54.035" width="50.8" height="5" fill="none" stroke="#333333" stroke-width="0.25"/>
+<rect x="147.15" y="55.53" width="21.35" height="15.51" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
+<rect x="151" y="74.785" width="17.5" height="13.82" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
+<rect x="150.8" y="93.465" width="17.7" height="13.92" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
+<rect x="87.375" y="102.885" width="8.65" height="7.4" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
+<rect x="102.9" y="102.515" width="7.2" height="7.95" fill="none" stroke="#333333" stroke-width="0.25"/>
+<rect x="116.4" y="102.515" width="7.2" height="7.95" fill="none" stroke="#333333" stroke-width="0.25"/>
+<rect x="131" y="96.535" width="7" height="12.5" fill="none" stroke="#333333" stroke-width="0.25"/>
+<path d="M 83.5000 109.0350 L 162.5000 109.0350 A 3.0000 3.0000 0 0 0 165.5000 106.0350 L 165.5000 56.0350 A 3.0000 3.0000 0 0 0 162.5000 53.0350 L 83.5000 53.0350 A 3.0000 3.0000 0 0 0 80.5000 56.0350 L 80.5000 106.0350 A 3.0000 3.0000 0 0 0 83.5000 109.0350 L 162.5000 109.0350 Z" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="84" cy="105.535" r="3" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="84" cy="105.535" r="1.35" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<line x1="81.05" y1="105.535" x2="86.95" y2="105.535" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="84" y1="108.485" x2="84" y2="102.585" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="142" cy="105.535" r="3" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="142" cy="105.535" r="1.35" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<line x1="139.05" y1="105.535" x2="144.95" y2="105.535" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="142" y1="108.485" x2="142" y2="102.585" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="84" cy="56.535" r="3" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="84" cy="56.535" r="1.35" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<line x1="81.05" y1="56.535" x2="86.95" y2="56.535" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="84" y1="59.485" x2="84" y2="53.585" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="142" cy="56.535" r="3" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="142" cy="56.535" r="1.35" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<line x1="139.05" y1="56.535" x2="144.95" y2="56.535" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="142" y1="59.485" x2="142" y2="53.585" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="157.825" cy="63.285" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
+<line x1="157.825" y1="63.285" x2="128.0745" y2="71.2566" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="124.9835" cy="72.0848" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="124.9835" y="70.8348" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">2</text>
+<circle cx="113" cy="56.535" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
+<line x1="113" y1="56.535" x2="120.9716" y2="26.7845" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="121.7998" cy="23.6935" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="121.7998" y="22.4435" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">1</text>
+<circle cx="159.65" cy="100.425" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
+<line x1="159.65" y1="100.425" x2="190.45" y2="100.425" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="193.65" cy="100.425" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="193.65" y="99.175" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">4</text>
+<circle cx="159.75" cy="81.695" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
+<line x1="159.75" y1="81.695" x2="190.55" y2="81.695" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="193.75" cy="81.695" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="193.75" y="80.445" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">3</text>
+<circle cx="134.5" cy="102.785" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
+<line x1="134.5" y1="102.785" x2="143.4" y2="87.3697" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="145" cy="84.5985" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="145" y="83.3485" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">8</text>
+<circle cx="91.7" cy="106.585" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
+<line x1="91.7" y1="106.585" x2="107.1" y2="79.9114" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="108.7" cy="77.1401" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="108.7" y="75.8901" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">5</text>
+<circle cx="106.5" cy="106.49" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
+<line x1="106.5" y1="106.49" x2="118.4" y2="85.8786" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="120" cy="83.1073" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="120" y="81.8573" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">6</text>
+<circle cx="120" cy="106.49" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
+<line x1="120" y1="106.49" x2="135.4" y2="79.8164" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="137" cy="77.0451" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="137" y="75.7951" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">7</text>
+<line x1="80.5" y1="110.235" x2="80.5" y2="119.465" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="80.5" y="123.965" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 80.5 123.965)">0</text>
+<line x1="84" y1="57.735" x2="84" y2="126.3743" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="84" y="130.8743" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 84 130.8743)">3.50</text>
+<line x1="108.1" y1="100.835" x2="108.1" y2="119.465" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="108.1" y="123.965" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 108.1 123.965)">27.60</text>
+<line x1="142" y1="57.735" x2="142" y2="119.465" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="142" y="123.965" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 142 123.965)">61.50</text>
+<line x1="79.3" y1="109.035" x2="71.5" y2="109.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="69.5" y="107.785" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">0</text>
+<line x1="82.8" y1="105.535" x2="59.0705" y2="105.535" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="57.0705" y="104.285" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">3.50</text>
+<line x1="88.7" y1="92.605" x2="71.5" y2="92.605" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="69.5" y="91.355" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">16.43</text>
+<line x1="88.7" y1="69.745" x2="71.5" y2="69.745" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="69.5" y="68.495" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">39.29</text>
+<line x1="82.8" y1="56.535" x2="71.5" y2="56.535" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="69.5" y="55.285" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">52.50</text>
+<line x1="80.5" y1="139.7413" x2="80.5" y2="145.7413" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="165.5" y1="139.7413" x2="165.5" y2="145.7413" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="80.5" y1="143.7413" x2="165.5" y2="143.7413" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="80.5,143.7413 83.5,144.6413 83.5,142.8413" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="165.5,143.7413 162.5,142.8413 162.5,144.6413" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="123" y="142.8413" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">85.00</text>
+<line x1="48.2035" y1="109.035" x2="42.2035" y2="109.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="48.2035" y1="53.035" x2="42.2035" y2="53.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="44.2035" y1="109.035" x2="44.2035" y2="53.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="44.2035,109.035 45.1035,106.035 43.3035,106.035" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="44.2035,53.035 43.3035,56.035 45.1035,56.035" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="43.3035" y="81.035" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 43.3035 81.035)">56.00</text>
+<circle cx="80.5" cy="109.035" r="2" fill="none" stroke="#004c99" stroke-width="0.25"/>
+<path d="M 80.5 109.035 L 82.5 109.035 A 2.0 2.0 0 0 1 80.5 107.035 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 80.5 109.035 L 78.5 109.035 A 2.0 2.0 0 0 1 80.5 111.035 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="164.6,53.935 167.5977,53.0275 166.6032,51.5272" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<line x1="164.6" y1="53.935" x2="173.5" y2="48.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="173.5" y1="48.035" x2="178.5" y2="48.035" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="179.7" y="47.135" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start">R3.00 (4 places), board outline</text>
 <text x="240" y="21.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">HOLE SCHEDULE</text>
 <line x1="240" y1="22.9" x2="402" y2="22.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="240" y="25.1" width="81.333" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
@@ -298,48 +298,58 @@
 <line x1="292.0104" y1="129.0778" x2="292.0104" y2="151.3" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="307.6115" y1="129.0778" x2="307.6115" y2="151.3" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="330.3042" y1="129.0778" x2="330.3042" y2="151.3" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="19" y="197.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
-<line x1="19" y1="198.9" x2="121.5" y2="198.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="19" y="203.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="23.542" y="203.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All dimensions in millimetres. The datum symbol marks the</text>
-<text x="23.542" y="208.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">origin: the lower-left corner of the board outline, X right, Y up,</text>
-<text x="23.542" y="212.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">viewed from the component side.</text>
-<text x="19" y="218.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="23.542" y="218.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Phantom outline is the Digilent Pmod HAT Adapter fitted to the</text>
-<text x="23.542" y="222.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">40-pin GPIO header, drawn in this board&#x27;s frame because its</text>
-<text x="23.542" y="227.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mounting holes coincide with this board&#x27;s.</text>
-<text x="19" y="232.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="23.542" y="232.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Connector outlines are the component body as drawn by</text>
-<text x="23.542" y="237.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi Ltd, overhang past the board edge included.</text>
-<text x="19" y="242.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="23.542" y="242.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mounting hole diameter: Read from the DXF: hole and keep-out</text>
-<text x="23.542" y="247.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">circles on layer 0.</text>
-<text x="19" y="252.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
-<text x="23.542" y="252.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole IDs are assigned by this drawing, bottom row first then</text>
-<text x="23.542" y="257.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">left to right, and mean the same thing on every Raspberry Pi</text>
-<text x="23.542" y="261.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">sheet here.</text>
-<text x="129.5" y="197.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
-<line x1="129.5" y1="198.9" x2="232" y2="198.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="129.5" y="203.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
-<text x="134.042" y="203.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host JC on the Pmod HAT Adapter overhangs the lower</text>
-<text x="134.042" y="208.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board edge in the same region as this board&#x27;s HDMI and power</text>
-<text x="134.042" y="212.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">connectors. Digilent&#x27;s own reference manual warns to fit the</text>
-<text x="134.042" y="217.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">two standoffs opposite the 40-pin connector so that JC&#x27;s pins</text>
-<text x="134.042" y="221.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">cannot touch the HDMI shell.</text>
-<text x="129.5" y="227.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
-<text x="134.042" y="227.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Those host positions are DERIVED, not published: Digilent</text>
-<text x="134.042" y="231.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">issue no mechanical drawing for the adapter. Good to about</text>
-<text x="134.042" y="236.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">+/-0.75 mm. JA and JB face out of the left edge, JC out of the</text>
-<text x="134.042" y="240.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">lower edge, all right-angle hosts whose bodies overhang the</text>
-<text x="134.042" y="245.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">edge. The Pmod HAT Adapter sheet has the derivation.</text>
-<text x="240" y="160.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="240" y1="162.2" x2="402" y2="162.2" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="240" y="166.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="244.542" y="166.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mechanical drawing: https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.dxf -</text>
-<text x="244.542" y="171.4267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi Ltd</text>
-<text x="240" y="176.9535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="244.542" y="176.9535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mounting holes: https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.dxf -</text>
-<text x="244.542" y="181.4802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Read from the DXF: hole and keep-out circles on layer 0.</text>
+<text x="19" y="181.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
+<line x1="19" y1="182.9" x2="121.5" y2="182.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="19" y="187.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="23.542" y="187.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All dimensions in millimetres. The datum symbol marks the</text>
+<text x="23.542" y="192.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">origin: the lower-left corner of the board outline, X right, Y up,</text>
+<text x="23.542" y="196.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">viewed from the component side.</text>
+<text x="19" y="202.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="23.542" y="202.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Phantom outline is the Digilent Pmod HAT Adapter fitted to the</text>
+<text x="23.542" y="206.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">40-pin GPIO header, drawn in this board&#x27;s frame because its</text>
+<text x="23.542" y="211.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mounting holes coincide with this board&#x27;s.</text>
+<text x="19" y="216.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="23.542" y="216.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Connector outlines are the component body as drawn by</text>
+<text x="23.542" y="221.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi Ltd, overhang past the board edge included.</text>
+<text x="19" y="226.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="23.542" y="226.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mounting hole diameter: Read from the DXF: hole and keep-out</text>
+<text x="23.542" y="231.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">circles on layer 0.</text>
+<text x="19" y="236.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
+<text x="23.542" y="236.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole IDs are assigned by this drawing, bottom row first then</text>
+<text x="23.542" y="241.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">left to right, and mean the same thing on every Raspberry Pi</text>
+<text x="23.542" y="245.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">sheet here.</text>
+<text x="19" y="251.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
+<text x="23.542" y="251.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Design mounting hole keep-outs to 6.2 mm diameter on every</text>
+<text x="23.542" y="255.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">model. That is what the Raspberry Pi HAT mechanical</text>
+<text x="23.542" y="260.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">specification (github.com/raspberrypi/hats) requires around</text>
+<text x="23.542" y="265.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">each hole, and it is the largest of the figures the individual</text>
+<text x="23.542" y="269.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">models publish. The KEEPOUT column gives what this model&#x27;s</text>
+<text x="23.542" y="274.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">own drawing shows, which is not always anything.</text>
+<text x="129.5" y="181.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<line x1="129.5" y1="182.9" x2="232" y2="182.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="129.5" y="187.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
+<text x="134.042" y="187.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host JC on the Pmod HAT Adapter overhangs the lower</text>
+<text x="134.042" y="192.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board edge in the same region as this board&#x27;s HDMI and power</text>
+<text x="134.042" y="196.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">connectors. Digilent&#x27;s own reference manual warns to fit the</text>
+<text x="134.042" y="201.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">two standoffs opposite the 40-pin connector so that JC&#x27;s pins</text>
+<text x="134.042" y="205.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">cannot touch the HDMI shell.</text>
+<text x="129.5" y="211.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">8.</text>
+<text x="134.042" y="211.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Those host positions are DERIVED, not published: Digilent</text>
+<text x="134.042" y="215.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">issue no mechanical drawing for the adapter. Good to about</text>
+<text x="134.042" y="220.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">+/-0.75 mm. JA and JB face out of the left edge, JC out of the</text>
+<text x="134.042" y="224.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">lower edge, all right-angle hosts whose bodies overhang the</text>
+<text x="134.042" y="229.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">edge. The Pmod HAT Adapter sheet has the derivation.</text>
+<text x="129.5" y="235.8675" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
+<line x1="129.5" y1="237.2675" x2="232" y2="237.2675" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="129.5" y="241.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="134.042" y="241.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mechanical drawing:</text>
+<text x="134.042" y="246.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechan</text>
+<text x="134.042" y="251.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">ical-drawing.dxf - Raspberry Pi Ltd</text>
+<text x="129.5" y="256.5477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="134.042" y="256.5477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mounting holes:</text>
+<text x="134.042" y="261.0745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechan</text>
+<text x="134.042" y="265.6012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">ical-drawing.dxf - Read from the DXF: hole and keep-out circles</text>
+<text x="134.042" y="270.128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">on layer 0.</text>
 <rect x="240" y="234" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="240" y1="249" x2="405" y2="249" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="242.5" y="242.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">RASPBERRY PI 4 MODEL B</text>
@@ -372,10 +382,8 @@
 <text x="365.35" y="269.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">A</text>
 <line x1="240" y1="271" x2="405" y2="271" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="241.6" y="274.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">MATERIAL</text>
-<text x="241.6" y="280.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">PCB</text>
-<line x1="286.2" y1="282" x2="286.2" y2="271" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="287.8" y="274.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">GENERAL TOLERANCE</text>
-<text x="287.8" y="280.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">edge +/-0.20   hole pos +/-0.10   hole dia +/-0.08</text>
-<line x1="378.6" y1="282" x2="378.6" y2="271" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="380.2" y="274.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">PROJECTION</text>
+<text x="241.6" y="280.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">PCB, thickness not stated</text>
+<line x1="296.1" y1="282" x2="296.1" y2="271" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="297.7" y="274.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">GENERAL TOLERANCE</text>
+<text x="297.7" y="280.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">edge +/-0.20   hole pos +/-0.10   hole dia +/-0.08</text>
 </svg>

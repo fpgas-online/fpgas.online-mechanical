@@ -237,9 +237,12 @@ GENERIC_POE = BoardSpec(
         "several factories. Two independent sources agree on an 80 mm long "
         "body: DSLRKIT quote 80 x 27 x 22 mm and Adafruit measure "
         "80 x 30 x 24 mm.",
-        "The envelope drawn here is the larger of those two, 80 x 30 x 24 mm. "
-        "Design any cradle to that, and allow for gigabit variants in a longer "
-        "case, up to about 95 mm.",
+        "The envelope drawn here is the LARGER of those two, 80 x 30 x 24 mm, "
+        "and the title block quotes it as a maximum rather than a nominal: a "
+        "real part may be up to 3 mm narrower and 2 mm shorter in height.",
+        "Length is the one dimension that is not bounded by 80 mm: gigabit "
+        "variants come in a longer case, up to about 95 mm. Design a cradle "
+        "that can take that, or check the part before committing.",
         "No mounting holes: the case is a glued plastic clamshell, so a "
         "bracket has to clamp or strap the body.",
     ),

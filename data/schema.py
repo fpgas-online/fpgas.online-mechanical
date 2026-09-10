@@ -202,6 +202,9 @@ class BoardSpec:
     #: "pcb" for a bare board drawn in plan only, "enclosure" for a packaged
     #: item that also gets a side elevation.
     body: str = "pcb"
+    #: Overrides the sheet's default general tolerance, for a part whose source
+    #: does not support the usual figures.
+    tolerance: str = ""
 
     def of_kind(self, *kinds: str) -> tuple[Feature, ...]:
         return tuple(f for f in self.features if f.kind in kinds)

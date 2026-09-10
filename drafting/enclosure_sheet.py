@@ -11,11 +11,30 @@ from __future__ import annotations
 from data.schema import BoardSpec
 
 from . import dims, style
-from .board_sheet import _place_notes_and_sources
+from .board_sheet import _place_notes_and_sources, note_blocks
 from .sheet import Rect, Sheet, TitleBlock
 from .view import STANDARD_SCALES, View, scale_text
 
 GAP = 26.0          # space between views, for the dimensions that go there
+
+
+def _material(spec) -> str:
+    """The actual material, not the word "enclosure"."""
+    return {"waveshare-poe-usbc": "aluminium extrusion",
+            "generic-poe-microusb": "moulded plastic"}.get(
+                spec.key, "enclosure")
+
+
+def _tolerance(spec) -> str:
+    """A tolerance the sheet's own notes do not contradict.
+
+    The generic splitter's two independent sources disagree by 3 mm on width
+    and 2 mm on height, and gigabit variants run 15 mm longer, so quoting a
+    millimetre on that envelope would be false precision.
+    """
+    if spec.key == "generic-poe-microusb":
+        return "envelope is a MAXIMUM: +0/-3 W, +0/-2 H"
+    return "envelope +/-1.0 unless noted"
 
 
 def _pick_scale(length: float, depth: float, height: float,
@@ -32,18 +51,44 @@ def _pick_scale(length: float, depth: float, height: float,
     return 1.0, "1:1"
 
 
+def _enclosure_text(spec) -> tuple[list[str], list[str]]:
+    """The sheet's notes and sources, built before the sheet exists."""
+    notes = [
+        "All dimensions in millimetres. The datum symbol on the plan marks the "
+        "origin: the lower-left corner of the body envelope, X along the "
+        "length, Y across the width, Z up.",
+        "First-angle projection. The plan is the view from above, placed below "
+        "the front elevation; the end view is the view from the RJ45 end, "
+        "placed to the left of it.",
+        "The RJ45 aperture drawn in the end view is a standard 8P8C jack "
+        "envelope, positioned centrally because the vendor does not dimension "
+        "it. Its size and position are indicative to about +/-1.5 mm; the body "
+        "envelope itself is the dimension to trust.",
+        "The corner radius is nominal. It belongs to the body cross-section, "
+        "so it appears in the end view only.",
+    ] + list(spec.notes)
+    src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
+           for s in spec.sources]
+    return notes, src
+
+
 def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                      sheet_size: str = "A3") -> Sheet:
     o = spec.outline
     length, depth = o.width, o.height
     height = o.z_height or 10.0
 
+    notes, src = _enclosure_text(spec)
+    band_h, band_cols = Sheet.plan_notes_band(
+        sheet_size, note_blocks(notes, src),
+        max_height=style.SHEET_SIZES[sheet_size][1]
+        - 2 * (style.SHEET_MARGIN + 5) - (height + GAP + depth) - 64.0)
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle,
         drawing_no=drawing_no, rev="A", date=date, drawn_by="generated",
-        material="sealed enclosure",
-        tolerance="envelope +/-1.0 unless noted",
-        projection="first angle"))
+        material=_material(spec),
+        tolerance=_tolerance(spec),
+        projection="first angle"), notes_band_height=band_h)
     sheet.draw_frame()
     c = sheet.canvas
     area = sheet.area
@@ -145,23 +190,7 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                     ["FEATURE", "X EXTENT mm", "Y EXTENT mm"], rows,
                     ["start", "end", "end"])
 
-    notes = [
-        "All dimensions in millimetres. The datum symbol on the plan marks the "
-        "origin: the lower-left corner of the body envelope, X along the "
-        "length, Y across the width, Z up.",
-        "First-angle projection. The plan is the view from above, placed below "
-        "the front elevation; the end view is the view from the RJ45 end, "
-        "placed to the left of it.",
-        "The RJ45 aperture drawn in the end view is a standard 8P8C jack "
-        "envelope, positioned centrally because the vendor does not dimension "
-        "it. Its size and position are indicative to about +/-1.5 mm; the body "
-        "envelope itself is the dimension to trust.",
-        "The corner radius is nominal. It belongs to the body cross-section, "
-        "so it appears in the end view only.",
-    ] + list(spec.notes)
-    src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
-           for s in spec.sources]
-    _place_notes_and_sources(sheet, notes, src)
+    _place_notes_and_sources(sheet, notes, src, columns=band_cols)
 
     sheet.draw_title_block()
     return sheet

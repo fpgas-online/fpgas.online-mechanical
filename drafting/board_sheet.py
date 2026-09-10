@@ -39,6 +39,12 @@ KIND_LABEL = {
     "connector": "Connector",
 }
 
+#: Room reserved above and below a view.  Dimensions stack below and to the
+#: left; only balloons need space above.
+VIEW_MARGIN_SIDE = 46.0
+VIEW_MARGIN_TOP = 22.0
+VIEW_MARGIN_BOTTOM = 48.0
+
 BALLOON_R = 3.2
 BALLOON_STEP = 8.4
 BALLOON_OFFSET = 13.0
@@ -290,27 +296,65 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
         dims.balloon(c, item.tip, pos, item.label, radius=BALLOON_R)
 
 
-def _place_notes_and_sources(sheet: Sheet, notes: list[str],
-                             sources: list[str]) -> None:
-    """Draw the notes and sources in the band across the bottom of the sheet.
+def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None) -> float:
+    """Vertical room the view and its dimensions want, in sheet millimetres."""
+    ys = [0.0, spec.outline.height]
+    for f in spec.features:
+        ys += [f.y0, f.y1]
+    for p in spec.pmods:
+        if p.body_y1 > p.body_y0:
+            ys += [p.body_y0, p.body_y1]
+    if overlay is not None:
+        ys += [0.0, overlay.outline.height]
+    return (max(ys) - min(ys)) + VIEW_MARGIN_TOP + VIEW_MARGIN_BOTTOM
 
-    They used to share the annotation column with the schedules, which meant
-    notes were dropped whenever a board had a long feature list.  The band is
-    wide enough to flow them into columns and lose nothing.
-    """
-    columns = sheet.band_columns(sheet.notes_band)
-    # Whatever is left at the foot of the annotation column, once the schedules
-    # have been placed, becomes one more column.  A board with a long feature
-    # list has a short leftover and a long note list, and vice versa, so this
-    # is where the slack actually is.
-    spare = sheet.column_remaining
-    if spare > 30.0:
-        columns.append(Rect(sheet.column.x, sheet.column.y,
-                            sheet.column.w - sheet.COLUMN_GUTTER, spare))
+
+def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
+                extra_notes: tuple[str, ...]) -> tuple[list[str], list[str]]:
+    """The notes and sources this sheet will carry."""
+    o = spec.outline
+    notes = [
+        "All dimensions in millimetres. The datum symbol marks the origin: "
+        "the lower-left corner of the board outline, X right, Y up, viewed "
+        "from the component side.",
+    ]
+    if overlay is not None:
+        notes.append(
+            f"Phantom outline is the {overlay.title} fitted to the 40-pin GPIO "
+            "header, drawn in this board's frame because its mounting holes "
+            "coincide with this board's.")
+    notes += list(spec.notes) + list(extra_notes)
+    if overlay is not None:
+        notes.append(
+            "Those host positions are DERIVED, not published: Digilent issue "
+            "no mechanical drawing for the adapter. Good to about +/-0.75 mm. "
+            "JA and JB face out of the left edge, JC out of the lower edge, "
+            "all right-angle hosts whose bodies overhang the edge. The Pmod "
+            "HAT Adapter sheet has the derivation.")
+    if o.profile_note:
+        notes.append(o.profile_note)
+    sources = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
+               for s in spec.sources]
+    return notes, sources
+
+
+def note_blocks(notes: list[str], sources: list[str]):
     blocks = [("NOTES", notes, style.T_NOTE)]
     if sources:
         blocks.append(("SOURCES", sources, style.T_TINY))
-    sheet.notes_columns(columns, blocks)
+    return blocks
+
+
+def _place_notes_and_sources(sheet: Sheet, notes: list[str],
+                             sources: list[str], columns: int = 2) -> None:
+    """Draw the notes and sources in the band across the bottom of the sheet.
+
+    Everything stays in the band.  Spilling the tail into the annotation column
+    put a continuation above the block it continued, which reads badly: a
+    reader scanning down the sheet meets note 10 before note 1.
+    """
+    sheet.notes_columns(sheet.band_columns(sheet.notes_band, count=columns),
+                        note_blocks(notes, sources))
 
 
 def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
@@ -359,35 +403,23 @@ def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
                else "alphabetic", bold=True)
 
 
-def _place_notes_and_sources(sheet: Sheet, notes: list[str],
-                             sources: list[str]) -> None:
-    """Draw the notes and sources in the band across the bottom of the sheet.
-
-    They used to share the annotation column with the schedules, which meant
-    notes were dropped whenever a board had a long feature list.  The band is
-    wide enough to flow them into columns and lose nothing.
-    """
-    columns = sheet.band_columns(sheet.notes_band)
-    # Whatever is left at the foot of the annotation column, once the schedules
-    # have been placed, becomes one more column.  A board with a long feature
-    # list has a short leftover and a long note list, and vice versa, so this
-    # is where the slack actually is.
-    spare = sheet.column_remaining
-    if spare > 30.0:
-        columns.append(Rect(sheet.column.x, sheet.column.y,
-                            sheet.column.w - sheet.COLUMN_GUTTER, spare))
-    blocks = [("NOTES", notes, style.T_NOTE)]
-    if sources:
-        blocks.append(("SOURCES", sources, style.T_TINY))
-    sheet.notes_columns(columns, blocks)
-
-
 def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                  sheet_size: str = "A3", extra_notes: tuple[str, ...] = (),
                  force_scale: float | None = None,
                  overlay: BoardSpec | None = None) -> Sheet:
     """Build a complete drawing sheet for *spec* and return it."""
     o = spec.outline
+
+    # The notes are known before anything is drawn, and their height decides
+    # how much of the sheet is left for the view, so they are built first and
+    # the band is sized to them.
+    notes, src_lines = _sheet_text(spec, overlay, extra_notes)
+    view_needs = _view_height_needed(spec, overlay)
+    band_h, band_cols = Sheet.plan_notes_band(
+        sheet_size, note_blocks(notes, src_lines),
+        max_height=style.SHEET_SIZES[sheet_size][1] - 2 * (style.SHEET_MARGIN + 5)
+        - view_needs - 6.0)
+
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(),
         subtitle=spec.subtitle,
@@ -396,8 +428,11 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         date=date,
         drawn_by="generated",
         units="mm",
-        material="PCB",
-    ))
+        # Board thickness matters: standoff and screw length depend on it.
+        material=(f"PCB, {o.thickness:.2f} thick" if o.thickness
+                  else "PCB, thickness not stated"),
+        **({"tolerance": spec.tolerance} if spec.tolerance else {}),
+    ), notes_band_height=band_h)
     sheet.draw_frame()
     c = sheet.canvas
 
@@ -421,8 +456,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     bbox = (min(xs), min(ys), max(xs), max(ys))
 
     # Dimensions stack below and left; only balloons need room above.
-    view = View.fit(sheet.area, bbox, margin=46.0, margin_top=22.0,
-                    margin_bottom=48.0, force_scale=force_scale)
+    view = View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
+                    margin_top=VIEW_MARGIN_TOP,
+                    margin_bottom=VIEW_MARGIN_BOTTOM, force_scale=force_scale)
     sheet.title.scale = view.scale_label
 
     board = Rect(view.x(0), view.y(0), view.d(o.width), view.d(o.height))
@@ -625,9 +661,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
             ["EDGE", "CX mm", "CY mm", "PIN1 X mm", "PIN1 Y mm"]
         align = ["start"] + (["start"] if show_ref else []) + \
             ["start", "end", "end", "end", "end"]
+        # Three decimals here on purpose: at two, 27.695 and 50.555 print as
+        # 27.70 and 50.55, whose difference is 22.85, contradicting the 22.86
+        # pitch dimensioned on the view.
         rows = [[p.label] + ([p.designator] if show_ref else [])
-                + [p.edge, f"{p.cx:.2f}", f"{p.cy:.2f}",
-                   f"{p.pin1_x:.2f}", f"{p.pin1_y:.2f}"] for p in spec.pmods]
+                + [p.edge, f"{p.cx:.3f}", f"{p.cy:.3f}",
+                   f"{p.pin1_x:.3f}", f"{p.pin1_y:.3f}"] for p in spec.pmods]
         block = sheet.column_block(sheet.table_height("PMOD HOST HEADERS", len(rows)))
         sheet.table(block, "PMOD HOST HEADERS", head, rows, align)
 
@@ -651,31 +690,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     # Notes carry facts about this board, not an explanation of how to read a
     # drawing.  The column is finite, and losing a provenance note to make room
     # for a description of ordinate dimensioning is a bad trade.
-    notes = [
-        "All dimensions in millimetres. The datum symbol marks the origin: "
-        "the lower-left corner of the board outline, X right, Y up, viewed "
-        "from the component side.",
-    ]
-    if overlay is not None:
-        notes.append(
-            f"Phantom outline is the {overlay.title} fitted to the 40-pin GPIO "
-            "header, drawn in this board's frame because its mounting holes "
-            "coincide with this board's.")
-    notes += list(spec.notes) + list(extra_notes)
-    if overlay is not None:
-        # Summarised, not copied: the overlay has its own sheet, and repeating
-        # all of its notes here pushes this sheet's column over.
-        notes.append(
-            "Those host positions are DERIVED, not published: Digilent issue "
-            "no mechanical drawing for the adapter. Good to about +/-0.75 mm. "
-            "JA and JB face out of the left edge, JC out of the lower edge, "
-            "all right-angle hosts whose bodies overhang the edge. The Pmod "
-            "HAT Adapter sheet has the derivation.")
-    if o.profile_note:
-        notes.append(o.profile_note)
-    src_lines = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
-                 for s in spec.sources]
-    _place_notes_and_sources(sheet, notes, src_lines)
+    _place_notes_and_sources(sheet, notes, src_lines, columns=band_cols)
 
     sheet.draw_title_block()
     return sheet

@@ -81,6 +81,9 @@ BOARDS['tt123-v2.2.6'] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
+        "Hole IDs are the board's own reference designators, taken from the "
+        "KiCad file, not assigned by this drawing. They are not in any "
+        "particular positional order.",
         'No other demo board revision shares this geometry.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
@@ -172,6 +175,9 @@ BOARDS['v1.2.2'] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
+        "Hole IDs are the board's own reference designators, taken from the "
+        "KiCad file, not assigned by this drawing. They are not in any "
+        "particular positional order.",
         'Geometrically identical to revision v1.2.3: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
@@ -263,6 +269,9 @@ BOARDS['v1.2.3'] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
+        "Hole IDs are the board's own reference designators, taken from the "
+        "KiCad file, not assigned by this drawing. They are not in any "
+        "particular positional order.",
         'Geometrically identical to revision v1.2.2: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
@@ -342,6 +351,9 @@ BOARDS['v2.0.1'] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
+        "Hole IDs are the board's own reference designators, taken from the "
+        "KiCad file, not assigned by this drawing. They are not in any "
+        "particular positional order.",
         'Geometrically identical to revision v2.1.0: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
@@ -421,6 +433,9 @@ BOARDS['v2.1.0'] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
+        "Hole IDs are the board's own reference designators, taken from the "
+        "KiCad file, not assigned by this drawing. They are not in any "
+        "particular positional order.",
         'Geometrically identical to revision v2.0.1: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
@@ -500,6 +515,9 @@ BOARDS['v2.1.2'] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
+        "Hole IDs are the board's own reference designators, taken from the "
+        "KiCad file, not assigned by this drawing. They are not in any "
+        "particular positional order.",
         'No other demo board revision shares this geometry.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
@@ -568,6 +586,9 @@ BOARDS['v3.2'] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
+        "Hole IDs are the board's own reference designators, taken from the "
+        "KiCad file, not assigned by this drawing. They are not in any "
+        "particular positional order.",
         'No other demo board revision shares this geometry.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
@@ -636,6 +657,9 @@ BOARDS['v3.3'] = BoardSpec(
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
+        "Hole IDs are the board's own reference designators, taken from the "
+        "KiCad file, not assigned by this drawing. They are not in any "
+        "particular positional order.",
         'No other demo board revision shares this geometry.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",

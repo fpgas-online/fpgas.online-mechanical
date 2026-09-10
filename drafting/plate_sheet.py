@@ -20,10 +20,15 @@ from data.schema import BoardSpec, Hole, Slot
 from data.tinytapeout_boards import BOARDS as TT_BOARDS
 
 from . import dims, style
-from .board_sheet import Obstacles, _place_notes_and_sources, outline_path
+from .board_sheet import (Obstacles, _place_notes_and_sources, note_blocks,
+                          outline_path)
 from .canvas import Canvas
 from .sheet import Rect, Sheet, TitleBlock
 from .view import View
+
+#: Room above and below the plate view.  Nothing but hole labels goes above.
+PLATE_MARGIN_TOP = 12.0
+PLATE_MARGIN_BOTTOM = 44.0
 
 BOARD_HOLE = "#a00000"
 PLATE_HOLE = "#006060"
@@ -151,17 +156,51 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
         place_label(c, obstacles, (mx, my), half, slot_labels[i], BOARD_HOLE)
 
 
+def _plate_text(spec) -> tuple[list[str], list[str]]:
+    """The plate sheet's notes and sources, built before the sheet exists."""
+    notes = [
+        "All dimensions in millimetres. The datum symbol marks the origin: "
+        "the lower-left corner of the plate, X right, Y up, viewed from the "
+        "side the demo board mounts on.",
+        "Hole positions are tabulated, not dimensioned individually: there "
+        "are too many to put on the view and keep it readable. A slot row "
+        "gives the centres of its two ends, so its length is those centres "
+        "apart plus the slot width.",
+        "The three PMOD envelopes are not machined features. They mark where "
+        "the Pmod host pin fields end up, the same place for every board "
+        "revision. That is the point of the plate.",
+    ] + list(spec.notes) + [
+        "Fit the plate to its chassis before the demo board: the fixings sit "
+        "in the border, which a board overhangs. Least material between any "
+        "two features is about 1.6 mm, between H2 and H3.",
+        "Drawing TT-MP-02 shows which holes each revision uses.",
+    ]
+    src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
+           for s in spec.sources]
+    return notes, src
+
+
 def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet:
     spec = PLATE
     o = spec.outline
+    notes, src = _plate_text(spec)
+    band_h, band_cols = Sheet.plan_notes_band(
+        sheet_size, note_blocks(notes, src),
+        max_height=style.SHEET_SIZES[sheet_size][1]
+        - 2 * (style.SHEET_MARGIN + 5) - o.height
+        - PLATE_MARGIN_TOP - PLATE_MARGIN_BOTTOM - 6.0)
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle, drawing_no=drawing_no,
-        rev="A", date=date, drawn_by="generated", material="3 mm sheet"))
+        rev="A", date=date, drawn_by="generated",
+        material="3 mm acrylic or 1.6 mm FR4",
+        tolerance="outline +/-0.20   hole pos +/-0.10   see kerf note"),
+        notes_band_height=band_h)
     sheet.draw_frame()
     c = sheet.canvas
 
     view = View.fit(sheet.area, (0, 0, o.width, o.height), margin=40.0,
-                    margin_top=20.0, margin_bottom=48.0)
+                    margin_top=PLATE_MARGIN_TOP,
+                    margin_bottom=PLATE_MARGIN_BOTTOM)
     sheet.title.scale = view.scale_label
     plate = Rect(view.x(0), view.y(0), view.d(o.width), view.d(o.height))
 
@@ -249,26 +288,7 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
                 ["ID", "X mm", "Y mm", "DIA mm"], rows,
                 ["start", "end", "end", "end"])
 
-    notes = [
-        "All dimensions in millimetres. The datum symbol marks the origin: "
-        "the lower-left corner of the plate, X right, Y up, viewed from the "
-        "side the demo board mounts on.",
-        "Hole positions are tabulated rather than dimensioned individually: "
-        "there are too many to put on the view without it becoming unreadable.",
-        "The three PMOD envelopes are not machined features. They mark where "
-        "the Pmod host pin fields end up, which is the same place for every "
-        "board revision. That is the point of the plate.",
-        "A slot row gives two X and two Y values: the centres of its two ends. "
-        "Its length is those centres apart plus the slot width.",
-    ] + list(spec.notes) + [
-        "Fit the plate to its chassis before fitting a demo board: the plate "
-        "fixings sit in the border, but the board overhangs part of it.",
-        "Suggested material 3 mm acrylic or 1.6 mm FR4. Least material between "
-        "any two features is about 1.6 mm, between H2 and H3.",
-    ]
-    src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
-           for s in spec.sources]
-    _place_notes_and_sources(sheet, notes, src)
+    _place_notes_and_sources(sheet, notes, src, columns=band_cols)
 
     sheet.draw_title_block()
     return sheet

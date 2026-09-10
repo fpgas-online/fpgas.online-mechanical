@@ -75,7 +75,8 @@ class Sheet:
     TITLE_HEIGHT = 48.0
 
     def __init__(self, size: str = "A3", title: TitleBlock | None = None,
-                 column_width: float | None = None):
+                 column_width: float | None = None,
+                 notes_band_height: float | None = None):
         self.w, self.h = style.SHEET_SIZES[size]
         self.size_name = size
         self.canvas = Canvas(self.w, self.h)
@@ -97,7 +98,8 @@ class Sheet:
         # side, not in the annotation column.  The column is finite and mostly
         # eaten by schedules; the space under the view is otherwise wasted, and
         # putting the notes there means nothing has to be trimmed.
-        band_h = self.NOTES_BAND_HEIGHT
+        band_h = self.NOTES_BAND_HEIGHT if notes_band_height is None \
+            else notes_band_height
         # Inset from the frame line, or the note numbers sit on it.
         self.notes_band = Rect(self.frame.x + 4.0, self.frame.y + 3.0,
                                self.frame.w - cw - 12.0, band_h - 3.0)
@@ -171,9 +173,12 @@ class Sheet:
             ("SCALE", t.scale), ("SIZE", self.size_name), ("SHEET", t.sheet),
             ("DRAWING NO", t.drawing_no), ("REV", t.rev),
         ]
-        wide = [("MATERIAL", t.material, 0.28),
-                ("GENERAL TOLERANCE", t.tolerance, 0.56),
-                ("PROJECTION", "", 0.16)]
+        # A single-view sheet does not get a PROJECTION cell at all: an empty
+        # cell on a title block reads as an omission, not as "not applicable".
+        wide = [("MATERIAL", t.material, 0.28 if t.projection else 0.34),
+                ("GENERAL TOLERANCE", t.tolerance, 0.56 if t.projection else 0.66)]
+        if t.projection:
+            wide.append(("PROJECTION", "", 0.16))
         rows, cols = 3, 4
         ch = (r.h - band) / rows
         cw = r.w / cols
@@ -312,15 +317,43 @@ class Sheet:
         return y
 
     def band_columns(self, rect: Rect, gutter: float = 8.0,
-                     target: float = 105.0) -> list[Rect]:
+                     target: float = 105.0, count: int | None = None) -> list[Rect]:
         """Split a band into columns of roughly *target* width."""
-        n = max(1, int(rect.w // target))
+        n = count or max(1, int(rect.w // target))
         w = (rect.w - gutter * (n - 1)) / n
         return [Rect(rect.x + i * (w + gutter), rect.y, w, rect.h)
                 for i in range(n)]
 
+    @classmethod
+    def plan_notes_band(cls, size: str, blocks, max_height: float,
+                        column_width: float | None = None,
+                        gutter: float = 8.0) -> tuple[float, int]:
+        """Work out how tall the notes band has to be, and in how many columns.
+
+        Called before the sheet is built, because the band's height decides how
+        much room the view gets.  Sizing the band to its content is what stops
+        notes being trimmed or flung into a column that reads out of order.
+        """
+        # Estimating the height is not good enough: the flow keeps blocks and
+        # headings together, so a column can end well short of its bottom.  The
+        # real flow is run as a dry pass at increasing heights instead.
+        for count in (2, 3):
+            probe = cls(size, TitleBlock(title=""), column_width)
+            h = 40.0
+            while h <= max_height:
+                probe = cls(size, TitleBlock(title=""), column_width,
+                            notes_band_height=h)
+                cols = probe.band_columns(probe.notes_band, gutter, count=count)
+                if probe.notes_columns(cols, blocks, dry=True):
+                    return h, count
+                h += 4.0
+        raise SystemExit(
+            "the notes will not fit this sheet at any band height; shorten "
+            "them or use a bigger sheet")
+
     def notes_columns(self, columns: list[Rect],
-                      blocks: list[tuple[str, list[str], float]]) -> None:
+                      blocks: list[tuple[str, list[str], float]],
+                      dry: bool = False) -> bool:
         """Flow several note blocks down a list of columns.
 
         Everything is measured first and then placed, so a block can never run
@@ -378,6 +411,8 @@ class Sheet:
             if y - need < columns[col].y:
                 col += 1
                 if col >= len(columns):
+                    if dry:
+                        return False
                     raise SystemExit(
                         "notes do not fit the space available; widen the band "
                         "or shorten them rather than letting them run off the "
@@ -392,14 +427,16 @@ class Sheet:
                     y -= hh
                 continue
             here = columns[col]
-            if kind == "heading":
-                self.heading(Rect(here.x, y - h, here.w, h), payload)
-            else:
-                n, line = payload
-                self.notes(Rect(here.x, y - h, here.w, h), "", [line],
-                           size=size, start_index=n)
+            if not dry:
+                if kind == "heading":
+                    self.heading(Rect(here.x, y - h, here.w, h), payload)
+                else:
+                    n, line = payload
+                    self.notes(Rect(here.x, y - h, here.w, h), "", [line],
+                               size=size, start_index=n)
             y -= h
             i += 1
+        return True
 
 
     def table_height(self, title: str, rows: int,

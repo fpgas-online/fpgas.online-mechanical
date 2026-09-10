@@ -59,10 +59,14 @@ STANDARD_HOLES = [(3.5, 3.5), (61.5, 3.5), (3.5, 52.5), (61.5, 52.5)]
 # keep-out around each mounting hole on a board fitted to a Pi.  That is the
 # figure to design a plate to, and it is quoted in the notes rather than being
 # passed off as a dimension from the Pi's own drawing.
-HAT_KEEPOUT_NOTE = (
-    "No mounting hole keep-out is dimensioned on this model's own drawing. "
-    "Design to the 6.2 mm the Raspberry Pi HAT mechanical specification "
-    "(github.com/raspberrypi/hats) requires around each hole."
+#: Said on every model, whatever that model's own drawing gives, so one plate
+#: can be designed for all five.
+KEEPOUT_DESIGN_NOTE = (
+    "Design mounting hole keep-outs to 6.2 mm diameter on every model. That is "
+    "what the Raspberry Pi HAT mechanical specification (github.com/raspberrypi"
+    "/hats) requires around each hole, and it is the largest of the figures "
+    "the individual models publish. The KEEPOUT column gives what this model's "
+    "own drawing shows, which is not always anything."
 )
 
 MODELS = [
@@ -71,7 +75,8 @@ MODELS = [
         kind="dxf", file="raspberry-pi-3-b-mechanical-drawing.dxf",
         width=85.0, height=56.0, corner_radius=3.0,
         hole_dia=2.75, hole_keepout=None, hole_tol=0.05,
-        hole_note="Drawing note, quoted: 4x M2.5 MOUNTING HOLES DRILLED TO 2.75 +/- 0.05mm.",
+        hole_note="Drawing note, quoted: 4x M2.5 MOUNTING HOLES DRILLED TO "
+                  "2.75 +/- 0.05mm.",
         hole_source=f"{DOC}/rpi3/raspberry-pi-3-b-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi3/raspberry-pi-3-b-mechanical-drawing.dxf",
         parts=[
@@ -90,7 +95,7 @@ MODELS = [
         width=85.0, height=56.0, corner_radius=3.0,
         hole_dia=2.75, hole_keepout=None, hole_tol=0.05,
         hole_note="Carried over from the Pi 3 Model B drawing, which states "
-                  "4x M2.5 holes drilled to 2.75 +/- 0.05 mm. The 3B+ drawing "
+                  "4x M2.5 holes drilled to 2.75 +/-0.05 mm. The 3B+ drawing "
                   "gives no hole size; the two boards share an identical "
                   "outline, hole pattern and DXF geometry.",
         hole_source=f"{DOC}/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.pdf",
@@ -114,6 +119,7 @@ MODELS = [
         hole_source=f"{DOC}/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf",
         reduced=True,
+        tolerance="reduced-source plot, see note: +/-0.5 typical",
         parts=[
             ("gpio40", "40-pin GPIO header", "header", (32.5, 52.5), (50.8, 5.0)),
             ("usb_a_1", "USB 2.0 type A (single)", "usb_a", (60.4, 31.5), (14.3, 13.1)),
@@ -146,8 +152,8 @@ MODELS = [
         kind="pdf", file="raspberry-pi-5-mechanical-drawing.pdf",
         width=85.0, height=56.0, corner_radius=3.0,
         hole_dia=2.70, hole_keepout=5.80, hole_tol=None,
-        hole_note="Hole diameter dimensioned on the drawing as \u00f82.7; the "
-                  "keep-out circle is drawn and measures 5.80.",
+        hole_note="Hole diameter dimensioned on the drawing as \u00f82.7 mm; "
+                  "the keep-out circle is drawn and measures 5.80 mm.",
         hole_source=f"{DOC}/rpi5/raspberry-pi-5-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi5/raspberry-pi-5-mechanical-drawing.pdf",
         # Snapped from the measured 3.482 / 61.480, which are within the
@@ -328,12 +334,14 @@ def render(rec: dict) -> str:
              repr("Hole IDs are assigned by this drawing, bottom row first "
                   "then left to right, and mean the same thing on every "
                   "Raspberry Pi sheet here.")]
-    if m.get("hole_keepout") is None:
-        notes.append(repr(HAT_KEEPOUT_NOTE))
+    notes.append(repr(KEEPOUT_DESIGN_NOTE))
     if m.get("reduced"):
-        notes.append('"The source drawing is a reduced plot, not 1:1, so '
-                     f'dimensions carry more uncertainty than the other models; '
-                     f'the recovered plot scale was {rec["scale"]:.4f}."')
+        notes.append(repr(
+            "The source drawing is a reduced plot, not 1:1. Its scale was "
+            f"recovered from the mounting hole rectangle as {rec['scale']:.4f} "
+            "and applied. Residual error over the 85 mm width is a few tenths "
+            "of a millimetre, so treat every dimension on this sheet as "
+            "+/-0.5 rather than the +/-0.20 the other models carry."))
     if m.get("aux_holes"):
         notes.append('"AUX1 and AUX2 are 3.0 mm holes additional to the four '
                      'M2.5 mounting holes. Each sits 6.0 mm inboard of the '
@@ -358,6 +366,7 @@ BOARDS[{m["key"]!r}] = BoardSpec(
     features=(
 {feats},
     ),
+    tolerance={m.get("tolerance", "")!r},
     sources=(
         Source(label="Mechanical drawing", ref={m["drawing"]!r},
                note="Raspberry Pi Ltd"),
