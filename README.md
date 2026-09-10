@@ -44,6 +44,11 @@ Two checks run over the output, and each has caught a real defect:
   sources heading on four Raspberry Pi sheets, a datum leader running back
   through its own text, and overall dimension extension lines crossing the
   ordinate labels.
+- `crosscheck_gerber.py` compares an extracted board outline against the
+  upstream Edge_Cuts gerber, which KiCad's own plotter produced from the same
+  board file. Both give 104.500 x 81.000 mm for the TT01/02/03 board, so the
+  parsing and coordinate path is confirmed against something that did not come
+  from this repository. Needs network, so it is not part of `make`.
 - `verify_mounting_plate.py` proves the plate does what it claims, from the
   data rather than from the drawing: every revision's fasteners pass an M3,
   every Pmod host lands exactly on its plate position, no board overhangs, and

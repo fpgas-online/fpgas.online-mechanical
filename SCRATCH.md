@@ -59,6 +59,11 @@ Automated checks, all passing:
   Pmod host lands on its plate position, no board overhangs, connector faces
   clear the plate front edge.
 - Arc and outline checks inside `scripts/extract_tinytapeout.py`.
+- `scripts/crosscheck_gerber.py` -- compares the extracted TT01/02/03 outline
+  against the upstream Edge_Cuts gerber, an artefact KiCad's own plotter
+  produced from the same board file.  Both give 104.500 x 81.000 mm, which
+  confirms the whole s-expression parsing and coordinate path against something
+  that did not come from this repository.
 
 18 sheets exist under `diagrams/`, as SVG, PDF and PNG:
 8 Tiny Tapeout revisions, 5 Raspberry Pi models (each with the Pmod HAT
