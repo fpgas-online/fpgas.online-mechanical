@@ -80,6 +80,11 @@ _JA_JB_MID = (39.45 + 16.27) / 2
 PMOD_HAT_JA_Y = round(_JA_JB_MID + PMOD_HOST_SPACING / 2, 2)
 PMOD_HAT_JB_Y = round(_JA_JB_MID - PMOD_HOST_SPACING / 2, 2)
 PMOD_HAT_JC_X = 27.6
+
+# Depth of the through-hole field in from the edge the host faces.  The visible
+# pin runs in the photo span roughly 6.1 to 10.9 mm in from the edge, which puts
+# the two hole rows at about 8.2 and 10.7 mm, so the field centre is 9.4 mm.
+PMOD_HAT_FIELD_DEPTH = 9.4
 PMOD_HAT_TOL = 0.75
 
 PMOD_HAT = BoardSpec(
@@ -95,17 +100,20 @@ PMOD_HAT = BoardSpec(
         for i, (x, y) in enumerate(HAT_HOLES)
     ),
     pmods=(
-        PmodHeader(key="ja", label="JA", designator="JA",
-                   cx=-1.0, cy=PMOD_HAT_JA_Y, pin1_x=-1.0,
+        PmodHeader(key="ja", label="JA", designator="JA", edge="left",
+                   cx=PMOD_HAT_FIELD_DEPTH, cy=PMOD_HAT_JA_Y,
+                   pin1_x=PMOD_HAT_FIELD_DEPTH - PMOD_ROW_SPACING / 2,
                    pin1_y=PMOD_HAT_JA_Y + PMOD_PIN_SPAN / 2,
                    columns=PMOD_COLUMNS, rows=PMOD_ROWS),
-        PmodHeader(key="jb", label="JB", designator="JB",
-                   cx=-1.0, cy=PMOD_HAT_JB_Y, pin1_x=-1.0,
+        PmodHeader(key="jb", label="JB", designator="JB", edge="left",
+                   cx=PMOD_HAT_FIELD_DEPTH, cy=PMOD_HAT_JB_Y,
+                   pin1_x=PMOD_HAT_FIELD_DEPTH - PMOD_ROW_SPACING / 2,
                    pin1_y=PMOD_HAT_JB_Y + PMOD_PIN_SPAN / 2,
                    columns=PMOD_COLUMNS, rows=PMOD_ROWS),
-        PmodHeader(key="jc", label="JC", designator="JC",
-                   cx=PMOD_HAT_JC_X, cy=-1.0,
-                   pin1_x=PMOD_HAT_JC_X - PMOD_PIN_SPAN / 2, pin1_y=-1.0,
+        PmodHeader(key="jc", label="JC", designator="JC", edge="bottom",
+                   cx=PMOD_HAT_JC_X, cy=PMOD_HAT_FIELD_DEPTH,
+                   pin1_x=PMOD_HAT_JC_X - PMOD_PIN_SPAN / 2,
+                   pin1_y=PMOD_HAT_FIELD_DEPTH - PMOD_ROW_SPACING / 2,
                    columns=PMOD_COLUMNS, rows=PMOD_ROWS),
     ),
     features=(
@@ -136,8 +144,9 @@ PMOD_HAT = BoardSpec(
         "or board file for this product. Pmod host positions were measured "
         f"photogrammetrically and are good to about +/-{PMOD_HAT_TOL} mm.",
         "JA and JB face out of the left edge, JC out of the lower edge. All "
-        "three are right-angle hosts whose mating faces sit at or just beyond "
-        "the board edge.",
+        "three are right-angle hosts: the connector body overhangs the board "
+        "edge by roughly 3 mm and the through-hole field sits about 9.4 mm in "
+        "from it, so a mating Pmod peripheral plugs in from outside that edge.",
         f"JA and JB are snapped to the {PMOD_HOST_SPACING} mm host spacing "
         "the Pmod Interface Specification mandates; they measured 23.18 mm "
         "apart, inside the measurement uncertainty.",

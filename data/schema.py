@@ -117,6 +117,9 @@ class PmodHeader:
     pitch: float = 2.54
     columns: int = 6
     rows: int = 2
+    #: Board edge the host faces: "bottom", "top", "left" or "right".  The six
+    #: columns run parallel to that edge and the two rows perpendicular to it.
+    edge: str = "bottom"
     body_x0: float = 0.0
     body_y0: float = 0.0
     body_x1: float = 0.0

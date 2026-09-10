@@ -135,7 +135,7 @@ def draw_pmod(c: Canvas, view: View, p, spec: BoardSpec) -> None:
         c.rect(min(bx0, bx1), min(by0, by1), abs(bx1 - bx0), abs(by1 - by0),
                weight=style.W_PHANTOM, colour=style.C_PHANTOM,
                dash="3,1.5,0.8,1.5")
-    horizontal = spec.front_edge in ("bottom", "top")
+    horizontal = p.edge in ("bottom", "top")
     half_span = p.pin_span / 2
     half_rows = p.row_span / 2
     for col in range(p.columns):
@@ -246,9 +246,56 @@ def _dim_places(value: float) -> int:
     return 2
 
 
+def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
+    """Draw an adjacent part in phantom line, ISO 128 style.
+
+    Used to show where a Digilent Pmod HAT Adapter's host connectors land once
+    it is plugged onto a Raspberry Pi.  Phantom line is the convention for a
+    part that is not the subject of the drawing but constrains it.
+    """
+    outline_path(c, view, spec, colour=style.C_PHANTOM, w=style.W_PHANTOM,
+                 dash="6,1.6,1.2,1.6")
+    for p in spec.pmods:
+        horizontal = p.edge in ("bottom", "top")
+        half_span, half_rows = p.pin_span / 2, p.row_span / 2
+        xs, ys = [], []
+        for col in range(p.columns):
+            for row in range(p.rows):
+                if horizontal:
+                    x = p.cx - half_span + col * p.pitch
+                    y = p.cy - half_rows + row * p.pitch
+                else:
+                    x = p.cx - half_rows + row * p.pitch
+                    y = p.cy - half_span + col * p.pitch
+                xs.append(x)
+                ys.append(y)
+                px, py = view.pt(x, y)
+                c.circle(px, py, view.d(0.5), w=style.W_PHANTOM,
+                         colour=style.C_PHANTOM, fill="#ffffff")
+        x0, y0 = view.pt(min(xs) - 1.3, min(ys) - 1.3)
+        x1, y1 = view.pt(max(xs) + 1.3, max(ys) + 1.3)
+        c.rect(x0, y0, x1 - x0, y1 - y0, weight=style.W_COMPONENT,
+               colour=style.C_PHANTOM)
+        # Label goes inboard of the pin field, away from the edge the host
+        # faces, so it never sits on top of the pins.
+        pad = 2.0
+        if p.edge == "left":
+            lx, ly, anchor = x1 + pad, (y0 + y1) / 2, "start"
+        elif p.edge == "right":
+            lx, ly, anchor = x0 - pad, (y0 + y1) / 2, "end"
+        elif p.edge == "bottom":
+            lx, ly, anchor = (x0 + x1) / 2, y1 + pad, "middle"
+        else:
+            lx, ly, anchor = (x0 + x1) / 2, y0 - pad - style.T_LABEL, "middle"
+        c.text(lx, ly, p.label, size=style.T_LABEL, colour=style.C_PHANTOM,
+               anchor=anchor, baseline="middle" if p.edge in ("left", "right")
+               else "alphabetic", bold=True)
+
+
 def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                  sheet_size: str = "A3", extra_notes: tuple[str, ...] = (),
-                 force_scale: float | None = None) -> Sheet:
+                 force_scale: float | None = None,
+                 overlay: BoardSpec | None = None) -> Sheet:
     """Build a complete drawing sheet for *spec* and return it."""
     o = spec.outline
     sheet = Sheet(sheet_size, TitleBlock(
@@ -274,6 +321,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         if p.body_x1 > p.body_x0:
             xs += [p.body_x0, p.body_x1]
             ys += [p.body_y0, p.body_y1]
+    if overlay is not None:
+        xs += [0.0, overlay.outline.width]
+        ys += [0.0, overlay.outline.height]
+        for p in overlay.pmods:
+            xs += [p.cx - p.pin_span / 2 - 2, p.cx + p.pin_span / 2 + 2]
+            ys += [p.cy - p.pin_span / 2 - 2, p.cy + p.pin_span / 2 + 2]
     bbox = (min(xs), min(ys), max(xs), max(ys))
 
     view = View.fit(sheet.area, bbox, margin=48.0, force_scale=force_scale)
@@ -282,6 +335,8 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     board = Rect(view.x(0), view.y(0), view.d(o.width), view.d(o.height))
 
     # --- geometry -----------------------------------------------------------
+    if overlay is not None:
+        draw_overlay(c, view, overlay)
     for f in spec.features:
         draw_feature(c, view, f)
     for p in spec.pmods:
@@ -334,12 +389,17 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                     text=f"{p1.cx - p0.cx:.2f} TYP")
         lowest -= 6.0 + style.T_DIM + 2.0
 
-    xvals = sorted({round(h.x, 3) for h in spec.holes}
-                   | {round(p.cx, 3) for p in spec.pmods
-                      if spec.front_edge in ("bottom", "top")})
-    yvals = sorted({round(h.y, 3) for h in spec.holes}
-                   | {round(p.cy, 3) for p in spec.pmods
-                      if spec.front_edge in ("bottom", "top")})
+    xvals = {round(h.x, 3) for h in spec.holes}
+    yvals = {round(h.y, 3) for h in spec.holes}
+    # A host on a horizontal edge is located by its X, one on a vertical edge
+    # by its Y: that is the coordinate a mating peripheral cares about.
+    for p in list(spec.pmods) + (list(overlay.pmods) if overlay else []):
+        if p.edge in ("bottom", "top"):
+            xvals.add(round(p.cx, 3))
+        else:
+            yvals.add(round(p.cy, 3))
+    xvals = sorted(xvals)
+    yvals = sorted(yvals)
     x_extent = dims.ordinate_chain(
         c, [(view.x(v), f"{v:.2f}") for v in xvals], board.y, lowest - 9.0,
         horizontal=True)
@@ -390,13 +450,29 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                     ["#", "FEATURE", "X EXTENT", "Y EXTENT"], schedule,
                     ["middle", "start", "end", "end"])
 
+    if overlay is not None and overlay.pmods:
+        rows = [[p.label, f"{p.edge} edge", f"{p.cx:.2f}", f"{p.cy:.2f}"]
+                for p in overlay.pmods]
+        block = sheet.column_block(len(rows) * style.T_TABLE * 1.75 + 14.0)
+        sheet.table(block, "PMOD HAT ADAPTER HOSTS",
+                    ["PORT", "EDGE", "CX", "CY"], rows,
+                    ["start", "start", "end", "end"])
+
     notes = [
         "All dimensions in millimetres. Datum is the lower-left corner of the "
         "board outline; X to the right, Y up, viewed from the component side.",
         "Hole and Pmod positions are ordinate dimensions from that single "
         "datum, so they do not accumulate tolerance.",
     ]
+    if overlay is not None:
+        notes.append(
+            f"Phantom outline is the {overlay.title} fitted to the 40-pin GPIO "
+            "header. Its Pmod host positions are given in this board's "
+            "coordinate frame, since the adapter's mounting holes coincide "
+            "with this board's.")
     notes += list(spec.notes) + list(extra_notes)
+    if overlay is not None:
+        notes += [f"Pmod HAT Adapter: {n}" for n in overlay.notes]
     notes.append(
         f"Fabrication tolerance is not called out per dimension. Assume "
         f"+/-{0.20:.2f} on the routed board edge, +/-{0.10:.2f} on drilled "
