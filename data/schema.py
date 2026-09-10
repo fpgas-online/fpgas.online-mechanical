@@ -153,7 +153,8 @@ class Outline:
     height: float
     corner_radius: float = 0.0
     edges: tuple[tuple, ...] = ()
-    thickness: float | None = None
+    thickness: float | None = None      # bare PCB thickness
+    z_height: float | None = None       # overall height of a packaged item
     profile_note: str = ""
 
 
@@ -173,6 +174,9 @@ class BoardSpec:
     notes: tuple[str, ...] = ()
     used_by: tuple[str, ...] = ()
     front_edge: str = "bottom"
+    #: "pcb" for a bare board drawn in plan only, "enclosure" for a packaged
+    #: item that also gets a side elevation.
+    body: str = "pcb"
 
     def of_kind(self, *kinds: str) -> tuple[Feature, ...]:
         return tuple(f for f in self.features if f.kind in kinds)
