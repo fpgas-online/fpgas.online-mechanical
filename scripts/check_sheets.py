@@ -37,6 +37,14 @@ MIN_TEXT_MM = 2.45
 #: Overlaps smaller than this are touching, not colliding.
 OVERLAP_TOL = 0.35
 
+#: Two pieces of text on the same line, closer than this, read as one word.
+#: ISO 3098 puts the minimum word gap at 0.6 of the character height, which is
+#: 1.5 mm at the 2.5 mm cap height used here.  A slightly smaller figure is
+#: used so that ordinary table cells, whose padding is deliberate, are not
+#: reported: what this is for is a label that has drifted up against its
+#: neighbour, which is how "H3" and "PMOD 1" came to print as "H3PMOD 1".
+MIN_WORD_GAP = 1.2
+
 
 def unescape(s: str) -> str:
     return (s.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
@@ -93,6 +101,18 @@ def lines(svg: str):
             yield x1, y1, x2, y2
 
 
+def all_lines(svg: str):
+    """Every ruled line, whatever its colour.
+
+    The stroke filter above is right for "is a line running through this
+    text", where a table rule beside its own text is not a fault.  It is wrong
+    for "do these two words run together", where a table rule between them is
+    exactly what keeps them apart.
+    """
+    for m in LINE_RE.finditer(svg):
+        yield tuple(float(v) for v in m.groups()[:4])
+
+
 def box_hits_line(box, seg, tol: float) -> float:
     """How far a segment reaches inside a text box, 0 if it stays clear."""
     x0, y0, x1, y1 = box[0] + tol, box[1] + tol, box[2] - tol, box[3] - tol
@@ -119,6 +139,37 @@ def overlap(a, b) -> float:
     return min(dx, dy) if dx > 0 and dy > 0 else 0.0
 
 
+def side_gap(a, b, rules) -> float | None:
+    """Horizontal gap between two pieces of text that share a line.
+
+    None when they do not share a line, when they overlap (which the overlap
+    test already reports), or when a ruled line runs between them: a table
+    column rule separates two cells perfectly well however narrow the gutter,
+    and every table on these sheets is ruled.
+    """
+    share = min(a[3], b[3]) - max(a[1], b[1])
+    if share <= 0.4:
+        return None
+    lo, hi = (a[2], b[0]) if b[0] >= a[2] else (b[2], a[0])
+    gap = hi - lo
+    if gap < 0:
+        return None
+    top, bottom = max(a[1], b[1]), min(a[3], b[3])
+    for rx, ry0, ry1 in rules:
+        if lo - 0.2 <= rx <= hi + 0.2 and ry0 <= top + 0.2 and ry1 >= bottom - 0.2:
+            return None
+    return gap
+
+
+def vertical_rules(svg_lines) -> list[tuple[float, float, float]]:
+    """Vertical ruled lines, as (x, y0, y1), for the word-gap test."""
+    out = []
+    for x1, y1, x2, y2 in svg_lines:
+        if abs(x2 - x1) < 0.05 and abs(y2 - y1) > 0.5:
+            out.append((x1, min(y1, y2), max(y1, y2)))
+    return out
+
+
 def main() -> int:
     sheets = sorted((ROOT / "diagrams").rglob("*.svg"))
     if not sheets:
@@ -134,6 +185,7 @@ def main() -> int:
         trim = style.SHEET_MARGIN / 2
         items = boxes(svg)
         svg_lines = list(lines(svg))
+        rules = vertical_rules(all_lines(svg))
 
         problems: list[str] = []
         for i, a in enumerate(items):
@@ -150,6 +202,13 @@ def main() -> int:
                     problems.append(
                         f"text {a[4]!r} and {b[4]!r} overlap by {ov:.2f} mm "
                         f"near ({max(a[0], b[0]):.1f},{max(a[1], b[1]):.1f})")
+                    continue
+                gap = side_gap(a, b, rules)
+                if gap is not None and gap < MIN_WORD_GAP:
+                    problems.append(
+                        f"text {a[4]!r} and {b[4]!r} are {gap:.2f} mm apart "
+                        f"and read as one word, near "
+                        f"({max(a[0], b[0]):.1f},{max(a[1], b[1]):.1f})")
         for a in items:
             for seg in svg_lines:
                 run = box_hits_line(a[:4], seg, tol=0.5)

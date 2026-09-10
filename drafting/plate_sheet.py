@@ -70,11 +70,19 @@ _LABEL_DIRS = [(1, 1), (1, -1), (-1, 1), (-1, -1), (1, 0), (-1, 0),
 
 
 def place_label(c: Canvas, obstacles: Obstacles, anchor: tuple[float, float],
-                clear: float, text: str, colour: str) -> None:
+                clear: float, text: str, colour: str,
+                others: list[tuple[float, float]] | None = None
+                ) -> tuple[float, float, float, float]:
     """Put *text* near *anchor*, in the first spot free of *obstacles*.
 
     Draws a short leader when the label ends up far enough away that which
-    feature it belongs to would otherwise be a guess.
+    feature it belongs to would otherwise be a guess.  Returns the box it
+    occupied, so the caller can reserve it against the next label.
+
+    *others* are the anchors of the neighbouring features.  A label that ends
+    up nearer one of those than to its own feature reads as belonging to the
+    wrong one: on the mounting plate, H3 and slot S1 sit nine millimetres
+    apart and their labels swapped over each other's features.
     """
     px, py = anchor
     tw = style.text_width(text, style.T_LABEL, bold=True)
@@ -84,10 +92,13 @@ def place_label(c: Canvas, obstacles: Obstacles, anchor: tuple[float, float],
         for dx, dy in _LABEL_DIRS:
             cx = px + dx * (radius + tw / 2)
             cy = py + dy * (radius + th / 2)
-            score = obstacles.hits(cx, cy, max(tw, th) / 2) * 100 + radius
+            mine = math.dist((cx, cy), (px, py))
+            stolen = any(math.dist((cx, cy), o) < mine for o in (others or ()))
+            score = (obstacles.hits(cx, cy, max(tw, th) / 2) * 100
+                     + stolen * 70 + radius)
             if best_score is None or score < best_score:
                 best, best_score = (cx, cy), score
-        if best_score is not None and best_score < 100:
+        if best_score is not None and best_score < 70:
             break
     cx, cy = best
     gap = math.dist((px, py), (cx, cy)) - clear - max(tw, th) / 2
@@ -100,6 +111,10 @@ def place_label(c: Canvas, obstacles: Obstacles, anchor: tuple[float, float],
                w=style.W_THIN, colour=colour)
     c.text(cx, cy, text, size=style.T_LABEL, colour=colour, bold=True,
            anchor="middle", baseline="middle")
+    # The drawn box, descender included: reserving only the cap height let the
+    # next label sit a fraction of a millimetre into this one.
+    half_h = (th + style.descender(style.T_LABEL)) / 2
+    return (cx - tw / 2, cy - half_h, cx + tw / 2, cy + half_h)
     obstacles.add_rect(cx - tw / 2, cy - th / 2, cx + tw / 2, cy + th / 2,
                        pad=0.8)
 
@@ -131,6 +146,19 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
                            max(view.x(sl.x0), view.x(sl.x1)),
                            max(view.y(sl.y0), view.y(sl.y1)), pad=pad)
 
+    # Every *labelled* feature's anchor, so a label can be kept nearer its own
+    # feature than to any other.  Features drawn faint carry no label, so they
+    # cannot steal one and must not push labels around.
+    anchors = [view.pt(h.x, h.y) for i, h in enumerate(spec.holes)
+               if labels and i in labels
+               and not (highlight is not None and i not in highlight)]
+    anchors += [view.pt((sl.x0 + sl.x1) / 2, (sl.y0 + sl.y1) / 2)
+                for i, sl in enumerate(spec.slots)
+                if slot_labels and i in slot_labels]
+
+    def others(mine: tuple[float, float]) -> list[tuple[float, float]]:
+        return [a for a in anchors if a != mine]
+
     for i, h in enumerate(spec.holes):
         colour = PLATE_HOLE if h.kind == "plate" else BOARD_HOLE
         faint = highlight is not None and i not in highlight
@@ -143,7 +171,10 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
         dims.centre_mark(c, px, py, r, colour=colour, over=1.2)
         if not (labels and i in labels) or faint:
             continue
-        place_label(c, obstacles, (px, py), r, labels[i], colour)
+        box = place_label(c, obstacles, (px, py), r, labels[i], colour,
+                          others((px, py)))
+        # Reserve it: nothing stopped the next label landing on this one.
+        obstacles.add_rect(*box, pad=1.5)
 
     # Slot labels go through the same placer, so they cannot land on the datum
     # marker or the ordinate chain the way a fixed offset did.
@@ -153,7 +184,9 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
         mx, my = view.pt((sl.x0 + sl.x1) / 2, (sl.y0 + sl.y1) / 2)
         half = view.d(max(abs(sl.x1 - sl.x0), abs(sl.y1 - sl.y0)) / 2
                       + sl.width / 2)
-        place_label(c, obstacles, (mx, my), half, slot_labels[i], BOARD_HOLE)
+        box = place_label(c, obstacles, (mx, my), half, slot_labels[i],
+                          BOARD_HOLE, others((mx, my)))
+        obstacles.add_rect(*box, pad=1.5)
 
 
 def _group_key() -> str:
@@ -289,21 +322,35 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     for a, b in (((0, 0), (o.width, 0)), ((o.width, 0), (o.width, o.height)),
                  ((o.width, o.height), (0, o.height)), ((0, o.height), (0, 0))):
         edge.add_segment(*view.pt(*a), *view.pt(*b))
+    # The Pmod host grid is the reason the plate exists, so it is drawn and
+    # dimensioned even though it is not a machined feature.  Its envelopes and
+    # captions are worked out before the hole labels are placed and handed to
+    # the placer: drawn afterwards without being reserved, caption "PMOD 1"
+    # and hole label "H3" ended up 0.48 mm apart and printed as one word.
+    envelopes = []
+    for i, px in enumerate(PMOD_SLOT_X):
+        sx, sy = view.pt(px, PMOD_ROW_Y)
+        half = view.d(6.35)
+        cap = f"PMOD {i + 1}"
+        cap_y = sy + view.d(2.9) + 2.2
+        cap_w = style.text_width(cap, style.T_LABEL)
+        envelopes.append((sx, sy, half, cap, cap_y, cap_w))
+        edge.add_rect(sx - half, sy - view.d(2.9), sx + half,
+                      sy + view.d(2.9), pad=0.8)
+        edge.add_rect(sx - cap_w / 2, cap_y - style.descender(style.T_LABEL),
+                      sx + cap_w / 2, cap_y + style.T_LABEL, pad=1.2)
+
     for sl in spec.slots:
         draw_slot(c, view, sl)
     draw_plate_holes(c, view, spec, labels, extra=edge,
                      slot_labels={i: f"S{i + 1}"
                                   for i in range(len(spec.slots))})
 
-    # The Pmod host grid is the reason the plate exists, so it is drawn and
-    # dimensioned even though it is not a machined feature.
-    for i, px in enumerate(PMOD_SLOT_X):
-        sx, sy = view.pt(px, PMOD_ROW_Y)
-        half = view.d(6.35)
+    for sx, sy, half, cap, cap_y, _ in envelopes:
         c.rect(sx - half, sy - view.d(2.9), half * 2, view.d(5.8),
                weight=style.W_PHANTOM, colour=style.C_HIGHLIGHT,
                dash=style.D_PHANTOM)
-        c.text(sx, sy + view.d(2.9) + 2.2, f"PMOD {i + 1}", size=style.T_LABEL,
+        c.text(sx, cap_y, cap, size=style.T_LABEL,
                colour=style.C_HIGHLIGHT, anchor="middle")
 
     dims.linear(c, view.pt(PMOD_SLOT_X[0], PMOD_ROW_Y),
