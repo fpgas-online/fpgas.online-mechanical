@@ -174,9 +174,15 @@ class Outline:
     Each entry in ``edges`` is either::
 
         ("line", x1, y1, x2, y2)
-        ("arc",  x1, y1, xm, ym, x2, y2)      # start, mid, end
+        ("arc",  x1, y1, x2, y2, radius, large_arc, ccw)
 
-    in the board frame.  A renderer should prefer ``edges`` when present.
+    in the board frame.  An arc is resolved at extraction rather than carried
+    as a mid point, because a renderer emitting an SVG arc needs the radius
+    and the two flags and cannot recover them from three points without
+    repeating the same arithmetic.  ``large_arc`` and ``ccw`` are 1 or 0 and
+    are given in the board frame, ``ccw`` being 1 for a counter-clockwise
+    sweep; the canvas inverts the sweep flag when it flips Y.  A renderer
+    should prefer ``edges`` when present.
     """
 
     width: float

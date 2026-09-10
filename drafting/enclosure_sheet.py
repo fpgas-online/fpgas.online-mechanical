@@ -246,23 +246,38 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
         elif f.kind == "connector":
             # The captive output lead is what actually decides how close the
             # splitter can sit to the board it feeds, and it was drawn on the
-            # plan without a dimension or a label to say what it was.  Its
-            # width and its position across the body go on the right of the
-            # plan, which is the only clear side left.
-            ap = f" +/-{f.tol:.1f}" if f.tol else ""
+            # plan without a dimension or a label to say what it was.
+            #
+            # Both dimensions are anchored on the exit's own inboard edge and
+            # run out to the left, past the end the lead leaves.  Anchoring
+            # them on plan.x1 instead put the value and its extension stubs at
+            # the far end of the plan, hard against the RJ45 aperture, where
+            # they read as dimensioning that aperture rather than a feature
+            # eighty millimetres away with nothing joining the two.
+            # Given on the leader rather than as dimension lines.  The exit is
+            # three millimetres wide and each value is four times that, so a
+            # dimension line for it is longer than the thing it dimensions and
+            # has nowhere to sit: the left of the plan is the depth dimension
+            # and the end view's stack, the right is the RJ45 aperture.  A
+            # leader points at the feature and cannot be read as belonging to
+            # anything else, which is the whole difficulty here.
+            ap = f" +/-{f.tol:.1f} mm" if f.tol else " mm"
             y0 = plan.y + f.y0 * scale
             y1 = plan.y + f.y1 * scale
-            dims.linear(c, (plan.x1, y0), (plan.x1, y1), 14.0,
-                        horizontal=False, text=f"{f.y1 - f.y0:.2f}{ap}",
-                        text_side="high")
-            dims.linear(c, (plan.x1, plan.y), (plan.x1, y0), 25.0,
-                        horizontal=False, text=f"{f.y0:.2f}{ap}",
-                        text_side="high")
-            # Label above the plan, in the gap between it and the elevation:
-            # below is the dimension stack and left is the depth dimension.
-            dims.leader(c, (plan.x + (f.x0 + f.x1) / 2 * scale,
-                            (y0 + y1) / 2),
-                        (plan.x + 4.0, plan.y1 + 9.0), f.label, dot=True)
+            exit_label = (f"{f.label}: {f.y1 - f.y0:.2f} wide, "
+                          f"{f.y0:.2f} from the datum{ap}")
+            # Above the plan, in the gap between it and the elevation: below
+            # is the dimension stack and left is the depth dimension.
+            # Held back so the text ends inside the drawing area, and never
+            # so far back that it passes the point it labels and turns the
+            # tail round.
+            tip_x = plan.x + (f.x0 + f.x1) / 2 * scale
+            elbow_x = max(tip_x + 3.0,
+                          min(plan.x + 4.0,
+                              area.x1 - 6.2 - style.text_width(exit_label,
+                                                               style.T_LABEL)))
+            dims.leader(c, (tip_x, (y0 + y1) / 2),
+                        (elbow_x, plan.y1 + 9.0), exit_label, dot=True)
 
     dims.linear(c, (plan.x, plan.y), (plan.x1, plan.y), plan_stack,
                 horizontal=True, value=length)

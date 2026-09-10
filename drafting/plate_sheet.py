@@ -132,8 +132,6 @@ def place_label(c: Canvas, obstacles: Obstacles, anchor: tuple[float, float],
     # next label sit a fraction of a millimetre into this one.
     half_h = (th + style.descender(style.T_LABEL)) / 2
     return (cx - tw / 2, cy - half_h, cx + tw / 2, cy + half_h)
-    obstacles.add_rect(cx - tw / 2, cy - th / 2, cx + tw / 2, cy + th / 2,
-                       pad=0.8)
 
 
 def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
@@ -354,7 +352,7 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
 
     outline_path(c, view, spec)
 
-    labels, board_ids, plate_ids = hole_ids(spec)
+    labels, _, plate_ids = hole_ids(spec)
     # Labels must also keep off the plate outline itself: the fixings near the
     # right-hand edge would otherwise put their label straight on it.
     edge = Obstacles()
@@ -362,6 +360,20 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     for a, b in (((0, 0), (o.width, 0)), ((o.width, 0), (o.width, o.height)),
                  ((o.width, o.height), (0, o.height)), ((0, o.height), (0, 0))):
         edge.add_segment(*view.pt(*a), *view.pt(*b))
+
+    # The corner radius callout is drawn further down, after the labels are
+    # placed, so its span is worked out here and reserved.  Computing it twice
+    # is what let a balloon land on the same callout on the board sheets.
+    radius_label = f"R{o.corner_radius:.2f} (4 places), plate edge"
+    radius_w = style.text_width(radius_label, style.T_LABEL)
+    radius_elbow = min(plate.x1 + 8.0, sheet.area.x1 - 6.2 - radius_w)
+    edge.add_rect(min(radius_elbow, radius_elbow + radius_w + 8.0),
+                  plate.y1 + 2.0,
+                  max(radius_elbow, radius_elbow + radius_w + 8.0),
+                  plate.y1 + 9.0, pad=1.2)
+    edge.add_segment(*view.pt(o.width - o.corner_radius * 0.3,
+                              o.height - o.corner_radius * 0.3),
+                     radius_elbow, plate.y1 + 5.0)
     # The Pmod host grid is the reason the plate exists, so it is drawn and
     # dimensioned even though it is not a machined feature.  Its envelopes and
     # captions are worked out before the hole labels are placed and handed to
@@ -414,14 +426,9 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
                 y_extent - 7.0 - plate.x, horizontal=False, value=o.height,
                 ext_start=y_extent - 2.0)
     dims.datum_marker(c, plate.x, plate.y, label="")
-    radius_label = f"R{o.corner_radius:.2f} (4 places), plate edge"
     dims.leader(c, view.pt(o.width - o.corner_radius * 0.3,
                            o.height - o.corner_radius * 0.3),
-                (min(plate.x1 + 8.0,
-                     sheet.area.x1 - 6.2 - style.text_width(radius_label,
-                                                            style.T_LABEL)),
-                 plate.y1 + 5.0),
-                radius_label)
+                (radius_elbow, plate.y1 + 5.0), radius_label)
 
     rows = []
     for i, h in enumerate(spec.holes):

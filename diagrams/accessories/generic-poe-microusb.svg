@@ -99,26 +99,10 @@
 <polygon points="192.5,139.5 189.5,138.6 189.5,140.4" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <text x="160.5" y="137.7907" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">64.00 REF</text>
 <rect x="128.5" y="96.5" width="3" height="6" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
-<line x1="209.7" y1="102.5" x2="222.5" y2="102.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="209.7" y1="96.5" x2="222.5" y2="96.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="222.5" y1="102.5" x2="222.5" y2="96.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="222.5,102.5 221.6,105.5 223.4,105.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="222.5,96.5 223.4,93.5 221.6,93.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<line x1="222.5" y1="109.1" x2="222.5" y2="102.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="222.5" y1="96.5" x2="222.5" y2="89.9" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="219.9453" y="88.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start" transform="rotate(-90 219.9453 88.5)">6.00 +/-2.0</text>
-<line x1="209.7" y1="114.5" x2="233.5" y2="114.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="209.7" y1="102.5" x2="233.5" y2="102.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="233.5" y1="114.5" x2="233.5" y2="102.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="233.5,114.5 232.6,117.5 234.4,117.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="233.5,102.5 234.4,99.5 232.6,99.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<line x1="233.5" y1="121.1" x2="233.5" y2="114.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="233.5" y1="102.5" x2="233.5" y2="95.9" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="230.9453" y="94.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start" transform="rotate(-90 230.9453 94.5)">12.00 +/-2.0</text>
 <circle cx="130" cy="99.5" r="0.7" fill="#004c99" stroke="#004c99" stroke-width="0.05"/>
-<line x1="130" y1="99.5" x2="132.5" y2="75.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="132.5" y1="75.5" x2="137.5" y2="75.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="138.7" y="74.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start">Output cable exit</text>
+<line x1="130" y1="99.5" x2="133" y2="75.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="133" y1="75.5" x2="138" y2="75.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="139.2" y="74.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start">Output cable exit: 6.00 wide, 12.00 from the datum +/-2.0 mm</text>
 <line x1="128.5" y1="115.7" x2="128.5" y2="152.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="208.5" y1="115.7" x2="208.5" y2="152.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="128.5" y1="150.5" x2="208.5" y2="150.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>

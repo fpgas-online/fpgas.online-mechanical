@@ -515,6 +515,24 @@ def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None) -> float:
 STANDARD_PCB_THICKNESS = (0.6, 0.8, 1.0, 1.2, 1.6, 2.0, 2.4)
 
 
+#: How far a stackup sum may sit from a standard thickness and still be taken
+#: as that thickness.  The demo boards are all within 0.04 mm of 1.6.
+NOMINAL_THICKNESS_TOL = 0.05
+
+
+def _nominal_thickness(o) -> float | None:
+    """The finished thickness a board's stackup sum corresponds to, if any.
+
+    One definition, because the MATERIAL field and the note that explains it
+    both need the answer and must not disagree about it.
+    """
+    if not o.thickness:
+        return None
+    nominal = min(STANDARD_PCB_THICKNESS, key=lambda t: abs(t - o.thickness))
+    return nominal if abs(nominal - o.thickness) <= NOMINAL_THICKNESS_TOL \
+        else None
+
+
 def _pcb_material(o) -> str:
     """The MATERIAL field for a bare board.
 
@@ -524,8 +542,8 @@ def _pcb_material(o) -> str:
     """
     if not o.thickness:
         return "PCB, thickness not stated"
-    nominal = min(STANDARD_PCB_THICKNESS, key=lambda t: abs(t - o.thickness))
-    if abs(nominal - o.thickness) <= 0.05:
+    nominal = _nominal_thickness(o)
+    if nominal is not None:
         return f"PCB, {nominal:.1f} nominal"
     return f"PCB, {o.thickness:.3f} stackup sum"
 
@@ -647,13 +665,21 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
             "boards, after the silkscreen; PMOD 1 to 3 on the plate sheets, "
             "which number plate positions. TT-MP-02 maps them.")
     if o.thickness:
-        nominal = min(STANDARD_PCB_THICKNESS,
-                      key=lambda t: abs(t - o.thickness))
-        if abs(nominal - o.thickness) <= 0.05:
+        nominal = _nominal_thickness(o)
+        if nominal is not None:
             notes.append(
                 f"Board thickness is {nominal:.1f} mm nominal. The KiCad "
                 f"file's {o.thickness:.5f} mm is its stackup sum, not a "
                 "specified finished thickness.")
+        else:
+            # The title block prints the raw stackup figure in this case, so
+            # the note has to say what that figure is, or the sheet asserts an
+            # unexplained number.
+            notes.append(
+                f"MATERIAL gives {o.thickness:.3f} mm, the sum of the KiCad "
+                "stackup layers. It is not a specified finished thickness, "
+                "and it is not within a twentieth of a millimetre of any "
+                "standard one, so no nominal is claimed for it.")
     if spec.features:
         # What a chassis actually has to clear, which is not the board
         # outline: on the Pi 4B the connectors reach 88 mm across an 85 mm
