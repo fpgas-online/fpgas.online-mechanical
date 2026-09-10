@@ -318,6 +318,9 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle, drawing_no=drawing_no,
         rev="A", date=date, drawn_by="generated",
+        # The plate is a two-sheet set: this one and the fitting guide, which
+        # each cross-reference the other.  Both said "1 OF 1".
+        sheet="1 OF 2",
         material="3 mm acrylic or 1.6 mm FR4",
         # Self-contained: "see kerf note" was a cross-reference to a note
         # whose number is generated, so it could not be given.
@@ -446,6 +449,7 @@ def render_fitting_guide(*, drawing_no: str, date: str,
         title="TT MOUNTING PLATE FITTING GUIDE",
         subtitle="Which holes each demo board revision uses",
         drawing_no=drawing_no, rev="A", date=date, drawn_by="generated",
+        sheet="2 OF 2",
         material="-  not a made part",
         # Nothing on this sheet is a manufactured feature, so it must not
         # assert a manufacturing tolerance; the previous default claimed an

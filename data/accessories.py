@@ -201,7 +201,9 @@ WAVESHARE_POE = BoardSpec(
     ),
     notes=(
         "Output is 5 V at up to 5 A (25 W) on a USB-C male plug on a captive "
-        "lead, not a panel-mounted receptacle.",
+        "lead, not a panel-mounted receptacle. The lead leaves the end "
+        "opposite the RJ45, at the cable exit dimensioned on the plan; its "
+        "length is not published, so allow for the plug and its bend radius.",
         "No panel mounting holes. Each end plate is retained by four corner "
         "screws, whose size and position the vendor does not publish, so any "
         "bracket has to clamp or strap the body.",
@@ -262,6 +264,11 @@ GENERIC_POE = BoardSpec(
         "committing.",
         "No mounting holes: the case is a glued plastic clamshell, so a "
         "bracket has to clamp or strap the body.",
+        "Output is 5 V on a micro-USB male plug on a captive lead, not a "
+        "panel-mounted receptacle. The lead leaves the end opposite the RJ45, "
+        "at the cable exit dimensioned on the plan, and is quoted at 155 to "
+        "205 mm. Allow for it: the plug and its bend radius, not the body, "
+        "set how close the splitter can sit to the board it feeds.",
     ),
 )
 

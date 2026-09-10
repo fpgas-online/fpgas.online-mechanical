@@ -236,6 +236,26 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                         -25.0, horizontal=True, text=f"{f.x0:.2f}{ap}",
                         text_side="low")
             plan_stack = -36.0
+        elif f.kind == "connector":
+            # The captive output lead is what actually decides how close the
+            # splitter can sit to the board it feeds, and it was drawn on the
+            # plan without a dimension or a label to say what it was.  Its
+            # width and its position across the body go on the right of the
+            # plan, which is the only clear side left.
+            ap = f" +/-{f.tol:.1f}" if f.tol else ""
+            y0 = plan.y + f.y0 * scale
+            y1 = plan.y + f.y1 * scale
+            dims.linear(c, (plan.x1, y0), (plan.x1, y1), 14.0,
+                        horizontal=False, text=f"{f.y1 - f.y0:.2f}{ap}",
+                        text_side="high")
+            dims.linear(c, (plan.x1, plan.y), (plan.x1, y0), 25.0,
+                        horizontal=False, text=f"{f.y0:.2f}{ap}",
+                        text_side="high")
+            # Label above the plan, in the gap between it and the elevation:
+            # below is the dimension stack and left is the depth dimension.
+            dims.leader(c, (plan.x + (f.x0 + f.x1) / 2 * scale,
+                            (y0 + y1) / 2),
+                        (plan.x + 4.0, plan.y1 + 9.0), f.label, dot=True)
 
     dims.linear(c, (plan.x, plan.y), (plan.x1, plan.y), plan_stack,
                 horizontal=True, value=length)
