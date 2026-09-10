@@ -40,10 +40,20 @@ class View:
     @classmethod
     def fit(cls, rect: Rect, bbox: tuple[float, float, float, float],
             margin: float = 26.0, force_scale: float | None = None,
-            centre_y: bool = True) -> "View":
+            centre_y: bool = True, margin_top: float | None = None,
+            margin_bottom: float | None = None) -> "View":
+        """Place *bbox* in *rect*, reserving margins for annotation.
+
+        The margins are asymmetric on purpose: dimensions stack up below and to
+        the left of a view, while above it only balloons need room.  Reserving
+        the same generous margin on all four sides wastes a third of the sheet
+        height for nothing.
+        """
         x0, y0, x1, y1 = bbox
+        top = margin if margin_top is None else margin_top
+        bottom = margin if margin_bottom is None else margin_bottom
         avail_w = rect.w - 2 * margin
-        avail_h = rect.h - 2 * margin
+        avail_h = rect.h - top - bottom
         mw, mh = x1 - x0, y1 - y0
         chosen, label = None, "1:1"
         if force_scale:
@@ -60,8 +70,11 @@ class View:
             chosen = min(avail_w / mw, avail_h / mh)
             label = f"1:{1 / chosen:.3g}"
         cx = rect.cx - (x0 + x1) / 2 * chosen
-        cy = rect.cy - (y0 + y1) / 2 * chosen if centre_y else \
-            rect.y1 - margin - mh * chosen + y0 * chosen
+        # Centre within the space left after the margins, not within the whole
+        # rectangle, or the view drifts into the smaller margin.
+        inner_cy = rect.y + bottom + (rect.h - top - bottom) / 2
+        cy = inner_cy - (y0 + y1) / 2 * chosen if centre_y else \
+            rect.y1 - top - mh * chosen + y0 * chosen
         return cls(rect, x0, y0, x1, y1, chosen, label, cx, cy)
 
     # -- transforms ---------------------------------------------------------

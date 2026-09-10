@@ -40,91 +40,86 @@
 <line x1="405" y1="81.75" x2="415" y2="81.75" stroke="#888888" stroke-width="0.25" stroke-linecap="round"/>
 <text x="10" y="47.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
 <text x="410" y="47.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
-<rect x="124.5" y="102.5" width="80" height="24" fill="none" stroke="#000000" stroke-width="0.5"/>
-<rect x="124.5" y="152.5" width="80" height="30" fill="none" stroke="#000000" stroke-width="0.5"/>
-<rect x="68.5" y="102.5" width="30" height="24" fill="none" stroke="#000000" stroke-width="0.5" rx="2" ry="2"/>
-<text x="164.5" y="98.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">FRONT ELEVATION</text>
-<text x="164.5" y="148.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">PLAN</text>
-<text x="83.5" y="98.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">END VIEW, RJ45 END</text>
-<rect x="188.5" y="159" width="16" height="17" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
-<rect x="75" y="108" width="17" height="13" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
-<line x1="75" y1="122.2" x2="75" y2="137" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="92" y1="122.2" x2="92" y2="137" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="75" y1="135" x2="92" y2="135" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="75,135 78,135.9 78,134.1" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="92,135 89,134.1 89,135.9" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="83.5" y="134.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">17.00</text>
-<line x1="73.8" y1="121" x2="59" y2="121" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="73.8" y1="108" x2="59" y2="108" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="61" y1="121" x2="61" y2="108" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="61,121 60.1,124 61.9,124" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="61,108 61.9,105 60.1,105" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<line x1="61" y1="127.6" x2="61" y2="121" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="61" y1="108" x2="61" y2="101.4" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="60.1" y="100.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 60.1 100.8)">13.00</text>
-<line x1="67.3" y1="121" x2="40.5" y2="121" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="67.3" y1="126.5" x2="40.5" y2="126.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="42.5" y1="126.5" x2="42.5" y2="121" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="42.5,126.5 41.6,129.5 43.4,129.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="42.5,121 43.4,118 41.6,118" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<line x1="42.5" y1="133.1" x2="42.5" y2="126.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="42.5" y1="121" x2="42.5" y2="114.4" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="41.6" y="113.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 41.6 113.8)">5.50</text>
-<line x1="188.5" y1="151.3" x2="188.5" y2="141.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="204.5" y1="151.3" x2="204.5" y2="141.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="188.5" y1="143.5" x2="204.5" y2="143.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="188.5,143.5 185.5,142.6 185.5,144.4" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="204.5,143.5 207.5,144.4 207.5,142.6" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<line x1="181.9" y1="143.5" x2="188.5" y2="143.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="204.5" y1="143.5" x2="211.1" y2="143.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="216.1148" y="142.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">16.00</text>
-<line x1="124.5" y1="183.7" x2="124.5" y2="209.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="188.5" y1="183.7" x2="188.5" y2="209.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="124.5" y1="207.5" x2="188.5" y2="207.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="124.5,207.5 127.5,208.4 127.5,206.6" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="188.5,207.5 185.5,206.6 185.5,208.4" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="156.5" y="206.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">64.00</text>
-<rect x="124.5" y="164.5" width="3" height="6" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
-<line x1="124.5" y1="183.7" x2="124.5" y2="198.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="204.5" y1="183.7" x2="204.5" y2="198.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="124.5" y1="196.5" x2="204.5" y2="196.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="124.5,196.5 127.5,197.4 127.5,195.6" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="204.5,196.5 201.5,195.6 201.5,197.4" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="164.5" y="195.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">80.00</text>
-<line x1="123.3" y1="182.5" x2="108.5" y2="182.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="123.3" y1="152.5" x2="108.5" y2="152.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="110.5" y1="182.5" x2="110.5" y2="152.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="110.5,182.5 111.4,179.5 109.6,179.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="110.5,152.5 109.6,155.5 111.4,155.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="109.6" y="167.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 109.6 167.5)">30.00</text>
-<line x1="205.7" y1="126.5" x2="220.5" y2="126.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="205.7" y1="102.5" x2="220.5" y2="102.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="218.5" y1="126.5" x2="218.5" y2="102.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="218.5,126.5 219.4,123.5 217.6,123.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="218.5,102.5 217.6,105.5 219.4,105.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="217.6" y="114.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 217.6 114.5)">24.00</text>
-<line x1="68.5" y1="127.7" x2="68.5" y2="142.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="98.5" y1="127.7" x2="98.5" y2="142.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="68.5" y1="140.5" x2="98.5" y2="140.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="68.5,140.5 71.5,141.4 71.5,139.6" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="98.5,140.5 95.5,139.6 95.5,141.4" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="83.5" y="139.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">30.00</text>
-<polygon points="97.9,125.9 99.6935,128.4678 100.8108,127.0565" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<line x1="97.9" y1="125.9" x2="107.5" y2="133.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="107.5" y1="133.5" x2="112.5" y2="133.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="113.7" y="132.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start">R2.00 nominal (4 places)</text>
-<circle cx="124.5" cy="182.5" r="2" fill="none" stroke="#004c99" stroke-width="0.25"/>
-<path d="M 124.5 182.5 L 126.5 182.5 A 2.0 2.0 0 0 1 124.5 180.5 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 124.5 182.5 L 122.5 182.5 A 2.0 2.0 0 0 1 124.5 184.5 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="124.5" cy="182.5" r="0.7" fill="#004c99" stroke="#004c99" stroke-width="0.05"/>
-<line x1="124.5" y1="182.5" x2="100.5" y2="198.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="100.5" y1="198.5" x2="98.5" y2="198.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="97.3" y="197.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">DATUM  X0 Y0</text>
-<text x="218" y="262.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">FIRST ANGLE PROJECTION</text>
-<line x1="207" y1="267" x2="229" y2="267" stroke="#666666" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="3,1.2,0.6,1.2"/>
-<polygon points="209,264.6 217,265.8 217,268.2 209,269.4" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round"/>
-<circle cx="223.4" cy="267" r="2.4" fill="none" stroke="#000000" stroke-width="0.5"/>
-<circle cx="223.4" cy="267" r="1.2" fill="none" stroke="#000000" stroke-width="0.5"/>
+<rect x="124.5" y="56.5" width="80" height="24" fill="none" stroke="#000000" stroke-width="0.5"/>
+<rect x="124.5" y="106.5" width="80" height="30" fill="none" stroke="#000000" stroke-width="0.5"/>
+<rect x="68.5" y="56.5" width="30" height="24" fill="none" stroke="#000000" stroke-width="0.5" rx="2" ry="2"/>
+<text x="164.5" y="52.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">FRONT ELEVATION</text>
+<text x="164.5" y="102.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">PLAN</text>
+<text x="83.5" y="52.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">END VIEW, RJ45 END</text>
+<rect x="188.5" y="113" width="16" height="17" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
+<rect x="75" y="62" width="17" height="13" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
+<line x1="75" y1="76.2" x2="75" y2="91" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="92" y1="76.2" x2="92" y2="91" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="75" y1="89" x2="92" y2="89" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="75,89 78,89.9 78,88.1" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="92,89 89,88.1 89,89.9" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="83.5" y="88.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">17.00</text>
+<line x1="73.8" y1="75" x2="59" y2="75" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="73.8" y1="62" x2="59" y2="62" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="61" y1="75" x2="61" y2="62" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="61,75 60.1,78 61.9,78" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="61,62 61.9,59 60.1,59" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<line x1="61" y1="81.6" x2="61" y2="75" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="61" y1="62" x2="61" y2="55.4" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="60.1" y="54.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 60.1 54.8)">13.00</text>
+<line x1="67.3" y1="75" x2="40.5" y2="75" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="67.3" y1="80.5" x2="40.5" y2="80.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="42.5" y1="80.5" x2="42.5" y2="75" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="42.5,80.5 41.6,83.5 43.4,83.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="42.5,75 43.4,72 41.6,72" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<line x1="42.5" y1="87.1" x2="42.5" y2="80.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="42.5" y1="75" x2="42.5" y2="68.4" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="41.6" y="67.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 41.6 67.8)">5.50</text>
+<line x1="188.5" y1="105.3" x2="188.5" y2="95.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="204.5" y1="105.3" x2="204.5" y2="95.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="188.5" y1="97.5" x2="204.5" y2="97.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="188.5,97.5 185.5,96.6 185.5,98.4" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="204.5,97.5 207.5,98.4 207.5,96.6" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<line x1="181.9" y1="97.5" x2="188.5" y2="97.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="204.5" y1="97.5" x2="211.1" y2="97.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="216.1148" y="96.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">16.00</text>
+<line x1="124.5" y1="137.7" x2="124.5" y2="163.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="188.5" y1="137.7" x2="188.5" y2="163.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="124.5" y1="161.5" x2="188.5" y2="161.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="124.5,161.5 127.5,162.4 127.5,160.6" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="188.5,161.5 185.5,160.6 185.5,162.4" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="156.5" y="160.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">64.00</text>
+<rect x="124.5" y="118.5" width="3" height="6" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
+<line x1="124.5" y1="137.7" x2="124.5" y2="152.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="204.5" y1="137.7" x2="204.5" y2="152.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="124.5" y1="150.5" x2="204.5" y2="150.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="124.5,150.5 127.5,151.4 127.5,149.6" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="204.5,150.5 201.5,149.6 201.5,151.4" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="164.5" y="149.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">80.00</text>
+<line x1="123.3" y1="136.5" x2="108.5" y2="136.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="123.3" y1="106.5" x2="108.5" y2="106.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="110.5" y1="136.5" x2="110.5" y2="106.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="110.5,136.5 111.4,133.5 109.6,133.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="110.5,106.5 109.6,109.5 111.4,109.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="109.6" y="121.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 109.6 121.5)">30.00</text>
+<line x1="205.7" y1="80.5" x2="220.5" y2="80.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="205.7" y1="56.5" x2="220.5" y2="56.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="218.5" y1="80.5" x2="218.5" y2="56.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="218.5,80.5 219.4,77.5 217.6,77.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="218.5,56.5 217.6,59.5 219.4,59.5" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="217.6" y="68.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 217.6 68.5)">24.00</text>
+<line x1="68.5" y1="81.7" x2="68.5" y2="96.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="98.5" y1="81.7" x2="98.5" y2="96.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="68.5" y1="94.5" x2="98.5" y2="94.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="68.5,94.5 71.5,95.4 71.5,93.6" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="98.5,94.5 95.5,93.6 95.5,95.4" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="83.5" y="93.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">30.00</text>
+<polygon points="97.9,79.9 99.6935,82.4678 100.8108,81.0565" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<line x1="97.9" y1="79.9" x2="107.5" y2="87.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="107.5" y1="87.5" x2="112.5" y2="87.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="113.7" y="86.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start">R2.00 nominal (4 places)</text>
+<circle cx="124.5" cy="136.5" r="2" fill="none" stroke="#004c99" stroke-width="0.25"/>
+<path d="M 124.5 136.5 L 126.5 136.5 A 2.0 2.0 0 0 1 124.5 134.5 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 124.5 136.5 L 122.5 136.5 A 2.0 2.0 0 0 1 124.5 138.5 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="124.5" cy="136.5" r="0.7" fill="#004c99" stroke="#004c99" stroke-width="0.05"/>
+<line x1="124.5" y1="136.5" x2="100.5" y2="152.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="100.5" y1="152.5" x2="98.5" y2="152.5" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="97.3" y="151.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">DATUM  X0 Y0</text>
 <text x="240" y="21.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">ENVELOPE</text>
 <line x1="240" y1="22.9" x2="402" y2="22.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="240" y="25.1" width="37.8705" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
@@ -156,43 +151,52 @@
 <text x="357.0161" y="75.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">12.00 to 18.00</text>
 <line x1="303.0744" y1="60.4222" x2="303.0744" y2="77.0889" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="331.018" y1="60.4222" x2="331.018" y2="77.0889" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="240" y="86.5889" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
-<line x1="240" y1="87.9889" x2="402" y2="87.9889" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="240" y="92.6889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="245" y="92.6889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All dimensions in millimetres. Plan datum is the lower-left corner of the body envelope, X along the</text>
-<text x="245" y="97.2156" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">length, Y across the width, Z up.</text>
-<text x="240" y="102.7424" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="245" y="102.7424" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">First-angle projection. The plan is the view from above, placed below the front elevation; the end</text>
-<text x="245" y="107.2691" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">view is the view from the RJ45 end, placed to the left of it.</text>
-<text x="240" y="112.7959" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="245" y="112.7959" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The RJ45 aperture drawn in the end view is a standard 8P8C jack envelope, positioned centrally</text>
-<text x="245" y="117.3226" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">because the vendor does not dimension it. Its size and position are indicative to about +/-1.5 mm;</text>
-<text x="245" y="121.8494" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the body envelope itself is the dimension to trust.</text>
-<text x="240" y="127.3761" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="245" y="127.3761" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The corner radius is nominal. It is a cross-section feature of the extrusion, so it appears in the end</text>
-<text x="245" y="131.9029" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">view only.</text>
-<text x="240" y="137.4296" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
-<text x="245" y="137.4296" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">NO SINGLE OFFICIAL SOURCE. These are near-identical clones from several factories. Two</text>
-<text x="245" y="141.9564" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">independent sources agree on an 80 mm long body: DSLRKIT quote 80 x 27 x 22 mm and Adafruit</text>
-<text x="245" y="146.4831" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">measure 80 x 30 x 24 mm.</text>
-<text x="240" y="152.0099" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
-<text x="245" y="152.0099" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The envelope drawn here is the larger of those two, 80 x 30 x 24 mm. Design any cradle to that, and</text>
-<text x="245" y="156.5366" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">allow for gigabit variants in a longer case, up to about 95 mm.</text>
-<text x="240" y="162.0634" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
-<text x="245" y="162.0634" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">No mounting holes: the case is a glued plastic clamshell, so a bracket has to clamp or strap the body.</text>
-<text x="240" y="187.5502" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="240" y1="188.9502" x2="402" y2="188.9502" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="240" y="193.6502" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="245" y="193.6502" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DSLRKIT active PoE splitter:</text>
-<text x="245" y="198.177" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://www.amazon.com/DSLRKIT-Active-Splitter-Ethernet-Raspberry/dp/B01H37XQP8 - Vendor text:</text>
-<text x="245" y="202.7037" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">&quot;Body size: 80 x 27 x 22 mm&quot;, weight 55 g, DC cable 165 mm, RJ45 plug cable 155 mm.</text>
-<text x="240" y="208.2305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="245" y="208.2305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Adafruit 3785, equivalent unit: https://www.adafruit.com/product/3785 - &quot;Body dimensions: 80mm x</text>
-<text x="245" y="212.7572" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">30mm x 24mm&quot;, weight 54.1 g, each lead 205 mm.</text>
-<text x="240" y="218.284" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="245" y="218.284" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">AliExpress listings: AliExpress items 1005006389914897, 1005005523161215, 1005009263116567 -</text>
-<text x="245" y="222.8107" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Most listings quote packaging rather than body size. The one plausible body figure seen was 95 x 28</text>
-<text x="245" y="227.3375" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">x 24 mm, for a gigabit variant in a longer case.</text>
+<text x="19" y="197.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
+<line x1="19" y1="198.9" x2="121.5" y2="198.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="19" y="203.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="23.542" y="203.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All dimensions in millimetres. Plan datum is the lower-left</text>
+<text x="23.542" y="208.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">corner of the body envelope, X along the length, Y across the</text>
+<text x="23.542" y="212.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">width, Z up.</text>
+<text x="19" y="218.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="23.542" y="218.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">First-angle projection. The plan is the view from above, placed</text>
+<text x="23.542" y="222.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">below the front elevation; the end view is the view from the</text>
+<text x="23.542" y="227.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">RJ45 end, placed to the left of it.</text>
+<text x="19" y="232.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="23.542" y="232.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The RJ45 aperture drawn in the end view is a standard 8P8C</text>
+<text x="23.542" y="237.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">jack envelope, positioned centrally because the vendor does</text>
+<text x="23.542" y="241.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">not dimension it. Its size and position are indicative to about</text>
+<text x="23.542" y="246.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">+/-1.5 mm; the body envelope itself is the dimension to trust.</text>
+<text x="19" y="251.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="23.542" y="251.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The corner radius is nominal. It is a cross-section feature of the</text>
+<text x="23.542" y="256.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">extrusion, so it appears in the end view only.</text>
+<text x="19" y="261.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
+<text x="23.542" y="261.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">NO SINGLE OFFICIAL SOURCE. These are near-identical clones</text>
+<text x="23.542" y="266.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">from several factories. Two independent sources agree on an</text>
+<text x="23.542" y="270.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">80 mm long body: DSLRKIT quote 80 x 27 x 22 mm and</text>
+<text x="23.542" y="275.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Adafruit measure 80 x 30 x 24 mm.</text>
+<text x="129.5" y="196.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
+<text x="134.042" y="196.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The envelope drawn here is the larger of those two, 80 x 30 x</text>
+<text x="134.042" y="201.0267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">24 mm. Design any cradle to that, and allow for gigabit</text>
+<text x="134.042" y="205.5535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">variants in a longer case, up to about 95 mm.</text>
+<text x="129.5" y="211.0802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
+<text x="134.042" y="211.0802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">No mounting holes: the case is a glued plastic clamshell, so a</text>
+<text x="134.042" y="215.607" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">bracket has to clamp or strap the body.</text>
+<text x="129.5" y="222.1337" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
+<line x1="129.5" y1="223.5337" x2="232" y2="223.5337" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="129.5" y="228.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="134.042" y="228.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DSLRKIT active PoE splitter:</text>
+<text x="134.042" y="232.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://www.amazon.com/DSLRKIT-Active-Splitter-Ethernet-Ras</text>
+<text x="134.042" y="237.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pberry/dp/B01H37XQP8 - Vendor text: &quot;Body size: 80 x 27 x 22</text>
+<text x="134.042" y="241.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm&quot;, weight 55 g, DC cable 165 mm, RJ45 plug cable 155</text>
+<text x="134.042" y="246.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm.</text>
+<text x="129.5" y="251.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="134.042" y="251.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Adafruit 3785, equivalent unit:</text>
+<text x="134.042" y="256.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://www.adafruit.com/product/3785 - &quot;Body dimensions:</text>
+<text x="134.042" y="260.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">80mm x 30mm x 24mm&quot;, weight 54.1 g, each lead 205 mm.</text>
+<text x="240" y="85.5889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="244.542" y="85.5889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">AliExpress listings: AliExpress items 1005006389914897, 1005005523161215, 1005009263116567 -</text>
+<text x="244.542" y="90.1156" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Most listings quote packaging rather than body size. The one plausible body figure seen was 95 x 28</text>
+<text x="244.542" y="94.6424" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">x 24 mm, for a gigabit variant in a longer case.</text>
 <rect x="240" y="234" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="240" y1="249" x2="405" y2="249" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="242.5" y="242.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">GENERIC POE SPLITTER TO MICRO-USB</text>
@@ -225,8 +229,14 @@
 <text x="365.35" y="269.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">A</text>
 <line x1="240" y1="271" x2="405" y2="271" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="241.6" y="274.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">MATERIAL</text>
-<text x="241.6" y="280.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">moulded / extruded enclosure</text>
-<line x1="296.1" y1="282" x2="296.1" y2="271" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="297.7" y="274.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">GENERAL TOLERANCE</text>
-<text x="297.7" y="280.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">envelope +/-1.0 unless a note says otherwise</text>
+<text x="241.6" y="280.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">sealed enclosure</text>
+<line x1="286.2" y1="282" x2="286.2" y2="271" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="287.8" y="274.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">GENERAL TOLERANCE</text>
+<text x="287.8" y="280.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">envelope +/-1.0 unless noted</text>
+<line x1="378.6" y1="282" x2="378.6" y2="271" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="380.2" y="274.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">PROJECTION</text>
+<line x1="384.98" y1="279.14" x2="398.62" y2="279.14" stroke="#666666" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="3,1.2,0.6,1.2"/>
+<polygon points="386.22,277.652 391.18,278.396 391.18,279.884 386.22,280.628" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round"/>
+<circle cx="395.148" cy="279.14" r="1.488" fill="none" stroke="#000000" stroke-width="0.5"/>
+<circle cx="395.148" cy="279.14" r="0.744" fill="none" stroke="#000000" stroke-width="0.5"/>
 </svg>

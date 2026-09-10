@@ -60,11 +60,9 @@ STANDARD_HOLES = [(3.5, 3.5), (61.5, 3.5), (3.5, 52.5), (61.5, 52.5)]
 # figure to design a plate to, and it is quoted in the notes rather than being
 # passed off as a dimension from the Pi's own drawing.
 HAT_KEEPOUT_NOTE = (
-    "No keep-out around the mounting holes is dimensioned on this model's own "
-    "drawing. The Raspberry Pi HAT mechanical specification "
-    "(github.com/raspberrypi/hats, hat-board-mechanical.pdf) requires a 6.2 mm "
-    "keep-out around each mounting hole on a board fitted to a Pi; design to "
-    "that."
+    "No mounting hole keep-out is dimensioned on this model's own drawing. "
+    "Design to the 6.2 mm the Raspberry Pi HAT mechanical specification "
+    "(github.com/raspberrypi/hats) requires around each hole."
 )
 
 MODELS = [
@@ -325,11 +323,11 @@ def render(rec: dict) -> str:
         for f in rec["features"])
 
     notes = ['"Connector outlines are the component body as drawn by '
-             'Raspberry Pi Ltd, including any overhang past the board edge."',
+             'Raspberry Pi Ltd, overhang past the board edge included."',
              repr(f"Mounting hole diameter: {m['hole_note']}"),
-             repr("Hole IDs are assigned by this drawing, not by Raspberry Pi "
-                  "Ltd, and run bottom row first then left to right. The same "
-                  "ID means the same hole on every Raspberry Pi sheet here.")]
+             repr("Hole IDs are assigned by this drawing, bottom row first "
+                  "then left to right, and mean the same thing on every "
+                  "Raspberry Pi sheet here.")]
     if m.get("hole_keepout") is None:
         notes.append(repr(HAT_KEEPOUT_NOTE))
     if m.get("reduced"):
@@ -343,7 +341,7 @@ def render(rec: dict) -> str:
                      'pair are diagonally opposite each other."')
     if not m.get("holes_from_source"):
         notes.append('"Hole positions are the 3.5 mm inset and 58 x 49 mm '
-                     'rectangle dimensioned on this model\'s own drawing."')
+                     'rectangle dimensioned on this model\'s drawing."')
 
     return f'''
 BOARDS[{m["key"]!r}] = BoardSpec(

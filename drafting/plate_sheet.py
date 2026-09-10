@@ -142,7 +142,8 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     sheet.draw_frame()
     c = sheet.canvas
 
-    view = View.fit(sheet.area, (0, 0, o.width, o.height), margin=38.0)
+    view = View.fit(sheet.area, (0, 0, o.width, o.height), margin=40.0,
+                    margin_top=20.0, margin_bottom=48.0)
     sheet.title.scale = view.scale_label
     plate = Rect(view.x(0), view.y(0), view.d(o.width), view.d(o.height))
 
@@ -305,8 +306,7 @@ def render_fitting_guide(*, drawing_no: str, date: str,
         "All five revisions put their Pmod host pin fields on the same three "
         "positions, at the same height above the plate's front edge.",
     ]
-    block = sheet.column_block(70.0)
-    sheet.notes(block, "NOTES", notes)
+    _place_notes_and_sources(sheet, notes, [])
     sheet.draw_title_block()
     return sheet
 

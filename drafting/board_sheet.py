@@ -291,42 +291,25 @@ def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
 
 def _place_notes_and_sources(sheet: Sheet, notes: list[str],
                              sources: list[str]) -> None:
-    """Fit the notes and the sources into whatever column space is left.
+    """Draw the notes and sources in the band across the bottom of the sheet.
 
-    Both blocks are measured before either is drawn, and the note text is
-    stepped down within the ISO 3098 range until the pair fits.  If they still
-    will not fit, the source annotations are dropped before the sources
-    themselves: which document a number came from matters more than the
-    commentary about it.
+    They used to share the annotation column with the schedules, which meant
+    notes were dropped whenever a board had a long feature list.  The band is
+    wide enough to flow them into columns and lose nothing.
     """
-    width = sheet.column.w - sheet.COLUMN_GUTTER
-    # Text size is never traded away: 2.5 mm caps is the ISO 3098 floor and
-    # everything here already sits on it.  What gives, in order, is the source
-    # commentary and then notes from the end.
-    for src in (sources, [s.split(" - ")[0] for s in sources]):
-        nh = sheet.notes_height(width, "NOTES", notes, style.T_NOTE)
-        sh = sheet.notes_height(width, "SOURCES", src, style.T_TINY)
-        if nh + sh + 6.0 <= sheet.column_remaining:
-            sheet.notes(sheet.column_block(nh), "NOTES", notes, style.T_NOTE)
-            sheet.notes(sheet.column_block(sh), "SOURCES", src,
-                        size=style.T_TINY)
-            return
-    # Still too much. Drop notes from the end until it fits and say how many
-    # went, rather than letting one block run through another.
-    src = [s.split(" - ")[0] for s in sources]
-    sh = sheet.notes_height(width, "SOURCES", src, style.T_TINY)
-    kept = list(notes)
-    while kept:
-        shown = kept + [f"{len(notes) - len(kept)} further note(s) omitted for "
-                        f"space; the full set is in the data module this sheet "
-                        f"was generated from."]
-        nh = sheet.notes_height(width, "NOTES", shown, style.T_NOTE)
-        if nh + sh + 6.0 <= sheet.column_remaining:
-            sheet.notes(sheet.column_block(nh), "NOTES", shown, style.T_NOTE)
-            sheet.notes(sheet.column_block(sh), "SOURCES", src,
-                        size=style.T_TINY)
-            return
-        kept.pop()
+    columns = sheet.band_columns(sheet.notes_band)
+    # Whatever is left at the foot of the annotation column, once the schedules
+    # have been placed, becomes one more column.  A board with a long feature
+    # list has a short leftover and a long note list, and vice versa, so this
+    # is where the slack actually is.
+    spare = sheet.column_remaining
+    if spare > 30.0:
+        columns.append(Rect(sheet.column.x, sheet.column.y,
+                            sheet.column.w - sheet.COLUMN_GUTTER, spare))
+    sheet.notes_columns(columns, [
+        ("NOTES", notes, style.T_NOTE),
+        ("SOURCES", sources, style.T_TINY),
+    ])
 
 
 def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
@@ -367,7 +350,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
             ys += [p.cy - p.pin_span / 2 - 2, p.cy + p.pin_span / 2 + 2]
     bbox = (min(xs), min(ys), max(xs), max(ys))
 
-    view = View.fit(sheet.area, bbox, margin=48.0, force_scale=force_scale)
+    # Dimensions stack below and left; only balloons need room above.
+    view = View.fit(sheet.area, bbox, margin=46.0, margin_top=22.0,
+                    margin_bottom=48.0, force_scale=force_scale)
     sheet.title.scale = view.scale_label
 
     board = Rect(view.x(0), view.y(0), view.d(o.width), view.d(o.height))
@@ -383,6 +368,16 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     draw_holes(c, view, spec.holes)
 
     # --- balloons -----------------------------------------------------------
+    # Where the dimension bands will go, computed before the balloons so they
+    # can be kept out of it.  A balloon sitting on an ordinate witness line
+    # reads as though it belongs to the dimension.
+    dim_bottom = min([board.y] + [view.y(p.body_y0) for p in spec.pmods
+                                  if p.body_y1 > p.body_y0]
+                     + [view.y(f.y0) for f in spec.features])
+    dim_left = min([board.x] + [view.x(f.x0) for f in spec.features])
+    balloon_bounds = Rect(dim_left, dim_bottom,
+                          sheet.area.x1 - dim_left, sheet.area.y1 - dim_bottom)
+
     obstacles = Obstacles()
     for f in spec.features:
         obstacles.add_rect(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1), pad=0.8)
@@ -423,13 +418,10 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     for i in order:
         f = spec.features[i]
         items.append(_Ballooned(str(i + 1), view.pt(f.cx, f.cy)))
-    place_balloons(items, obstacles, sheet.area, c)
+    place_balloons(items, obstacles, balloon_bounds, c)
 
     # --- dimensions ---------------------------------------------------------
-    lowest = min([board.y] + [view.y(p.body_y0) for p in spec.pmods
-                              if p.body_y1 > p.body_y0]
-                 + [view.y(f.y0) for f in spec.features])
-    leftmost = min([board.x] + [view.x(f.x0) for f in spec.features])
+    lowest, leftmost = dim_bottom, dim_left
 
     # Pmod host spacing is dimensioned per board edge, between the first two
     # hosts on that edge.  Taking the first two hosts overall instead gives a
@@ -561,28 +553,28 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                      "PIN1 Y mm"], rows,
                     ["start", "start", "end", "end", "end", "end"])
 
+    # Notes carry facts about this board, not an explanation of how to read a
+    # drawing.  The column is finite, and losing a provenance note to make room
+    # for a description of ordinate dimensioning is a bad trade.
     notes = [
         "All dimensions in millimetres. Datum is the lower-left corner of the "
-        "board outline; X to the right, Y up, viewed from the component side.",
-        "Hole and Pmod positions are ordinate dimensions from that single "
-        "datum, so they do not accumulate tolerance.",
+        "board outline; X right, Y up, viewed from the component side.",
     ]
     if overlay is not None:
         notes.append(
             f"Phantom outline is the {overlay.title} fitted to the 40-pin GPIO "
-            "header. Its Pmod host positions are given in this board's "
-            "coordinate frame, since the adapter's mounting holes coincide "
-            "with this board's.")
+            "header, drawn in this board's frame because its mounting holes "
+            "coincide with this board's.")
     notes += list(spec.notes) + list(extra_notes)
     if overlay is not None:
         # Summarised, not copied: the overlay has its own sheet, and repeating
         # all of its notes here pushes this sheet's column over.
         notes.append(
-            f"{overlay.title} positions are DERIVED, not published, and are "
-            "good to about +/-0.75 mm. JA and JB face out of the left edge, JC "
-            "out of the lower edge; all three are right-angle hosts whose "
-            "bodies overhang the edge. See the Pmod HAT Adapter sheet for the "
-            "full derivation.")
+            "Those host positions are DERIVED, not published: Digilent issue "
+            "no mechanical drawing for the adapter. Good to about +/-0.75 mm. "
+            "JA and JB face out of the left edge, JC out of the lower edge, "
+            "all right-angle hosts whose bodies overhang the edge. The Pmod "
+            "HAT Adapter sheet has the derivation.")
     if o.profile_note:
         notes.append(o.profile_note)
     src_lines = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")

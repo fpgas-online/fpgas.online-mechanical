@@ -23,8 +23,10 @@ class TitleBlock:
     #: Kept in the title block rather than the notes, which is where a real
     #: drawing puts it and, more practically, means it can never be the note
     #: that gets trimmed when the column runs short.
-    tolerance: str = "+/-0.20 edge, +/-0.10 hole pos, +/-0.08 hole dia"
-    projection: str = "first angle"
+    tolerance: str = "edge +/-0.20   hole pos +/-0.10   hole dia +/-0.08"
+    #: Only a multi-view drawing declares a projection angle; a single-view
+    #: sheet leaves it blank rather than claiming one it does not demonstrate.
+    projection: str = ""
 
 
 @dataclass
@@ -63,6 +65,9 @@ class Sheet:
     them colliding with dimension lines.
     """
 
+    #: Height of the notes band across the bottom of the drawing side.
+    NOTES_BAND_HEIGHT = 88.0
+
     #: Wide enough for the tables at a true 2.5 mm cap height, and no wider:
     #: the drawing area has to keep every board at 1:1, and the mounting plate
     #: at 135 mm is the widest thing that has to fit.
@@ -88,8 +93,16 @@ class Sheet:
         # does not sit on the frame line.
         self.column = Rect(self.frame.x1 - cw, self.title_rect.y1 + 4.0,
                            cw, self.frame.y1 - self.title_rect.y1 - 7.0)
-        self.area = Rect(self.frame.x, self.frame.y,
-                         self.frame.w - cw - 6.0, self.frame.h)
+        # Notes and sources live in a band across the bottom of the drawing
+        # side, not in the annotation column.  The column is finite and mostly
+        # eaten by schedules; the space under the view is otherwise wasted, and
+        # putting the notes there means nothing has to be trimmed.
+        band_h = self.NOTES_BAND_HEIGHT
+        # Inset from the frame line, or the note numbers sit on it.
+        self.notes_band = Rect(self.frame.x + 4.0, self.frame.y + 3.0,
+                               self.frame.w - cw - 12.0, band_h - 3.0)
+        self.area = Rect(self.frame.x, self.frame.y + band_h + 4.0,
+                         self.frame.w - cw - 6.0, self.frame.h - band_h - 4.0)
         self._column_cursor = self.column.y1
 
     # -- furniture ----------------------------------------------------------
@@ -136,7 +149,16 @@ class Sheet:
 
         band = 15.0
         c.line(r.x, r.y1 - band, r.x1, r.y1 - band, w=style.W_TABLE_HEAVY)
-        c.text(r.x + 2.5, r.y1 - band + 6.2, t.title, size=style.T_TITLE,
+        # Shrink the title until it fits its band rather than letting it run
+        # out of the title block, which is where the longest of these titles,
+        # the mounting plate's, ended up.
+        room = r.w - 5.0
+        size = style.T_TITLE
+        while size > style.T_SUBHEAD and \
+                style.text_width(t.title, size, face="sans",
+                                 bold=True) > room:
+            size -= 0.2
+        c.text(r.x + 2.5, r.y1 - band + 6.2, t.title, size=size,
                face="sans", bold=True)
         if t.subtitle:
             c.text(r.x + 2.5, r.y1 - band + 1.6, t.subtitle,
@@ -149,8 +171,9 @@ class Sheet:
             ("SCALE", t.scale), ("SIZE", self.size_name), ("SHEET", t.sheet),
             ("DRAWING NO", t.drawing_no), ("REV", t.rev),
         ]
-        wide = [("MATERIAL", t.material, 0.34),
-                ("GENERAL TOLERANCE", t.tolerance, 0.66)]
+        wide = [("MATERIAL", t.material, 0.28),
+                ("GENERAL TOLERANCE", t.tolerance, 0.56),
+                ("PROJECTION", "", 0.16)]
         rows, cols = 3, 4
         ch = (r.h - band) / rows
         cw = r.w / cols
@@ -162,29 +185,61 @@ class Sheet:
                 c.line(x, y, x, y + ch, w=style.W_TABLE)
             if row:
                 c.line(x, y + ch, x + cw, y + ch, w=style.W_TABLE)
-            self._title_cell(x, y, ch, label, value)
+            self._title_cell(x, y, ch, label, value, width=cw)
         y = r.y
         c.line(r.x, y + ch, r.x1, y + ch, w=style.W_TABLE)
         x = r.x
         for label, value, frac in wide:
             if x > r.x:
                 c.line(x, y, x, y + ch, w=style.W_TABLE)
-            self._title_cell(x, y, ch, label, value)
+            self._title_cell(x, y, ch, label, value, width=r.w * frac)
+            if label == "PROJECTION" and t.projection:
+                # In the title block, which is where a reader looks for it, and
+                # where it cannot collide with the notes band.
+                self.projection_symbol(x + r.w * frac / 2, y + 1.0, scale=0.62,
+                                       caption=False)
             x += r.w * frac
 
     def _title_cell(self, x: float, y: float, ch: float, label: str,
-                    value: str) -> None:
+                    value: str, width: float | None = None) -> None:
+        """Draw one title block field, refusing to let a value overrun a cell.
+
+        Title block values are short by convention but not by construction, so
+        the value is set at the standard size if it fits and the ISO minimum if
+        it does not.  Anything that still will not fit is a mistake in the
+        content, not something to silently overprint the next field with.
+        """
         c = self.canvas
         c.text(x + 1.6, y + ch - style.T_TINY - 1.0, label, size=style.T_TINY,
                colour="#666666")
-        c.text(x + 1.6, y + 1.6, value or "-", size=style.T_LABEL, bold=True)
+        # A blank field stays blank: a dash reads as "none", which is not the
+        # same as "this drawing does not declare one".
+        text = value if label == "PROJECTION" else (value or "-")
+        if not text:
+            return
+        if width is not None:
+            room = width - 3.2
+            size = style.T_LABEL
+            if style.text_width(text, size, bold=True) > room:
+                size = style.T_MIN
+            if style.text_width(text, size, bold=True) > room:
+                raise SystemExit(
+                    f"title block field {label!r} does not fit its cell: "
+                    f"{text!r} needs "
+                    f"{style.text_width(text, size, bold=True):.1f} mm of "
+                    f"{room:.1f} mm. Shorten it.")
+            c.text(x + 1.6, y + 1.6, text, size=size, bold=True)
+            return
+        c.text(x + 1.6, y + 1.6, text, size=style.T_LABEL, bold=True)
 
-    def projection_symbol(self, x: float, y: float, scale: float = 1.0) -> None:
+    def projection_symbol(self, x: float, y: float, scale: float = 1.0,
+                          caption: bool = True) -> None:
         """First-angle projection symbol (ISO 128), drawn as a truncated cone."""
         c = self.canvas
         s = scale
-        c.text(x, y + 7.2 * s, "FIRST ANGLE PROJECTION", size=style.T_TINY,
-               anchor="middle", colour="#666666")
+        if caption:
+            c.text(x, y + 7.2 * s, "FIRST ANGLE PROJECTION", size=style.T_TINY,
+                   anchor="middle", colour="#666666")
         c.line(x - 11 * s, y + 3 * s, x + 11 * s, y + 3 * s,
                w=style.W_CENTRE, colour="#666666", dash="3,1.2,0.6,1.2")
         c.polyline([(x - 9 * s, y + 5.4 * s), (x - 1 * s, y + 4.2 * s),
@@ -229,7 +284,7 @@ class Sheet:
         Reserving a guessed height and then drawing whatever fits is how the
         notes ended up running through the sources heading.
         """
-        indent = 5.0 if numbered else 0.0
+        indent = (style.text_width("99.", size) + 1.6) if numbered else 0.0
         total = self.HEADING_HEIGHT if title else 0.0
         for line in lines:
             total += (len(wrap(line, width - indent, size))
@@ -237,12 +292,16 @@ class Sheet:
         return total
 
     def notes(self, rect: Rect, title: str, lines: list[str],
-              size: float = style.T_NOTE, numbered: bool = True) -> float:
+              size: float = style.T_NOTE, numbered: bool = True,
+              start_index: int = 1) -> float:
         """Draw a numbered note block, wrapping to the column width."""
         c = self.canvas
         y = self.heading(rect, title) if title else rect.y1
-        indent = 5.0 if numbered else 0.0
-        for i, line in enumerate(lines, 1):
+        # Wide enough for the widest number this block will show, so a
+        # two-digit note number does not run into its own text.
+        indent = (style.text_width(f"{start_index + len(lines) - 1}.", size)
+                  + 1.6) if numbered else 0.0
+        for i, line in enumerate(lines, start_index):
             wrapped = wrap(line, rect.w - indent, size)
             if numbered:
                 c.text(rect.x, y - size, f"{i}.", size=size)
@@ -251,6 +310,69 @@ class Sheet:
                 y -= style.line_pitch(size)
             y -= 1.0
         return y
+
+    def band_columns(self, rect: Rect, gutter: float = 8.0,
+                     target: float = 105.0) -> list[Rect]:
+        """Split a band into columns of roughly *target* width."""
+        n = max(1, int(rect.w // target))
+        w = (rect.w - gutter * (n - 1)) / n
+        return [Rect(rect.x + i * (w + gutter), rect.y, w, rect.h)
+                for i in range(n)]
+
+    def notes_columns(self, columns: list[Rect],
+                      blocks: list[tuple[str, list[str], float]]) -> None:
+        """Flow several note blocks down a list of columns.
+
+        Everything is measured first and then placed, so a block can never run
+        past the bottom of a column.  A heading is never left stranded at the
+        foot of one: it moves on with its first line.  Columns need not be the
+        same height, which is what lets the leftover space at the bottom of the
+        annotation column serve as one more column.
+        """
+        items: list[tuple[str, object, float]] = []
+        for title, lines, size in blocks:
+            if title:
+                items.append(("heading", title, size))
+            for n, line in enumerate(lines, 1):
+                items.append(("line", (n, line), size))
+
+        def height(item, width):
+            kind, payload, size = item
+            if kind == "heading":
+                return self.HEADING_HEIGHT
+            return self.notes_height(width, "", [payload[1]], size)
+
+        col = 0
+        y = columns[0].y1
+        i = 0
+        while i < len(items):
+            kind, payload, size = items[i]
+            # Measured against the column it is about to go in, so a wide
+            # column does not reserve the height a narrow one would need and
+            # leave a gap.
+            h = height(items[i], columns[col].w)
+            need = h
+            if kind == "heading" and i + 1 < len(items):
+                need += height(items[i + 1], columns[col].w)
+            if y - need < columns[col].y:
+                col += 1
+                if col >= len(columns):
+                    raise SystemExit(
+                        "notes do not fit the space available; widen the band "
+                        "or shorten them rather than letting them run off the "
+                        "sheet")
+                y = columns[col].y1
+                continue
+            here = columns[col]
+            if kind == "heading":
+                self.heading(Rect(here.x, y - h, here.w, h), payload)
+            else:
+                n, line = payload
+                self.notes(Rect(here.x, y - h, here.w, h), "", [line],
+                           size=size, start_index=n)
+            y -= h
+            i += 1
+
 
     def table_height(self, title: str, rows: int,
                      size: float = style.T_TABLE) -> float:

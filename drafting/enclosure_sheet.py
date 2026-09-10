@@ -11,6 +11,7 @@ from __future__ import annotations
 from data.schema import BoardSpec
 
 from . import dims, style
+from .board_sheet import _place_notes_and_sources
 from .sheet import Rect, Sheet, TitleBlock
 from .view import STANDARD_SCALES, View, scale_text
 
@@ -40,8 +41,9 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle,
         drawing_no=drawing_no, rev="A", date=date, drawn_by="generated",
-        material="moulded / extruded enclosure",
-        tolerance="envelope +/-1.0 unless a note says otherwise"))
+        material="sealed enclosure",
+        tolerance="envelope +/-1.0 unless noted",
+        projection="first angle"))
     sheet.draw_frame()
     c = sheet.canvas
     area = sheet.area
@@ -129,9 +131,6 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
     dims.leader(c, (plan.x, plan.y), (plan.x - 24.0, plan.y - 16.0),
                 "DATUM  X0 Y0", tail=2.0, anchor="end", dot=True)
 
-    # Beside the title block, where a reader looks for it.
-    sheet.projection_symbol(sheet.title_rect.x - 22.0,
-                            sheet.title_rect.y + 12.0)
 
     rows = [["Overall length", f"{length:.2f}"],
             ["Overall width", f"{depth:.2f}"],
@@ -161,13 +160,9 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
         "The corner radius is nominal. It is a cross-section feature of the "
         "extrusion, so it appears in the end view only.",
     ] + list(spec.notes)
-    block = sheet.column_block(min(sheet.column_remaining * 0.66, 104.0))
-    sheet.notes(block, "NOTES", notes)
-
     src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
            for s in spec.sources]
-    block = sheet.column_block(max(sheet.column_remaining - 2.0, 20.0))
-    sheet.notes(block, "SOURCES", src, size=style.T_TINY)
+    _place_notes_and_sources(sheet, notes, src)
 
     sheet.draw_title_block()
     return sheet
