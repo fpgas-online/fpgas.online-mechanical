@@ -171,7 +171,8 @@ WAVESHARE_POE = BoardSpec(
     subtitle="POE-SPLITTER-25W-TYPE-C, extruded aluminium body",
     family="accessory",
     body="enclosure",
-    outline=Outline(width=102.5, height=29.6, z_height=24.8, corner_radius=1.5),
+    outline=Outline(width=102.5, height=29.6, z_height=24.8,
+                    corner_radius=1.5, constant_section=True),
     features=(
         Feature(key="rj45_in", label="RJ45 PoE input, in the end plate",
                 kind="ethernet", x0=86.5, y0=6.3, x1=102.5, y1=23.3,

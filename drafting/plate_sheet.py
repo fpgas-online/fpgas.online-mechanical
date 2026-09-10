@@ -394,10 +394,14 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
                 y_extent - 7.0 - plate.x, horizontal=False, value=o.height,
                 ext_start=y_extent - 2.0)
     dims.datum_marker(c, plate.x, plate.y, label="")
+    radius_label = f"R{o.corner_radius:.2f} (4 places), plate edge"
     dims.leader(c, view.pt(o.width - o.corner_radius * 0.3,
                            o.height - o.corner_radius * 0.3),
-                (plate.x1 + 8.0, plate.y1 + 5.0),
-                f"R{o.corner_radius:.2f} (4 places)")
+                (min(plate.x1 + 8.0,
+                     sheet.area.x1 - 6.2 - style.text_width(radius_label,
+                                                            style.T_LABEL)),
+                 plate.y1 + 5.0),
+                radius_label)
 
     rows = []
     for i, h in enumerate(spec.holes):

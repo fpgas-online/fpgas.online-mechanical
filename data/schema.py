@@ -186,6 +186,11 @@ class Outline:
     thickness: float | None = None      # bare PCB thickness
     z_height: float | None = None       # overall height of a packaged item
     profile_note: str = ""
+    #: True for a body of constant cross-section, such as an extrusion, whose
+    #: corner radii belong to that section and so appear in the end view only.
+    #: A moulded or clamshell case is rounded in plan as well, and its plan
+    #: view has to show it.
+    constant_section: bool = False
 
 
 @dataclass(frozen=True)

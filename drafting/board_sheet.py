@@ -44,9 +44,14 @@ KIND_LABEL = {
 
 #: Room reserved above and below a view.  Dimensions stack below and to the
 #: left; only balloons need space above.
+# Room the view wants around the part.  The bottom carries the Pmod spacing
+# dimension, the ordinate chain and the overall dimension; the top carries
+# balloons only.  Both were set generously and then measured: on the fullest
+# sheet the deepest dimension still cleared the notes band by ten millimetres,
+# which is space the notes need more than the view does.
 VIEW_MARGIN_SIDE = 46.0
-VIEW_MARGIN_TOP = 22.0
-VIEW_MARGIN_BOTTOM = 48.0
+VIEW_MARGIN_TOP = 18.0
+VIEW_MARGIN_BOTTOM = 40.0
 
 BALLOON_R = 3.2
 BALLOON_STEP = 8.4
@@ -465,6 +470,31 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
         dims.balloon(c, tip, pos, item.label, radius=BALLOON_R)
 
 
+def _radius_callout(o, board: Rect, sheet: Sheet, view: View
+                    ) -> tuple[str, float, float, float]:
+    """The corner radius callout: its text, its elbow, and the text's span.
+
+    One definition, because the balloon placer reserves the callout's space
+    before it is drawn and the two have to agree.  Reserving one span and
+    drawing another put a balloon straight on the callout: the elbow is held
+    back so the text ends inside the drawing area, and on the widest boards
+    that pulls it left of the corner it points at, which makes the leader tail
+    -- and the text with it -- run the other way.  That is fine, the space
+    above the board is empty; guessing the direction was not.
+    """
+    label = f"R{o.corner_radius:.2f} (4 places), board outline"
+    tw = style.text_width(label, style.T_LABEL)
+    tip_x = view.x(o.width - o.corner_radius * 0.3)
+    elbow = min(board.x1 + 8.0, sheet.area.x1 - 6.2 - tw)
+    # Mirrors dims.leader: the tail runs away from the tip, and the text runs
+    # on from the end of the tail.
+    if elbow >= tip_x:
+        end = elbow + dims.LEADER_TAIL
+        return label, elbow, end + 1.2, end + 1.2 + tw
+    end = elbow - dims.LEADER_TAIL
+    return label, elbow, end - 1.2 - tw, end - 1.2
+
+
 def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None) -> float:
     """Vertical room the view and its dimensions want, in sheet millimetres."""
     ys = [0.0, spec.outline.height]
@@ -624,6 +654,20 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
                 f"Board thickness is {nominal:.1f} mm nominal. The KiCad "
                 f"file's {o.thickness:.5f} mm is its stackup sum, not a "
                 "specified finished thickness.")
+    if spec.features:
+        # What a chassis actually has to clear, which is not the board
+        # outline: on the Pi 4B the connectors reach 88 mm across an 85 mm
+        # board, and the demo boards' USB-C shells overhang too.
+        x0 = min([0.0] + [f.x0 for f in spec.features])
+        x1 = max([o.width] + [f.x1 for f in spec.features])
+        y0 = min([0.0] + [f.y0 for f in spec.features])
+        y1 = max([o.height] + [f.y1 for f in spec.features])
+        if (x0, y0, x1, y1) != (0.0, 0.0, o.width, o.height):
+            notes.append(
+                f"Assembled envelope, connector overhang included, is "
+                f"{x1 - x0:.2f} x {y1 - y0:.2f} mm against a "
+                f"{o.width:.2f} x {o.height:.2f} mm board outline. The "
+                "FEATURE SCHEDULE gives the extents.")
     if o.profile_note:
         notes.append(o.profile_note)
     sources = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
@@ -862,16 +906,17 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         obstacles.add_rect(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1), pad=0.8)
         feature_rect[i] = len(obstacles.rects) - 1
     # The radius callout is drawn after the balloons but occupies its space
-    # regardless, so reserve it now.
+    # regardless, so reserve it now, at exactly the place it will be drawn.
     if o.corner_radius:
-        rlabel = f"R{o.corner_radius:.2f} (4 places), board outline" \
-            if overlay is not None else f"R{o.corner_radius:.2f} (4 places)"
-        rw = style.text_width(rlabel, style.T_LABEL)
-        obstacles.add_rect(board.x1 + 8.0, board.y1 + 3.0,
-                           board.x1 + 8.0 + rw + 8.0, board.y1 + 8.0, pad=1.0)
+        _, relbow, rx0, rx1 = _radius_callout(o, board, sheet, view)
+        # Hard: a balloon on the callout hides a dimension, and there is
+        # always somewhere else for a balloon to go.
+        obstacles.add_rect(min(relbow, rx0), board.y1 + 2.0,
+                           max(relbow, rx1), board.y1 + 9.0,
+                           pad=1.2, weight=HARD)
         obstacles.add_segment(*view.pt(o.width - o.corner_radius * 0.3,
                                        o.height - o.corner_radius * 0.3),
-                              board.x1 + 8.0, board.y1 + 5.0)
+                              relbow, board.y1 + 5.0, weight=HARD)
 
     if overlay is not None:
         # The phantom part is drawn on this view, so a balloon must keep off it
@@ -1053,12 +1098,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     if o.corner_radius:
         r = o.corner_radius
         tip = view.pt(o.width - r * 0.3, o.height - r * 0.3)
-        # Says which outline it applies to, because on the Pi 3A+ the phantom
-        # Pmod HAT Adapter outline runs within half a millimetre of the board's
-        # own and the callout would otherwise be ambiguous.
-        label = f"R{r:.2f} (4 places), board outline" if overlay is not None \
-            else f"R{r:.2f} (4 places)"
-        dims.leader(c, tip, (board.x1 + 8.0, board.y1 + 5.0), label)
+        # Always names its subject.  On the Pi 3A+ the phantom Pmod HAT
+        # Adapter outline runs within half a millimetre of the board's own, so
+        # the callout has to say which it means; naming it only there left the
+        # same callout worded two ways across the package.
+        label, elbow_x, _, _ = _radius_callout(o, board, sheet, view)
+        dims.leader(c, tip, (elbow_x, board.y1 + 5.0), label)
 
     # --- annotation column --------------------------------------------------
     if spec.holes:

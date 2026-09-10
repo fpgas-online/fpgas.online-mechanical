@@ -298,6 +298,8 @@ class Sheet:
         Reserving a guessed height and then drawing whatever fits is how the
         notes ended up running through the sources heading.
         """
+        # Matches the widest number a block can reach in practice, so the
+        # reserved height and the drawn height agree.
         indent = (style.text_width("99.", size) + 1.6) if numbered else 0.0
         total = self.HEADING_HEIGHT if title else 0.0
         for line in lines:
@@ -307,14 +309,21 @@ class Sheet:
 
     def notes(self, rect: Rect, title: str, lines: list[str],
               size: float = style.T_NOTE, numbered: bool = True,
-              start_index: int = 1) -> float:
-        """Draw a numbered note block, wrapping to the column width."""
+              start_index: int = 1, widest_index: int | None = None) -> float:
+        """Draw a numbered note block, wrapping to the column width.
+
+        *widest_index* is the highest note number the whole list will reach,
+        which is not always the highest this call draws: the flow places notes
+        one at a time, so sized to its own number every note got its own
+        indent and note 10's text started further right than note 9's.
+        """
         c = self.canvas
         y = self.heading(rect, title) if title else rect.y1
-        # Wide enough for the widest number this block will show, so a
-        # two-digit note number does not run into its own text.
-        indent = (style.text_width(f"{start_index + len(lines) - 1}.", size)
-                  + 1.6) if numbered else 0.0
+        # Wide enough for the widest number the list will show, so a two-digit
+        # note number neither runs into its own text nor shifts it.
+        top = widest_index if widest_index is not None \
+            else start_index + len(lines) - 1
+        indent = (style.text_width(f"{top}.", size) + 1.6) if numbered else 0.0
         for i, line in enumerate(lines, start_index):
             wrapped = wrap(line, rect.w - indent, size)
             if numbered:
@@ -374,6 +383,9 @@ class Sheet:
         same height, which is what lets the leftover space at the bottom of the
         annotation column serve as one more column.
         """
+        # The highest number any block reaches, so every note in the list is
+        # indented to the same width.
+        widest = max((len(lines) for _, lines, _ in blocks), default=1)
         items: list[tuple[str, object, float]] = []
         for title, lines, size in blocks:
             if title:
@@ -450,7 +462,7 @@ class Sheet:
                 else:
                     n, line = payload
                     self.notes(Rect(here.x, y - h, here.w, h), "", [line],
-                               size=size, start_index=n)
+                               size=size, start_index=n, widest_index=widest)
             y -= h
             i += 1
         return True

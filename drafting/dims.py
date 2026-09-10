@@ -156,9 +156,13 @@ def centre_mark(c: Canvas, cx: float, cy: float, r: float, *,
     c.line(cx, cy - o, cx, cy + o, w=style.W_CENTRE, colour=colour)
 
 
+#: Length of a leader's horizontal tail, before its text.
+LEADER_TAIL = 5.0
+
+
 def leader(c: Canvas, tip: tuple[float, float], elbow: tuple[float, float],
            text: str, *, size: float = style.T_LABEL,
-           colour: str = style.C_DIM, tail: float = 5.0,
+           colour: str = style.C_DIM, tail: float = LEADER_TAIL,
            anchor: str | None = None, dot: bool = False) -> tuple[float, float]:
     """Leader with an arrow at *tip*, a bend at *elbow* and a horizontal tail.
 
@@ -187,6 +191,10 @@ def balloon(c: Canvas, tip: tuple[float, float], centre: tuple[float, float],
     tx, ty = tip
     bx, by = centre
     ang = math.atan2(by - ty, bx - tx)
+    # A white core under the terminator: the dot is drawn in the same colour
+    # as a filled feature, so on the LEDs, which are solid, it vanished and
+    # the leader appeared to stop at nothing.
+    c.circle(tx, ty, 1.05, fill="#ffffff", colour="#ffffff", w=0.05)
     c.circle(tx, ty, 0.65, fill=colour, colour=colour, w=0.05)
     c.line(tx, ty, bx - radius * math.cos(ang), by - radius * math.sin(ang),
            w=style.W_THIN, colour=colour)

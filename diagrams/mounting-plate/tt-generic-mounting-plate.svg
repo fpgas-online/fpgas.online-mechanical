@@ -172,10 +172,10 @@
 <circle cx="57" cy="129" r="2" fill="none" stroke="#004c99" stroke-width="0.25"/>
 <path d="M 57.0 129.0 L 59.0 129.0 A 2.0 2.0 0 0 1 57.0 127.0 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M 57.0 129.0 L 55.0 129.0 A 2.0 2.0 0 0 1 57.0 131.0 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
-<polygon points="190.8,29.2 193.7908,28.2698 192.7848,26.7771" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<line x1="190.8" y1="29.2" x2="200" y2="23" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="200" y1="23" x2="205" y2="23" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="206.2" y="22.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start">R4.00 (4 places)</text>
+<polygon points="190.8,29.2 189.2054,26.5042 187.9848,27.8272" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<line x1="190.8" y1="29.2" x2="184.08" y2="23" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="184.08" y1="23" x2="179.08" y2="23" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="177.88" y="22.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">R4.00 (4 places), plate edge</text>
 <text x="240" y="21.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">BOARD MOUNTING HOLES</text>
 <line x1="240" y1="22.9" x2="402" y2="22.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="240" y="25.1" width="159.4049" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
@@ -317,58 +317,58 @@
 <text x="19" y="177.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
 <line x1="19" y1="178.9" x2="121.5" y2="178.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="19" y="183.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="23.542" y="183.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All dimensions in millimetres. The datum symbol marks the</text>
-<text x="23.542" y="188.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">origin: the plate&#x27;s lower-left corner, X right, Y up, seen from the</text>
-<text x="23.542" y="192.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">side the board mounts on.</text>
+<text x="25.5045" y="183.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All dimensions in millimetres. The datum symbol marks the</text>
+<text x="25.5045" y="188.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">origin: the plate&#x27;s lower-left corner, X right, Y up, seen from</text>
+<text x="25.5045" y="192.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the side the board mounts on.</text>
 <text x="19" y="198.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="23.542" y="198.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole positions are tabulated, not dimensioned on the view:</text>
-<text x="23.542" y="202.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">there are too many to dimension and keep it readable. A slot</text>
-<text x="23.542" y="207.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">row gives its two end centres; DIA/WIDTH is the slot width,</text>
-<text x="23.542" y="211.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">LENGTH is overall.</text>
+<text x="25.5045" y="198.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole positions are tabulated, not dimensioned on the view:</text>
+<text x="25.5045" y="202.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">there are too many to dimension and keep it readable. A slot</text>
+<text x="25.5045" y="207.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">row gives its two end centres; DIA/WIDTH is the slot width,</text>
+<text x="25.5045" y="211.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">LENGTH is overall.</text>
 <text x="19" y="217.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="23.542" y="217.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USED BY reads &lt;group&gt;:&lt;hole&gt;; MT1 to MT4 are the board&#x27;s</text>
-<text x="23.542" y="221.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">own hole IDs. Groups, by board revision: TT01-03 =</text>
-<text x="23.542" y="226.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">tt123-v2.2.6; TT04-05 = v1.2.2, v1.2.3; TT06-08 = v2.0.1,</text>
-<text x="23.542" y="230.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">v2.1.0, v2.1.2; v3.2 and v3.3 = themselves, no shuttle yet.</text>
+<text x="25.5045" y="217.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USED BY reads &lt;group&gt;:&lt;hole&gt;; MT1 to MT4 are the board&#x27;s</text>
+<text x="25.5045" y="221.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">own hole IDs. Groups, by board revision: TT01-03 =</text>
+<text x="25.5045" y="226.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">tt123-v2.2.6; TT04-05 = v1.2.2, v1.2.3; TT06-08 = v2.0.1,</text>
+<text x="25.5045" y="230.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">v2.1.0, v2.1.2; v3.2 and v3.3 = themselves, no shuttle yet.</text>
 <text x="19" y="236.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="23.542" y="236.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The three PMOD envelopes are not machined features. They</text>
-<text x="23.542" y="240.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mark where the Pmod host pin fields end up, the same place</text>
-<text x="23.542" y="245.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">for every board revision. That is the point of the plate.</text>
+<text x="25.5045" y="236.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The three PMOD envelopes are not machined features. They</text>
+<text x="25.5045" y="240.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mark where the Pmod host pin fields end up, the same place</text>
+<text x="25.5045" y="245.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">for every board revision. That is the point of the plate.</text>
 <text x="19" y="250.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
-<text x="23.542" y="250.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Fit the board on standoffs. A board uses only the holes and</text>
-<text x="23.542" y="255.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">slots its USED BY row names.</text>
+<text x="25.5045" y="250.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Fit the board on standoffs. A board uses only the holes and</text>
+<text x="25.5045" y="255.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">slots its USED BY row names.</text>
 <text x="19" y="261.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
-<text x="23.542" y="261.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board holes and slots are 3.4 mm, a close clearance fit on M3.</text>
-<text x="23.542" y="265.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate fixings are 4.3 mm, a clearance fit on M4. A slot spans</text>
-<text x="23.542" y="270.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">two revisions whose holes are too close together to drill</text>
-<text x="23.542" y="274.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">separately.</text>
+<text x="25.5045" y="261.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board holes and slots are 3.4 mm, a close clearance fit on</text>
+<text x="25.5045" y="265.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">M3. Plate fixings are 4.3 mm, a clearance fit on M4. A slot</text>
+<text x="25.5045" y="270.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">spans two revisions whose holes are too close together to</text>
+<text x="25.5045" y="274.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">drill separately.</text>
 <text x="129.5" y="177.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
 <line x1="129.5" y1="178.9" x2="232" y2="178.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="129.5" y="183.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
-<text x="134.042" y="183.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The Pmod host connector bodies overhang the plate&#x27;s front</text>
-<text x="134.042" y="188.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">edge by 2.78 mm, so a peripheral module plugs into clear air.</text>
+<text x="136.0045" y="183.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The Pmod host connector bodies overhang the plate&#x27;s front</text>
+<text x="136.0045" y="188.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">edge by 2.78 mm, so a peripheral module plugs into clear air.</text>
 <text x="129.5" y="193.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">8.</text>
-<text x="134.042" y="193.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Cut file: tt-generic-mounting-plate.dxf, four layers. Sizes here</text>
-<text x="134.042" y="198.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">are finished sizes; allow for your cutter&#x27;s kerf.</text>
+<text x="136.0045" y="193.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Cut file: tt-generic-mounting-plate.dxf, four layers. Sizes here</text>
+<text x="136.0045" y="198.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">are finished sizes; allow for your cutter&#x27;s kerf.</text>
 <text x="129.5" y="203.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">9.</text>
-<text x="134.042" y="203.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Fit the plate to its chassis before the board: the fixings sit in</text>
-<text x="134.042" y="208.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the border, which a board overhangs. Least material between</text>
-<text x="134.042" y="212.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">features is 1.59 mm, between H1 and H2.</text>
+<text x="136.0045" y="203.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Fit the plate to its chassis before the board: the fixings sit in</text>
+<text x="136.0045" y="208.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the border, which a board overhangs. Least material between</text>
+<text x="136.0045" y="212.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">features is 1.59 mm, between H1 and H2.</text>
 <text x="129.5" y="218.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">10.</text>
 <text x="136.0045" y="218.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Drawing TT-MP-02 shows which holes each revision uses.</text>
 <text x="129.5" y="224.814" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
 <line x1="129.5" y1="226.214" x2="232" y2="226.214" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="129.5" y="230.914" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="134.042" y="230.914" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Derived from: data/tinytapeout_boards.py - Board outlines,</text>
-<text x="134.042" y="235.4407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mounting holes and Pmod host positions for every Tiny</text>
-<text x="134.042" y="239.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Tapeout demo board revision, extracted from the upstream</text>
-<text x="134.042" y="244.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">KiCad files.</text>
+<text x="136.0045" y="230.914" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Derived from: data/tinytapeout_boards.py - Board outlines,</text>
+<text x="136.0045" y="235.4407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mounting holes and Pmod host positions for every Tiny</text>
+<text x="136.0045" y="239.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Tapeout demo board revision, extracted from the upstream</text>
+<text x="136.0045" y="244.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">KiCad files.</text>
 <text x="129.5" y="250.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="134.042" y="250.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host pitch:</text>
-<text x="134.042" y="254.5477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/_media/reference/pmod/</text>
-<text x="134.042" y="259.0745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pmod-interface-specification-1_2_0.pdf - Digilent mandate .90</text>
-<text x="134.042" y="263.6012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">in (22.86 mm) between adjacent host ports on a board edge,</text>
-<text x="134.042" y="268.128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">which is why one plate can serve every revision.</text>
+<text x="136.0045" y="250.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host pitch:</text>
+<text x="136.0045" y="254.5477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/_media/reference/pmod/</text>
+<text x="136.0045" y="259.0745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pmod-interface-specification-1_2_0.pdf - Digilent mandate</text>
+<text x="136.0045" y="263.6012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">.90 in (22.86 mm) between adjacent host ports on a board</text>
+<text x="136.0045" y="268.128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">edge, which is why one plate can serve every revision.</text>
 <text x="240" y="158.8111" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
 <line x1="240" y1="160.2111" x2="402" y2="160.2111" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <line x1="240" y1="165.0111" x2="260" y2="165.0111" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>

@@ -103,8 +103,11 @@ def _enclosure_text(spec) -> tuple[list[str], list[str]]:
         "dimension marked REF is scaled from vendor photographs, is good to "
         "about " + _ref_tol(spec) + ", and is not for inspection. The body "
         "envelope is the dimension to trust.",
-        "The corner radius is nominal. It belongs to the body cross-section, "
-        "so it appears in the end view only.",
+        ("The corner radius is nominal. It belongs to the body cross-section, "
+         "so it appears in the end view only."
+         if spec.outline.constant_section else
+         "The corner radius is nominal. The case is not a constant section, "
+         "so the radius runs round the plan as well and is drawn there."),
     ] + list(spec.notes)
     src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
            for s in spec.sources]
@@ -150,13 +153,16 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
     def box(r: Rect, radius: float = 0.0) -> None:
         c.rect(r.x, r.y, r.w, r.h, weight=style.W_OUTLINE, radius=radius)
 
-    # The corner radii belong to the body cross-section, so only the end view
-    # shows them; the plan and the elevation are plain rectangles.  Drawing the
-    # radius on the plan as well, as this sheet used to, says the part is
-    # rounded in two directions at once.
-    box(front)
-    box(plan)
-    box(end, radius=o.corner_radius * scale)
+    # An extruded body has one cross-section, so its radii belong to the end
+    # view and the plan and elevation are plain rectangles: drawing the radius
+    # on the plan as well would say the part is rounded in two directions at
+    # once.  A moulded or clamshell case is rounded in plan too, and saying
+    # otherwise on its sheet was a note copied from the extrusion's.
+    section_only = o.constant_section
+    r = o.corner_radius * scale
+    box(front, radius=0.0 if section_only else r)
+    box(plan, radius=0.0 if section_only else r)
+    box(end, radius=r)
 
     # Captions above each view, so the space below stays free for dimensions.
     for r, name in ((front, "FRONT ELEVATION"), (plan, "PLAN"),
@@ -168,10 +174,9 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
     # depth.  Project each onto the plan, and onto the end view where it sits
     # in an end face.
     #
-    # The overall dimensions sit at the bottom of each view's dimension stack,
-    # so where a feature adds dimensions above them, they move down to clear.
+    # The plan's overall length sits at the bottom of its dimension stack, so
+    # where a feature adds dimensions above it, it moves down to clear them.
     plan_stack = -14.0
-    end_stack = -14.0
     for f in spec.features:
         px = plan.x + f.x0 * scale
         py = plan.y + f.y0 * scale
@@ -220,7 +225,6 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
             dims.linear(c, (end.x, end.y), (end.x, ey), -25.0,
                         horizontal=False, text=f"{f.z0:.2f}{ap}",
                         text_side="low")
-            end_stack = -36.0
             # Jack size and position along the body, in the plan.  All three
             # plan dimensions go below the view in one stack, shortest first,
             # so a reader reads outwards from the part.
@@ -239,14 +243,16 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                 horizontal=False, value=depth)
     dims.linear(c, (front.x1, front.y), (front.x1, front.y1), 14.0,
                 horizontal=False, value=height)
-    dims.linear(c, (end.x, end.y), (end.x1, end.y), end_stack, horizontal=True,
-                value=depth)
+    # Depth is dimensioned on the plan, next to the length it goes with, and
+    # not again here: one dimension, one place.
     # Below the view, not above: the caption sits above and is wider than the
     # view itself, so an upward leader runs straight through it.
     dims.leader(c, (end.x1 - o.corner_radius * scale * 0.3,
                     end.y + o.corner_radius * scale * 0.3),
                 (end.x1 + 9.0, end.y - 7.0),
-                f"R{o.corner_radius:.2f} nominal (4 places)")
+                (f"R{o.corner_radius:.2f} nominal (4 places), body section"
+                 if section_only else
+                 f"R{o.corner_radius:.2f} nominal, all corners"))
     dims.datum_marker(c, plan.x, plan.y, label="")
 
 
