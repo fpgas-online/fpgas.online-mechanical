@@ -38,18 +38,42 @@ RPI = ROOT / "tmp" / "rpi"
 
 DOC = "https://datasheets.raspberrypi.com"
 
-# Every Model B sized Raspberry Pi shares this hole pattern.  It is dimensioned
-# on each model's own mechanical drawing (3.5 mm in from the edges, 58 x 49 mm
-# spacing); the Pi 3B/3B+ DXFs omit the holes, so the figures below come from
-# the corresponding PDF drawings.
+# Every Model B sized Raspberry Pi shares this hole pattern, dimensioned on each
+# model's own drawing: 3.5 mm in from the edges on a 58 x 49 mm rectangle.
 STANDARD_HOLES = [(3.5, 3.5), (61.5, 3.5), (3.5, 52.5), (61.5, 52.5)]
+
+# Hole diameter and keep-out provenance differs per model and must not be
+# blurred together, because only some of it is actually published:
+#
+#   Pi 3B    the drawing carries the note "4x M2.5 MOUNTING HOLES DRILLED TO
+#            2.75 +/- 0.05mm".  No keep-out is given.
+#   Pi 3B+   no hole note and no keep-out on its drawing.  Same outline, same
+#            hole pattern, and a byte-identical BOARD_OUTLINE and hole geometry
+#            in its DXF, so the Pi 3B figure is carried over and said to be.
+#   Pi 3A+   same, carried over from the Pi 3B.
+#   Pi 4B    the DXF carries the holes on layer 0: 2.70 hole, 6.00 keep-out.
+#   Pi 5     the drawing dimensions the hole as "o2.7"; the keep-out circle is
+#            drawn and measures 5.80.
+#
+# The Raspberry Pi HAT mechanical specification separately requires a 6.2 mm
+# keep-out around each mounting hole on a board fitted to a Pi.  That is the
+# figure to design a plate to, and it is quoted in the notes rather than being
+# passed off as a dimension from the Pi's own drawing.
+HAT_KEEPOUT_NOTE = (
+    "No keep-out around the mounting holes is dimensioned on this model's own "
+    "drawing. The Raspberry Pi HAT mechanical specification "
+    "(github.com/raspberrypi/hats, hat-board-mechanical.pdf) requires a 6.2 mm "
+    "keep-out around each mounting hole on a board fitted to a Pi; design to "
+    "that."
+)
 
 MODELS = [
     dict(
         key="rpi3b", title="Raspberry Pi 3 Model B", subtitle="85 x 56 mm",
         kind="dxf", file="raspberry-pi-3-b-mechanical-drawing.dxf",
         width=85.0, height=56.0, corner_radius=3.0,
-        hole_dia=2.75, hole_keepout=6.2,
+        hole_dia=2.75, hole_keepout=None, hole_tol=0.05,
+        hole_note="Drawing note, quoted: 4x M2.5 MOUNTING HOLES DRILLED TO 2.75 +/- 0.05mm.",
         hole_source=f"{DOC}/rpi3/raspberry-pi-3-b-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi3/raspberry-pi-3-b-mechanical-drawing.dxf",
         parts=[
@@ -66,7 +90,11 @@ MODELS = [
         key="rpi3bplus", title="Raspberry Pi 3 Model B+", subtitle="85 x 56 mm",
         kind="dxf", file="raspberry-pi-3-b-plus-mechanical-drawing.dxf",
         width=85.0, height=56.0, corner_radius=3.0,
-        hole_dia=2.75, hole_keepout=6.2,
+        hole_dia=2.75, hole_keepout=None, hole_tol=0.05,
+        hole_note="Carried over from the Pi 3 Model B drawing, which states "
+                  "4x M2.5 holes drilled to 2.75 +/- 0.05 mm. The 3B+ drawing "
+                  "gives no hole size; the two boards share an identical "
+                  "outline, hole pattern and DXF geometry.",
         hole_source=f"{DOC}/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.dxf",
         parts=[
@@ -83,7 +111,8 @@ MODELS = [
         key="rpi3aplus", title="Raspberry Pi 3 Model A+", subtitle="65 x 56 mm",
         kind="pdf", file="raspberry-pi-3-a-plus-mechanical-drawing.pdf",
         width=65.0, height=56.0, corner_radius=3.0,
-        hole_dia=2.75, hole_keepout=6.2,
+        hole_dia=2.75, hole_keepout=None, hole_tol=0.05,
+        hole_note="Carried over from the Pi 3 Model B drawing. The 3A+ drawing gives no hole size.",
         hole_source=f"{DOC}/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf",
         reduced=True,
@@ -99,7 +128,8 @@ MODELS = [
         key="rpi4b", title="Raspberry Pi 4 Model B", subtitle="85 x 56 mm",
         kind="dxf", file="raspberry-pi-4-mechanical-drawing.dxf",
         width=85.0, height=56.0, corner_radius=3.0,
-        hole_dia=2.70, hole_keepout=6.0, holes_from_source=True,
+        hole_dia=2.70, hole_keepout=6.00, hole_tol=None,
+        hole_note="Read from the DXF: hole and keep-out circles on layer 0.", holes_from_source=True,
         hole_source=f"{DOC}/rpi4/raspberry-pi-4-mechanical-drawing.dxf",
         drawing=f"{DOC}/rpi4/raspberry-pi-4-mechanical-drawing.dxf",
         parts=[
@@ -117,7 +147,8 @@ MODELS = [
         key="rpi5", title="Raspberry Pi 5", subtitle="85 x 56 mm",
         kind="pdf", file="raspberry-pi-5-mechanical-drawing.pdf",
         width=85.0, height=56.0, corner_radius=3.0,
-        hole_dia=2.70, hole_keepout=5.8,
+        hole_dia=2.70, hole_keepout=5.80, hole_tol=None,
+        hole_note="Hole diameter dimensioned on the drawing as o2.7; the keep-out circle is drawn and measures 5.80.",
         hole_source=f"{DOC}/rpi5/raspberry-pi-5-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi5/raspberry-pi-5-mechanical-drawing.pdf",
         # Snapped from the measured 3.482 / 61.480, which are within the
@@ -221,8 +252,6 @@ def extract(model: dict) -> dict:
             raise SystemExit(f"{model['key']}: expected 4 holes, got {len(holes)}")
     else:
         for x, y in STANDARD_HOLES:
-            if x > model["width"] - 3.0:
-                continue
             holes.append(dict(x=x, y=y, dia=model["hole_dia"],
                               keepout_dia=model["hole_keepout"], kind="mount"))
     for x, y, d in model.get("aux_holes", []):
@@ -264,7 +293,7 @@ def render(rec: dict) -> str:
     m = rec["model"]
     holes = ",\n".join(
         f"        Hole(x={h['x']}, y={h['y']}, dia={h['dia']}, kind={h['kind']!r}, "
-        f"keepout_dia={h['keepout_dia']})"
+        f"keepout_dia={h['keepout_dia']}, tol={m.get('hole_tol')})"
         for h in rec["holes"])
     feats = ",\n".join(
         f"        Feature(key={f['key']!r}, label={f['label']!r}, kind={f['kind']!r},\n"
@@ -272,7 +301,10 @@ def render(rec: dict) -> str:
         for f in rec["features"])
 
     notes = ['"Connector outlines are the component body as drawn by '
-             'Raspberry Pi Ltd, including any overhang past the board edge."']
+             'Raspberry Pi Ltd, including any overhang past the board edge."',
+             repr(f"Mounting hole diameter: {m['hole_note']}")]
+    if m.get("hole_keepout") is None:
+        notes.append(repr(HAT_KEEPOUT_NOTE))
     if m.get("reduced"):
         notes.append('"The source drawing is a reduced plot, not 1:1, so '
                      f'dimensions carry more uncertainty than the other models; '
@@ -282,12 +314,8 @@ def render(rec: dict) -> str:
                      'mounting holes, and sit 6.0 mm from the nearer mounting '
                      'hole on the board diagonal."')
     if not m.get("holes_from_source"):
-        notes.append('"The source DXF does not carry the mounting holes; hole '
-                     'positions and diameter are taken from the same model\'s '
-                     'PDF mechanical drawing."'
-                     if m["kind"] == "dxf" else
-                     '"Mounting hole diameter is the figure dimensioned on the '
-                     'drawing."')
+        notes.append('"Hole positions are the 3.5 mm inset and 58 x 49 mm '
+                     'rectangle dimensioned on this model\'s own drawing."')
 
     return f'''
 BOARDS[{m["key"]!r}] = BoardSpec(
@@ -308,7 +336,7 @@ BOARDS[{m["key"]!r}] = BoardSpec(
         Source(label="Mechanical drawing", ref={m["drawing"]!r},
                note="Raspberry Pi Ltd"),
         Source(label="Mounting holes", ref={m["hole_source"]!r},
-               note="Raspberry Pi Ltd"),
+               note={m["hole_note"]!r}),
     ),
     notes=(
         {",\n        ".join(notes)},

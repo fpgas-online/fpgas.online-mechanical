@@ -62,13 +62,12 @@ def outline_path(c: Canvas, view: View, spec: BoardSpec, *,
                 c.line(*view.pt(x1, y1), *view.pt(x2, y2), w=w, colour=colour,
                        dash=dash)
             else:
-                _, x1, y1, xm, ym, x2, y2 = edge
-                r = _arc_radius(x1, y1, xm, ym, x2, y2)
+                # ("arc", x1, y1, x2, y2, radius, large_arc, counter_clockwise),
+                # already resolved by the extractor.
+                _, x1, y1, x2, y2, r, large, ccw = edge
                 p1, p2 = view.pt(x1, y1), view.pt(x2, y2)
-                large = 0
-                sweep = 1 if _cross(x1, y1, xm, ym, x2, y2) < 0 else 0
                 c.arc(p1[0], p1[1], p2[0], p2[1], view.d(r), large=large,
-                      sweep=sweep, w=w, colour=colour)
+                      sweep=ccw, w=w, colour=colour)
         return
     r = o.corner_radius
     x0, y0 = 0.0, 0.0
@@ -85,21 +84,6 @@ def outline_path(c: Canvas, view: View, spec: BoardSpec, *,
         d += f"L {after[0]:.4f} {c._y(after[1]):.4f} "
     d += "Z"
     c.path(d, w=w, colour=colour, dash=dash)
-
-
-def _cross(x1, y1, xm, ym, x2, y2) -> float:
-    return (xm - x1) * (y2 - y1) - (ym - y1) * (x2 - x1)
-
-
-def _arc_radius(x1, y1, xm, ym, x2, y2) -> float:
-    d = 2 * (x1 * (ym - y2) + xm * (y2 - y1) + x2 * (y1 - ym))
-    if abs(d) < 1e-9:
-        return math.hypot(x2 - x1, y2 - y1) / 2
-    ux = ((x1**2 + y1**2) * (ym - y2) + (xm**2 + ym**2) * (y2 - y1)
-          + (x2**2 + y2**2) * (y1 - ym)) / d
-    uy = ((x1**2 + y1**2) * (x2 - xm) + (xm**2 + ym**2) * (x1 - x2)
-          + (x2**2 + y2**2) * (xm - x1)) / d
-    return math.hypot(x1 - ux, y1 - uy)
 
 
 def draw_holes(c: Canvas, view: View, holes: tuple[Hole, ...]) -> None:
@@ -240,10 +224,6 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
         dims.balloon(c, item.tip, best, item.label, radius=BALLOON_R)
         obstacles.add_circle(best[0], best[1], BALLOON_R + 1.2)
         obstacles.add_segment(item.tip[0], item.tip[1], best[0], best[1])
-
-
-def _dim_places(value: float) -> int:
-    return 2
 
 
 def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
@@ -428,8 +408,8 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     # --- annotation column --------------------------------------------------
     if spec.holes:
         rows = [[h.label or f"H{i}", f"{h.x:.2f}", f"{h.y:.2f}",
-                 f"{h.dia:.2f}",
-                 f"{h.keepout_dia:.2f}" if h.keepout_dia else "-"]
+                 f"{h.dia:.2f}" + (f" +/-{h.tol:.2f}" if h.tol else ""),
+                 f"{h.keepout_dia:.2f}" if h.keepout_dia else "not given"]
                 for i, h in enumerate(spec.holes, 1)]
         block = sheet.column_block(len(rows) * style.T_TABLE * 1.75 + 14.0)
         sheet.table(block, "HOLE SCHEDULE",

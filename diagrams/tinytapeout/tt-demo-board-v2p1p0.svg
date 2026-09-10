@@ -98,10 +98,10 @@
 <line x1="176.725" y1="184.0725" x2="83.225" y2="184.0725" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
 <line x1="179.725" y1="109.0725" x2="179.725" y2="181.0725" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
 <line x1="80.225" y1="181.0725" x2="80.225" y2="109.0725" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
-<path d="M 176.725 106.0725 A 3.0011 3.0011 0 0 0 179.725 109.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 83.225 184.0725 A 3.0011 3.0011 0 0 0 80.225 181.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 80.225 109.0725 A 3.0011 3.0011 0 0 0 83.225 106.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 179.725 181.0725 A 3.0011 3.0011 0 0 0 176.725 184.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 176.725 106.0725 A 3 3 0 0 1 179.725 109.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 83.225 184.0725 A 3 3 0 0 1 80.225 181.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 80.225 109.0725 A 3 3 0 0 1 83.225 106.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 179.725 181.0725 A 3 3 0 0 1 176.725 184.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="83.725" cy="180.5725" r="3.2" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
 <circle cx="83.725" cy="180.5725" r="1.6" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
 <line x1="80.525" y1="180.5725" x2="86.925" y2="180.5725" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
@@ -200,7 +200,7 @@
 <line x1="187.725" y1="101.0725" x2="192.725" y2="101.0725" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="193.925" y="100.1725" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#004c99" text-anchor="start">R3.00 (4 places)</text>
 <text x="243" y="18.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">HOLE SCHEDULE</text>
-<line x1="243" y1="19.9" x2="405" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="19.9" x2="402" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="22.1" width="52.3617" height="4.375" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="244.8" y="25.075" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">ID</text>
 <text x="259.5816" y="25.075" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="end" font-weight="bold">X</text>
@@ -236,7 +236,7 @@
 <line x1="271.4184" y1="22.1" x2="271.4184" y2="43.975" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="280.0244" y1="22.1" x2="280.0244" y2="43.975" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="54" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">PMOD HOST HEADERS</text>
-<line x1="243" y1="55.4" x2="405" y2="55.4" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="55.4" x2="402" y2="55.4" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="57.6" width="63.8062" height="4.375" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="244.8" y="60.575" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">PORT</text>
 <text x="257.5662" y="60.575" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">REF</text>
@@ -271,7 +271,7 @@
 <line x1="282.815" y1="57.6" x2="282.815" y2="75.1" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="294.8637" y1="57.6" x2="294.8637" y2="75.1" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="85.125" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">FEATURE SCHEDULE</text>
-<line x1="243" y1="86.525" x2="405" y2="86.525" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="86.525" x2="402" y2="86.525" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="88.725" width="78.4316" height="4.375" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="245.7424" y="91.7" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="middle" font-weight="bold">#</text>
 <text x="250.2848" y="91.7" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">FEATURE</text>
@@ -326,7 +326,7 @@
 <line x1="281.1141" y1="88.725" x2="281.1141" y2="132.475" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="301.2729" y1="88.725" x2="301.2729" y2="132.475" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="142.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
-<line x1="243" y1="143.9" x2="405" y2="143.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="143.9" x2="402" y2="143.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="243" y="148.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">1.</text>
 <text x="248" y="148.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">All dimensions in millimetres. Datum is the lower-left corner of the board outline; X to the right, Y up, viewed from the component side.</text>
 <text x="243" y="152.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">2.</text>
@@ -336,13 +336,13 @@
 <text x="243" y="161.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">4.</text>
 <text x="248" y="161.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent Pmod Interface Specification 1.2.0.</text>
 <text x="243" y="165.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">5.</text>
-<text x="248" y="165.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">The Pmod host headers along the lower edge are what a mounting plate has to register against. Their 22.86 mm pitch is identical on every</text>
-<text x="248" y="169.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Tiny Tapeout demo board revision, but their distance from the lower board edge and their absolute position along it are not.</text>
+<text x="248" y="165.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">The Pmod host headers along the lower edge are what a mounting plate has to register against. Their 22.86 mm pitch is identical on</text>
+<text x="248" y="169.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">every Tiny Tapeout demo board revision, but their distance from the lower board edge and their absolute position along it are not.</text>
 <text x="243" y="173.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">6.</text>
 <text x="248" y="173.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Fabrication tolerance is not called out per dimension. Assume +/-0.20 on the routed board edge, +/-0.10 on drilled hole position and</text>
 <text x="248" y="176.7" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">+/-0.08 on plated hole diameter unless the board house states otherwise.</text>
 <text x="243" y="206.64" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="243" y1="208.04" x2="405" y2="208.04" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="208.04" x2="402" y2="208.04" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="243" y="212.74" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">1.</text>
 <text x="248" y="212.74" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">KiCad board file: https://github.com/TinyTapeout/tt-demo-pcb tinytapeout-demo.kicad_pcb @ a799acb38 - title block: TinyTapeout 06+</text>
 <text x="248" y="216.04" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Demoboard rev 2.1.0, dated 2024-12-10</text>

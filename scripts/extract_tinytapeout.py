@@ -16,6 +16,7 @@ Run: uv run --no-project python scripts/extract_tinytapeout.py
 
 from __future__ import annotations
 
+import math
 import subprocess
 import sys
 from pathlib import Path
@@ -187,10 +188,23 @@ def extract(rev: dict) -> dict:
         a, b = to_xy(g.x1, g.y1), to_xy(g.x2, g.y2)
         edges.append(("line", round(a[0], 3), round(a[1], 3),
                       round(b[0], 3), round(b[1], 3)))
+    # Arcs are resolved here, where the source geometry is, rather than in the
+    # renderer.  Storing centre, radius, whether the arc is the major one and
+    # which way it turns means the drawing side never has to re-derive a circle
+    # from three points, and cannot get the large-arc flag wrong.
     for g in arcs:
+        cx, cy, r = g.centre_radius()
         a, m, b = to_xy(g.x1, g.y1), to_xy(g.xm, g.ym), to_xy(g.x2, g.y2)
-        edges.append(("arc", round(a[0], 3), round(a[1], 3), round(m[0], 3),
-                      round(m[1], 3), round(b[0], 3), round(b[1], 3)))
+        centre = to_xy(cx, cy)
+        a0 = math.atan2(a[1] - centre[1], a[0] - centre[0])
+        a1 = math.atan2(m[1] - centre[1], m[0] - centre[0])
+        a2 = math.atan2(b[1] - centre[1], b[0] - centre[0])
+        ccw = ((a1 - a0) % (2 * math.pi)) < ((a2 - a0) % (2 * math.pi))
+        swept = ((a2 - a0) % (2 * math.pi)) if ccw \
+            else ((a0 - a2) % (2 * math.pi))
+        edges.append(("arc", round(a[0], 3), round(a[1], 3),
+                      round(b[0], 3), round(b[1], 3), round(r, 4),
+                      1 if swept > math.pi else 0, 1 if ccw else 0))
     radii = sorted({round(g.centre_radius()[2], 3) for g in arcs})
     corner_radius = radii[-1]
     profile_note = ""
@@ -205,7 +219,12 @@ def extract(rev: dict) -> dict:
         fp = one(fps, ref)
         x, y = to_xy(fp.x, fp.y)
         pads = fp.pads
-        dia = min(p.drill for p in pads if p.drill) if any(p.drill for p in pads) else 3.2
+        drills = [p.drill for p in pads if p.drill]
+        if not drills:
+            raise SystemExit(
+                f"{rev['key']}: mounting hole {ref} has no drill size. Do not "
+                f"guess one; fix the role table or the source.")
+        dia = min(drills)
         pad_dia = max(max(p.size) for p in pads)
         holes.append(dict(x=round(x, 3), y=round(y, 3), dia=round(dia, 3),
                           label=ref, kind="mount", keepout_dia=round(pad_dia, 3)))

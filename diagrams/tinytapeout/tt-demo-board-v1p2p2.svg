@@ -103,18 +103,18 @@
 <line x1="101.655" y1="111.0225" x2="101.655" y2="104.8225" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
 <line x1="110.095" y1="111.0225" x2="102.455" y2="111.0225" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
 <line x1="110.895" y1="104.8225" x2="110.895" y2="111.0225" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
-<path d="M 101.255 104.4225 A 0.3995 0.3995 0 0 0 101.655 104.8225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 110.895 104.8225 A 0.3995 0.3995 0 0 0 111.295 104.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 179.525 104.4225 A 3.0011 3.0011 0 0 0 182.525 107.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 81.025 185.4225 A 3.0011 3.0011 0 0 0 78.025 182.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 78.025 107.4225 A 3.0011 3.0011 0 0 0 81.025 104.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 182.525 182.4225 A 3.0011 3.0011 0 0 0 179.525 185.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 101.98 111.4225 A 0.3656 0.3656 0 0 0 101.655 111.0225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 102.305 111.1425 A 0.3047 0.3047 0 0 0 101.98 111.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 102.305 111.1425 A 0.1357 0.1357 0 0 0 102.455 111.0225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 110.095 111.0225 A 0.1357 0.1357 0 0 0 110.245 111.1425" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 110.57 111.4225 A 0.3047 0.3047 0 0 0 110.245 111.1425" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 110.895 111.0225 A 0.3656 0.3656 0 0 0 110.57 111.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 101.255 104.4225 A 0.4 0.4 0 0 1 101.655 104.8225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 110.895 104.8225 A 0.4 0.4 0 0 1 111.295 104.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 179.525 104.4225 A 3 3 0 0 1 182.525 107.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 81.025 185.4225 A 3 3 0 0 1 78.025 182.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 78.025 107.4225 A 3 3 0 0 1 81.025 104.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 182.525 182.4225 A 3 3 0 0 1 179.525 185.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 101.98 111.4225 A 0.3644 0.3644 0 0 1 101.655 111.0225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 102.305 111.1425 A 0.3033 0.3033 0 0 1 101.98 111.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 102.305 111.1425 A 0.1358 0.1358 0 0 1 102.455 111.0225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 110.095 111.0225 A 0.1358 0.1358 0 0 1 110.245 111.1425" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 110.57 111.4225 A 0.3033 0.3033 0 0 1 110.245 111.1425" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 110.895 111.0225 A 0.3644 0.3644 0 0 1 110.57 111.4225" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="81.775" cy="181.6725" r="3.2" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
 <circle cx="81.775" cy="181.6725" r="1.6" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
 <line x1="78.575" y1="181.6725" x2="84.975" y2="181.6725" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
@@ -211,7 +211,7 @@
 <line x1="190.525" y1="99.4225" x2="195.525" y2="99.4225" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="196.725" y="98.5225" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#004c99" text-anchor="start">R3.00 (4 places)</text>
 <text x="243" y="18.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">HOLE SCHEDULE</text>
-<line x1="243" y1="19.9" x2="405" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="19.9" x2="402" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="22.1" width="53.7924" height="4.375" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="244.8" y="25.075" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">ID</text>
 <text x="261.0123" y="25.075" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="end" font-weight="bold">X</text>
@@ -247,7 +247,7 @@
 <line x1="272.849" y1="22.1" x2="272.849" y2="43.975" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="281.4551" y1="22.1" x2="281.4551" y2="43.975" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="54" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">PMOD HOST HEADERS</text>
-<line x1="243" y1="55.4" x2="405" y2="55.4" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="55.4" x2="402" y2="55.4" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="57.6" width="63.8062" height="4.375" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="244.8" y="60.575" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">PORT</text>
 <text x="257.5662" y="60.575" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">REF</text>
@@ -282,7 +282,7 @@
 <line x1="282.815" y1="57.6" x2="282.815" y2="75.1" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="294.8637" y1="57.6" x2="294.8637" y2="75.1" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="85.125" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">FEATURE SCHEDULE</text>
-<line x1="243" y1="86.525" x2="405" y2="86.525" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="86.525" x2="402" y2="86.525" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="88.725" width="81.293" height="4.375" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="245.7424" y="91.7" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="middle" font-weight="bold">#</text>
 <text x="250.2848" y="91.7" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">FEATURE</text>
@@ -337,7 +337,7 @@
 <line x1="281.1141" y1="88.725" x2="281.1141" y2="132.475" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="304.1342" y1="88.725" x2="304.1342" y2="132.475" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="142.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
-<line x1="243" y1="143.9" x2="405" y2="143.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="143.9" x2="402" y2="143.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="243" y="148.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">1.</text>
 <text x="248" y="148.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">All dimensions in millimetres. Datum is the lower-left corner of the board outline; X to the right, Y up, viewed from the component side.</text>
 <text x="243" y="152.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">2.</text>
@@ -347,8 +347,8 @@
 <text x="243" y="161.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">4.</text>
 <text x="248" y="161.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent Pmod Interface Specification 1.2.0.</text>
 <text x="243" y="165.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">5.</text>
-<text x="248" y="165.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">The Pmod host headers along the lower edge are what a mounting plate has to register against. Their 22.86 mm pitch is identical on every</text>
-<text x="248" y="169.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Tiny Tapeout demo board revision, but their distance from the lower board edge and their absolute position along it are not.</text>
+<text x="248" y="165.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">The Pmod host headers along the lower edge are what a mounting plate has to register against. Their 22.86 mm pitch is identical on</text>
+<text x="248" y="169.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">every Tiny Tapeout demo board revision, but their distance from the lower board edge and their absolute position along it are not.</text>
 <text x="243" y="173.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">6.</text>
 <text x="248" y="173.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Fabrication tolerance is not called out per dimension. Assume +/-0.20 on the routed board edge, +/-0.10 on drilled hole position and</text>
 <text x="248" y="176.7" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">+/-0.08 on plated hole diameter unless the board house states otherwise.</text>
@@ -356,7 +356,7 @@
 <text x="248" y="181" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Upper edge carries a shallow recess for the USB-C shell, contributed by the connector footprint&#x27;s own edge cuts (fillet radii 0.136 mm,</text>
 <text x="248" y="184.3" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">0.303 mm, 0.364 mm, 0.4 mm).</text>
 <text x="243" y="206.64" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="243" y1="208.04" x2="405" y2="208.04" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="208.04" x2="402" y2="208.04" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="243" y="212.74" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">1.</text>
 <text x="248" y="212.74" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">KiCad board file: https://github.com/TinyTapeout/tt-demo-pcb tinytapeout-demo.kicad_pcb @ cfdd80d7b - title block: TinyTapeout 4+</text>
 <text x="248" y="216.04" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Demoboard rev 1.2.2, dated 2024-04-26</text>

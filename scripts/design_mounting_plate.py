@@ -1,0 +1,355 @@
+#!/usr/bin/env python3
+"""Design the Tiny Tapeout generic mounting plate and write its data module.
+
+The plate carries one hole pattern that accepts *any* Tiny Tapeout demo board
+revision on standoffs, while holding the Pmod host headers in a single fixed
+place.  That is possible because of one invariant: every revision from TT01
+through v3.3 spaces its Pmod hosts 22.86 mm apart, the pitch the Digilent Pmod
+Interface Specification mandates for host ports on a board edge.
+
+The design frame has its origin at the pin-field centre of the leftmost Pmod
+host position, X along the board's front edge and Y into the board.  Each board
+revision is then placed by the offset that puts its Pmod hosts on that grid,
+and its mounting holes fall wherever they fall.
+
+Holes that land close together are dealt with by separation:
+
+* under 1.0 mm apart, they become one hole at the midpoint; the residual error
+  is small compared with an M3 clearance hole;
+* between 1.0 mm and the minimum drillable spacing, they become one obround
+  slot spanning both positions;
+* beyond that, they stay as separate holes.
+
+Run: uv run --no-project python scripts/design_mounting_plate.py
+"""
+
+from __future__ import annotations
+
+import math
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from data.tinytapeout_boards import BOARDS  # noqa: E402
+
+PMOD_PITCH = 22.86
+HOLE_DIA = 3.40            # close clearance for M3
+SLOT_WIDTH = 3.40
+MIN_WEB = 1.50             # least material left between two holes
+MERGE_BELOW = 1.00         # under this, one hole serves both positions
+PLATE_HOLE_DIA = 4.30      # M4 clearance, for fixing the plate down
+PLATE_HOLE_CLEAR = 6.0     # keep plate fixings this far from any board hole
+
+#: Each entry is one mechanically distinct board revision, in shuttle order,
+#: with the shuttles it covers.  Revisions with identical geometry share a row.
+REVISIONS = [
+    ("TT01-03", "tt123-v2.2.6", ("TT01", "TT02", "TT03")),
+    ("TT04-05", "v1.2.2", ("TT04", "TT05")),
+    ("TT06-08", "v2.0.1", ("TT06", "TT07", "TT08")),
+    ("v3.2", "v3.2", ()),
+    ("v3.3", "v3.3", ()),
+]
+
+#: The TT01/02/03 board has only two Pmod hosts.  Putting its first host on the
+#: middle of the three plate positions rather than the left makes the plate
+#: 5.15 mm narrower, because that board is the widest and sits furthest right.
+TWO_PMOD_START_SLOT = 1
+
+#: Distance from a Pmod host's pin-field centre to the front face of its
+#: connector body.  Identical on every revision, because they all use the same
+#: footprint, so it is a reliable datum for where the plate's front edge can go.
+PMOD_BODY_OVERHANG = 11.78
+
+#: How far the connector bodies should overhang the plate's front edge, so a
+#: peripheral module plugs into clear air.
+FRONT_CLEARANCE = 2.78
+
+#: The plate is sized to leave a clear border outside every board footprint on
+#: three sides, wide enough to take the plate's own M4 fixings.  The front edge
+#: cannot be pushed out that way: it is pinned by the Pmod connector overhang,
+#: so there is no fixing along the front.
+PLATE_WIDTH = 135.0
+PLATE_HEIGHT = 101.0
+PLATE_CORNER_R = 4.0
+#: Centres the board footprints across the plate: they span 113.515 mm, leaving
+#: 10.745 mm each side.
+DATUM_X = 38.75
+DATUM_Y = PMOD_BODY_OVERHANG - FRONT_CLEARANCE      # 9.0
+
+
+def placements() -> list[dict]:
+    out = []
+    for name, key, shuttles in REVISIONS:
+        board = BOARDS[key]
+        pmods = sorted(board.pmods, key=lambda p: p.cx)
+        slot = TWO_PMOD_START_SLOT if len(pmods) == 2 else 0
+        ox = slot * PMOD_PITCH - pmods[0].cx
+        oy = -pmods[0].cy
+        out.append(dict(name=name, key=key, shuttles=shuttles, board=board,
+                        ox=ox, oy=oy, first_slot=slot, pmods=len(pmods)))
+    return out
+
+
+def cluster(points: list[dict], threshold: float) -> list[list[dict]]:
+    """Single-link clustering of hole positions."""
+    groups: list[list[dict]] = []
+    for p in points:
+        joined = [g for g in groups
+                  if any(math.dist((p["x"], p["y"]), (q["x"], q["y"])) < threshold
+                         for q in g)]
+        if not joined:
+            groups.append([p])
+            continue
+        merged = [p]
+        for g in joined:
+            merged += g
+            groups.remove(g)
+        groups.append(merged)
+    return groups
+
+
+def build():
+    place = placements()
+    points = []
+    for pl in place:
+        for h in pl["board"].holes:
+            points.append(dict(rev=pl["name"], label=h.label,
+                               x=pl["ox"] + h.x, y=pl["oy"] + h.y, dia=h.dia))
+
+    min_sep = HOLE_DIA + MIN_WEB
+    groups = cluster(points, min_sep)
+
+    holes, slots = [], []
+    for g in sorted(groups, key=lambda g: (round(g[0]["x"], 1), g[0]["y"])):
+        # The merge and slot rules below only make sense for a pair.  Three
+        # revisions landing in one cluster needs a human decision, not an
+        # averaged centroid or a slot through the two outermost of them.
+        if len(g) > 2:
+            raise SystemExit(
+                "three or more revisions want a fastener within "
+                f"{min_sep:.2f} mm here: "
+                + ", ".join(f"{p['rev']} {p['label']}" for p in g)
+                + ". Decide by hand how to serve them.")
+        used = sorted({(p["rev"], p["label"]) for p in g})
+        span = max((math.dist((a["x"], a["y"]), (b["x"], b["y"]))
+                    for a in g for b in g), default=0.0)
+        if span < MERGE_BELOW:
+            holes.append(dict(x=sum(p["x"] for p in g) / len(g),
+                              y=sum(p["y"] for p in g) / len(g),
+                              dia=HOLE_DIA, used=used, spread=span))
+        else:
+            # Longest pair in the group defines the slot axis.
+            a, b = max(((a, b) for a in g for b in g),
+                       key=lambda ab: math.dist((ab[0]["x"], ab[0]["y"]),
+                                                (ab[1]["x"], ab[1]["y"])))
+            slots.append(dict(x0=a["x"], y0=a["y"], x1=b["x"], y1=b["y"],
+                              width=SLOT_WIDTH, used=used, spread=span))
+    return place, holes, slots
+
+
+def plate_fixings(place, holes, slots):
+    """M4 fixings for the plate itself, in the border outside every board.
+
+    They cannot go along the front edge: that edge is pinned by the Pmod
+    connector overhang and the border there is only a few millimetres.
+    """
+    bx0 = min(pl["ox"] for pl in place) + DATUM_X
+    bx1 = max(pl["ox"] + pl["board"].outline.width for pl in place) + DATUM_X
+    by1 = max(pl["oy"] + pl["board"].outline.height for pl in place) + DATUM_Y
+
+    left = bx0 / 2
+    right = (bx1 + PLATE_WIDTH) / 2
+    back = (by1 + PLATE_HEIGHT) / 2
+    out = [(round(left, 3), 22.0), (round(left, 3), 74.0),
+           (round(right, 3), 22.0), (round(right, 3), 74.0),
+           (42.0, round(back, 3)), (93.0, round(back, 3))]
+
+    for x, y in out:
+        near = min(
+            [math.dist((x, y), (h["x"] + DATUM_X, h["y"] + DATUM_Y)) for h in holes]
+            + [_point_seg((x, y), (s["x0"] + DATUM_X, s["y0"] + DATUM_Y),
+                          (s["x1"] + DATUM_X, s["y1"] + DATUM_Y)) for s in slots])
+        if near < PLATE_HOLE_CLEAR:
+            raise SystemExit(
+                f"plate fixing at ({x}, {y}) is only {near:.2f} mm from a board "
+                f"hole; needs {PLATE_HOLE_CLEAR}")
+        edge = min(x, y, PLATE_WIDTH - x, PLATE_HEIGHT - y)
+        if edge < PLATE_HOLE_DIA:
+            raise SystemExit(
+                f"plate fixing at ({x}, {y}) is only {edge:.2f} mm from the "
+                f"plate edge")
+    return out
+
+
+def _point_seg(p, a, b):
+    ax, ay = a
+    bx, by = b
+    dx, dy = bx - ax, by - ay
+    if dx == 0 and dy == 0:
+        return math.dist(p, a)
+    t = max(0.0, min(1.0, ((p[0] - ax) * dx + (p[1] - ay) * dy) / (dx * dx + dy * dy)))
+    return math.dist(p, (ax + t * dx, ay + t * dy))
+
+
+TEMPLATE = '''"""Tiny Tapeout generic mounting plate.
+
+GENERATED FILE -- do not edit by hand.
+Regenerate with::
+
+    uv run --no-project python scripts/design_mounting_plate.py
+
+One plate that accepts any Tiny Tapeout demo board revision on standoffs while
+holding the Pmod host headers in a single fixed place.  See the module
+docstring of the generating script for how the pattern is derived.
+
+Plate coordinates: origin at the lower-left corner of the plate, X right, Y up,
+viewed from the side the board mounts on.
+"""
+
+from __future__ import annotations
+
+from .schema import BoardSpec, Hole, Outline, Slot, Source
+
+#: Pmod host pin-field centres, in plate coordinates.  These are the whole
+#: point of the plate: they do not move when the board revision changes.
+PMOD_SLOT_X = {pmod_x}
+PMOD_ROW_Y = {pmod_y}
+PMOD_PITCH = {pitch}
+
+#: Offset from the design frame (origin at the leftmost Pmod pin-field centre)
+#: to plate coordinates.
+DATUM_X = {datum_x}
+DATUM_Y = {datum_y}
+
+#: How to place each board revision: add these to a board coordinate to get a
+#: plate coordinate.
+PLACEMENTS = {{
+{placements}
+}}
+
+PLATE = BoardSpec(
+    key="tt-generic-mounting-plate",
+    title="Tiny Tapeout Generic Mounting Plate",
+    subtitle="Accepts every demo board revision, Pmod hosts fixed in place",
+    family="mountingplate",
+    outline=Outline(width={w}, height={h}, corner_radius={r}, thickness=3.0),
+    holes=(
+{holes}
+    ),
+    slots=(
+{slots}
+    ),
+    sources=(
+        Source(label="Derived from",
+               ref="data/tinytapeout_boards.py",
+               note="Board outlines, mounting holes and Pmod host positions "
+                    "for every Tiny Tapeout demo board revision, extracted "
+                    "from the upstream KiCad files."),
+        Source(label="Pmod host pitch",
+               ref="https://digilent.com/reference/_media/reference/pmod/"
+                   "pmod-interface-specification-1_2_0.pdf",
+               note="Digilent mandate .90 in (22.86 mm) between adjacent host "
+                    "ports on a board edge, which is why one plate can serve "
+                    "every revision."),
+    ),
+    notes=(
+        "Fit the board on standoffs. Each hole or slot is labelled with the "
+        "board revisions that use it; a given board uses only its own.",
+        "Holes are {dia} mm, a close clearance fit on M3. Slots are the same "
+        "width and span two revisions whose holes are too close together to "
+        "drill separately.",
+        "The Pmod host connector bodies overhang the plate's front edge by "
+        "{fc} mm, so a peripheral module plugs into clear air.",
+        "Plate fixing holes are {pdia} mm, a clearance fit on M4.",
+    ),
+)
+'''
+
+
+def main() -> None:
+    place, holes, slots = build()
+    fixings = plate_fixings(place, holes, slots)
+
+    print("Board placements (add to board coordinates to get plate coordinates):")
+    for pl in place:
+        ox, oy = pl["ox"] + DATUM_X, pl["oy"] + DATUM_Y
+        b = pl["board"].outline
+        print(f"  {pl['name']:9s} {pl['pmods']} Pmods, first on slot "
+              f"{pl['first_slot'] + 1}  offset ({ox:7.3f},{oy:6.3f})  "
+              f"occupies x {ox:7.3f}..{ox + b.width:7.3f}  "
+              f"y {oy:6.3f}..{oy + b.height:6.3f}")
+    print()
+    print(f"Plate {PLATE_WIDTH} x {PLATE_HEIGHT} mm, corner radius {PLATE_CORNER_R}")
+    print(f"Pmod host pin-field centres at plate y = {DATUM_Y}, "
+          f"x = {DATUM_X}, {DATUM_X + PMOD_PITCH}, {DATUM_X + 2 * PMOD_PITCH}")
+    print()
+    print(f"{len(holes)} holes and {len(slots)} slots for the boards, "
+          f"{len(fixings)} plate fixings:")
+    for h in holes:
+        used = ", ".join(f"{r} {l}" for r, l in h["used"])
+        print(f"  hole  ({h['x'] + DATUM_X:7.3f},{h['y'] + DATUM_Y:6.3f}) "
+              f"dia {h['dia']:.2f}  spread {h['spread']:.3f}  <- {used}")
+    for s in slots:
+        used = ", ".join(f"{r} {l}" for r, l in s["used"])
+        print(f"  slot  ({s['x0'] + DATUM_X:7.3f},{s['y0'] + DATUM_Y:6.3f}) to "
+              f"({s['x1'] + DATUM_X:7.3f},{s['y1'] + DATUM_Y:6.3f}) "
+              f"w {s['width']:.2f}  <- {used}")
+    for x, y in fixings:
+        print(f"  fixing({x:7.3f},{y:6.3f}) dia {PLATE_HOLE_DIA:.2f}")
+
+    # Emit the data module.
+    def hole_src():
+        out = []
+        for h in holes:
+            used = "+".join(f"{r}:{l}" for r, l in h["used"])
+            note = (f"Serves {len(h['used'])} revision positions spread "
+                    f"{h['spread']:.3f} mm; drilled at their midpoint."
+                    if h["spread"] else "")
+            out.append(f'        Hole(x={h["x"] + DATUM_X:.3f}, '
+                       f'y={h["y"] + DATUM_Y:.3f}, dia={h["dia"]:.2f}, '
+                       f'label={used!r}, kind="board", tol=None),'
+                       + (f"  # {note}" if note else ""))
+        for x, y in fixings:
+            out.append(f'        Hole(x={x:.3f}, y={y:.3f}, '
+                       f'dia={PLATE_HOLE_DIA:.2f}, label="PLATE", kind="plate"),')
+        return "\n".join(out)
+
+    def slot_src():
+        out = []
+        for s in slots:
+            used = "+".join(f"{r}:{l}" for r, l in s["used"])
+            out.append(f'        Slot(x0={s["x0"] + DATUM_X:.3f}, '
+                       f'y0={s["y0"] + DATUM_Y:.3f}, '
+                       f'x1={s["x1"] + DATUM_X:.3f}, y1={s["y1"] + DATUM_Y:.3f}, '
+                       f'width={s["width"]:.2f}, label={used!r},\n'
+                       f'             note="Two revisions want a fastener '
+                       f'{s["spread"]:.3f} mm apart here, too close to drill '
+                       f'as separate holes."),')
+        return "\n".join(out)
+
+    def place_src():
+        out = []
+        for pl in place:
+            out.append(f'    {pl["name"]!r}: dict(revision={pl["key"]!r}, '
+                       f'shuttles={pl["shuttles"]!r},\n'
+                       f'        dx={pl["ox"] + DATUM_X:.3f}, '
+                       f'dy={pl["oy"] + DATUM_Y:.3f}, '
+                       f'first_pmod_slot={pl["first_slot"] + 1}, '
+                       f'pmod_count={pl["pmods"]}),')
+        return "\n".join(out)
+
+    text = TEMPLATE.format(
+        pmod_x=repr(tuple(round(DATUM_X + i * PMOD_PITCH, 3) for i in range(3))),
+        pmod_y=DATUM_Y, pitch=PMOD_PITCH,
+        datum_x=DATUM_X, datum_y=DATUM_Y,
+        placements=place_src(), holes=hole_src(), slots=slot_src(),
+        w=PLATE_WIDTH, h=PLATE_HEIGHT, r=PLATE_CORNER_R,
+        dia=HOLE_DIA, fc=FRONT_CLEARANCE, pdia=PLATE_HOLE_DIA)
+    (ROOT / "data" / "mounting_plate.py").write_text(text)
+    print("\nwrote data/mounting_plate.py")
+
+
+if __name__ == "__main__":
+    main()

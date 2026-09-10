@@ -85,7 +85,7 @@
 <circle cx="216.4" cy="273" r="2.4" fill="none" stroke="#000000" stroke-width="0.5"/>
 <circle cx="216.4" cy="273" r="1.2" fill="none" stroke="#000000" stroke-width="0.5"/>
 <text x="243" y="18.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">ENVELOPE</text>
-<line x1="243" y1="19.9" x2="405" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="19.9" x2="402" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="22.1" width="29.5588" height="4.375" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="244.8" y="25.075" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">DIMENSION</text>
 <text x="270.7588" y="25.075" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="end" font-weight="bold">mm</text>
@@ -100,7 +100,7 @@
 <text x="270.7588" y="38.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="end">24.00</text>
 <line x1="262.5221" y1="22.1" x2="262.5221" y2="39.6" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="49.625" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">FEATURES (PLAN VIEW)</text>
-<line x1="243" y1="51.025" x2="405" y2="51.025" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="51.025" x2="402" y2="51.025" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="53.225" width="87.2744" height="4.375" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="244.8" y="56.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">FEATURE</text>
 <text x="308.3156" y="56.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="end" font-weight="bold">X EXTENT</text>
@@ -116,7 +116,7 @@
 <line x1="289.9568" y1="53.225" x2="289.9568" y2="66.35" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="310.1156" y1="53.225" x2="310.1156" y2="66.35" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="82.375" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
-<line x1="243" y1="83.775" x2="405" y2="83.775" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="83.775" x2="402" y2="83.775" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="243" y="88.475" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">1.</text>
 <text x="248" y="88.475" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">All dimensions in millimetres. Plan datum is the lower-left corner of the body envelope, X along the length, Y across the width, Z up.</text>
 <text x="243" y="92.775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">2.</text>
@@ -129,21 +129,21 @@
 <text x="248" y="107.975" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">NO SINGLE OFFICIAL SOURCE. These are near-identical clones from several factories. Two independent sources agree on an 80 mm long</text>
 <text x="248" y="111.275" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">body: DSLRKIT quote 80 x 27 x 22 mm and Adafruit measure 80 x 30 x 24 mm.</text>
 <text x="243" y="115.575" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">5.</text>
-<text x="248" y="115.575" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">The envelope drawn here is the larger of those two, 80 x 30 x 24 mm. Design any cradle to that, and allow for gigabit variants in a longer</text>
-<text x="248" y="118.875" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">case, up to about 95 mm.</text>
+<text x="248" y="115.575" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">The envelope drawn here is the larger of those two, 80 x 30 x 24 mm. Design any cradle to that, and allow for gigabit variants in a</text>
+<text x="248" y="118.875" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">longer case, up to about 95 mm.</text>
 <text x="243" y="123.175" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">6.</text>
 <text x="248" y="123.175" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">No mounting holes: the case is a glued plastic clamshell, so a bracket has to clamp or strap the body.</text>
 <text x="243" y="190.0775" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="243" y1="191.4775" x2="405" y2="191.4775" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="191.4775" x2="402" y2="191.4775" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="243" y="196.1775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">1.</text>
 <text x="248" y="196.1775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">DSLRKIT active PoE splitter: https://www.amazon.com/DSLRKIT-Active-Splitter-Ethernet-Raspberry/dp/B01H37XQP8 - Vendor text: &quot;Body</text>
 <text x="248" y="199.4775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">size: 80 x 27 x 22 mm&quot;, weight 55 g, DC cable 165 mm, RJ45 plug cable 155 mm.</text>
 <text x="243" y="203.7775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">2.</text>
-<text x="248" y="203.7775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Adafruit 3785, equivalent unit: https://www.adafruit.com/product/3785 - &quot;Body dimensions: 80mm x 30mm x 24mm&quot;, weight 54.1 g, each</text>
-<text x="248" y="207.0775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">lead 205 mm.</text>
+<text x="248" y="203.7775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Adafruit 3785, equivalent unit: https://www.adafruit.com/product/3785 - &quot;Body dimensions: 80mm x 30mm x 24mm&quot;, weight 54.1 g,</text>
+<text x="248" y="207.0775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">each lead 205 mm.</text>
 <text x="243" y="211.3775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">3.</text>
-<text x="248" y="211.3775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">AliExpress listings: AliExpress items 1005006389914897, 1005005523161215, 1005009263116567 - Most listings quote packaging rather</text>
-<text x="248" y="214.6775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">than body size. The one plausible body figure seen was 95 x 28 x 24 mm, for a gigabit variant in a longer case.</text>
+<text x="248" y="211.3775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">AliExpress listings: AliExpress items 1005006389914897, 1005005523161215, 1005009263116567 - Most listings quote packaging</text>
+<text x="248" y="214.6775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">rather than body size. The one plausible body figure seen was 95 x 28 x 24 mm, for a gigabit variant in a longer case.</text>
 <rect x="243" y="240" width="162" height="42" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="243" y1="253" x2="405" y2="253" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="245.5" y="248.4" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="5" fill="#000000" text-anchor="start" font-weight="bold">GENERIC POE SPLITTER TO MICRO-USB</text>

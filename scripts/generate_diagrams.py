@@ -24,6 +24,7 @@ from data.raspberry_pi_boards import BOARDS as RPI_BOARDS  # noqa: E402
 from data.tinytapeout_boards import BOARDS as TT_BOARDS  # noqa: E402
 from drafting.board_sheet import render_board  # noqa: E402
 from drafting.enclosure_sheet import render_enclosure  # noqa: E402
+from drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
 
 DATE = date.today().isoformat()
 OUT = ROOT / "diagrams"
@@ -92,6 +93,18 @@ def main() -> None:
         path = acc_dir / f"{spec.key}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
+
+    plate_dir = OUT / "mounting-plate"
+    plate_dir.mkdir(parents=True, exist_ok=True)
+    sheet = render_plate(drawing_no="TT-MP-01", date=DATE)
+    path = plate_dir / "tt-generic-mounting-plate.svg"
+    sheet.canvas.save(str(path))
+    made.append(path)
+
+    sheet = render_fitting_guide(drawing_no="TT-MP-02", date=DATE)
+    path = plate_dir / "tt-generic-mounting-plate-fitting-guide.svg"
+    sheet.canvas.save(str(path))
+    made.append(path)
 
     for path in made:
         print(f"  {path.relative_to(ROOT)}")

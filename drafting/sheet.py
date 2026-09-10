@@ -169,11 +169,16 @@ class Sheet:
 
     # -- annotation column --------------------------------------------------
 
+    #: Right-hand gutter inside the annotation column.  Without it, a wrapped
+    #: note that exactly fills the column runs up against the frame line.
+    COLUMN_GUTTER = 3.0
+
     def column_block(self, height: float) -> Rect:
         """Reserve *height* mm at the top of the remaining annotation column."""
         top = self._column_cursor
         self._column_cursor = top - height - 4.0
-        return Rect(self.column.x, top - height, self.column.w, height)
+        return Rect(self.column.x, top - height,
+                    self.column.w - self.COLUMN_GUTTER, height)
 
     @property
     def column_remaining(self) -> float:

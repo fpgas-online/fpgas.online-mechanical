@@ -85,7 +85,7 @@
 <circle cx="216.4" cy="273" r="2.4" fill="none" stroke="#000000" stroke-width="0.5"/>
 <circle cx="216.4" cy="273" r="1.2" fill="none" stroke="#000000" stroke-width="0.5"/>
 <text x="243" y="18.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">ENVELOPE</text>
-<line x1="243" y1="19.9" x2="405" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="19.9" x2="402" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="22.1" width="30.9895" height="4.375" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="244.8" y="25.075" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">DIMENSION</text>
 <text x="272.1895" y="25.075" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="end" font-weight="bold">mm</text>
@@ -100,7 +100,7 @@
 <text x="272.1895" y="38.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="end">24.80</text>
 <line x1="262.5221" y1="22.1" x2="262.5221" y2="39.6" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="49.625" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">FEATURES (PLAN VIEW)</text>
-<line x1="243" y1="51.025" x2="405" y2="51.025" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="51.025" x2="402" y2="51.025" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="53.225" width="80.9617" height="4.375" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="244.8" y="56.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start" font-weight="bold">FEATURE</text>
 <text x="302.0029" y="56.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="end" font-weight="bold">X EXTENT</text>
@@ -116,7 +116,7 @@
 <line x1="282.2135" y1="53.225" x2="282.2135" y2="66.35" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="303.8029" y1="53.225" x2="303.8029" y2="66.35" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="82.375" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
-<line x1="243" y1="83.775" x2="405" y2="83.775" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="83.775" x2="402" y2="83.775" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="243" y="88.475" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">1.</text>
 <text x="248" y="88.475" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">All dimensions in millimetres. Plan datum is the lower-left corner of the body envelope, X along the length, Y across the width, Z up.</text>
 <text x="243" y="92.775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">2.</text>
@@ -133,10 +133,10 @@
 <text x="243" y="119.875" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">6.</text>
 <text x="248" y="119.875" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Body is a finned aluminium extrusion; the fin profile is not dimensioned here and the outline is the overall envelope.</text>
 <text x="243" y="190.0775" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="243" y1="191.4775" x2="405" y2="191.4775" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="191.4775" x2="402" y2="191.4775" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="243" y="196.1775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">1.</text>
-<text x="248" y="196.1775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Product page: https://www.waveshare.com/poe-splitter-25w-type-c.htm - Specification table: &quot;DIMENSIONS 102.5 x 29.6 x 24.8mm (L x W</text>
-<text x="248" y="199.4775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">x H)&quot;; &quot;POE INPUT VOLTAGE 37V ~ 57V&quot;; &quot;POWER OUTPUT 5V 5A (MAX)&quot;; IEEE 802.3af/at.</text>
+<text x="248" y="196.1775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Product page: https://www.waveshare.com/poe-splitter-25w-type-c.htm - Specification table: &quot;DIMENSIONS 102.5 x 29.6 x 24.8mm (L x</text>
+<text x="248" y="199.4775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">W x H)&quot;; &quot;POE INPUT VOLTAGE 37V ~ 57V&quot;; &quot;POWER OUTPUT 5V 5A (MAX)&quot;; IEEE 802.3af/at.</text>
 <text x="243" y="203.7775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">2.</text>
 <text x="248" y="203.7775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Dimension drawing:</text>
 <text x="248" y="207.0775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">https://www.waveshare.com/img/devkit/accBoard/POE-SPLITTER-25W-TYPE-C/POE-SPLITTER-25W-TYPE-C-details-size.jpg - Annotated</text>

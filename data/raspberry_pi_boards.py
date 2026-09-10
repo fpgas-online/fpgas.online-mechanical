@@ -33,10 +33,10 @@ BOARDS['rpi3b'] = BoardSpec(
     outline=Outline(width=85.0, height=56.0,
                     corner_radius=3.0),
     holes=(
-        Hole(x=3.5, y=3.5, dia=2.75, kind='mount', keepout_dia=6.2),
-        Hole(x=61.5, y=3.5, dia=2.75, kind='mount', keepout_dia=6.2),
-        Hole(x=3.5, y=52.5, dia=2.75, kind='mount', keepout_dia=6.2),
-        Hole(x=61.5, y=52.5, dia=2.75, kind='mount', keepout_dia=6.2),
+        Hole(x=3.5, y=3.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
+        Hole(x=61.5, y=3.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
+        Hole(x=3.5, y=52.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
+        Hole(x=61.5, y=52.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
     ),
     features=(
         Feature(key='gpio40', label='40-pin GPIO header', kind='header',
@@ -58,11 +58,13 @@ BOARDS['rpi3b'] = BoardSpec(
         Source(label="Mechanical drawing", ref='https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-b-mechanical-drawing.dxf',
                note="Raspberry Pi Ltd"),
         Source(label="Mounting holes", ref='https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-b-mechanical-drawing.pdf',
-               note="Raspberry Pi Ltd"),
+               note='Drawing note, quoted: 4x M2.5 MOUNTING HOLES DRILLED TO 2.75 +/- 0.05mm.'),
     ),
     notes=(
         "Connector outlines are the component body as drawn by Raspberry Pi Ltd, including any overhang past the board edge.",
-        "The source DXF does not carry the mounting holes; hole positions and diameter are taken from the same model's PDF mechanical drawing.",
+        'Mounting hole diameter: Drawing note, quoted: 4x M2.5 MOUNTING HOLES DRILLED TO 2.75 +/- 0.05mm.',
+        "No keep-out around the mounting holes is dimensioned on this model's own drawing. The Raspberry Pi HAT mechanical specification (github.com/raspberrypi/hats, hat-board-mechanical.pdf) requires a 6.2 mm keep-out around each mounting hole on a board fitted to a Pi; design to that.",
+        "Hole positions are the 3.5 mm inset and 58 x 49 mm rectangle dimensioned on this model's own drawing.",
     ),
 )
 
@@ -75,10 +77,10 @@ BOARDS['rpi3bplus'] = BoardSpec(
     outline=Outline(width=85.0, height=56.0,
                     corner_radius=3.0),
     holes=(
-        Hole(x=3.5, y=3.5, dia=2.75, kind='mount', keepout_dia=6.2),
-        Hole(x=61.5, y=3.5, dia=2.75, kind='mount', keepout_dia=6.2),
-        Hole(x=3.5, y=52.5, dia=2.75, kind='mount', keepout_dia=6.2),
-        Hole(x=61.5, y=52.5, dia=2.75, kind='mount', keepout_dia=6.2),
+        Hole(x=3.5, y=3.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
+        Hole(x=61.5, y=3.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
+        Hole(x=3.5, y=52.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
+        Hole(x=61.5, y=52.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
     ),
     features=(
         Feature(key='gpio40', label='40-pin GPIO header', kind='header',
@@ -100,11 +102,13 @@ BOARDS['rpi3bplus'] = BoardSpec(
         Source(label="Mechanical drawing", ref='https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.dxf',
                note="Raspberry Pi Ltd"),
         Source(label="Mounting holes", ref='https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.pdf',
-               note="Raspberry Pi Ltd"),
+               note='Carried over from the Pi 3 Model B drawing, which states 4x M2.5 holes drilled to 2.75 +/- 0.05 mm. The 3B+ drawing gives no hole size; the two boards share an identical outline, hole pattern and DXF geometry.'),
     ),
     notes=(
         "Connector outlines are the component body as drawn by Raspberry Pi Ltd, including any overhang past the board edge.",
-        "The source DXF does not carry the mounting holes; hole positions and diameter are taken from the same model's PDF mechanical drawing.",
+        'Mounting hole diameter: Carried over from the Pi 3 Model B drawing, which states 4x M2.5 holes drilled to 2.75 +/- 0.05 mm. The 3B+ drawing gives no hole size; the two boards share an identical outline, hole pattern and DXF geometry.',
+        "No keep-out around the mounting holes is dimensioned on this model's own drawing. The Raspberry Pi HAT mechanical specification (github.com/raspberrypi/hats, hat-board-mechanical.pdf) requires a 6.2 mm keep-out around each mounting hole on a board fitted to a Pi; design to that.",
+        "Hole positions are the 3.5 mm inset and 58 x 49 mm rectangle dimensioned on this model's own drawing.",
     ),
 )
 
@@ -117,10 +121,10 @@ BOARDS['rpi3aplus'] = BoardSpec(
     outline=Outline(width=65.0, height=56.0,
                     corner_radius=3.0),
     holes=(
-        Hole(x=3.5, y=3.5, dia=2.75, kind='mount', keepout_dia=6.2),
-        Hole(x=61.5, y=3.5, dia=2.75, kind='mount', keepout_dia=6.2),
-        Hole(x=3.5, y=52.5, dia=2.75, kind='mount', keepout_dia=6.2),
-        Hole(x=61.5, y=52.5, dia=2.75, kind='mount', keepout_dia=6.2),
+        Hole(x=3.5, y=3.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
+        Hole(x=61.5, y=3.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
+        Hole(x=3.5, y=52.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
+        Hole(x=61.5, y=52.5, dia=2.75, kind='mount', keepout_dia=None, tol=0.05),
     ),
     features=(
         Feature(key='gpio40', label='40-pin GPIO header', kind='header',
@@ -138,12 +142,14 @@ BOARDS['rpi3aplus'] = BoardSpec(
         Source(label="Mechanical drawing", ref='https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf',
                note="Raspberry Pi Ltd"),
         Source(label="Mounting holes", ref='https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf',
-               note="Raspberry Pi Ltd"),
+               note='Carried over from the Pi 3 Model B drawing. The 3A+ drawing gives no hole size.'),
     ),
     notes=(
         "Connector outlines are the component body as drawn by Raspberry Pi Ltd, including any overhang past the board edge.",
+        'Mounting hole diameter: Carried over from the Pi 3 Model B drawing. The 3A+ drawing gives no hole size.',
+        "No keep-out around the mounting holes is dimensioned on this model's own drawing. The Raspberry Pi HAT mechanical specification (github.com/raspberrypi/hats, hat-board-mechanical.pdf) requires a 6.2 mm keep-out around each mounting hole on a board fitted to a Pi; design to that.",
         "The source drawing is a reduced plot, not 1:1, so dimensions carry more uncertainty than the other models; the recovered plot scale was 1.0685.",
-        "Mounting hole diameter is the figure dimensioned on the drawing.",
+        "Hole positions are the 3.5 mm inset and 58 x 49 mm rectangle dimensioned on this model's own drawing.",
     ),
 )
 
@@ -156,10 +162,10 @@ BOARDS['rpi4b'] = BoardSpec(
     outline=Outline(width=85.0, height=56.0,
                     corner_radius=3.0),
     holes=(
-        Hole(x=3.5, y=3.5, dia=2.7, kind='mount', keepout_dia=6.0),
-        Hole(x=3.5, y=52.5, dia=2.7, kind='mount', keepout_dia=6.0),
-        Hole(x=61.5, y=3.5, dia=2.7, kind='mount', keepout_dia=6.0),
-        Hole(x=61.5, y=52.5, dia=2.7, kind='mount', keepout_dia=6.0),
+        Hole(x=3.5, y=3.5, dia=2.7, kind='mount', keepout_dia=6.0, tol=None),
+        Hole(x=3.5, y=52.5, dia=2.7, kind='mount', keepout_dia=6.0, tol=None),
+        Hole(x=61.5, y=3.5, dia=2.7, kind='mount', keepout_dia=6.0, tol=None),
+        Hole(x=61.5, y=52.5, dia=2.7, kind='mount', keepout_dia=6.0, tol=None),
     ),
     features=(
         Feature(key='gpio40', label='40-pin GPIO header', kind='header',
@@ -183,10 +189,11 @@ BOARDS['rpi4b'] = BoardSpec(
         Source(label="Mechanical drawing", ref='https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.dxf',
                note="Raspberry Pi Ltd"),
         Source(label="Mounting holes", ref='https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.dxf',
-               note="Raspberry Pi Ltd"),
+               note='Read from the DXF: hole and keep-out circles on layer 0.'),
     ),
     notes=(
         "Connector outlines are the component body as drawn by Raspberry Pi Ltd, including any overhang past the board edge.",
+        'Mounting hole diameter: Read from the DXF: hole and keep-out circles on layer 0.',
     ),
 )
 
@@ -199,12 +206,12 @@ BOARDS['rpi5'] = BoardSpec(
     outline=Outline(width=85.0, height=56.0,
                     corner_radius=3.0),
     holes=(
-        Hole(x=3.5, y=3.5, dia=2.7, kind='mount', keepout_dia=5.8),
-        Hole(x=61.5, y=3.5, dia=2.7, kind='mount', keepout_dia=5.8),
-        Hole(x=3.5, y=52.5, dia=2.7, kind='mount', keepout_dia=5.8),
-        Hole(x=61.5, y=52.5, dia=2.7, kind='mount', keepout_dia=5.8),
-        Hole(x=3.5, y=9.497, dia=3.0, kind='aux', keepout_dia=None),
-        Hole(x=61.5, y=46.504, dia=3.0, kind='aux', keepout_dia=None),
+        Hole(x=3.5, y=3.5, dia=2.7, kind='mount', keepout_dia=5.8, tol=None),
+        Hole(x=61.5, y=3.5, dia=2.7, kind='mount', keepout_dia=5.8, tol=None),
+        Hole(x=3.5, y=52.5, dia=2.7, kind='mount', keepout_dia=5.8, tol=None),
+        Hole(x=61.5, y=52.5, dia=2.7, kind='mount', keepout_dia=5.8, tol=None),
+        Hole(x=3.5, y=9.497, dia=3.0, kind='aux', keepout_dia=None, tol=None),
+        Hole(x=61.5, y=46.504, dia=3.0, kind='aux', keepout_dia=None, tol=None),
     ),
     features=(
         Feature(key='gpio40', label='40-pin GPIO header', kind='header',
@@ -222,11 +229,12 @@ BOARDS['rpi5'] = BoardSpec(
         Source(label="Mechanical drawing", ref='https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf',
                note="Raspberry Pi Ltd"),
         Source(label="Mounting holes", ref='https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf',
-               note="Raspberry Pi Ltd"),
+               note='Hole diameter dimensioned on the drawing as o2.7; the keep-out circle is drawn and measures 5.80.'),
     ),
     notes=(
         "Connector outlines are the component body as drawn by Raspberry Pi Ltd, including any overhang past the board edge.",
+        'Mounting hole diameter: Hole diameter dimensioned on the drawing as o2.7; the keep-out circle is drawn and measures 5.80.',
         "The two 3.0 mm holes are additional to the four M2.5 mounting holes, and sit 6.0 mm from the nearer mounting hole on the board diagonal.",
-        "Mounting hole diameter is the figure dimensioned on the drawing.",
+        "Hole positions are the 3.5 mm inset and 58 x 49 mm rectangle dimensioned on this model's own drawing.",
     ),
 )

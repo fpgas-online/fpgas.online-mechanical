@@ -51,6 +51,27 @@ class Hole:
 
 
 @dataclass(frozen=True)
+class Slot:
+    """An obround slot: a rectangle of width *width* with semicircular ends.
+
+    Used where two board revisions want a fastener at positions too close
+    together to drill as separate holes but too far apart to merge into one.
+    """
+
+    x0: float
+    y0: float
+    x1: float
+    y1: float
+    width: float
+    label: str = ""
+    note: str = ""
+
+    @property
+    def length(self) -> float:
+        return ((self.x1 - self.x0) ** 2 + (self.y1 - self.y0) ** 2) ** 0.5 + self.width
+
+
+@dataclass(frozen=True)
 class Feature:
     """A rectangular component footprint, given as a bounding box.
 
@@ -103,8 +124,8 @@ class PmodHeader:
 
     Positions are given as the centre of the pin field, plus the position of
     pin 1, because a mounting plate cares about the pin field while a pinout
-    cares about pin 1.  ``row_edge_offset`` is the distance from the board edge
-    the header faces to the nearer pin row.
+    cares about pin 1.  ``edge`` says which board edge the host faces, which
+    fixes the axis the six columns run along.
     """
 
     key: str
@@ -171,6 +192,7 @@ class BoardSpec:
     family: str
     outline: Outline
     holes: tuple[Hole, ...] = ()
+    slots: tuple[Slot, ...] = ()
     features: tuple[Feature, ...] = ()
     pmods: tuple[PmodHeader, ...] = ()
     sources: tuple[Source, ...] = ()
