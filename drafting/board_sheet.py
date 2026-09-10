@@ -362,18 +362,48 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                  + [view.y(f.y0) for f in spec.features])
     leftmost = min([board.x] + [view.x(f.x0) for f in spec.features])
 
-    if spec.pmods and spec.front_edge == "bottom" and len(spec.pmods) > 1:
-        p0, p1 = spec.pmods[0], spec.pmods[1]
-        dims.linear(c, view.pt(p0.cx, p0.cy), view.pt(p1.cx, p1.cy),
-                    lowest - 6.0 - view.y(p0.cy), horizontal=True,
-                    text=f"{p1.cx - p0.cx:.2f} TYP")
-        lowest -= 6.0 + style.T_DIM + 2.0
+    # Pmod host spacing is dimensioned per board edge, between the first two
+    # hosts on that edge.  Taking the first two hosts overall instead gives a
+    # meaningless 0.00 on a board like the Pmod HAT Adapter, whose JA and JB
+    # sit one above the other on the same edge.
+    by_edge: dict[str, list] = {}
+    for p in spec.pmods:
+        by_edge.setdefault(p.edge, []).append(p)
+    for edge, group in by_edge.items():
+        if len(group) < 2:
+            continue
+        along = "cx" if edge in ("bottom", "top") else "cy"
+        group = sorted(group, key=lambda p: getattr(p, along))
+        p0, p1 = group[0], group[1]
+        spacing = getattr(p1, along) - getattr(p0, along)
+        if spacing < 0.01:
+            continue
+        label = f"{spacing:.2f} TYP" if len(group) > 2 else f"{spacing:.2f}"
+        if along == "cx":
+            dims.linear(c, view.pt(p0.cx, p0.cy), view.pt(p1.cx, p1.cy),
+                        lowest - 6.0 - view.y(p0.cy), horizontal=True,
+                        text=label)
+            lowest -= 6.0 + style.T_DIM + 2.0
+        else:
+            dims.linear(c, view.pt(p0.cx, p0.cy), view.pt(p1.cx, p1.cy),
+                        leftmost - 6.0 - view.x(p0.cx), horizontal=False,
+                        text=label)
+            leftmost -= 6.0 + style.T_DIM + 2.0
 
     xvals = {round(h.x, 3) for h in spec.holes}
     yvals = {round(h.y, 3) for h in spec.holes}
-    # A host on a horizontal edge is located by its X, one on a vertical edge
-    # by its Y: that is the coordinate a mating peripheral cares about.
-    for p in list(spec.pmods) + (list(overlay.pmods) if overlay else []):
+    # A host on a horizontal edge is located along that edge by its X, one on a
+    # vertical edge by its Y: that is the coordinate a mating peripheral cares
+    # about.  The board's own hosts also get their depth in from the edge
+    # dimensioned, since that is what a plate has to clear.
+    for p in spec.pmods:
+        if p.edge in ("bottom", "top"):
+            xvals.add(round(p.cx, 3))
+            yvals.add(round(p.cy, 3))
+        else:
+            yvals.add(round(p.cy, 3))
+            xvals.add(round(p.cx, 3))
+    for p in (overlay.pmods if overlay else ()):
         if p.edge in ("bottom", "top"):
             xvals.add(round(p.cx, 3))
         else:

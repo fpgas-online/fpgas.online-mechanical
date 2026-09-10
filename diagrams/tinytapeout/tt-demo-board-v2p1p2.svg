@@ -172,6 +172,8 @@
 <text x="176.225" y="215.3775" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#004c99" text-anchor="middle" transform="rotate(-90 176.225 215.3775)">96.00</text>
 <line x1="80.225" y1="180.5725" x2="63.275" y2="180.5725" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="61.275" y="179.6725" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#004c99" text-anchor="end">3.50</text>
+<line x1="80.225" y1="180.2975" x2="56.775" y2="180.2975" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<text x="54.775" y="179.3975" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#004c99" text-anchor="end">3.77</text>
 <line x1="80.225" y1="176.0725" x2="63.275" y2="176.0725" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="61.275" y="175.1725" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#004c99" text-anchor="end">8.00</text>
 <line x1="80.225" y1="109.5725" x2="63.275" y2="109.5725" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
