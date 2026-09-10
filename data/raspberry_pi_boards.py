@@ -63,7 +63,6 @@ BOARDS['rpi3b'] = BoardSpec(
     ),
     notes=(
         "Connector outlines are the component body as drawn by Raspberry Pi Ltd, overhang past the board edge included.",
-        'Mounting hole diameter: Drawing note, quoted: 4x M2.5 MOUNTING HOLES DRILLED TO 2.75 +/- 0.05mm.',
         'Hole IDs are assigned by this drawing, bottom row first then left to right, and mean the same thing on every Raspberry Pi sheet here.',
         "Design mounting hole keep-outs to 6.2 mm diameter on every model. That is what the Raspberry Pi HAT mechanical specification (github.com/raspberrypi/hats) requires around each hole, and it is the largest of the figures the individual models publish. The KEEPOUT column gives what this model's own drawing shows, which is not always anything.",
         "The hole diameter tolerance in the schedule, +/-0.05 mm, is quoted from this model's own drawing and governs in place of the hole diameter figure in the general tolerance block.",
@@ -110,7 +109,6 @@ BOARDS['rpi3bplus'] = BoardSpec(
     ),
     notes=(
         "Connector outlines are the component body as drawn by Raspberry Pi Ltd, overhang past the board edge included.",
-        'Mounting hole diameter: Carried over from the Pi 3 Model B drawing, which states 4x M2.5 holes drilled to 2.75 +/-0.05 mm; the two boards share an identical outline, hole pattern and DXF geometry. The 3B+ drawing gives neither a hole size nor a tolerance, so the +/-0.05 is not repeated.',
         'Hole IDs are assigned by this drawing, bottom row first then left to right, and mean the same thing on every Raspberry Pi sheet here.',
         "Design mounting hole keep-outs to 6.2 mm diameter on every model. That is what the Raspberry Pi HAT mechanical specification (github.com/raspberrypi/hats) requires around each hole, and it is the largest of the figures the individual models publish. The KEEPOUT column gives what this model's own drawing shows, which is not always anything.",
         "Hole positions are the 3.5 mm inset and 58 x 49 mm rectangle dimensioned on this model's drawing.",
@@ -152,7 +150,6 @@ BOARDS['rpi3aplus'] = BoardSpec(
     ),
     notes=(
         "Connector outlines are the component body as drawn by Raspberry Pi Ltd, overhang past the board edge included.",
-        "Mounting hole diameter: Carried over from the Pi 3 Model B drawing; the 3A+ gives neither a hole size nor a tolerance, so the Model B's +/-0.05 is not repeated.",
         'Hole IDs are assigned by this drawing, bottom row first then left to right, and mean the same thing on every Raspberry Pi sheet here.',
         "Design mounting hole keep-outs to 6.2 mm diameter on every model. That is what the Raspberry Pi HAT mechanical specification (github.com/raspberrypi/hats) requires around each hole, and it is the largest of the figures the individual models publish. The KEEPOUT column gives what this model's own drawing shows, which is not always anything.",
         'The source drawing is a reduced plot, not 1:1. Its scale was recovered from the mounting hole rectangle as 1.0685 and applied. Residual error over the 85 mm width is a few tenths of a millimetre, so treat every dimension on this sheet as +/-0.5 rather than the +/-0.20 the other models carry.',
@@ -201,7 +198,6 @@ BOARDS['rpi4b'] = BoardSpec(
     ),
     notes=(
         "Connector outlines are the component body as drawn by Raspberry Pi Ltd, overhang past the board edge included.",
-        'Mounting hole diameter: Read from the DXF: hole and keep-out circles on layer 0.',
         'Hole IDs are assigned by this drawing, bottom row first then left to right, and mean the same thing on every Raspberry Pi sheet here.',
         "Design mounting hole keep-outs to 6.2 mm diameter on every model. That is what the Raspberry Pi HAT mechanical specification (github.com/raspberrypi/hats) requires around each hole, and it is the largest of the figures the individual models publish. The KEEPOUT column gives what this model's own drawing shows, which is not always anything.",
     ),
@@ -248,7 +244,6 @@ BOARDS['rpi5'] = BoardSpec(
     ),
     notes=(
         "Connector outlines are the component body as drawn by Raspberry Pi Ltd, overhang past the board edge included.",
-        'Mounting hole diameter: Hole diameter dimensioned on the drawing as ø2.7 mm; the keep-out circle is drawn and measures 5.80 mm.',
         'Hole IDs are assigned by this drawing, bottom row first then left to right, and mean the same thing on every Raspberry Pi sheet here.',
         "Design mounting hole keep-outs to 6.2 mm diameter on every model. That is what the Raspberry Pi HAT mechanical specification (github.com/raspberrypi/hats) requires around each hole, and it is the largest of the figures the individual models publish. The KEEPOUT column gives what this model's own drawing shows, which is not always anything.",
         'The source is a PDF, not a DXF, but a true 1:1 vector plot: its scale, recovered from the mounting hole rectangle, came out 1.00002. Geometry was read from the vector paths, so this sheet carries the same tolerance as the DXF-derived models.',

@@ -98,7 +98,7 @@ BOARDS['v1.2.2'] = BoardSpec(
     used_by=('TT04',),
     outline=Outline(width=104.5, height=81.0,
                     corner_radius=3.0, thickness=1.56252,
-                    profile_note="Upper edge carries a shallow recess for the USB-C shell, contributed by the connector footprint's own edge cuts (fillet radii 0.136 mm, 0.303 mm, 0.364 mm, 0.4 mm).",
+                    profile_note="Upper edge carries a shallow recess for the USB-C shell, contributed by the connector footprint's own edge cuts (fillet radii 0.136 mm, 0.303 mm, 0.364 mm, 0.400 mm).",
                     edges=(
                         ('line', 33.27, 81.0, 101.5, 81.0),
                         ('line', 101.5, 0.0, 3.0, 0.0),
@@ -192,7 +192,7 @@ BOARDS['v1.2.3'] = BoardSpec(
     used_by=('TT05',),
     outline=Outline(width=104.5, height=81.0,
                     corner_radius=3.0, thickness=1.56252,
-                    profile_note="Upper edge carries a shallow recess for the USB-C shell, contributed by the connector footprint's own edge cuts (fillet radii 0.136 mm, 0.303 mm, 0.364 mm, 0.4 mm).",
+                    profile_note="Upper edge carries a shallow recess for the USB-C shell, contributed by the connector footprint's own edge cuts (fillet radii 0.136 mm, 0.303 mm, 0.364 mm, 0.400 mm).",
                     edges=(
                         ('line', 33.27, 81.0, 101.5, 81.0),
                         ('line', 101.5, 0.0, 3.0, 0.0),

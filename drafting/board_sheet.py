@@ -726,13 +726,18 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         # usual figures, not something any source here states, and on sheets
         # whose whole discipline is that every number is traceable an
         # untraceable one in the title block is the odd thing out.
-        schedule = " Where the hole schedule quotes a tolerance, it is from " \
-            "the source drawing and governs." if any(h.tol for h in spec.holes) \
+        schedule = " A tolerance quoted in the hole schedule is from the " \
+            "source drawing and governs." if any(h.tol for h in spec.holes) \
             else ""
         notes.append(
-            "The GENERAL TOLERANCE in the title block is a normal printed "
-            "circuit fabrication figure, not one this sheet's source states: "
-            "no source here publishes a general tolerance." + schedule)
+            "GENERAL TOLERANCE in the title block is a normal board-house "
+            "figure, not one any source here states." + schedule)
+    # Says what DRAWN "generated" means and that nobody countersigned it.
+    # ISO 7200 expects an approver; there isn't one, and a sheet that leaves
+    # the field off without saying so implies there was.
+    notes.append(
+        "Generated from the listed sources and not checked by a second "
+        "party: there is no CHECKED field because nobody has signed it.")
     sources = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
                for s in spec.sources]
     return notes, sources
@@ -745,35 +750,46 @@ def note_blocks(notes: list[str], sources: list[str]):
     return blocks
 
 
-def _place_notes_and_sources(sheet: Sheet, notes: list[str],
-                             sources: list[str], columns: int = 2) -> None:
-    """Draw the notes and sources in the band across the bottom of the sheet.
+def notes_spill_needed(sheet: Sheet, notes: list[str], sources: list[str],
+                       columns: int = 2) -> float:
+    """How much of the annotation column the notes' tail needs, or 0.
 
-    The band comes first and is used in full.  Only when it cannot hold
-    everything does the tail spill into whatever is left at the bottom of the
-    annotation column, which is to the right of the band and level with it, so
-    a reader still meets note 1 before note 10.  Spilling into the column
-    higher up, above the tables, is what read badly and is not what happens
-    here: the leftover starts below the last table.
+    Worked out before anything is placed in the column, so the legend can be
+    given the top of it and the notes the bottom.
     """
     blocks = note_blocks(notes, sources)
     cols = sheet.band_columns(sheet.notes_band, count=columns)
-    if not sheet.notes_columns(cols, blocks, dry=True):
-        # Take only as much of the column as the tail actually needs, so that
-        # whatever else wants the leftover -- the legend -- still has it.
-        spare = sheet.column_remaining
-        need = None
-        h = 20.0
-        while h <= spare:
-            probe = Rect(sheet.column.x, sheet.column.y,
-                         sheet.column.w - sheet.COLUMN_GUTTER, h)
-            if sheet.notes_columns(cols + [probe], blocks, dry=True):
-                need = h
-                break
-            h += 4.0
-        if need is None:
-            need = spare
-        cols = cols + [sheet.column_block(need)]
+    if sheet.notes_columns(cols, blocks, dry=True):
+        return 0.0
+    spare = sheet.column_remaining
+    h = 20.0
+    while h <= spare:
+        probe = Rect(sheet.column.x, sheet.column.y,
+                     sheet.column.w - sheet.COLUMN_GUTTER, h)
+        if sheet.notes_columns(cols + [probe], blocks, dry=True):
+            return h
+        h += 4.0
+    return spare
+
+
+def _place_notes_and_sources(sheet: Sheet, notes: list[str],
+                             sources: list[str], columns: int = 2,
+                             spill: float | None = None) -> None:
+    """Draw the notes and sources in the band across the bottom of the sheet.
+
+    The band comes first and is used in full.  Only when it cannot hold
+    everything does the tail spill into the annotation column, and then into
+    the BOTTOM of it, level with the lower half of the band, so the sheet
+    reads left to right along its foot.  Higher up, between the tables and the
+    legend, "SOURCES (continued)" printed ninety millimetres above the
+    "SOURCES" heading it continued.
+    """
+    blocks = note_blocks(notes, sources)
+    cols = sheet.band_columns(sheet.notes_band, count=columns)
+    if spill is None:
+        spill = notes_spill_needed(sheet, notes, sources, columns)
+    if spill > 0:
+        cols = cols + [sheet.column_block_bottom(spill)]
     sheet.notes_columns(cols, blocks)
 
 
@@ -1263,20 +1279,24 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                      "PIN1 Y mm"], rows,
                     ["start", "start", "end", "end", "end", "end"])
 
-    # Notes first: they are the sheet's content and must fit.  The legend is
-    # a reading aid and takes whatever the notes leave, which on every sheet
-    # here is more than enough.
+    # The legend goes directly under the tables and the notes' tail below it,
+    # at the foot of the column.  Both are measured first so that neither can
+    # take space the other needs.
+    #
     # Notes carry facts about this board, not an explanation of how to read a
     # drawing.  The column is finite, and losing a provenance note to make room
     # for a description of ordinate dimensioning is a bad trade.
-    _place_notes_and_sources(sheet, notes, src_lines, columns=band_cols)
     entries = _legend_entries(spec, overlay)
-    if sheet.column_remaining >= legend_height(len(entries)):
-        draw_legend(sheet, entries)
-    else:
+    spill = notes_spill_needed(sheet, notes, src_lines, band_cols)
+    want = legend_height(len(entries)) + (spill + 4.0 if spill else 0.0)
+    if sheet.column_remaining < want:
         raise SystemExit(
-            f"{spec.key}: no room left in the annotation column for the "
-            "legend; shorten the notes or drop a table")
+            f"{spec.key}: the annotation column cannot hold both the legend "
+            f"and the notes' tail ({want:.0f} mm wanted, "
+            f"{sheet.column_remaining:.0f} mm left); shorten the notes")
+    draw_legend(sheet, entries)
+    _place_notes_and_sources(sheet, notes, src_lines, columns=band_cols,
+                             spill=spill)
 
     sheet.draw_title_block()
     return sheet

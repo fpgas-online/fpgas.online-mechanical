@@ -23,6 +23,12 @@ PMOD_SLOT_X = (38.75, 61.61, 84.47)
 PMOD_ROW_Y = 9.0
 PMOD_PITCH = 22.86
 
+#: The Pmod connector body relative to its pin-field centre, as
+#: (dx0, dx1, dy0, dy1).  Identical on every revision; the generator checks it
+#: rather than assuming it.  dy0 is negative because the body overhangs the
+#: edge its host faces, and that overhang is what fixes the plate's front edge.
+PMOD_BODY = (-8.15, 8.1, -11.78, 3.07)
+
 #: Offset from the design frame (origin at the leftmost Pmod pin-field centre)
 #: to plate coordinates.
 DATUM_X = 38.75

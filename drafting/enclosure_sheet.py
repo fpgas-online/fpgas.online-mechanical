@@ -12,7 +12,8 @@ from data.schema import BoardSpec
 
 from . import dims, style
 from .board_sheet import (_place_notes_and_sources, draw_legend,
-                          note_blocks)
+                          legend_height, note_blocks,
+                          notes_spill_needed)
 from .sheet import Rect, Sheet, TitleBlock
 from .view import STANDARD_SCALES, View, scale_text
 
@@ -313,13 +314,21 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                     ["FEATURE", "X EXTENT mm", "Y EXTENT mm"], rows,
                     ["start", "end", "end"])
 
-    _place_notes_and_sources(sheet, notes, src, columns=band_cols)
-    draw_legend(sheet, [
+    # Legend under the tables, notes' tail at the foot of the column.
+    legend = [
         ("outline", "Body envelope"),
         ("component", "Aperture or cable exit"),
-        ("centre", "Projection symbol axis"),
         ("dimension", "Dimension, extension and leader"),
-    ])
+    ]
+    spill = notes_spill_needed(sheet, notes, src, band_cols)
+    want = legend_height(len(legend)) + (spill + 4.0 if spill else 0.0)
+    if sheet.column_remaining < want:
+        raise SystemExit(
+            f"{spec.key}: the annotation column cannot hold both the legend "
+            f"and the notes' tail ({want:.0f} mm wanted, "
+            f"{sheet.column_remaining:.0f} mm left); shorten the notes")
+    draw_legend(sheet, legend)
+    _place_notes_and_sources(sheet, notes, src, columns=band_cols, spill=spill)
 
     sheet.draw_title_block()
     return sheet

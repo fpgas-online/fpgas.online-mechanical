@@ -388,6 +388,51 @@ Drawing review, round 3, all twenty findings acted on:
   date is in the title block; a one-row history would say nothing the title
   block does not.  Worth adding at the first revision, not before.
 
+Code review, round 4:
+
+- **The output cable exit's dimensions on both PoE sheets were anchored at the
+  far end of the plan**, so they sat against the RJ45 aperture eighty
+  millimetres from the feature they describe.  Same class as round 3's "labels
+  that read as belonging to the wrong feature", reintroduced by the commit
+  meant to answer it.  The numbers are on the feature's own leader now.
+- Unreachable code after a `return`, a callout without the reservation its
+  twin had, duplicated thickness logic with an unhandled branch, and a
+  docstring describing an arc format that changed when arcs began being
+  resolved at extraction.
+
+Drawing review, round 4, all findings acted on:
+
+- **The projection symbol was the third-angle symbol** on the two sheets that
+  say, and are laid out in, first angle.  The trapezium's short side faced the
+  circles; in first angle it faces away.  Checked against the standard before
+  changing it.
+- **The assembled envelope counted positions marked "not fitted"**,
+  overstating five demo board sheets by 8 mm.
+- **The Pmod setback dimension's extension line ended in open board** on nine
+  sheets.  Round 3 moved its lane clear of the holes it used to cross, which
+  put it where there was nothing to point at.  The pin row has a centre line
+  now, which is what a row of centres should have had all along.
+- **The plate's 9.00 ordinate ran through hole H3 and slot S1.**
+- **The general tolerance block asserted figures no source states.**  Fifteen
+  sheets.  A note says where they come from, and a sheet whose schedule quotes
+  the source's own tolerance no longer gives a second, different one.
+- **A balloon sat on a connector on the Pi 3A+.**  Two mis-prices: a balloon's
+  own feature was priced like a neighbour's, and witness lines were charged to
+  leaders as well as balloons, so crossing one cost more than covering a
+  feature.
+- **"SOURCES (continued)" printed ninety millimetres above "SOURCES."**  The
+  notes' tail spilled into the top of the annotation column; it goes to the
+  foot of it now, level with the band, so the sheet reads left to right along
+  its bottom.
+- **The same line type meant two different things**: on a board sheet the
+  chain-double-dot rectangle at a Pmod host is the connector body, on the
+  plate it was the pin-field envelope.  The plate now draws both, exactly as
+  the board sheets do, which also puts the 2.78 mm front-edge overhang its own
+  note calls the point of the design on the view for the first time.
+- Smaller: fillet radii printed to mixed precision, the same sentence in both
+  a note and a source on every Pi sheet, and no statement anywhere that these
+  sheets are generated and uncountersigned.
+
 ## Things that did not work
 
 - `curl` without `-L` against `datasheets.raspberrypi.com` returns a 301 with a
@@ -441,3 +486,14 @@ Drawing review, round 3, all twenty findings acted on:
   span and drew another, the Pmod envelopes were drawn after the labels that
   had to avoid them, and the ordinate witness lines were drawn after the
   balloons.  Each is now computed once and used for both.
+
+- **Fixing a placement by moving it is not the same as fixing it.**  Twice now
+  a dimension was moved off the thing it was colliding with and left pointing
+  at nothing: the Pmod setback lane, and the cable exit's dimensions.  The
+  test is not "does it still collide" but "does its extension line end on the
+  feature".
+- **A weight that is right for one purpose is wrong for another.**  Witness
+  lines had to be hard so balloons would not sit on them, which then made
+  crossing one with a leader cost more than covering a feature.  Three
+  obstacle classes now split position from route: the board outline, the
+  witness lines, and a balloon's own feature.

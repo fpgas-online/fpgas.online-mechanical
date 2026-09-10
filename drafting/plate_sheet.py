@@ -15,14 +15,15 @@ from __future__ import annotations
 
 import math
 
-from data.mounting_plate import PLACEMENTS, PMOD_ROW_Y, PMOD_SLOT_X, PLATE
+from data.mounting_plate import (PLACEMENTS, PMOD_BODY, PMOD_ROW_Y,
+                                 PMOD_SLOT_X, PLATE)
 from data.schema import BoardSpec, Hole, Slot
 from data.tinytapeout_boards import BOARDS as TT_BOARDS
 
 from . import dims, style
 from .board_sheet import (Obstacles, _place_notes_and_sources,
                           draw_legend, legend_height, note_blocks,
-                          outline_path)
+                          notes_spill_needed, outline_path)
 from .canvas import Canvas
 from .sheet import Rect, Sheet, TitleBlock
 from .view import View
@@ -266,7 +267,8 @@ PLATE_LEGEND = [
     (BOARD_HOLE, "Hole or slot for a demo board fastener"),
     (PLATE_HOLE, "Plate fixing, into the chassis"),
     ("centre", "Slot axis"),
-    ("phantom", "Pmod host envelope, not a machined feature"),
+    ("component", "Pmod host pin field, where a board's hosts land"),
+    ("phantom", "Pmod connector body, overhanging the front edge"),
     ("dimension", "Dimension, extension and leader"),
 ]
 
@@ -379,6 +381,7 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     # captions are worked out before the hole labels are placed and handed to
     # the placer: drawn afterwards without being reserved, caption "PMOD 1"
     # and hole label "H3" ended up 0.48 mm apart and printed as one word.
+    bx0, bx1, by0, by1 = PMOD_BODY
     envelopes = []
     for i, px in enumerate(PMOD_SLOT_X):
         sx, sy = view.pt(px, PMOD_ROW_Y)
@@ -386,9 +389,11 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
         cap = f"PMOD {i + 1}"
         cap_y = sy + view.d(2.9) + 2.2
         cap_w = style.text_width(cap, style.T_LABEL)
-        envelopes.append((sx, sy, half, cap, cap_y, cap_w))
-        edge.add_rect(sx - half, sy - view.d(2.9), sx + half,
-                      sy + view.d(2.9), pad=0.8)
+        body = (view.x(px + bx0), view.y(PMOD_ROW_Y + by0),
+                view.x(px + bx1), view.y(PMOD_ROW_Y + by1))
+        envelopes.append((sx, sy, half, cap, cap_y, cap_w, body))
+        edge.add_rect(min(body[0], body[2]), min(body[1], body[3]),
+                      max(body[0], body[2]), max(body[1], body[3]), pad=0.8)
         edge.add_rect(sx - cap_w / 2, cap_y - style.descender(style.T_LABEL),
                       sx + cap_w / 2, cap_y + style.T_LABEL, pad=1.2)
 
@@ -398,10 +403,27 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
                      slot_labels={i: f"S{i + 1}"
                                   for i in range(len(spec.slots))})
 
-    for sx, sy, half, cap, cap_y, _ in envelopes:
-        c.rect(sx - half, sy - view.d(2.9), half * 2, view.d(5.8),
-               weight=style.W_PHANTOM, colour=style.C_HIGHLIGHT,
+    for sx, sy, half, cap, cap_y, _, body in envelopes:
+        # The connector body, phantom, overhanging the plate's front edge --
+        # which is the 2.78 mm the notes call the point of the design and
+        # which nothing on this view used to show.  Drawn exactly as the board
+        # sheets draw it, because it is the same connector: the pin field as
+        # pins, the body as a type K rectangle.  Only the pin-field box was
+        # here before, in the same line type as a board sheet's connector
+        # body, so one line type meant two different pieces of geometry.
+        c.rect(min(body[0], body[2]), min(body[1], body[3]),
+               abs(body[2] - body[0]), abs(body[3] - body[1]),
+               weight=style.W_PHANTOM, colour=style.C_PHANTOM,
                dash=style.D_PHANTOM)
+        for col in range(6):
+            for row in range(2):
+                c.circle(sx + view.d((col - 2.5) * 2.54),
+                         sy + view.d((row - 0.5) * 2.54),
+                         view.d(0.5), w=style.W_PHANTOM,
+                         colour=style.C_PHANTOM, fill="#ffffff")
+        c.rect(sx - half - view.d(1.3), sy - view.d(2.54 / 2 + 1.3),
+               (half + view.d(1.3)) * 2, view.d(2.54 + 2.6),
+               weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT)
         c.text(sx, cap_y, cap, size=style.T_LABEL,
                colour=style.C_HIGHLIGHT, anchor="middle")
 
@@ -476,8 +498,15 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
                 ["ID", "X mm", "Y mm", "DIA mm"], rows,
                 ["start", "end", "end", "end"])
 
-    _place_notes_and_sources(sheet, notes, src, columns=band_cols)
+    spill = notes_spill_needed(sheet, notes, src, band_cols)
+    want = legend_height(len(PLATE_LEGEND)) + (spill + 4.0 if spill else 0.0)
+    if sheet.column_remaining < want:
+        raise SystemExit(
+            f"the plate sheet's annotation column cannot hold both the legend "
+            f"and the notes' tail ({want:.0f} mm wanted, "
+            f"{sheet.column_remaining:.0f} mm left); shorten the notes")
     draw_legend(sheet, PLATE_LEGEND)
+    _place_notes_and_sources(sheet, notes, src, columns=band_cols, spill=spill)
 
     sheet.draw_title_block()
     return sheet
@@ -551,8 +580,9 @@ def render_fitting_guide(*, drawing_no: str, date: str,
         "positions, at the same height above the plate's front edge. See "
         "drawing TT-MP-01 for the plate itself.",
     ]
-    _place_notes_and_sources(sheet, notes, [])
+    spill = notes_spill_needed(sheet, notes, [])
     draw_legend(sheet, GUIDE_LEGEND)
+    _place_notes_and_sources(sheet, notes, [], spill=spill)
     sheet.draw_title_block()
     return sheet
 

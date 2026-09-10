@@ -284,7 +284,10 @@ def extract(rev: dict) -> dict:
         profile_note = (
             "Upper edge carries a shallow recess for the USB-C shell, "
             "contributed by the connector footprint's own edge cuts "
-            f"(fillet radii {', '.join(f'{r} mm' for r in radii[:-1])}).")
+            # Three decimals throughout: printed at their natural precision
+            # the list read "0.136 mm, 0.303 mm, 0.364 mm, 0.4 mm", where the
+            # last looks like a coarser measurement than the others.
+            f"(fillet radii {', '.join(f'{r:.3f} mm' for r in radii[:-1])}).")
 
     holes = []
     for ref in roles["holes"]:

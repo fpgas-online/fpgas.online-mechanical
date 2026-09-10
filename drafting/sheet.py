@@ -312,6 +312,20 @@ class Sheet:
         return Rect(self.column.x, top - height,
                     self.column.w - self.COLUMN_GUTTER, height)
 
+    def column_block_bottom(self, height: float) -> Rect:
+        """Reserve *height* mm at the BOTTOM of the remaining column.
+
+        For the notes' overflow.  Taken from the top it landed between the
+        tables and the legend, ninety millimetres above the NOTES heading it
+        continued, so a reader met "SOURCES (continued)" before "SOURCES".
+        At the bottom it sits level with the lower half of the band, and the
+        sheet reads left to right along its foot.
+        """
+        bottom = self.column.y
+        self._column_cursor = min(self._column_cursor, bottom + height + 4.0)
+        return Rect(self.column.x, bottom,
+                    self.column.w - self.COLUMN_GUTTER, height)
+
     @property
     def column_remaining(self) -> float:
         return self._column_cursor - self.column.y

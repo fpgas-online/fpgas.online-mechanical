@@ -159,6 +159,15 @@
 <text x="360.0161" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">12.00 to 18.00</text>
 <line x1="306.0744" y1="57.4222" x2="306.0744" y2="74.0889" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="334.018" y1="57.4222" x2="334.018" y2="74.0889" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="243" y="83.5889" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
+<line x1="243" y1="84.9889" x2="405" y2="84.9889" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="89.7889" x2="263" y2="89.7889" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="266" y="91.0389" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Body envelope</text>
+<line x1="243" y1="94.9889" x2="263" y2="94.9889" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
+<text x="266" y="96.2389" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Aperture or cable exit</text>
+<line x1="243" y1="100.1889" x2="263" y2="100.1889" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="263,100.1889 260,99.2889 260,101.0889" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="266" y="101.4389" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
 <text x="24" y="156.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
 <line x1="24" y1="157.9" x2="125.5" y2="157.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="24" y="162.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
@@ -218,23 +227,12 @@
 <text x="138.042" y="250.6547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Adafruit 3785, equivalent unit:</text>
 <text x="138.042" y="255.1815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://www.adafruit.com/product/3785 - &quot;Body dimensions:</text>
 <text x="138.042" y="259.7082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">80mm x 30mm x 24mm&quot;, weight 54.1 g, each lead 205 mm.</text>
-<text x="243" y="83.5889" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES (continued)</text>
-<line x1="243" y1="84.9889" x2="405" y2="84.9889" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="243" y="89.6889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="247.542" y="89.6889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">AliExpress listings: AliExpress items 1005006389914897, 1005005523161215, 1005009263116567 -</text>
-<text x="247.542" y="94.2156" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Most listings quote packaging rather than body size. The one plausible body figure seen was 95 x 28</text>
-<text x="247.542" y="98.7424" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">x 24 mm, for a gigabit variant in a longer case.</text>
-<text x="243" y="111.5889" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
-<line x1="243" y1="112.9889" x2="405" y2="112.9889" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<line x1="243" y1="117.7889" x2="263" y2="117.7889" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
-<text x="266" y="119.0389" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Body envelope</text>
-<line x1="243" y1="122.9889" x2="263" y2="122.9889" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
-<text x="266" y="124.2389" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Aperture or cable exit</text>
-<line x1="243" y1="128.1889" x2="263" y2="128.1889" stroke="#000000" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="3.2,1.2,0.6,1.2"/>
-<text x="266" y="129.4389" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Projection symbol axis</text>
-<line x1="243" y1="133.3889" x2="263" y2="133.3889" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="263,133.3889 260,132.4889 260,134.2889" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="266" y="134.6389" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
+<text x="243" y="212.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES (continued)</text>
+<line x1="243" y1="213.9" x2="405" y2="213.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="243" y="218.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="247.542" y="218.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">AliExpress listings: AliExpress items 1005006389914897, 1005005523161215, 1005009263116567 -</text>
+<text x="247.542" y="223.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Most listings quote packaging rather than body size. The one plausible body figure seen was 95 x 28</text>
+<text x="247.542" y="227.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">x 24 mm, for a gigabit variant in a longer case.</text>
 <rect x="243" y="237" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="243" y1="252" x2="408" y2="252" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="245.5" y="245.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">GENERIC POE SPLITTER TO MICRO-USB</text>

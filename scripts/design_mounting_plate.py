@@ -71,10 +71,33 @@ REVISIONS = [
 #: 5.15 mm narrower, because that board is the widest and sits furthest right.
 TWO_PMOD_START_SLOT = 1
 
+def pmod_body_box() -> tuple[float, float, float, float]:
+    """The Pmod connector body, relative to its pin-field centre.
+
+    Read from the board data and checked to be identical on every revision,
+    rather than written down here: every revision uses the same footprint, and
+    that is the fact the whole plate rests on.  Returned as
+    (dx0, dx1, dy0, dy1) in millimetres from the pin-field centre.
+    """
+    boxes = set()
+    for board in BOARDS.values():
+        for p in board.pmods:
+            if p.body_x1 <= p.body_x0:
+                continue
+            boxes.add((round(p.body_x0 - p.cx, 3), round(p.body_x1 - p.cx, 3),
+                       round(p.body_y0 - p.cy, 3), round(p.body_y1 - p.cy, 3)))
+    if len(boxes) != 1:
+        raise SystemExit(
+            "the Pmod connector body is not the same on every revision: "
+            f"{sorted(boxes)}. The plate's front edge is placed from it, so "
+            "the design assumption no longer holds")
+    return boxes.pop()
+
+
 #: Distance from a Pmod host's pin-field centre to the front face of its
-#: connector body.  Identical on every revision, because they all use the same
-#: footprint, so it is a reliable datum for where the plate's front edge can go.
-PMOD_BODY_OVERHANG = 11.78
+#: connector body.  A reliable datum for where the plate's front edge can go.
+PMOD_BODY = pmod_body_box()
+PMOD_BODY_OVERHANG = -PMOD_BODY[2]
 
 #: How far the connector bodies should overhang the plate's front edge, so a
 #: peripheral module plugs into clear air.
@@ -278,6 +301,12 @@ PMOD_SLOT_X = {pmod_x}
 PMOD_ROW_Y = {pmod_y}
 PMOD_PITCH = {pitch}
 
+#: The Pmod connector body relative to its pin-field centre, as
+#: (dx0, dx1, dy0, dy1).  Identical on every revision; the generator checks it
+#: rather than assuming it.  dy0 is negative because the body overhangs the
+#: edge its host faces, and that overhang is what fixes the plate's front edge.
+PMOD_BODY = {pmod_body}
+
 #: Offset from the design frame (origin at the leftmost Pmod pin-field centre)
 #: to plate coordinates.
 DATUM_X = {datum_x}
@@ -405,7 +434,7 @@ def main() -> None:
 
     text = TEMPLATE.format(
         pmod_x=repr(tuple(round(DATUM_X + i * PMOD_PITCH, 3) for i in range(3))),
-        pmod_y=DATUM_Y, pitch=PMOD_PITCH,
+        pmod_y=DATUM_Y, pitch=PMOD_PITCH, pmod_body=repr(PMOD_BODY),
         datum_x=DATUM_X, datum_y=DATUM_Y,
         placements=place_src(), holes=hole_src(), slots=slot_src(),
         w=PLATE_WIDTH, h=PLATE_HEIGHT, r=PLATE_CORNER_R,

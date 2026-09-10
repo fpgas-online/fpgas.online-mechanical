@@ -331,9 +331,11 @@ def render(rec: dict) -> str:
         f"                x0={f['x0']}, y0={f['y0']}, x1={f['x1']}, y1={f['y1']})"
         for f in rec["features"])
 
+    # The hole note is provenance, so it goes in SOURCES under "Mounting
+    # holes" and not also in the notes: printed in both it was the same
+    # sentence twice on every Raspberry Pi sheet.
     notes = ['"Connector outlines are the component body as drawn by '
              'Raspberry Pi Ltd, overhang past the board edge included."',
-             repr(f"Mounting hole diameter: {m['hole_note']}"),
              repr("Hole IDs are assigned by this drawing, bottom row first "
                   "then left to right, and mean the same thing on every "
                   "Raspberry Pi sheet here.")]
