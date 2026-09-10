@@ -86,10 +86,22 @@ and one slot cover all five distinct geometries on a 135 x 101 mm plate.
 All sheets use the same frame: origin at the lower-left corner of the part, X
 right, Y up, viewed from the component side, millimetres. Holes and Pmod
 positions are ordinate dimensions from that single datum, so they neither
-overlap on the sheet nor accumulate tolerance.
+accumulate tolerance nor overlap on the sheet, and each witness line starts at
+the feature it dimensions.
 
-Dimensions and balloons are kept on opposite sides of each view. Long hole
-schedules are tabulated rather than dimensioned individually.
+Sheet layout: the view sits top-left with its dimensions below and to the left;
+schedules go in the right-hand column; notes and sources flow into a band
+across the bottom, plus whatever is left at the foot of the column. Balloons
+are placed inside the view against an obstacle list, so a leader is never
+routed through a neighbouring feature.
+
+Text is sized by ISO 3098 character height, not by font em. Nothing is smaller
+than 2.5 mm capitals, which is 3.43 mm of font size for these faces. Long hole
+schedules are tabulated rather than dimensioned individually, which is standard
+once a part has more than a handful of holes.
+
+The general tolerance lives in the title block, where a real drawing puts it
+and where it cannot be the note that gets dropped for space.
 
 ## Licence
 
