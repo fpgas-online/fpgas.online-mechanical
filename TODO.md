@@ -33,13 +33,16 @@ Status key: `[ ]` not started, `[~]` in progress, `[x]` done.
 - [x] Choose plate outline and hole pattern
 - [x] Mounting plate fabrication drawing
 - [x] Board fitting guide, one view per revision
-- [ ] Cut file (DXF or SVG outline only) for a laser or router
+- [x] Cut file: `diagrams/mounting-plate/tt-generic-mounting-plate.dxf`
 
 ## 5. Review
-- [x] Sub-agent code review, round 1 -- acted on, see commit "Design the
-      generic mounting plate; act on the code review"
-- [~] Sub-agent mechanical drawing review, round 1
-- [ ] Sub-agent review, round 2, after the drawing review fixes
+- [x] Sub-agent code review, round 1 -- acted on
+- [x] Sub-agent mechanical drawing review, round 1 -- acted on
+- [~] Sub-agent review, round 2
+- [x] Automated sheet checker (`scripts/check_sheets.py`): text collisions,
+      out-of-frame content, text under the 2.5 mm ISO 3098 floor
+- [x] Automated arc check in the extractor: a resolved arc must pass through
+      the point KiCad puts on it
 
 ## 6. Repository
 - [x] README explaining what is here and how the numbers were obtained

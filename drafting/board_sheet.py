@@ -511,8 +511,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     if o.corner_radius:
         r = o.corner_radius
         tip = view.pt(o.width - r * 0.3, o.height - r * 0.3)
-        dims.leader(c, tip, (board.x1 + 8.0, board.y1 + 5.0),
-                    f"R{r:.2f} (4 places)")
+        # Says which outline it applies to, because on the Pi 3A+ the phantom
+        # Pmod HAT Adapter outline runs within half a millimetre of the board's
+        # own and the callout would otherwise be ambiguous.
+        label = f"R{r:.2f} (4 places), board outline" if overlay is not None \
+            else f"R{r:.2f} (4 places)"
+        dims.leader(c, tip, (board.x1 + 8.0, board.y1 + 5.0), label)
 
     # --- annotation column --------------------------------------------------
     if spec.holes:

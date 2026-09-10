@@ -32,7 +32,7 @@ document the request linked) for:
 
 ## Status
 
-Phase: **all 18 sheets generated; drawing review outstanding**.
+Phase: **18 sheets generated; both reviews acted on; round 2 outstanding**.
 
 18 sheets exist under `diagrams/`, as SVG, PDF and PNG:
 8 Tiny Tapeout revisions, 5 Raspberry Pi models (each with the Pmod HAT
@@ -203,6 +203,31 @@ Plate is **135 x 101 mm**, corner radius 4.  Origin at its lower-left corner.
 
   Note the v2.x lower-right hole is at Y = 8.0, not 3.5: that pattern is not
   symmetric.
+
+## What the reviews caught
+
+Code review, round 1:
+
+- Raspberry Pi keep-out figures were tabulated as if all equally authoritative
+  when only the Pi 4B's is machine-read and three models publish none at all.
+- A silent 3.2 mm fallback for a missing mounting hole drill size.
+- The SVG large-arc flag hardcoded to 0.
+- Hole clustering on the plate could average three coincident positions.
+
+Drawing review, round 1:
+
+- **Text was sized by em, not cap height.**  ISO 3098 specifies lettering by
+  character height, so `font-size="2.5"` gives a 1.82 mm capital.  Everything
+  is now declared as a cap height; the DejaVu cap ratio is 0.7290.
+- **Ordinate witness lines started at a board edge, not at the feature.**  So
+  nothing said which number belonged to which hole.
+- The Pi 5 was missing both micro-HDMI connectors, because the rectangle
+  recovery only closed shapes drawn as a pair of full-width horizontals.
+- Notes ran through the sources block on four Raspberry Pi sheets.
+- `0.00 TYP` on the Pmod HAT sheet: the host-pitch dimension took the first two
+  hosts on the board rather than the first two on a shared edge.
+- Pi 4B hole IDs were in a different order from every other Pi.
+- Balloon leaders routed through neighbouring features.
 
 ## Things that did not work
 

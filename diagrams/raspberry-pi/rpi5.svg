@@ -185,7 +185,7 @@
 <polygon points="164.62,120.992 167.6177,120.0845 166.6232,118.5842" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <line x1="164.62" y1="120.992" x2="173.52" y2="115.092" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="173.52" y1="115.092" x2="178.52" y2="115.092" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="179.72" y="114.192" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start">R3.00 (4 places)</text>
+<text x="179.72" y="114.192" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="start">R3.00 (4 places), board outline</text>
 <text x="240" y="21.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">HOLE SCHEDULE</text>
 <line x1="240" y1="22.9" x2="402" y2="22.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="240" y="25.1" width="83.2687" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
