@@ -182,7 +182,7 @@ def main() -> int:
         page_h = float(re.search(r'height="([\d.]+)mm"', svg).group(1))
         # The zone markings live in the strip between the trim line and the
         # drawing frame, by design, so the bound is the trim line.
-        trim = style.SHEET_MARGIN / 2
+        trim = style.TRIM_MARGIN
         items = boxes(svg)
         svg_lines = list(lines(svg))
         rules = vertical_rules(all_lines(svg))

@@ -816,7 +816,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     view_needs = _view_height_needed(spec, overlay)
     band_h, band_cols = Sheet.plan_notes_band(
         sheet_size, note_blocks(notes, src_lines),
-        max_height=style.SHEET_SIZES[sheet_size][1] - 2 * (style.SHEET_MARGIN + 5)
+        max_height=style.SHEET_SIZES[sheet_size][1] - 2 * style.FRAME_MARGIN
         - view_needs - 6.0)
 
     sheet = Sheet(sheet_size, TitleBlock(

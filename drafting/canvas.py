@@ -95,9 +95,14 @@ class Canvas:
         """
         if not s:
             return
+        # The canvas Y axis points up and the SVG one points down, so the sign
+        # here is easy to get backwards, and was: "middle" moved the capitals a
+        # whole cap height above the point instead of centring them on it, so
+        # every balloon digit sat high in its circle and every ordinate label
+        # sat off its own witness line.
         dy = 0.0
         if baseline == "middle":
-            dy = style.text_height(size) / 2
+            dy = -style.text_height(size) / 2
         elif baseline == "top":
             dy = -style.text_height(size)
         sy = self._y(y + dy)

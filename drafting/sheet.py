@@ -81,12 +81,20 @@ class Sheet:
         self.size_name = size
         self.canvas = Canvas(self.w, self.h)
         self.title = title or TitleBlock(title="")
-        # Two borders, ISO 5457 style: a trim line near the paper edge and the
+        # Two borders, ISO 5457: a trim line near the paper edge and the
         # drawing frame inside it.  The strip between them carries the zone
         # markings, which is what keeps them clear of the drawing content.
-        m = style.SHEET_MARGIN
-        self.trim = Rect(m / 2, m / 2, self.w - m, self.h - m)
-        self.frame = Rect(m + 5, m + 5, self.w - 2 * (m + 5), self.h - 2 * (m + 5))
+        #
+        # ISO 5457 puts the frame 20 mm from the filing edge and 10 mm from
+        # the other three.  It was 15 mm all round, which both wasted ten
+        # millimetres of height and left a punched print biting into the
+        # left-hand zone band.
+        self.trim = Rect(style.TRIM_MARGIN, style.TRIM_MARGIN,
+                         self.w - 2 * style.TRIM_MARGIN,
+                         self.h - 2 * style.TRIM_MARGIN)
+        self.frame = Rect(style.FILING_MARGIN, style.FRAME_MARGIN,
+                          self.w - style.FILING_MARGIN - style.FRAME_MARGIN,
+                          self.h - 2 * style.FRAME_MARGIN)
         cw = self.COLUMN_WIDTH if column_width is None else column_width
         self.title_rect = Rect(self.frame.x1 - cw, self.frame.y, cw,
                                self.TITLE_HEIGHT)
@@ -116,9 +124,30 @@ class Sheet:
         f = self.frame
         c.rect(f.x, f.y, f.w, f.h, weight=style.W_FRAME)
         self._draw_zones()
+        self._draw_centring_marks()
+
+    def _draw_centring_marks(self) -> None:
+        """ISO 5457 centring marks: a short bar at the middle of each edge.
+
+        They run from the paper edge to just inside the frame, and are what a
+        copier or a scanner is lined up against.
+        """
+        c = self.canvas
+        f = self.frame
+        for x in (f.cx,):
+            c.line(x, 0.0, x, f.y + 5.0, w=style.W_FRAME, colour="#000000")
+            c.line(x, f.y1 - 5.0, x, self.h, w=style.W_FRAME, colour="#000000")
+        for y in (f.cy,):
+            c.line(0.0, y, f.x + 5.0, y, w=style.W_FRAME, colour="#000000")
+            c.line(f.x1 - 5.0, y, self.w, y, w=style.W_FRAME, colour="#000000")
 
     def _draw_zones(self) -> None:
-        """Zone letters down the sides and numbers along top and bottom."""
+        """Zone letters down the sides and numbers along top and bottom.
+
+        ISO 5457 numbers the columns from 1 at the top left and letters the
+        rows from A at the top.  The numbers used to run the other way, so
+        zone 1A was the top right corner.
+        """
         c, f = self.canvas, self.frame
         t = self.trim
         strip = f.y - t.y
@@ -132,7 +161,7 @@ class Sheet:
                 c.line(x0, t.y, x0, f.y, w=style.W_THIN, colour="#888888")
                 c.line(x0, f.y1, x0, t.y1, w=style.W_THIN, colour="#888888")
             for y in (t.y + strip / 2, t.y1 - strip / 2):
-                c.text((x0 + x1) / 2, y, str(cols - i), size=style.T_TINY,
+                c.text((x0 + x1) / 2, y, str(i + 1), size=style.T_TINY,
                        anchor="middle", baseline="middle", colour="#666666")
         for j in range(rows):
             y0 = f.y + f.h * j / rows
@@ -140,7 +169,7 @@ class Sheet:
             if j:
                 c.line(t.x, y0, f.x, y0, w=style.W_THIN, colour="#888888")
                 c.line(f.x1, y0, t.x1, y0, w=style.W_THIN, colour="#888888")
-            for x in (t.x + strip / 2, t.x1 - strip / 2):
+            for x in ((t.x + f.x) / 2, (f.x1 + t.x1) / 2):
                 c.text(x, (y0 + y1) / 2, letters[rows - 1 - j],
                        size=style.T_TINY, anchor="middle", baseline="middle",
                        colour="#666666")

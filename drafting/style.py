@@ -159,9 +159,18 @@ C_FILL_TABLE_HEAD = "#e6e6e6"
 
 # --- sheet -----------------------------------------------------------------
 
+#: ISO 5457 sheet borders.  The frame sits 20 mm from the filing edge, which
+#: is the left one on a landscape sheet, and 10 mm from the other three; the
+#: trim line marks where the sheet is cut.
+TRIM_MARGIN = 5.0
+FILING_MARGIN = 20.0
+#: 12 rather than the standard's minimum 10, so that the zone band between the
+#: trim line and the frame is seven millimetres: a 2.5 mm capital centred in a
+#: five millimetre band touches both lines.
+FRAME_MARGIN = 12.0
+
 SHEET_SIZES = {
     "A4": (297.0, 210.0),
     "A3": (420.0, 297.0),
     "A2": (594.0, 420.0),
 }
-SHEET_MARGIN = 10.0

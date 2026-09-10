@@ -124,7 +124,7 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
     band_h, band_cols = Sheet.plan_notes_band(
         sheet_size, note_blocks(notes, src),
         max_height=style.SHEET_SIZES[sheet_size][1]
-        - 2 * (style.SHEET_MARGIN + 5) - (height + GAP + depth) - 64.0)
+        - 2 * style.FRAME_MARGIN - (height + GAP + depth) - 64.0)
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle,
         drawing_no=drawing_no, rev="A", date=date, drawn_by="generated",

@@ -72,7 +72,8 @@ _LABEL_DIRS = [(1, 1), (1, -1), (-1, 1), (-1, -1), (1, 0), (-1, 0),
 
 def place_label(c: Canvas, obstacles: Obstacles, anchor: tuple[float, float],
                 clear: float, text: str, colour: str,
-                others: list[tuple[float, float]] | None = None
+                others: list[tuple[float, float]] | None = None,
+                bounds: Rect | None = None
                 ) -> tuple[float, float, float, float]:
     """Put *text* near *anchor*, in the first spot free of *obstacles*.
 
@@ -84,15 +85,27 @@ def place_label(c: Canvas, obstacles: Obstacles, anchor: tuple[float, float],
     up nearer one of those than to its own feature reads as belonging to the
     wrong one: on the mounting plate, H3 and slot S1 sit nine millimetres
     apart and their labels swapped over each other's features.
+
+    *bounds* keeps the label inside its own view.  The fitting guide draws
+    five small views side by side, each with its own obstacle list, and two
+    labels from neighbouring views drifted into the gap between them and
+    landed on each other.
     """
     px, py = anchor
     tw = style.text_width(text, style.T_LABEL, bold=True)
     th = style.text_height(style.T_LABEL)
     best, best_score = None, None
-    for radius in (clear + 2.2, clear + 5.0, clear + 8.0, clear + 12.0):
+    # Reaching further out is better than landing on a neighbour: on the
+    # half-scale fitting guide views the near positions are all taken.
+    for radius in (clear + 2.2, clear + 5.0, clear + 8.0, clear + 12.0,
+                   clear + 16.0, clear + 21.0):
         for dx, dy in _LABEL_DIRS:
             cx = px + dx * (radius + tw / 2)
             cy = py + dy * (radius + th / 2)
+            if bounds is not None and not (
+                    bounds.x + tw / 2 <= cx <= bounds.x1 - tw / 2
+                    and bounds.y + th / 2 <= cy <= bounds.y1 - th / 2):
+                continue
             mine = math.dist((cx, cy), (px, py))
             stolen = any(math.dist((cx, cy), o) < mine for o in (others or ()))
             score = (obstacles.hits(cx, cy, max(tw, th) / 2) * 100
@@ -101,6 +114,9 @@ def place_label(c: Canvas, obstacles: Obstacles, anchor: tuple[float, float],
                 best, best_score = (cx, cy), score
         if best_score is not None and best_score < 70:
             break
+    if best is None:
+        raise SystemExit(
+            f"no room anywhere for label {text!r} inside its view")
     cx, cy = best
     gap = math.dist((px, py), (cx, cy)) - clear - max(tw, th) / 2
     if gap > 1.5:
@@ -124,7 +140,8 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
                      labels: dict[int, str] | None = None,
                      highlight: set[int] | None = None,
                      extra: Obstacles | None = None,
-                     slot_labels: dict[int, str] | None = None) -> None:
+                     slot_labels: dict[int, str] | None = None,
+                     bounds: Rect | None = None) -> None:
     """Draw the holes, and place their labels so they do not collide.
 
     Several holes on this plate sit five millimetres apart, so a fixed label
@@ -173,7 +190,7 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
         if not (labels and i in labels) or faint:
             continue
         box = place_label(c, obstacles, (px, py), r, labels[i], colour,
-                          others((px, py)))
+                          others((px, py)), bounds)
         # Reserve it: nothing stopped the next label landing on this one.
         obstacles.add_rect(*box, pad=1.5)
 
@@ -186,7 +203,7 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
         half = view.d(max(abs(sl.x1 - sl.x0), abs(sl.y1 - sl.y0)) / 2
                       + sl.width / 2)
         box = place_label(c, obstacles, (mx, my), half, slot_labels[i],
-                          BOARD_HOLE, others((mx, my)))
+                          BOARD_HOLE, others((mx, my)), bounds)
         obstacles.add_rect(*box, pad=1.5)
 
 
@@ -313,7 +330,7 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     band_h, band_cols = Sheet.plan_notes_band(
         sheet_size, note_blocks(notes, src),
         max_height=style.SHEET_SIZES[sheet_size][1]
-        - 2 * (style.SHEET_MARGIN + 5) - o.height
+        - 2 * style.FRAME_MARGIN - o.height
         - PLATE_MARGIN_TOP - PLATE_MARGIN_BOTTOM - 6.0)
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle, drawing_no=drawing_no,
@@ -571,16 +588,26 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
         edge.add_segment(*view.pt(*a), *view.pt(*b))
     edge.add_rect(*view.pt(dx, dy),
                   *view.pt(dx + bo.width, dy + bo.height), pad=0.0)
-    draw_plate_holes(c, view, spec, labels, highlight=used, extra=edge,
-                     slot_labels={i: f"S{i + 1}" for i in used_slots})
 
+    # The three caption lines sit right under the view, close enough that a
+    # hole label on the plate's lower edge lands on the first of them.
     shuttles = ", ".join(pl["shuttles"]) or "no shipped shuttle yet"
-    c.text(cell.cx, view.y(0) - 7.0, f"{name}  ({shuttles})",
-           size=style.T_LABEL, anchor="middle", bold=True, face="sans")
-    # Every revision the view covers, not just the one whose geometry was used.
-    c.text(cell.cx, view.y(0) - 12.0,
-           "board rev " + ", ".join(pl["revisions"]),
-           size=style.T_LABEL, anchor="middle", colour="#444444")
-    c.text(cell.cx, view.y(0) - 17.0,
-           f"offset X {dx:.2f}  Y {dy:.2f} mm",
-           size=style.T_LABEL, anchor="middle", colour="#444444")
+    captions = [
+        (f"{name}  ({shuttles})", 7.0, True, style.C_NOTE),
+        ("board rev " + ", ".join(pl["revisions"]), 12.0, False, "#444444"),
+        (f"offset X {dx:.2f}  Y {dy:.2f} mm", 17.0, False, "#444444"),
+    ]
+    for text, drop, bold, _ in captions:
+        w = style.text_width(text, style.T_LABEL, bold=bold)
+        y = view.y(0) - drop
+        edge.add_rect(cell.cx - w / 2, y - style.descender(style.T_LABEL),
+                      cell.cx + w / 2, y + style.T_LABEL, pad=1.0)
+
+    draw_plate_holes(c, view, spec, labels, highlight=used, extra=edge,
+                     slot_labels={i: f"S{i + 1}" for i in used_slots},
+                     bounds=cell)
+
+    for text, drop, bold, colour in captions:
+        c.text(cell.cx, view.y(0) - drop, text, size=style.T_LABEL,
+               anchor="middle", bold=bold, colour=colour,
+               face="sans" if bold else "condensed")
