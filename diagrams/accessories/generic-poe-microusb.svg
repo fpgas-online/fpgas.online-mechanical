@@ -179,24 +179,19 @@
 <text x="129.5" y="218.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
 <text x="134.042" y="218.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">No mounting holes: the case is a glued plastic clamshell, so a</text>
 <text x="134.042" y="222.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">bracket has to clamp or strap the body.</text>
-<text x="129.5" y="229.2337" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="129.5" y1="230.6337" x2="232" y2="230.6337" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="129.5" y="235.3337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="134.042" y="235.3337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DSLRKIT active PoE splitter:</text>
-<text x="134.042" y="239.8605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://www.amazon.com/DSLRKIT-Active-Splitter-Ethernet-Ras</text>
-<text x="134.042" y="244.3872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pberry/dp/B01H37XQP8 - Vendor text: &quot;Body size: 80 x 27 x 22</text>
-<text x="134.042" y="248.914" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm&quot;, weight 55 g, DC cable 165 mm, RJ45 plug cable 155</text>
-<text x="134.042" y="253.4407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm.</text>
-<text x="129.5" y="258.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="134.042" y="258.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Adafruit 3785, equivalent unit:</text>
-<text x="134.042" y="263.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://www.adafruit.com/product/3785 - &quot;Body dimensions:</text>
-<text x="134.042" y="268.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">80mm x 30mm x 24mm&quot;, weight 54.1 g, each lead 205 mm.</text>
-<text x="240" y="86.5889" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES (continued)</text>
+<text x="240" y="86.5889" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
 <line x1="240" y1="87.9889" x2="402" y2="87.9889" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="240" y="92.6889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="244.542" y="92.6889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">AliExpress listings: AliExpress items 1005006389914897, 1005005523161215, 1005009263116567 -</text>
-<text x="244.542" y="97.2156" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Most listings quote packaging rather than body size. The one plausible body figure seen was 95 x 28</text>
-<text x="244.542" y="101.7424" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">x 24 mm, for a gigabit variant in a longer case.</text>
+<text x="240" y="92.6889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="244.542" y="92.6889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DSLRKIT active PoE splitter:</text>
+<text x="244.542" y="97.2156" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://www.amazon.com/DSLRKIT-Active-Splitter-Ethernet-Raspberry/dp/B01H37XQP8 - Vendor text:</text>
+<text x="244.542" y="101.7424" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">&quot;Body size: 80 x 27 x 22 mm&quot;, weight 55 g, DC cable 165 mm, RJ45 plug cable 155 mm.</text>
+<text x="240" y="107.2691" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="244.542" y="107.2691" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Adafruit 3785, equivalent unit: https://www.adafruit.com/product/3785 - &quot;Body dimensions: 80mm x</text>
+<text x="244.542" y="111.7959" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">30mm x 24mm&quot;, weight 54.1 g, each lead 205 mm.</text>
+<text x="240" y="117.3226" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="244.542" y="117.3226" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">AliExpress listings: AliExpress items 1005006389914897, 1005005523161215, 1005009263116567 -</text>
+<text x="244.542" y="121.8494" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Most listings quote packaging rather than body size. The one plausible body figure seen was 95 x 28</text>
+<text x="244.542" y="126.3761" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">x 24 mm, for a gigabit variant in a longer case.</text>
 <rect x="240" y="234" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="240" y1="249" x2="405" y2="249" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="242.5" y="242.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">GENERIC POE SPLITTER TO MICRO-USB</text>

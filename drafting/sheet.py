@@ -342,11 +342,32 @@ class Sheet:
                 return self.HEADING_HEIGHT
             return self.notes_height(width, "", [payload[1]], size)
 
+        def block_height(start: int, width: float) -> float:
+            """Height of the whole block beginning at *start*."""
+            total = 0.0
+            j = start
+            while j < len(items):
+                if j > start and items[j][0] == "heading":
+                    break
+                total += height(items[j], width)
+                j += 1
+            return total
+
         col = 0
         y = columns[0].y1
         i = 0
         while i < len(items):
             kind, payload, size = items[i][0], items[i][1], items[i][2]
+            # Keep a block whole where the next column could hold it all.  A
+            # short block split across a column boundary reads worse than the
+            # same block moved down intact, and the sources block is exactly
+            # that shape.
+            if kind == "heading" and col + 1 < len(columns):
+                whole = block_height(i, columns[col].w)
+                if whole > y - columns[col].y and \
+                        whole <= columns[col + 1].h:
+                    col += 1
+                    y = columns[col].y1
             # Measured against the column it is about to go in, so a wide
             # column does not reserve the height a narrow one would need and
             # leave a gap.
