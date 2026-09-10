@@ -52,12 +52,18 @@ PLATE_HOLE_CLEAR = 6.0     # keep plate fixings this far from any board hole
 
 #: Each entry is one mechanically distinct board revision, in shuttle order,
 #: with the shuttles it covers.  Revisions with identical geometry share a row.
+#: Group name, the revision whose geometry is used, every revision the group
+#: covers, and the shuttles those revisions shipped on.  A group's revisions
+#: share their mounting holes and Pmod host positions exactly, which is all the
+#: plate cares about; they may still differ elsewhere.  v2.1.2, for instance,
+#: moved its USB-C connector 0.9 mm relative to v2.0.1 and v2.1.0.
 REVISIONS = [
-    ("TT01-03", "tt123-v2.2.6", ("TT01", "TT02", "TT03")),
-    ("TT04-05", "v1.2.2", ("TT04", "TT05")),
-    ("TT06-08", "v2.0.1", ("TT06", "TT07", "TT08")),
-    ("v3.2", "v3.2", ()),
-    ("v3.3", "v3.3", ()),
+    ("TT01-03", "tt123-v2.2.6", ("tt123-v2.2.6",), ("TT01", "TT02", "TT03")),
+    ("TT04-05", "v1.2.2", ("v1.2.2", "v1.2.3"), ("TT04", "TT05")),
+    ("TT06-08", "v2.0.1", ("v2.0.1", "v2.1.0", "v2.1.2"),
+     ("TT06", "TT07", "TT08")),
+    ("v3.2", "v3.2", ("v3.2",), ()),
+    ("v3.3", "v3.3", ("v3.3",), ()),
 ]
 
 #: The TT01/02/03 board has only two Pmod hosts.  Putting its first host on the
@@ -89,13 +95,26 @@ DATUM_Y = PMOD_BODY_OVERHANG - FRONT_CLEARANCE      # 9.0
 
 def placements() -> list[dict]:
     out = []
-    for name, key, shuttles in REVISIONS:
+    for name, key, revisions, shuttles in REVISIONS:
         board = BOARDS[key]
         pmods = sorted(board.pmods, key=lambda p: p.cx)
         slot = TWO_PMOD_START_SLOT if len(pmods) == 2 else 0
         ox = slot * PMOD_PITCH - pmods[0].cx
         oy = -pmods[0].cy
-        out.append(dict(name=name, key=key, shuttles=shuttles, board=board,
+        # Every revision in the group must really share the geometry the plate
+        # registers against, or the group is a lie.
+        for other in revisions:
+            ob = BOARDS[other]
+            same_holes = sorted((h.x, h.y, h.dia) for h in ob.holes) == \
+                sorted((h.x, h.y, h.dia) for h in board.holes)
+            same_pmods = sorted((p.cx, p.cy) for p in ob.pmods) == \
+                sorted((p.cx, p.cy) for p in board.pmods)
+            if not (same_holes and same_pmods):
+                raise SystemExit(
+                    f"{name}: revision {other} does not share {key}'s mounting "
+                    f"holes and Pmod positions; it needs its own group.")
+        out.append(dict(name=name, key=key, revisions=revisions,
+                        shuttles=shuttles, board=board,
                         ox=ox, oy=oy, first_slot=slot, pmods=len(pmods)))
     return out
 
@@ -319,7 +338,7 @@ def main() -> None:
     for pl in place:
         ox, oy = pl["ox"] + DATUM_X, pl["oy"] + DATUM_Y
         b = pl["board"].outline
-        print(f"  {pl['name']:9s} {pl['pmods']} Pmods, first on slot "
+        print(f"  {pl['name']:9s} {pl['pmods']} Pmods, first on position "
               f"{pl['first_slot'] + 1}  offset ({ox:7.3f},{oy:6.3f})  "
               f"occupies x {ox:7.3f}..{ox + b.width:7.3f}  "
               f"y {oy:6.3f}..{oy + b.height:6.3f}")
@@ -376,10 +395,11 @@ def main() -> None:
         out = []
         for pl in place:
             out.append(f'    {pl["name"]!r}: dict(revision={pl["key"]!r}, '
-                       f'shuttles={pl["shuttles"]!r},\n'
-                       f'        dx={pl["ox"] + DATUM_X:.3f}, '
+                       f'revisions={pl["revisions"]!r},\n'
+                       f'        shuttles={pl["shuttles"]!r}, '
+                       f'dx={pl["ox"] + DATUM_X:.3f}, '
                        f'dy={pl["oy"] + DATUM_Y:.3f}, '
-                       f'first_pmod_slot={pl["first_slot"] + 1}, '
+                       f'first_pmod_position={pl["first_slot"] + 1}, '
                        f'pmod_count={pl["pmods"]}),')
         return "\n".join(out)
 

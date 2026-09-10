@@ -182,12 +182,52 @@ def datum_marker(c: Canvas, x: float, y: float, *, size: float = 4.0,
                colour=colour, anchor="middle")
 
 
+def broken_line(c: Canvas, x1: float, y1: float, x2: float, y2: float,
+                blockers, gap: float = 1.0, **kw) -> None:
+    """Draw an axis-aligned line, leaving a gap where it crosses a blocker.
+
+    An ordinate witness line runs from its feature to the chain, which on a
+    board can be most of the width of the view.  Running it straight through
+    every part on the way is what makes a generated ordinate chain look wrong;
+    a real drawing breaks the line.
+    """
+    vertical = abs(x2 - x1) < 1e-9
+    lo, hi = (min(y1, y2), max(y1, y2)) if vertical else (min(x1, x2), max(x1, x2))
+    fixed = x1 if vertical else y1
+
+    cuts = []
+    for bx0, by0, bx1, by1 in blockers:
+        across = (bx0 - gap, bx1 + gap) if vertical else (by0 - gap, by1 + gap)
+        along = (by0 - gap, by1 + gap) if vertical else (bx0 - gap, bx1 + gap)
+        if across[0] <= fixed <= across[1] and along[1] > lo and along[0] < hi:
+            cuts.append((max(along[0], lo), min(along[1], hi)))
+    cuts.sort()
+
+    pos = lo
+    for a, b in cuts:
+        if a > pos:
+            _seg(c, fixed, pos, a, vertical, **kw)
+        pos = max(pos, b)
+    if pos < hi:
+        _seg(c, fixed, pos, hi, vertical, **kw)
+
+
+def _seg(c: Canvas, fixed: float, a: float, b: float, vertical: bool, **kw):
+    if b - a < 0.4:
+        return
+    if vertical:
+        c.line(fixed, a, fixed, b, **kw)
+    else:
+        c.line(a, fixed, b, fixed, **kw)
+
+
 def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
                    horizontal: bool, colour: str = style.C_DIM,
                    size: float = style.T_DIM, text_gap: float = 2.0,
                    stagger: float | None = None, zero_label: str = "0",
                    zero_pos: float | None = None,
-                   zero_from: float | None = None) -> float:
+                   zero_from: float | None = None,
+                   blockers=()) -> float:
     """Ordinate dimensions: every value measured from one datum, no chains.
 
     *values* are ``(pos, label, from_pos)`` triples: where the feature sits
@@ -248,7 +288,8 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
         if (end - start) * out <= 0:
             start = end - out * style.EXT_OVER
         if horizontal:
-            c.line(pos, start, pos, end, w=style.W_THIN, colour=colour)
+            broken_line(c, pos, start, pos, end, blockers,
+                        w=style.W_THIN, colour=colour)
             # Rotated by 90 degrees and centred, so what has to clear the end
             # of the witness line is half the label's WIDTH, not its height.
             half = style.text_width(label, size) / 2
@@ -257,7 +298,8 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
                    rotate=90)
             reach = ty + out * half
         else:
-            c.line(start, pos, end, pos, w=style.W_THIN, colour=colour)
+            broken_line(c, start, pos, end, pos, blockers,
+                        w=style.W_THIN, colour=colour)
             tx = end + (text_gap if out > 0 else -text_gap)
             c.text(tx, pos, label, size=size, colour=colour,
                    anchor="start" if out > 0 else "end", baseline="middle")

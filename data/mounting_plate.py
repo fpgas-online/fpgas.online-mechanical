@@ -31,16 +31,16 @@ DATUM_Y = 9.0
 #: How to place each board revision: add these to a board coordinate to get a
 #: plate coordinate.
 PLACEMENTS = {
-    'TT01-03': dict(revision='tt123-v2.2.6', shuttles=('TT01', 'TT02', 'TT03'),
-        dx=19.760, dy=4.535, first_pmod_slot=2, pmod_count=2),
-    'TT04-05': dict(revision='v1.2.2', shuttles=('TT04', 'TT05'),
-        dx=11.055, dy=4.725, first_pmod_slot=1, pmod_count=3),
-    'TT06-08': dict(revision='v2.0.1', shuttles=('TT06', 'TT07', 'TT08'),
-        dx=10.745, dy=5.225, first_pmod_slot=1, pmod_count=3),
-    'v3.2': dict(revision='v3.2', shuttles=(),
-        dx=19.400, dy=5.770, first_pmod_slot=1, pmod_count=3),
-    'v3.3': dict(revision='v3.3', shuttles=(),
-        dx=19.400, dy=5.770, first_pmod_slot=1, pmod_count=3),
+    'TT01-03': dict(revision='tt123-v2.2.6', revisions=('tt123-v2.2.6',),
+        shuttles=('TT01', 'TT02', 'TT03'), dx=19.760, dy=4.535, first_pmod_position=2, pmod_count=2),
+    'TT04-05': dict(revision='v1.2.2', revisions=('v1.2.2', 'v1.2.3'),
+        shuttles=('TT04', 'TT05'), dx=11.055, dy=4.725, first_pmod_position=1, pmod_count=3),
+    'TT06-08': dict(revision='v2.0.1', revisions=('v2.0.1', 'v2.1.0', 'v2.1.2'),
+        shuttles=('TT06', 'TT07', 'TT08'), dx=10.745, dy=5.225, first_pmod_position=1, pmod_count=3),
+    'v3.2': dict(revision='v3.2', revisions=('v3.2',),
+        shuttles=(), dx=19.400, dy=5.770, first_pmod_position=1, pmod_count=3),
+    'v3.3': dict(revision='v3.3', revisions=('v3.3',),
+        shuttles=(), dx=19.400, dy=5.770, first_pmod_position=1, pmod_count=3),
 }
 
 PLATE = BoardSpec(

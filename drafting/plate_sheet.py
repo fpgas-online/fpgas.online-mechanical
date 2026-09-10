@@ -236,7 +236,7 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
         c.rect(sx - half, sy - view.d(2.9), half * 2, view.d(5.8),
                weight=style.W_PHANTOM, colour=style.C_HIGHLIGHT,
                dash="3,1.5,0.8,1.5")
-        c.text(sx, sy + view.d(3.4), f"PMOD {i + 1}", size=style.T_LABEL,
+        c.text(sx, sy + view.d(2.9) + 2.2, f"PMOD {i + 1}", size=style.T_LABEL,
                colour=style.C_HIGHLIGHT, anchor="middle")
 
     dims.linear(c, view.pt(PMOD_SLOT_X[0], PMOD_ROW_Y),
@@ -324,27 +324,36 @@ def render_fitting_guide(*, drawing_no: str, date: str,
     rows_t = []
     for name, pl in PLACEMENTS.items():
         used = ", ".join(pl["shuttles"]) or "not yet shipped"
-        rows_t.append([name, used, f"{pl['dx']:.2f}", f"{pl['dy']:.2f}",
-                       str(pl["pmod_count"]), str(pl["first_pmod_slot"])])
+        rows_t.append([name, ", ".join(pl["revisions"]), used,
+                       f"{pl['dx']:.2f}", f"{pl['dy']:.2f}",
+                       str(pl["pmod_count"]),
+                       str(pl["first_pmod_position"])])
     # In the annotation column, not in a half-width cell: at a true 2.5 mm cap
     # height this table does not fit in half the drawing area.
     block = sheet.column_block(sheet.table_height("BOARD PLACEMENT ON THE PLATE",
                                                   len(rows_t)))
     sheet.table(block, "BOARD PLACEMENT ON THE PLATE",
-                ["REVISION", "SHUTTLES", "dX mm", "dY mm", "PMODS",
-                 "FIRST SLOT"],
-                rows_t, ["start", "start", "end", "end", "middle", "middle"])
+                ["GROUP", "BOARD REVISIONS", "SHUTTLES", "dX mm", "dY mm",
+                 "PMODS", "FIRST PMOD POSITION"],
+                rows_t,
+                ["start", "start", "start", "end", "end", "middle", "middle"])
 
     notes = [
-        "Each view shows one demo board revision sitting on the plate, with "
-        "the holes that revision uses drawn solid and the rest greyed back.",
+        "Each view shows one group of demo board revisions on the plate, with "
+        "the holes and slots that group uses drawn solid and labelled, and "
+        "the rest greyed back. Hole IDs match drawing TT-MP-01.",
+        "The revisions in a group share their mounting holes and Pmod host "
+        "positions exactly, which is all the plate registers against. They "
+        "may differ elsewhere: v2.1.2 moved its USB-C connector 0.9 mm "
+        "relative to v2.0.1 and v2.1.0, for instance.",
         "dX and dY place the board: add them to a coordinate in that board's "
         "own frame to get a plate coordinate.",
         "The TT01/02/03 board has only two Pmod hosts. They go on plate Pmod "
         "positions 2 and 3, which makes the plate 5.15 mm narrower than "
         "putting them on 1 and 2 would.",
-        "All five revisions put their Pmod host pin fields on the same three "
-        "positions, at the same height above the plate's front edge.",
+        "Every revision puts its Pmod host pin fields on the same three "
+        "positions, at the same height above the plate's front edge. See "
+        "drawing TT-MP-01 for the plate itself.",
     ]
     _place_notes_and_sources(sheet, notes, [])
     sheet.draw_title_block()
@@ -388,15 +397,34 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
                weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT,
                fill="#ffffff")
 
-    draw_plate_holes(c, view, spec, highlight=used)
-    for i, s in enumerate(spec.slots):
-        draw_slot(c, view, s,
+    for i, sl in enumerate(spec.slots):
+        draw_slot(c, view, sl,
                   colour=BOARD_HOLE if i in used_slots else style.C_PHANTOM)
+    board_n = 0
+    labels = {}
+    for i, h in enumerate(spec.holes):
+        if h.kind == "plate":
+            continue
+        board_n += 1
+        if i in used:
+            labels[i] = f"H{board_n}"
+    # The plate edge and the phantom board outline are both obstacles for the
+    # hole labels here, as they are on the fabrication drawing.
+    edge = Obstacles()
+    for a, b in (((0, 0), (o.width, 0)), ((o.width, 0), (o.width, o.height)),
+                 ((o.width, o.height), (0, o.height)), ((0, o.height), (0, 0))):
+        edge.add_segment(*view.pt(*a), *view.pt(*b))
+    edge.add_rect(*view.pt(dx, dy),
+                  *view.pt(dx + bo.width, dy + bo.height), pad=0.0)
+    draw_plate_holes(c, view, spec, labels, highlight=used, extra=edge,
+                     slot_labels={i: f"S{i + 1}" for i in used_slots})
 
     shuttles = ", ".join(pl["shuttles"]) or "no shipped shuttle yet"
     c.text(cell.cx, view.y(0) - 7.0, f"{name}  ({shuttles})",
            size=style.T_LABEL, anchor="middle", bold=True, face="sans")
-    c.text(cell.cx, view.y(0) - 12.0, f"board rev {pl['revision']}",
+    # Every revision the view covers, not just the one whose geometry was used.
+    c.text(cell.cx, view.y(0) - 12.0,
+           "board rev " + ", ".join(pl["revisions"]),
            size=style.T_LABEL, anchor="middle", colour="#444444")
     c.text(cell.cx, view.y(0) - 17.0,
            f"offset X {dx:.2f}  Y {dy:.2f} mm",

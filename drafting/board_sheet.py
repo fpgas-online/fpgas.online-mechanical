@@ -24,8 +24,11 @@ from .canvas import Canvas
 from .sheet import Rect, Sheet, TitleBlock
 from .view import View
 
-# Which feature kinds this drawing is *about*, and so draws emphasised.
-HIGHLIGHT_KINDS = {"pmod", "usb_power", "usb_a", "ethernet", "display7", "led"}
+# Every feature in the schedule is drawn the same way.  Splitting them into
+# emphasised and plain gave two unexplained line styles on one view, both
+# carrying balloons and both in the same table, with nothing to say what the
+# difference meant.  The one distinction kept is do-not-populate, which is
+# drawn dashed and says so in its label.
 
 KIND_LABEL = {
     "pmod": "Pmod host header, 2x6, 2.54 mm pitch",
@@ -106,12 +109,12 @@ def draw_holes(c: Canvas, view: View, holes: tuple[Hole, ...]) -> None:
 def draw_feature(c: Canvas, view: View, f: Feature) -> None:
     x0, y0 = view.pt(f.x0, f.y0)
     x1, y1 = view.pt(f.x1, f.y1)
-    hot = f.kind in HIGHLIGHT_KINDS
-    colour = style.C_HIGHLIGHT if hot else style.C_COMPONENT
-    dash = "2.2,1.4" if "not fitted" in f.label.lower() else None
+    fitted = "not fitted" not in f.label.lower()
+    colour = style.C_HIGHLIGHT if fitted else style.C_PHANTOM
     c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
-           weight=style.W_COMPONENT if hot else style.W_PHANTOM,
-           colour=colour, fill=style.C_FILL_LIGHT if hot else "none", dash=dash)
+           weight=style.W_COMPONENT, colour=colour,
+           fill=style.C_FILL_LIGHT if fitted else "none",
+           dash=None if fitted else "2.2,1.4")
     if f.kind == "led":
         c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
                weight=0.05, colour=colour, fill=colour)
@@ -638,14 +641,30 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
             dims.linear(c, (view.x(outer.cx), y), (board.x1, y), 0.0,
                         horizontal=True, value=o.width - outer.cx)
 
+    # Witness lines break where they cross a drawn part, rather than running
+    # through it.
+    blockers = [(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1))
+                for f in spec.features]
+    blockers += [(*view.pt(h.x - h.dia / 2 - 0.6, h.y - h.dia / 2 - 0.6),
+                  *view.pt(h.x + h.dia / 2 + 0.6, h.y + h.dia / 2 + 0.6))
+                 for h in spec.holes]
+    for p in spec.pmods:
+        half_a, half_b = p.pin_span / 2 + 1.4, p.row_span / 2 + 1.4
+        hx, hy = ((half_a, half_b) if p.edge in ("bottom", "top")
+                  else (half_b, half_a))
+        blockers.append((*view.pt(p.cx - hx, p.cy - hy),
+                         *view.pt(p.cx + hx, p.cy + hy)))
+    blockers = [(min(b[0], b[2]), min(b[1], b[3]),
+                 max(b[0], b[2]), max(b[1], b[3])) for b in blockers]
+
     x_extent = dims.ordinate_chain(
         c, [(view.x(v), f"{v:.2f}", view.y(f)) for v, f in xvals.items()],
         board.y, lowest - 9.0, horizontal=True,
-        zero_pos=board.x, zero_from=board.y)
+        zero_pos=board.x, zero_from=board.y, blockers=blockers)
     y_extent = dims.ordinate_chain(
         c, [(view.y(v), f"{v:.2f}", view.x(f)) for v, f in yvals.items()],
         board.x, leftmost - 9.0, horizontal=False,
-        zero_pos=board.y, zero_from=board.x)
+        zero_pos=board.y, zero_from=board.x, blockers=blockers)
 
     # Extension lines start outside the ordinate labels, not at the board, so
     # they do not run through them on the way out.
