@@ -68,10 +68,15 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
                    w=style.W_THIN, colour=colour)
             c.line(b[0], line_y, b[0] + style.ARROW_LEN * 2.2, line_y,
                    w=style.W_THIN, colour=colour)
-            tx = b[0] + style.ARROW_LEN * 2.4 + tw / 2
-        ty = line_y + style.DIM_TEXT_GAP + text_offset
+            # Still centred on its own span: pushed out past an arrowhead it
+            # reads as dimensioning the next gap along.
+            tx = (a[0] + b[0]) / 2
+        # Clear of the line by the gap, with the descender allowed for: the
+        # baseline is not the bottom of the text.
+        below = style.DIM_TEXT_GAP + style.descender(size)
+        ty = line_y + below + text_offset
         if flip_text:
-            ty = line_y - style.DIM_TEXT_GAP - style.text_height(size) - text_offset
+            ty = line_y - below - style.text_height(size) - text_offset
         c.text(tx, ty, label, size=size, colour=colour, anchor="middle")
     else:
         dx = offset
@@ -101,10 +106,14 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
                    w=style.W_THIN, colour=colour)
             c.line(line_x, hi, line_x, hi + style.ARROW_LEN * 2.2,
                    w=style.W_THIN, colour=colour)
-            ty = hi + style.ARROW_LEN * 2.4
-        tx = line_x - style.DIM_TEXT_GAP - text_offset
+            ty = (lo + hi) / 2
+        # Turned on its side and centred, so half the character height sticks
+        # out towards the dimension line and has to be cleared as well.
+        aside = (style.DIM_TEXT_GAP + style.text_height(size) / 2
+                 + style.descender(size) / 2)
+        tx = line_x - aside - text_offset
         if flip_text:
-            tx = line_x + style.DIM_TEXT_GAP + text_offset
+            tx = line_x + aside + text_offset
         # Vertical dimension text reads from the right, per ISO 129-1.
         c.text(tx, ty, label, size=size, colour=colour, anchor="middle",
                rotate=90)
@@ -240,11 +249,13 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
             start = end - out * style.EXT_OVER
         if horizontal:
             c.line(pos, start, pos, end, w=style.W_THIN, colour=colour)
-            ty = end + (text_gap if out > 0 else
-                        -text_gap - style.text_height(size))
+            # Rotated by 90 degrees and centred, so what has to clear the end
+            # of the witness line is half the label's WIDTH, not its height.
+            half = style.text_width(label, size) / 2
+            ty = end + out * (text_gap + half)
             c.text(pos, ty, label, size=size, colour=colour, anchor="middle",
                    rotate=90)
-            reach = ty + out * style.text_width(label, size)
+            reach = ty + out * half
         else:
             c.line(start, pos, end, pos, w=style.W_THIN, colour=colour)
             tx = end + (text_gap if out > 0 else -text_gap)

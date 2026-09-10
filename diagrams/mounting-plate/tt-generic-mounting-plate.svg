@@ -144,31 +144,31 @@
 <polygon points="118.61,139 121.61,139.9 121.61,138.1" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <line x1="89.15" y1="139" x2="95.75" y2="139" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="118.61" y1="139" x2="125.21" y2="139" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="133.5285" y="138.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">22.86 TYP</text>
+<text x="107.18" y="137.2907" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">22.86 TYP</text>
 <line x1="57" y1="132.2" x2="57" y2="148" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="57" y="152.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 57 152.5)">0</text>
+<text x="57" y="150.9813" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 57 150.9813)">0</text>
 <line x1="95.75" y1="123.2" x2="95.75" y2="148" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="95.75" y="152.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 95.75 152.5)">38.75</text>
+<text x="95.75" y="154.4148" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 95.75 154.4148)">38.75</text>
 <line x1="118.61" y1="123.2" x2="118.61" y2="148" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="118.61" y="152.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 118.61 152.5)">61.61</text>
+<text x="118.61" y="154.4148" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 118.61 154.4148)">61.61</text>
 <line x1="141.47" y1="123.2" x2="141.47" y2="148" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="141.47" y="152.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 141.47 152.5)">84.47</text>
+<text x="141.47" y="154.4148" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 141.47 154.4148)">84.47</text>
 <line x1="55.8" y1="131" x2="45" y2="131" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="43" y="129.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">0</text>
 <line x1="94.55" y1="122" x2="45" y2="122" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="43" y="120.75" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">9.00</text>
-<line x1="57" y1="163.3295" x2="57" y2="170.3295" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="192" y1="163.3295" x2="192" y2="170.3295" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="57" y1="168.3295" x2="192" y2="168.3295" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="57,168.3295 60,169.2295 60,167.4295" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="192,168.3295 189,167.4295 189,169.2295" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="124.5" y="167.4295" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">135.00</text>
+<line x1="57" y1="160.8295" x2="57" y2="167.8295" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="192" y1="160.8295" x2="192" y2="167.8295" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="57" y1="165.8295" x2="192" y2="165.8295" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="57,165.8295 60,166.7295 60,164.9295" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="192,165.8295 189,164.9295 189,166.7295" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="124.5" y="164.1202" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">135.00</text>
 <line x1="34.133" y1="131" x2="27.133" y2="131" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="34.133" y1="30" x2="27.133" y2="30" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="29.133" y1="131" x2="29.133" y2="30" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <polygon points="29.133,131 30.033,128 28.233,128" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <polygon points="29.133,30 28.233,33 30.033,33" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="28.233" y="80.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 28.233 80.5)">101.00</text>
+<text x="26.5783" y="80.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 26.5783 80.5)">101.00</text>
 <circle cx="57" cy="131" r="2" fill="none" stroke="#004c99" stroke-width="0.25"/>
 <path d="M 57.0 131.0 L 59.0 131.0 A 2.0 2.0 0 0 1 57.0 129.0 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M 57.0 131.0 L 55.0 131.0 A 2.0 2.0 0 0 1 57.0 133.0 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>

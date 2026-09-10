@@ -600,14 +600,43 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     # vertical edge by its Y: that is the coordinate a mating peripheral cares
     # about.  The board's own hosts also get their depth in from the edge
     # dimensioned, since that is what a plate has to clear.
+    # A Pmod host goes into the chain that locates it along its edge, and only
+    # that one.  Putting its depth into the other chain landed a value within
+    # a third of a millimetre of a mounting hole's, so the two witness lines
+    # printed as one and neither label could be tied to a line.  The depth gets
+    # its own dimension instead.
     for p in spec.pmods:
-        note_x(p.cx, p.cy)
-        note_y(p.cy, p.cx)
+        if p.edge in ("bottom", "top"):
+            note_x(p.cx, p.cy)
+        else:
+            note_y(p.cy, p.cx)
     for p in (overlay.pmods if overlay else ()):
         if p.edge in ("bottom", "top"):
             note_x(p.cx, p.cy)
         else:
             note_y(p.cy, p.cx)
+
+    # The Pmod pin-field depth, dimensioned once per edge rather than folded
+    # into an ordinate chain.
+    for edge, group in by_edge.items():
+        outer = max(group, key=lambda p: p.cx if edge in ("bottom", "top")
+                    else p.cy)
+        if edge == "bottom":
+            x = view.x(outer.cx + outer.pin_span / 2 + 5.0)
+            dims.linear(c, (x, board.y), (x, view.y(outer.cy)), 0.0,
+                        horizontal=False, value=outer.cy)
+        elif edge == "top":
+            x = view.x(outer.cx + outer.pin_span / 2 + 5.0)
+            dims.linear(c, (x, view.y(outer.cy)), (x, board.y1), 0.0,
+                        horizontal=False, value=o.height - outer.cy)
+        elif edge == "left":
+            y = view.y(outer.cy + outer.pin_span / 2 + 5.0)
+            dims.linear(c, (board.x, y), (view.x(outer.cx), y), 0.0,
+                        horizontal=True, value=outer.cx)
+        else:
+            y = view.y(outer.cy + outer.pin_span / 2 + 5.0)
+            dims.linear(c, (view.x(outer.cx), y), (board.x1, y), 0.0,
+                        horizontal=True, value=o.width - outer.cx)
 
     x_extent = dims.ordinate_chain(
         c, [(view.x(v), f"{v:.2f}", view.y(f)) for v, f in xvals.items()],
