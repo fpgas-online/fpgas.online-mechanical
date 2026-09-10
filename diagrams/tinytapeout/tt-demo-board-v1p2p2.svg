@@ -40,8 +40,8 @@
 <line x1="408" y1="80.25" x2="415" y2="80.25" stroke="#888888" stroke-width="0.25" stroke-linecap="round"/>
 <text x="12.5" y="47.375" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
 <text x="411.5" y="47.375" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
-<line x1="214" y1="297" x2="214" y2="280" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
-<line x1="214" y1="17" x2="214" y2="0" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
+<line x1="210" y1="297" x2="210" y2="280" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
+<line x1="210" y1="17" x2="210" y2="0" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
 <line x1="0" y1="148.5" x2="25" y2="148.5" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
 <line x1="403" y1="148.5" x2="420" y2="148.5" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
 <rect x="102.405" y="31.0725" width="12.74" height="8.3" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
@@ -54,9 +54,9 @@
 <rect x="171.495" y="39.9425" width="1.46" height="2.96" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
 <rect x="171.545" y="48.1925" width="2.96" height="1.46" fill="#f0f0f0" stroke="#a00000" stroke-width="0.35"/>
 <rect x="171.545" y="48.1925" width="2.96" height="1.46" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<rect x="71.975" y="86.3425" width="14.85" height="16.25" fill="none" stroke="#7a7a7a" stroke-width="0.35" stroke-dasharray="2.2,1.4"/>
-<rect x="71.975" y="63.4825" width="14.85" height="16.25" fill="none" stroke="#7a7a7a" stroke-width="0.35" stroke-dasharray="2.2,1.4"/>
-<rect x="71.975" y="40.6225" width="14.85" height="16.25" fill="none" stroke="#7a7a7a" stroke-width="0.35" stroke-dasharray="2.2,1.4"/>
+<rect x="71.975" y="86.3425" width="14.85" height="16.25" fill="none" stroke="#7a7a7a" stroke-width="0.35" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<rect x="71.975" y="63.4825" width="14.85" height="16.25" fill="none" stroke="#7a7a7a" stroke-width="0.35" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<rect x="71.975" y="40.6225" width="14.85" height="16.25" fill="none" stroke="#7a7a7a" stroke-width="0.35" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <rect x="100.07" y="105.0775" width="16.25" height="14.85" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="101.87" cy="109.4175" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <circle cx="101.87" cy="106.8775" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
@@ -188,6 +188,7 @@
 <line x1="101.62" y1="125.9275" x2="108.22" y2="125.9275" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="131.08" y1="125.9275" x2="137.68" y2="125.9275" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="119.65" y="124.2182" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">22.86 TYP</text>
+<line x1="96.57" y1="108.1475" x2="165.59" y2="108.1475" stroke="#a00000" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="3.2,1.2,0.6,1.2"/>
 <line x1="142.39" y1="112.4225" x2="143.59" y2="112.4225" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="142.39" y1="108.1475" x2="143.59" y2="108.1475" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="143.59" y1="112.4225" x2="143.59" y2="108.1475" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
@@ -412,36 +413,37 @@
 <text x="140.0045" y="217.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm is its stackup sum, not a specified finished thickness.</text>
 <text x="133.5" y="222.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">11.</text>
 <text x="140.0045" y="222.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Assembled envelope, connector overhang included, is</text>
-<text x="140.0045" y="227.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">113.05 x 81.35 mm against a 104.50 x 81.00 mm board</text>
+<text x="140.0045" y="227.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">104.50 x 81.35 mm against a 104.50 x 81.00 mm board</text>
 <text x="140.0045" y="231.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">outline. The FEATURE SCHEDULE gives the extents.</text>
 <text x="133.5" y="237.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">12.</text>
 <text x="140.0045" y="237.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Upper edge carries a shallow recess for the USB-C shell,</text>
 <text x="140.0045" y="241.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">contributed by the connector footprint&#x27;s own edge cuts (fillet</text>
 <text x="140.0045" y="246.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">radii 0.136 mm, 0.303 mm, 0.364 mm, 0.4 mm).</text>
-<text x="133.5" y="253.028" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="133.5" y1="254.428" x2="235" y2="254.428" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="133.5" y="259.128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="140.0045" y="259.128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">KiCad board file: https://github.com/TinyTapeout/tt-demo-pcb</text>
-<text x="140.0045" y="263.6547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">tinytapeout-demo.kicad_pcb @ cfdd80d7b - title block:</text>
-<text x="140.0045" y="268.1815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TinyTapeout 4+ Demoboard rev 1.2.2, dated 2024-04-26</text>
-<text x="243" y="163.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES (continued)</text>
+<text x="133.5" y="252.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">13.</text>
+<text x="140.0045" y="252.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The GENERAL TOLERANCE in the title block is a normal</text>
+<text x="140.0045" y="256.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">printed circuit fabrication figure, not one this sheet&#x27;s source</text>
+<text x="140.0045" y="261.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">states: no source here publishes a general tolerance.</text>
+<text x="243" y="163.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
 <line x1="243" y1="164.7556" x2="405" y2="164.7556" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="243" y="169.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="249.5045" y="169.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Shuttle mapping: https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md -</text>
-<text x="249.5045" y="173.9823" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">used by: TT04</text>
-<text x="243" y="187.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
-<line x1="243" y1="188.7556" x2="405" y2="188.7556" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<line x1="243" y1="193.5556" x2="263" y2="193.5556" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
-<text x="266" y="194.8056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline</text>
-<line x1="243" y1="198.7556" x2="263" y2="198.7556" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
-<text x="266" y="200.0056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Component body, scheduled</text>
-<line x1="243" y1="203.9556" x2="263" y2="203.9556" stroke="#7a7a7a" stroke-width="0.35" stroke-linecap="round" stroke-dasharray="2.2,1.4"/>
-<text x="266" y="205.2056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Position not fitted on this revision</text>
-<line x1="243" y1="209.1556" x2="263" y2="209.1556" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<text x="266" y="210.4056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod connector body, hole keep-out</text>
-<line x1="243" y1="214.3556" x2="263" y2="214.3556" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="263,214.3556 260,213.4556 260,215.2556" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="266" y="215.6056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
+<text x="243" y="169.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="249.5045" y="169.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">KiCad board file: https://github.com/TinyTapeout/tt-demo-pcb tinytapeout-demo.kicad_pcb @</text>
+<text x="249.5045" y="173.9823" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">cfdd80d7b - title block: TinyTapeout 4+ Demoboard rev 1.2.2, dated 2024-04-26</text>
+<text x="243" y="179.5091" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="249.5045" y="179.5091" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Shuttle mapping: https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md -</text>
+<text x="249.5045" y="184.0358" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">used by: TT04</text>
+<text x="243" y="195.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
+<line x1="243" y1="196.7556" x2="405" y2="196.7556" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="201.5556" x2="263" y2="201.5556" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="266" y="202.8056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline</text>
+<line x1="243" y1="206.7556" x2="263" y2="206.7556" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
+<text x="266" y="208.0056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Component body, scheduled</text>
+<line x1="243" y1="211.9556" x2="263" y2="211.9556" stroke="#7a7a7a" stroke-width="0.35" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="213.2056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Position not fitted on this revision</text>
+<line x1="243" y1="217.1556" x2="263" y2="217.1556" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="218.4056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod connector body, hole keep-out</text>
+<line x1="243" y1="222.3556" x2="263" y2="222.3556" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="263,222.3556 260,221.4556 260,223.2556" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="266" y="223.6056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
 <rect x="243" y="237" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="243" y1="252" x2="408" y2="252" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="245.5" y="245.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">TINY TAPEOUT 4+ DEMO BOARD</text>

@@ -21,6 +21,7 @@ Run with::
 
 from __future__ import annotations
 
+import math
 import sys
 from pathlib import Path
 
@@ -106,6 +107,26 @@ ACCEPTED = {
 }
 
 
+def _on_a_feature(items, placed, obstacles) -> set[str]:
+    """Balloons whose circle overlaps a drawn feature outline.
+
+    A balloon covers whatever it sits on, so one sitting on a feature hides
+    the geometry the reader followed its leader to see.  The placer prices
+    that, but pricing is not proof: on the Raspberry Pi 3A+ a balloon covered
+    a neighbouring connector because every other position cost more still.
+    """
+    out = set()
+    for label, tip, centre in placed:
+        for x0, y0, x1, y1, _ in obstacles.rects:
+            nx = max(x0, min(centre[0], x1))
+            ny = max(y0, min(centre[1], y1))
+            if math.hypot(centre[0] - nx, centre[1] - ny) < bs.BALLOON_R:
+                out.add(label)
+                break
+    del items
+    return out
+
+
 def check(name: str, spec, overlay=None) -> tuple[set[str], set[str]]:
     """Draw one sheet and report which balloons cross a hard obstacle.
 
@@ -123,9 +144,12 @@ def check(name: str, spec, overlay=None) -> tuple[set[str], set[str]]:
             mark = "accepted" if label in accepted else "UNEXPECTED"
             print(f"  balloon {label} ({mark}): leader crosses "
                   + "; ".join(hit))
+    on_feature = _on_a_feature(None, _state["leaders"], obstacles)
+    for label in sorted(on_feature):
+        print(f"  balloon {label} (UNEXPECTED): sits on a feature outline")
     print(f"{name}: {len(crossing)} leader(s) crossing a hard obstacle "
           f"of {len(_state['leaders'])}")
-    return crossing - accepted, accepted - crossing
+    return (crossing - accepted) | on_feature, accepted - crossing
 
 
 def main() -> int:
@@ -154,7 +178,7 @@ def main() -> int:
         return 0
     for name, labels in unexpected.items():
         print(f"FAIL {name}: balloon(s) {', '.join(sorted(labels))} cross a "
-              "hard obstacle and are not in ACCEPTED")
+              "hard obstacle, or sit on a feature, and are not in ACCEPTED")
     return 1
 
 

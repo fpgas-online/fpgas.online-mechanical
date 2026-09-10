@@ -40,8 +40,8 @@
 <line x1="408" y1="80.25" x2="415" y2="80.25" stroke="#888888" stroke-width="0.25" stroke-linecap="round"/>
 <text x="12.5" y="47.375" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
 <text x="411.5" y="47.375" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
-<line x1="214" y1="297" x2="214" y2="280" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
-<line x1="214" y1="17" x2="214" y2="0" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
+<line x1="210" y1="297" x2="210" y2="280" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
+<line x1="210" y1="17" x2="210" y2="0" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
 <line x1="0" y1="148.5" x2="25" y2="148.5" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
 <line x1="403" y1="148.5" x2="420" y2="148.5" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
 <path d="M 87.5200 89.0920 L 146.5200 89.0920 A 3.0000 3.0000 0 0 0 149.5200 86.0920 L 149.5200 35.5920 A 3.0000 3.0000 0 0 0 146.5200 32.5920 L 87.5200 32.5920 A 3.0000 3.0000 0 0 0 84.5200 35.5920 L 84.5200 86.0920 A 3.0000 3.0000 0 0 0 87.5200 89.0920 L 146.5200 89.0920 Z" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
@@ -147,11 +147,11 @@
 <line x1="123.76" y1="86.092" x2="132.7431" y2="83.685" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="135.8341" cy="82.8568" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
 <text x="135.8341" y="84.1068" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">7</text>
-<circle cx="108.94" cy="84.172" r="1.05" fill="#ffffff" stroke="#ffffff" stroke-width="0.05"/>
-<circle cx="108.94" cy="84.172" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="108.94" y1="84.172" x2="128.34" y2="50.5702" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="129.94" cy="47.7989" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="129.94" y="49.0489" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">6</text>
+<circle cx="110.32" cy="84.172" r="1.05" fill="#ffffff" stroke="#ffffff" stroke-width="0.05"/>
+<circle cx="110.32" cy="84.172" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
+<line x1="110.32" y1="84.172" x2="129.72" y2="50.5702" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="131.32" cy="47.7989" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="131.32" y="49.0489" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">6</text>
 <line x1="84.52" y1="99.408" x2="84.52" y2="90.292" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="84.52" y="102.3893" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 84.52 102.3893)">0</text>
 <line x1="88.02" y1="106.3173" x2="88.02" y2="88.542" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
@@ -392,29 +392,30 @@
 <text x="140.0045" y="242.135" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Assembled envelope, connector overhang included, is 87.96</text>
 <text x="140.0045" y="246.6617" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">x 57.32 mm against a 85.00 x 56.00 mm board outline. The</text>
 <text x="140.0045" y="251.1885" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">FEATURE SCHEDULE gives the extents.</text>
-<text x="133.5" y="257.7152" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="133.5" y1="259.1152" x2="235" y2="259.1152" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="133.5" y="263.8152" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="140.0045" y="263.8152" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mechanical drawing:</text>
-<text x="140.0045" y="268.342" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://datasheets.raspberrypi.com/rpi5/</text>
-<text x="140.0045" y="272.8687" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">raspberry-pi-5-mechanical-drawing.pdf - Raspberry Pi Ltd</text>
-<text x="243" y="163.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES (continued)</text>
+<text x="133.5" y="256.7152" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">15.</text>
+<text x="140.0045" y="256.7152" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The GENERAL TOLERANCE in the title block is a normal</text>
+<text x="140.0045" y="261.242" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">printed circuit fabrication figure, not one this sheet&#x27;s source</text>
+<text x="140.0045" y="265.7687" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">states: no source here publishes a general tolerance.</text>
+<text x="243" y="163.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
 <line x1="243" y1="164.7556" x2="405" y2="164.7556" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="243" y="169.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="249.5045" y="169.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mounting holes: https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf -</text>
-<text x="249.5045" y="173.9823" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole diameter dimensioned on the drawing as ø2.7 mm; the keep-out circle is drawn and measures</text>
-<text x="249.5045" y="178.5091" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.80 mm.</text>
-<text x="243" y="191.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
-<line x1="243" y1="192.7556" x2="405" y2="192.7556" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<line x1="243" y1="197.5556" x2="263" y2="197.5556" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
-<text x="266" y="198.8056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline</text>
-<line x1="243" y1="202.7556" x2="263" y2="202.7556" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
-<text x="266" y="204.0056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Component body, scheduled</text>
-<line x1="243" y1="207.9556" x2="263" y2="207.9556" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<text x="266" y="209.2056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Adjacent part, hole keep-out</text>
-<line x1="243" y1="213.1556" x2="263" y2="213.1556" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="263,213.1556 260,212.2556 260,214.0556" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="266" y="214.4056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
+<text x="243" y="169.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="249.5045" y="169.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mechanical drawing: https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf</text>
+<text x="249.5045" y="173.9823" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">- Raspberry Pi Ltd</text>
+<text x="243" y="179.5091" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="249.5045" y="179.5091" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mounting holes: https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf -</text>
+<text x="249.5045" y="184.0358" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole diameter dimensioned on the drawing as ø2.7 mm; the keep-out circle is drawn and measures</text>
+<text x="249.5045" y="188.5626" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.80 mm.</text>
+<text x="243" y="199.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
+<line x1="243" y1="200.7556" x2="405" y2="200.7556" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="205.5556" x2="263" y2="205.5556" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="266" y="206.8056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline</text>
+<line x1="243" y1="210.7556" x2="263" y2="210.7556" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
+<text x="266" y="212.0056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Component body, scheduled</text>
+<line x1="243" y1="215.9556" x2="263" y2="215.9556" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="217.2056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Adjacent part, hole keep-out</text>
+<line x1="243" y1="221.1556" x2="263" y2="221.1556" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="263,221.1556 260,220.2556 260,222.0556" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="266" y="222.4056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
 <rect x="243" y="237" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="243" y1="252" x2="408" y2="252" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="245.5" y="245.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">RASPBERRY PI 5</text>

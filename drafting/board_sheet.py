@@ -132,15 +132,28 @@ def draw_holes(c: Canvas, view: View, holes: tuple[Hole, ...]) -> None:
         dims.centre_mark(c, px, py, max(r, 0.8))
 
 
+def is_fitted(f: Feature) -> bool:
+    """Whether this position carries a part on this board revision.
+
+    One definition.  The envelope note counted the unfitted side Pmod
+    positions and overstated the demo boards' assembled envelope by the eight
+    millimetres those connectors would have stuck out had they been there.
+    """
+    return "not fitted" not in f.label.lower()
+
+
 def draw_feature(c: Canvas, view: View, f: Feature) -> None:
     x0, y0 = view.pt(f.x0, f.y0)
     x1, y1 = view.pt(f.x1, f.y1)
-    fitted = "not fitted" not in f.label.lower()
+    fitted = is_fitted(f)
     colour = style.C_HIGHLIGHT if fitted else style.C_PHANTOM
     c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
            weight=style.W_COMPONENT, colour=colour,
            fill=style.C_FILL_LIGHT if fitted else "none",
-           dash=None if fitted else style.D_HIDDEN)
+           # Type K, not the dashed hidden-detail type: these positions are
+           # not hidden behind material, they are alternative positions that
+           # this revision does not populate.
+           dash=None if fitted else style.D_PHANTOM)
     if f.kind == "led":
         c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
                weight=0.05, colour=colour, fill=colour)
@@ -374,8 +387,17 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
         """
         o = Obstacles()
         own = items[skip].own
-        o.rects = [r for i, r in enumerate(obstacles.rects)
-                   if not (route and i == own)]
+        o.rects = []
+        for i, r in enumerate(obstacles.rects):
+            if i != own:
+                o.rects.append(r)
+            elif not route:
+                # Hard for the balloon, absent for its leader.  A balloon on
+                # top of the very feature it labels hides what the reader
+                # followed the leader to see, which is worse than landing on a
+                # neighbour, and it happened on the Pi 3A+ where the board is
+                # small and every other position was taken.
+                o.rects.append(r[:4] + (HARD,))
         o.circles = list(obstacles.circles)
         o.segments = list(obstacles.segments)
         if not route and position_only is not None:
@@ -564,7 +586,7 @@ LEGEND_SWATCH = 20.0
 LEGEND_STYLES = {
     "outline": ("line", style.W_OUTLINE, style.C_LINE, None),
     "component": ("line", style.W_COMPONENT, style.C_HIGHLIGHT, None),
-    "dnp": ("line", style.W_COMPONENT, style.C_PHANTOM, style.D_HIDDEN),
+    "dnp": ("line", style.W_COMPONENT, style.C_PHANTOM, style.D_PHANTOM),
     "phantom": ("line", style.W_PHANTOM, style.C_PHANTOM, style.D_PHANTOM),
     "centre": ("line", style.W_CENTRE, style.C_LINE, style.D_CENTRE),
     "dimension": ("arrow", style.W_THIN, style.C_DIM, None),
@@ -613,7 +635,7 @@ def _legend_entries(spec: BoardSpec, overlay: BoardSpec | None
     entries = [("outline", "Board outline")]
     if spec.features:
         entries.append(("component", "Component body, scheduled"))
-    if any("not fitted" in f.label.lower() for f in spec.features):
+    if any(not is_fitted(f) for f in spec.features):
         entries.append(("dnp", "Position not fitted on this revision"))
     phantom = ["Pmod connector body" if spec.pmods else ""]
     if overlay is not None:
@@ -680,14 +702,17 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
                 "stackup layers. It is not a specified finished thickness, "
                 "and it is not within a twentieth of a millimetre of any "
                 "standard one, so no nominal is claimed for it.")
-    if spec.features:
+    fitted = [f for f in spec.features if is_fitted(f)]
+    if fitted:
         # What a chassis actually has to clear, which is not the board
         # outline: on the Pi 4B the connectors reach 88 mm across an 85 mm
-        # board, and the demo boards' USB-C shells overhang too.
-        x0 = min([0.0] + [f.x0 for f in spec.features])
-        x1 = max([o.width] + [f.x1 for f in spec.features])
-        y0 = min([0.0] + [f.y0 for f in spec.features])
-        y1 = max([o.height] + [f.y1 for f in spec.features])
+        # board, and the demo boards' USB-C shells overhang too.  Positions
+        # that are not fitted are left out, or the figure describes a board
+        # that was never built.
+        x0 = min([0.0] + [f.x0 for f in fitted])
+        x1 = max([o.width] + [f.x1 for f in fitted])
+        y0 = min([0.0] + [f.y0 for f in fitted])
+        y1 = max([o.height] + [f.y1 for f in fitted])
         if (x0, y0, x1, y1) != (0.0, 0.0, o.width, o.height):
             notes.append(
                 f"Assembled envelope, connector overhang included, is "
@@ -696,6 +721,18 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
                 "FEATURE SCHEDULE gives the extents.")
     if o.profile_note:
         notes.append(o.profile_note)
+    if not spec.tolerance:
+        # Say where the general tolerance comes from.  It is a board house's
+        # usual figures, not something any source here states, and on sheets
+        # whose whole discipline is that every number is traceable an
+        # untraceable one in the title block is the odd thing out.
+        schedule = " Where the hole schedule quotes a tolerance, it is from " \
+            "the source drawing and governs." if any(h.tol for h in spec.holes) \
+            else ""
+        notes.append(
+            "The GENERAL TOLERANCE in the title block is a normal printed "
+            "circuit fabrication figure, not one this sheet's source states: "
+            "no source here publishes a general tolerance." + schedule)
     sources = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
                for s in spec.sources]
     return notes, sources
@@ -786,6 +823,33 @@ def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
                else "alphabetic", bold=True)
 
 
+def _pin_row_centre_line(c: Canvas, view: View, group, edge: str,
+                         lane: float) -> None:
+    """Centre line through a row of Pmod pin fields, on the row's own axis.
+
+    Extended past the outermost host far enough to reach *lane*, which is
+    where the setback dimension's extension line meets it, plus the usual
+    centre-line overshoot.
+    """
+    along_edge = edge in ("bottom", "top")
+    axis = view.y(group[0].cy) if along_edge else view.x(group[0].cx)
+    ends = []
+    for p in group:
+        half = p.pin_span / 2 + 1.3
+        centre = p.cx if along_edge else p.cy
+        ends += [centre - half, centre + half]
+    lo = view.x(min(ends)) if along_edge else view.y(min(ends))
+    hi = view.x(max(ends)) if along_edge else view.y(max(ends))
+    lo, hi = min(lo, hi), max(lo, hi)
+    lo, hi = min(lo, lane) - 4.0, max(hi, lane) + 4.0
+    if along_edge:
+        c.line(lo, axis, hi, axis, w=style.W_CENTRE, colour=style.C_HIGHLIGHT,
+               dash=style.D_CENTRE)
+    else:
+        c.line(axis, lo, axis, hi, w=style.W_CENTRE, colour=style.C_HIGHLIGHT,
+               dash=style.D_CENTRE)
+
+
 def _clear_lane(view: View, host, edge: str, board: Rect,
                 blockers: list[tuple[float, float, float, float]]) -> float:
     """Where to run the pin-field depth dimension for *host*, in sheet mm.
@@ -855,7 +919,14 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         units="mm",
         # Board thickness matters: standoff and screw length depend on it.
         material=_pcb_material(o),
-        **({"tolerance": spec.tolerance} if spec.tolerance else {}),
+        # A sheet whose hole schedule quotes the source's own diameter
+        # tolerance must not also assert a different one here: the Pi 3B's
+        # schedule says +/-0.05 and the block said +/-0.08, with nothing but a
+        # note to say which wins.
+        **({"tolerance": spec.tolerance} if spec.tolerance
+           else {"tolerance": "edge +/-0.20   hole pos +/-0.10   "
+                              "hole dia per schedule"}
+           if any(h.tol for h in spec.holes) else {}),
     ), notes_band_height=band_h)
     sheet.draw_frame()
     c = sheet.canvas
@@ -999,12 +1070,17 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     # their way all the same: a balloon sitting on one reads as though it
     # belonged to the dimension, so they are reserved now.  They run from the
     # feature they locate out to the dimension band.
+    # Position only, like the board outline: a balloon parked on a witness
+    # line reads as belonging to the dimension, but a leader crossing one is
+    # ordinary.  Charged to the leader as well, they cost more to cross than a
+    # feature costs to sit on, and on the Pi 3A+ a balloon chose to cover a
+    # neighbouring connector rather than cross the witness line beside it.
     xvals, yvals = _ordinate_values(spec, overlay)
     for v, f in xvals.items():
-        obstacles.add_segment(view.x(v), view.y(f), view.x(v),
+        edge_only.add_segment(view.x(v), view.y(f), view.x(v),
                               balloon_bounds.y, weight=HARD)
     for v, f in yvals.items():
-        obstacles.add_segment(view.x(f), view.y(v), balloon_bounds.x,
+        edge_only.add_segment(view.x(f), view.y(v), balloon_bounds.x,
                               view.y(v), weight=HARD)
 
     items: list[_Ballooned] = []
@@ -1084,6 +1160,13 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         along = "cx" if edge in ("bottom", "top") else "cy"
         outer = max(group, key=lambda p: getattr(p, along))
         lane = _clear_lane(view, outer, edge, board, blockers)
+        # A centre line along the row of pin fields, so the dimension's
+        # extension line ends on something.  Without it the lane -- chosen
+        # clear of every drawn part, which is what put it in a gap between
+        # hosts or just beyond the last one -- gave a 1.2 mm stub floating in
+        # open board, pointing at nothing.  It is a row of centres, so a
+        # centre line is what belongs there.
+        _pin_row_centre_line(c, view, group, edge, lane)
         if edge == "bottom":
             dims.linear(c, (lane, board.y), (lane, view.y(outer.cy)), 0.0,
                         horizontal=False, value=outer.cy, text_side="high")

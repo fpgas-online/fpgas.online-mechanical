@@ -410,14 +410,32 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
                 plate.y - 8.0 - view.y(PMOD_ROW_Y), horizontal=True,
                 text=f"{PMOD_SLOT_X[1] - PMOD_SLOT_X[0]:.2f} TYP")
 
+    # Witness lines break where they cross a machined feature rather than
+    # running through it.  The 9.00 ordinate runs the width of the plate to
+    # reach its chain, and passed straight through hole H3 and slot S1 on the
+    # way; a dimension line through a feature is exactly what ISO 128 forbids.
+    dim_blockers = [
+        (view.x(h.x) - view.d(h.dia / 2) - 1.0,
+         view.y(h.y) - view.d(h.dia / 2) - 1.0,
+         view.x(h.x) + view.d(h.dia / 2) + 1.0,
+         view.y(h.y) + view.d(h.dia / 2) + 1.0)
+        for h in spec.holes]
+    for sl in spec.slots:
+        pad = view.d(sl.width / 2) + 1.0
+        dim_blockers.append(
+            (min(view.x(sl.x0), view.x(sl.x1)) - pad,
+             min(view.y(sl.y0), view.y(sl.y1)) - pad,
+             max(view.x(sl.x0), view.x(sl.x1)) + pad,
+             max(view.y(sl.y0), view.y(sl.y1)) + pad))
+
     x_extent = dims.ordinate_chain(
         c, [(view.x(v), f"{v:.2f}", view.y(PMOD_ROW_Y)) for v in PMOD_SLOT_X],
         plate.y, plate.y - 17.0, horizontal=True,
-        zero_pos=plate.x, zero_from=plate.y)
+        zero_pos=plate.x, zero_from=plate.y, blockers=dim_blockers)
     y_extent = dims.ordinate_chain(
         c, [(view.y(PMOD_ROW_Y), f"{PMOD_ROW_Y:.2f}", view.x(PMOD_SLOT_X[0]))],
         plate.x, plate.x - 12.0, horizontal=False,
-        zero_pos=plate.y, zero_from=plate.x)
+        zero_pos=plate.y, zero_from=plate.x, blockers=dim_blockers)
 
     dims.linear(c, (plate.x, plate.y), (plate.x1, plate.y),
                 x_extent - 7.0 - plate.y, horizontal=True, value=o.width,

@@ -130,16 +130,18 @@ class Sheet:
         """ISO 5457 centring marks: a short bar at the middle of each edge.
 
         They run from the paper edge to just inside the frame, and are what a
-        copier or a scanner is lined up against.
+        copier or a scanner is lined up against -- so they go on the axes of
+        the trimmed SHEET, not of the frame.  The frame is not centred on the
+        sheet, because its filing margin is wider than the other three, so the
+        vertical marks were four millimetres out.
         """
         c = self.canvas
         f = self.frame
-        for x in (f.cx,):
-            c.line(x, 0.0, x, f.y + 5.0, w=style.W_FRAME, colour="#000000")
-            c.line(x, f.y1 - 5.0, x, self.h, w=style.W_FRAME, colour="#000000")
-        for y in (f.cy,):
-            c.line(0.0, y, f.x + 5.0, y, w=style.W_FRAME, colour="#000000")
-            c.line(f.x1 - 5.0, y, self.w, y, w=style.W_FRAME, colour="#000000")
+        x, y = self.w / 2, self.h / 2
+        c.line(x, 0.0, x, f.y + 5.0, w=style.W_FRAME, colour="#000000")
+        c.line(x, f.y1 - 5.0, x, self.h, w=style.W_FRAME, colour="#000000")
+        c.line(0.0, y, f.x + 5.0, y, w=style.W_FRAME, colour="#000000")
+        c.line(f.x1 - 5.0, y, self.w, y, w=style.W_FRAME, colour="#000000")
 
     def _draw_zones(self) -> None:
         """Zone letters down the sides and numbers along top and bottom.
@@ -277,7 +279,13 @@ class Sheet:
 
     def projection_symbol(self, x: float, y: float, scale: float = 1.0,
                           caption: bool = True) -> None:
-        """First-angle projection symbol (ISO 128), drawn as a truncated cone."""
+        """First-angle projection symbol (ISO 128), drawn as a truncated cone.
+
+        The trapezium's SHORT side faces away from the circles.  Drawn the
+        other way round -- short side towards them, which is what this was --
+        it is the third-angle symbol, and it then contradicted both the note
+        and the layout on the only two sheets that carry it.
+        """
         c = self.canvas
         s = scale
         if caption:
@@ -285,8 +293,8 @@ class Sheet:
                    anchor="middle", colour="#666666")
         c.line(x - 11 * s, y + 3 * s, x + 11 * s, y + 3 * s,
                w=style.W_CENTRE, colour="#666666", dash=style.D_CENTRE)
-        c.polyline([(x - 9 * s, y + 5.4 * s), (x - 1 * s, y + 4.2 * s),
-                    (x - 1 * s, y + 1.8 * s), (x - 9 * s, y + 0.6 * s)],
+        c.polyline([(x - 9 * s, y + 4.2 * s), (x - 1 * s, y + 5.4 * s),
+                    (x - 1 * s, y + 0.6 * s), (x - 9 * s, y + 1.8 * s)],
                    close=True, w=style.W_OUTLINE)
         c.circle(x + 5.4 * s, y + 3 * s, 2.4 * s, w=style.W_OUTLINE)
         c.circle(x + 5.4 * s, y + 3 * s, 1.2 * s, w=style.W_OUTLINE)

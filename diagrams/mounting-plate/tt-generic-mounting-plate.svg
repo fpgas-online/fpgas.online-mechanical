@@ -40,8 +40,8 @@
 <line x1="408" y1="80.25" x2="415" y2="80.25" stroke="#888888" stroke-width="0.25" stroke-linecap="round"/>
 <text x="12.5" y="47.375" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
 <text x="411.5" y="47.375" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
-<line x1="214" y1="297" x2="214" y2="280" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
-<line x1="214" y1="17" x2="214" y2="0" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
+<line x1="210" y1="297" x2="210" y2="280" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
+<line x1="210" y1="17" x2="210" y2="0" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
 <line x1="0" y1="148.5" x2="25" y2="148.5" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
 <line x1="403" y1="148.5" x2="420" y2="148.5" stroke="#000000" stroke-width="0.7" stroke-linecap="round"/>
 <path d="M 65.0000 129.0000 L 192.0000 129.0000 A 4.0000 4.0000 0 0 0 196.0000 125.0000 L 196.0000 32.0000 A 4.0000 4.0000 0 0 0 192.0000 28.0000 L 65.0000 28.0000 A 4.0000 4.0000 0 0 0 61.0000 32.0000 L 61.0000 125.0000 A 4.0000 4.0000 0 0 0 65.0000 129.0000 L 192.0000 129.0000 Z" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
@@ -159,7 +159,9 @@
 <text x="145.47" y="152.4148" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 145.47 152.4148)">84.47</text>
 <line x1="49" y1="129" x2="59.8" y2="129" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="47" y="130.25" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">0</text>
-<line x1="49" y1="120" x2="98.55" y2="120" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="49" y1="120" x2="71.545" y2="120" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="79.505" y1="120" x2="80.81" y2="120" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="88.21" y1="120" x2="98.55" y2="120" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="47" y="121.25" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">9.00</text>
 <line x1="61" y1="158.8295" x2="61" y2="165.8295" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="196" y1="158.8295" x2="196" y2="165.8295" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
