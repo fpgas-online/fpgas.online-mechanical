@@ -185,6 +185,7 @@ def _and(names: list[str]) -> str:
 
 def _plate_text(spec) -> tuple[list[str], list[str]]:
     """The plate sheet's notes and sources, built before the sheet exists."""
+    web_a, web_b, web = tightest_web(spec)
     notes = [
         "All dimensions in millimetres. The datum symbol marks the origin: "
         "the plate's lower-left corner, X right, Y up, seen from the side "
@@ -199,13 +200,57 @@ def _plate_text(spec) -> tuple[list[str], list[str]]:
         "revision. That is the point of the plate.",
     ] + list(spec.notes) + [
         "Fit the plate to its chassis before the board: the fixings sit in the "
-        "border, which a board overhangs. Least material between features "
-        "is about 1.6 mm, at H2/H3.",
+        f"border, which a board overhangs. Least material between features is "
+        f"{web:.2f} mm, between {web_a} and {web_b}.",
         "Drawing TT-MP-02 shows which holes each revision uses.",
     ]
     src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
            for s in spec.sources]
     return notes, src
+
+
+def hole_ids(spec) -> tuple[dict[int, str], list[int], list[int]]:
+    """Assign H1.. to the board holes and P1.. to the plate fixings.
+
+    One definition, so the view, the tables and the notes cannot disagree
+    about which hole is which.
+    """
+    labels: dict[int, str] = {}
+    board_ids: list[int] = []
+    plate_ids: list[int] = []
+    for i, h in enumerate(spec.holes):
+        if h.kind == "plate":
+            plate_ids.append(i)
+            labels[i] = f"P{len(plate_ids)}"
+        else:
+            board_ids.append(i)
+            labels[i] = f"H{len(board_ids)}"
+    return labels, board_ids, plate_ids
+
+
+def tightest_web(spec) -> tuple[str, str, float]:
+    """The two features with the least material between them, and how much.
+
+    Worked out from the hole table rather than written into the note by hand.
+    The note used to say H2/H3; those two are 78 mm apart, and the 1.6 mm web
+    is between H1 and H2.  A note that names generated IDs has to be generated
+    from the same data or it drifts the first time a hole moves.
+    """
+    labels, _, _ = hole_ids(spec)
+    items = [(labels[i], h.x, h.y, h.dia / 2) for i, h in enumerate(spec.holes)]
+    for n, sl in enumerate(spec.slots, 1):
+        # A slot's two end centres, each with the slot's own end radius.
+        items.append((f"S{n}", sl.x0, sl.y0, sl.width / 2))
+        items.append((f"S{n}", sl.x1, sl.y1, sl.width / 2))
+    best = None
+    for i, (na, ax, ay, ar) in enumerate(items):
+        for nb, bx, by, br in items[i + 1:]:
+            if na == nb:
+                continue
+            web = math.dist((ax, ay), (bx, by)) - ar - br
+            if best is None or web < best[2]:
+                best = (na, nb, web)
+    return best
 
 
 def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet:
@@ -221,7 +266,9 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
         title=spec.title.upper(), subtitle=spec.subtitle, drawing_no=drawing_no,
         rev="A", date=date, drawn_by="generated",
         material="3 mm acrylic or 1.6 mm FR4",
-        tolerance="outline +/-0.20   hole pos +/-0.10   see kerf note"),
+        # Self-contained: "see kerf note" was a cross-reference to a note
+        # whose number is generated, so it could not be given.
+        tolerance="edge +/-0.20   hole pos +/-0.10   allow for cutter kerf"),
         notes_band_height=band_h)
     sheet.draw_frame()
     c = sheet.canvas
@@ -234,15 +281,7 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
 
     outline_path(c, view, spec)
 
-    labels = {}
-    board_ids, plate_ids = [], []
-    for i, h in enumerate(spec.holes):
-        if h.kind == "plate":
-            plate_ids.append(i)
-            labels[i] = f"P{len(plate_ids)}"
-        else:
-            board_ids.append(i)
-            labels[i] = f"H{len(board_ids)}"
+    labels, board_ids, plate_ids = hole_ids(spec)
     # Labels must also keep off the plate outline itself: the fixings near the
     # right-hand edge would otherwise put their label straight on it.
     edge = Obstacles()
@@ -334,7 +373,13 @@ def render_fitting_guide(*, drawing_no: str, date: str,
     sheet = Sheet(sheet_size, TitleBlock(
         title="TT MOUNTING PLATE - BOARD FITTING GUIDE",
         subtitle="Which holes each demo board revision uses",
-        drawing_no=drawing_no, rev="A", date=date, drawn_by="generated"))
+        drawing_no=drawing_no, rev="A", date=date, drawn_by="generated",
+        material="-  not a made part",
+        # Nothing on this sheet is a manufactured feature, so it must not
+        # assert a manufacturing tolerance; the previous default claimed an
+        # edge, hole position and hole diameter tolerance of its own, which
+        # differed from the ones on the sheet the plate is actually made from.
+        tolerance="reference only - TT-MP-01 governs every dimension"))
     sheet.draw_frame()
     c = sheet.canvas
     area = sheet.area

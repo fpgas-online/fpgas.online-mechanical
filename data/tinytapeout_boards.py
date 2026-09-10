@@ -526,7 +526,7 @@ BOARDS['v2.1.2'] = BoardSpec(
 
 BOARDS['v3.2'] = BoardSpec(
     key='v3.2',
-    title='Tiny Tapeout Demo Board v3 (ETR)',
+    title='Tiny Tapeout Demo Board v3',
     subtitle='tinytapeout-demo rev 3.2',
     family="tinytapeout",
     used_by=(),
@@ -597,7 +597,7 @@ BOARDS['v3.2'] = BoardSpec(
 
 BOARDS['v3.3'] = BoardSpec(
     key='v3.3',
-    title='Tiny Tapeout Demo Board v3 (ETR)',
+    title='Tiny Tapeout Demo Board v3',
     subtitle='tinytapeout-demo rev 3.3',
     family="tinytapeout",
     used_by=(),

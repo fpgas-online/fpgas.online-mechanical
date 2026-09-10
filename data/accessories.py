@@ -150,7 +150,15 @@ PMOD_HAT = BoardSpec(
         f"JA and JB are snapped to the {PMOD_HOST_SPACING} mm host spacing "
         "the Pmod Interface Specification mandates; they measured 23.18 mm "
         "apart, inside the measurement uncertainty.",
+        "The board outline, corner radii and mounting holes are the "
+        "Raspberry Pi HAT specification's, which this board conforms to, and "
+        "carry that specification's figures. Only the Pmod host positions are "
+        "derived.",
     ),
+    # The general tolerance block otherwise claimed +/-0.20 on the edge and
+    # +/-0.10 on hole position for a board whose host positions are known to
+    # +/-0.75, which the sheet's own first note says.
+    tolerance=f"HAT spec outline; hosts DERIVED +/-{PMOD_HAT_TOL}, see notes",
 )
 
 # ---------------------------------------------------------------------------
@@ -246,9 +254,11 @@ GENERIC_POE = BoardSpec(
         "The envelope drawn here is the LARGER of those two, 80 x 30 x 24 mm, "
         "and the title block quotes it as a maximum rather than a nominal: a "
         "real part may be up to 3 mm narrower and 2 mm shorter in height.",
-        "Length is the one dimension that is not bounded by 80 mm: gigabit "
-        "variants come in a longer case, up to about 95 mm. Design a cradle "
-        "that can take that, or check the part before committing.",
+        "Length is the one dimension that is not bounded by 80 mm, which is "
+        "why the title block gives it +15/-0 while width and height are "
+        "maxima: gigabit variants come in a longer case, up to about 95 mm. "
+        "Design a cradle that can take that, or check the part before "
+        "committing.",
         "No mounting holes: the case is a glued plastic clamshell, so a "
         "bracket has to clamp or strap the body.",
     ),

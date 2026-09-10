@@ -93,11 +93,12 @@ MODELS = [
         key="rpi3bplus", title="Raspberry Pi 3 Model B+", subtitle="85 x 56 mm",
         kind="dxf", file="raspberry-pi-3-b-plus-mechanical-drawing.dxf",
         width=85.0, height=56.0, corner_radius=3.0,
-        hole_dia=2.75, hole_keepout=None, hole_tol=0.05,
+        hole_dia=2.75, hole_keepout=None, hole_tol=None,
         hole_note="Carried over from the Pi 3 Model B drawing, which states "
-                  "4x M2.5 holes drilled to 2.75 +/-0.05 mm. The 3B+ drawing "
-                  "gives no hole size; the two boards share an identical "
-                  "outline, hole pattern and DXF geometry.",
+                  "4x M2.5 holes drilled to 2.75 +/-0.05 mm; the two boards "
+                  "share an identical outline, hole pattern and DXF geometry. "
+                  "The 3B+ drawing gives neither a hole size nor a tolerance, "
+                  "so the +/-0.05 is not repeated.",
         hole_source=f"{DOC}/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.dxf",
         parts=[
@@ -114,8 +115,10 @@ MODELS = [
         key="rpi3aplus", title="Raspberry Pi 3 Model A+", subtitle="65 x 56 mm",
         kind="pdf", file="raspberry-pi-3-a-plus-mechanical-drawing.pdf",
         width=65.0, height=56.0, corner_radius=3.0,
-        hole_dia=2.75, hole_keepout=None, hole_tol=0.05,
-        hole_note="Carried over from the Pi 3 Model B drawing. The 3A+ drawing gives no hole size.",
+        hole_dia=2.75, hole_keepout=None, hole_tol=None,
+        hole_note="Carried over from the Pi 3 Model B drawing; the 3A+ gives "
+                  "neither a hole size nor a tolerance, so the Model B's "
+                  "+/-0.05 is not repeated.",
         hole_source=f"{DOC}/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf",
         reduced=True,
@@ -335,6 +338,14 @@ def render(rec: dict) -> str:
                   "then left to right, and mean the same thing on every "
                   "Raspberry Pi sheet here.")]
     notes.append(repr(KEEPOUT_DESIGN_NOTE))
+    if m.get("hole_tol"):
+        # The schedule's figure is tighter than the sheet's general block, and
+        # a drawing that states two tolerances for the same feature without
+        # saying which wins is ambiguous.
+        notes.append(repr(
+            f"The hole diameter tolerance in the schedule, +/-{m['hole_tol']} "
+            "mm, is quoted from this model's own drawing and governs in place "
+            "of the hole diameter figure in the general tolerance block."))
     if m.get("reduced"):
         notes.append(repr(
             "The source drawing is a reduced plot, not 1:1. Its scale was "
@@ -342,6 +353,16 @@ def render(rec: dict) -> str:
             "and applied. Residual error over the 85 mm width is a few tenths "
             "of a millimetre, so treat every dimension on this sheet as "
             "+/-0.5 rather than the +/-0.20 the other models carry."))
+    elif m["kind"] == "pdf":
+        # Say so explicitly.  A sheet built from a PDF that carries the general
+        # tolerance, next to one that says its plot was reduced, otherwise
+        # leaves a reader wondering whether the scale was checked at all.
+        notes.append(repr(
+            "The source is a PDF, not a DXF, but a true 1:1 vector plot: its "
+            "scale, recovered from the mounting hole rectangle, came out "
+            f"{rec['scale']:.5f}. Geometry was read from the vector paths, so "
+            "this sheet carries the same tolerance as the DXF-derived "
+            "models."))
     if m.get("aux_holes"):
         notes.append('"AUX1 and AUX2 are 3.0 mm holes additional to the four '
                      'M2.5 mounting holes. Each sits 6.0 mm inboard of the '

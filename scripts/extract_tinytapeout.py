@@ -84,7 +84,7 @@ REVISIONS = [
     dict(
         key="v3.2",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="d830790ca",
-        title="Tiny Tapeout Demo Board v3 (ETR)",
+        title="Tiny Tapeout Demo Board v3",
         subtitle="tinytapeout-demo rev 3.2",
         used_by=(),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
@@ -92,7 +92,7 @@ REVISIONS = [
     dict(
         key="v3.3",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="ecb636ace",
-        title="Tiny Tapeout Demo Board v3 (ETR)",
+        title="Tiny Tapeout Demo Board v3",
         subtitle="tinytapeout-demo rev 3.3",
         used_by=(),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",

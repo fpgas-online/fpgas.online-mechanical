@@ -33,7 +33,10 @@ def _tolerance(spec) -> str:
     millimetre on that envelope would be false precision.
     """
     if spec.key == "generic-poe-microusb":
-        return "envelope is a MAXIMUM: +0/-3 W, +0/-2 H"
+        # W and H are maxima; length is not.  Saying "envelope is a MAXIMUM"
+        # without qualifying it contradicted the sheet's own note that gigabit
+        # variants come in a case up to about 95 mm long.
+        return "W +0/-3 MAX   H +0/-2 MAX   L +15/-0, see notes"
     return "envelope +/-1.0 unless noted"
 
 
