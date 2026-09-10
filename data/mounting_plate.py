@@ -50,7 +50,6 @@ PLATE = BoardSpec(
     family="mountingplate",
     outline=Outline(width=135.0, height=101.0, corner_radius=4.0, thickness=3.0),
     holes=(
-        Hole(x=14.525, y=8.600, dia=3.40, label='TT04-05:MT1+TT06-08:MT1', kind="board", tol=None),  # Serves 2 revision positions spread 0.613 mm; drilled at their midpoint.
         Hole(x=23.455, y=81.778, dia=3.40, label='TT01-03:MT3+v3.2:MT1', kind="board", tol=None),  # Serves 2 revision positions spread 0.111 mm; drilled at their midpoint.
         Hole(x=23.400, y=86.770, dia=3.40, label='v3.3:MT1', kind="board", tol=None),
         Hole(x=23.510, y=8.285, dia=3.40, label='TT01-03:MT1', kind="board", tol=None),
@@ -69,6 +68,8 @@ PLATE = BoardSpec(
         Hole(x=93.000, y=95.885, dia=4.30, label="PLATE", kind="plate"),
     ),
     slots=(
+        Slot(x0=14.245, y0=8.725, x1=14.805, y1=8.475, width=3.40, label='TT04-05:MT1+TT06-08:MT1',
+             note="Two revisions want a fastener 0.613 mm apart here, too close to drill as separate holes."),
         Slot(x0=14.245, y0=79.725, x1=14.805, y1=81.975, width=3.40, label='TT04-05:MT3+TT06-08:MT3',
              note="Two revisions want a fastener 2.319 mm apart here, too close to drill as separate holes."),
     ),

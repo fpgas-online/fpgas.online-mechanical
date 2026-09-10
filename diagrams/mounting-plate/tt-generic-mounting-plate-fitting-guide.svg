@@ -47,9 +47,6 @@
 <line x1="27.63" y1="82.2325" x2="27.63" y2="44.7325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
 <rect x="44.73" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="56.16" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
-<circle cx="25.0125" cy="81.7" r="0.85" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<line x1="22.9625" y1="81.7" x2="27.0625" y2="81.7" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="25.0125" y1="83.75" x2="25.0125" y2="79.65" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="29.4775" cy="45.111" r="0.85" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
 <line x1="27.4275" y1="45.111" x2="31.5275" y2="45.111" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="29.4775" y1="47.161" x2="29.4775" y2="43.061" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
@@ -98,6 +95,9 @@
 <circle cx="64.25" cy="38.0575" r="1.075" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <line x1="61.975" y1="38.0575" x2="66.525" y2="38.0575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="64.25" y1="40.3325" x2="64.25" y2="35.7825" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<path d="M 25.2190 80.8613 L 25.4990 80.9863 A 0.8500 0.8500 0 0 1 24.8060 82.5387 L 24.5260 82.4137 A 0.8500 0.8500 0 0 1 25.2190 80.8613 Z" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="23.1625" y1="81.7" x2="26.8625" y2="81.7" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="25.0125" y1="83.55" x2="25.0125" y2="79.85" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <path d="M 24.0477 45.9322 L 24.3277 44.8072 A 0.8500 0.8500 0 0 1 25.9773 45.2178 L 25.6973 46.3428 A 0.8500 0.8500 0 0 1 24.0477 45.9322 Z" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
 <line x1="23.1625" y1="45.575" x2="26.8625" y2="45.575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="25.0125" y1="47.425" x2="25.0125" y2="43.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
@@ -116,9 +116,6 @@
 <rect x="106.3" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="117.73" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="129.16" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
-<circle cx="98.0125" cy="81.7" r="0.85" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
-<line x1="95.9625" y1="81.7" x2="100.0625" y2="81.7" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="98.0125" y1="83.75" x2="98.0125" y2="79.65" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="102.4775" cy="45.111" r="0.85" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <line x1="100.4275" y1="45.111" x2="104.5275" y2="45.111" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="102.4775" y1="47.161" x2="102.4775" y2="43.061" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
@@ -167,6 +164,9 @@
 <circle cx="137.25" cy="38.0575" r="1.075" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <line x1="134.975" y1="38.0575" x2="139.525" y2="38.0575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="137.25" y1="40.3325" x2="137.25" y2="35.7825" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<path d="M 98.2190 80.8613 L 98.4990 80.9863 A 0.8500 0.8500 0 0 1 97.8060 82.5387 L 97.5260 82.4137 A 0.8500 0.8500 0 0 1 98.2190 80.8613 Z" fill="#ffffff" stroke="#a00000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="96.1625" y1="81.7" x2="99.8625" y2="81.7" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="98.0125" y1="83.55" x2="98.0125" y2="79.85" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <path d="M 97.0477 45.9322 L 97.3277 44.8072 A 0.8500 0.8500 0 0 1 98.9773 45.2178 L 98.6973 46.3428 A 0.8500 0.8500 0 0 1 97.0477 45.9322 Z" fill="#ffffff" stroke="#a00000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
 <line x1="96.1625" y1="45.575" x2="99.8625" y2="45.575" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="98.0125" y1="47.425" x2="98.0125" y2="43.725" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
@@ -181,9 +181,6 @@
 <rect x="179.3" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="190.73" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="202.16" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
-<circle cx="171.0125" cy="81.7" r="0.85" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
-<line x1="168.9625" y1="81.7" x2="173.0625" y2="81.7" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="171.0125" y1="83.75" x2="171.0125" y2="79.65" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="175.4775" cy="45.111" r="0.85" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <line x1="173.4275" y1="45.111" x2="177.5275" y2="45.111" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="175.4775" y1="47.161" x2="175.4775" y2="43.061" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
@@ -232,6 +229,9 @@
 <circle cx="210.25" cy="38.0575" r="1.075" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <line x1="207.975" y1="38.0575" x2="212.525" y2="38.0575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="210.25" y1="40.3325" x2="210.25" y2="35.7825" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<path d="M 171.2190 80.8613 L 171.4990 80.9863 A 0.8500 0.8500 0 0 1 170.8060 82.5387 L 170.5260 82.4137 A 0.8500 0.8500 0 0 1 171.2190 80.8613 Z" fill="#ffffff" stroke="#a00000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="169.1625" y1="81.7" x2="172.8625" y2="81.7" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="171.0125" y1="83.55" x2="171.0125" y2="79.85" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <path d="M 170.0477 45.9322 L 170.3277 44.8072 A 0.8500 0.8500 0 0 1 171.9773 45.2178 L 171.6973 46.3428 A 0.8500 0.8500 0 0 1 170.0477 45.9322 Z" fill="#ffffff" stroke="#a00000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
 <line x1="169.1625" y1="45.575" x2="172.8625" y2="45.575" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="171.0125" y1="47.425" x2="171.0125" y2="43.725" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
@@ -246,9 +246,6 @@
 <rect x="33.3" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="44.73" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="56.16" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
-<circle cx="25.0125" cy="169.2" r="0.85" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<line x1="22.9625" y1="169.2" x2="27.0625" y2="169.2" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="25.0125" y1="171.25" x2="25.0125" y2="167.15" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="29.4775" cy="132.611" r="0.85" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
 <line x1="27.4275" y1="132.611" x2="31.5275" y2="132.611" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="29.4775" y1="134.661" x2="29.4775" y2="130.561" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
@@ -297,6 +294,9 @@
 <circle cx="64.25" cy="125.5575" r="1.075" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <line x1="61.975" y1="125.5575" x2="66.525" y2="125.5575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="64.25" y1="127.8325" x2="64.25" y2="123.2825" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<path d="M 25.2190 168.3613 L 25.4990 168.4863 A 0.8500 0.8500 0 0 1 24.8060 170.0387 L 24.5260 169.9137 A 0.8500 0.8500 0 0 1 25.2190 168.3613 Z" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="23.1625" y1="169.2" x2="26.8625" y2="169.2" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="25.0125" y1="171.05" x2="25.0125" y2="167.35" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <path d="M 24.0477 133.4322 L 24.3277 132.3072 A 0.8500 0.8500 0 0 1 25.9773 132.7178 L 25.6973 133.8428 A 0.8500 0.8500 0 0 1 24.0477 133.4322 Z" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
 <line x1="23.1625" y1="133.075" x2="26.8625" y2="133.075" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="25.0125" y1="134.925" x2="25.0125" y2="131.225" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
@@ -311,9 +311,6 @@
 <rect x="106.3" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="117.73" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="129.16" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
-<circle cx="98.0125" cy="169.2" r="0.85" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
-<line x1="95.9625" y1="169.2" x2="100.0625" y2="169.2" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="98.0125" y1="171.25" x2="98.0125" y2="167.15" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="102.4775" cy="132.611" r="0.85" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <line x1="100.4275" y1="132.611" x2="104.5275" y2="132.611" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="102.4775" y1="134.661" x2="102.4775" y2="130.561" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
@@ -362,6 +359,9 @@
 <circle cx="137.25" cy="125.5575" r="1.075" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <line x1="134.975" y1="125.5575" x2="139.525" y2="125.5575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="137.25" y1="127.8325" x2="137.25" y2="123.2825" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<path d="M 98.2190 168.3613 L 98.4990 168.4863 A 0.8500 0.8500 0 0 1 97.8060 170.0387 L 97.5260 169.9137 A 0.8500 0.8500 0 0 1 98.2190 168.3613 Z" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="96.1625" y1="169.2" x2="99.8625" y2="169.2" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="98.0125" y1="171.05" x2="98.0125" y2="167.35" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <path d="M 97.0477 133.4322 L 97.3277 132.3072 A 0.8500 0.8500 0 0 1 98.9773 132.7178 L 98.6973 133.8428 A 0.8500 0.8500 0 0 1 97.0477 133.4322 Z" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
 <line x1="96.1625" y1="133.075" x2="99.8625" y2="133.075" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="98.0125" y1="134.925" x2="98.0125" y2="131.225" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>

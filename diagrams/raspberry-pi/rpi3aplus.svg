@@ -121,23 +121,23 @@
 <line x1="101.34" y1="114.9575" x2="113.24" y2="94.3461" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="114.84" cy="91.5748" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
 <text x="114.84" y="90.3248" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">3</text>
-<line x1="90.72" y1="115.795" x2="90.72" y2="127.505" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="90.72" y1="118.195" x2="90.72" y2="127.505" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="90.72" y="132.005" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 90.72 132.005)">0</text>
-<line x1="94.22" y1="63.295" x2="94.22" y2="134.4143" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="94.22" y1="65.695" x2="94.22" y2="134.4143" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="94.22" y="138.9143" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 94.22 138.9143)">3.50</text>
-<line x1="118.32" y1="106.395" x2="118.32" y2="127.505" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="118.32" y1="108.795" x2="118.32" y2="127.505" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="118.32" y="132.005" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 118.32 132.005)">27.60</text>
-<line x1="152.22" y1="63.295" x2="152.22" y2="127.505" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="152.22" y1="65.695" x2="152.22" y2="127.505" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="152.22" y="132.005" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 152.22 132.005)">61.50</text>
-<line x1="91.92" y1="116.995" x2="81.72" y2="116.995" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="89.52" y1="116.995" x2="81.72" y2="116.995" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="79.72" y="115.745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">0</text>
-<line x1="95.42" y1="113.495" x2="69.2905" y2="113.495" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="93.02" y1="113.495" x2="69.2905" y2="113.495" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="67.2905" y="112.245" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">3.50</text>
-<line x1="101.32" y1="100.565" x2="81.72" y2="100.565" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="98.92" y1="100.565" x2="81.72" y2="100.565" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="79.72" y="99.315" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">16.43</text>
-<line x1="101.32" y1="77.705" x2="81.72" y2="77.705" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="98.92" y1="77.705" x2="81.72" y2="77.705" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="79.72" y="76.455" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">39.29</text>
-<line x1="95.42" y1="64.495" x2="81.72" y2="64.495" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="93.02" y1="64.495" x2="81.72" y2="64.495" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="79.72" y="63.245" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">52.50</text>
 <line x1="90.72" y1="118.195" x2="90.72" y2="153.7813" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="155.72" y1="118.195" x2="155.72" y2="153.7813" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>

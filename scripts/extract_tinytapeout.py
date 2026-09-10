@@ -448,8 +448,14 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
 
 
 def geometry_signature(rec: dict):
-    """What makes two revisions the same board, mechanically."""
+    """What makes two revisions the same board, mechanically.
+
+    The outline edges are part of it, not just the bounding box: two revisions
+    could share a width, height and corner radius while differing in a profile
+    feature such as the USB-C shell recess in the TT04/TT05 upper edge.
+    """
     return (rec["width"], rec["height"], rec["corner_radius"],
+            tuple(rec["edges"]),
             tuple(sorted((h["x"], h["y"], h["dia"]) for h in rec["holes"])),
             tuple(sorted((p["cx"], p["cy"]) for p in rec["pmods"])),
             tuple(sorted((f["key"], f["x0"], f["y0"], f["x1"], f["y1"])

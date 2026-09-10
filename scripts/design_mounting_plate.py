@@ -35,10 +35,18 @@ sys.path.insert(0, str(ROOT))
 from data.tinytapeout_boards import BOARDS  # noqa: E402
 
 PMOD_PITCH = 22.86
+M3_DIA = 3.00              # nominal M3 shank
 HOLE_DIA = 3.40            # close clearance for M3
 SLOT_WIDTH = 3.40
 MIN_WEB = 1.50             # least material left between two holes
-MERGE_BELOW = 1.00         # under this, one hole serves both positions
+
+#: Two positions may share one hole only if the hole's own clearance swallows
+#: the offset.  A 3.40 mm hole gives an M3 shank 0.20 mm of radial play, so the
+#: two positions may be at most 0.40 mm apart; drilled at their midpoint each
+#: is then 0.20 mm off centre, exactly using up the play.  A larger threshold
+#: produces a plate whose holes the fasteners do not actually fit: at 1.00 mm
+#: it merged two positions 0.613 mm apart and left the screw 0.107 mm short.
+MERGE_BELOW = HOLE_DIA - M3_DIA
 PLATE_HOLE_DIA = 4.30      # M4 clearance, for fixing the plate down
 PLATE_HOLE_CLEAR = 6.0     # keep plate fixings this far from any board hole
 
@@ -147,6 +155,39 @@ def build():
             slots.append(dict(x0=a["x"], y0=a["y"], x1=b["x"], y1=b["y"],
                               width=SLOT_WIDTH, used=used, spread=span))
     return place, holes, slots
+
+
+def check_fasteners(place, holes, slots) -> None:
+    """Every board's fastener must actually fit the feature meant to serve it.
+
+    Merging two positions into one hole and slotting two that are further apart
+    are both fine, but only if what comes out still passes an M3 shank at each
+    board's own hole position.  This is the check the merge threshold exists to
+    satisfy, so it is worth making rather than assuming.
+    """
+    worst = None
+    for pl in place:
+        for h in pl["board"].holes:
+            x, y = pl["ox"] + h.x + DATUM_X, pl["oy"] + h.y + DATUM_Y
+            best = -math.inf
+            for hole in holes:
+                best = max(best, (hole["dia"] - M3_DIA) / 2
+                           - math.dist((x, y), (hole["x"] + DATUM_X,
+                                                hole["y"] + DATUM_Y)))
+            for s in slots:
+                best = max(best, (s["width"] - M3_DIA) / 2
+                           - _point_seg((x, y),
+                                        (s["x0"] + DATUM_X, s["y0"] + DATUM_Y),
+                                        (s["x1"] + DATUM_X, s["y1"] + DATUM_Y)))
+            if worst is None or best < worst[0]:
+                worst = (best, pl["name"], h.label)
+            if best < 0:
+                raise SystemExit(
+                    f"{pl['name']} {h.label} at ({x:.3f},{y:.3f}) has no "
+                    f"feature an M3 fastener fits: clearance {best:+.3f} mm. "
+                    f"Lower MERGE_BELOW or widen the feature.")
+    print(f"tightest M3 clearance {worst[0]:+.3f} mm, at "
+          f"{worst[1]} {worst[2]}")
 
 
 def plate_fixings(place, holes, slots):
@@ -270,6 +311,7 @@ PLATE = BoardSpec(
 
 def main() -> None:
     place, holes, slots = build()
+    check_fasteners(place, holes, slots)
     fixings = plate_fixings(place, holes, slots)
 
     print("Board placements (add to board coordinates to get plate coordinates):")

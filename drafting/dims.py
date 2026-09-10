@@ -223,8 +223,11 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
     extent = line_pos
     for pos, label, from_pos, lane in placed:
         end = line_pos + out * lane * stagger
-        # Start clear of the feature, as ISO 129-1 asks of an extension line.
-        start = from_pos - out * style.EXT_GAP
+        # Start clear of the feature, on the side the dimension line is on, as
+        # ISO 129-1 asks of an extension line.  Subtracting here instead put
+        # the start on the far side, so the line ran back through the feature
+        # it was meant to stop short of.
+        start = from_pos + out * style.EXT_GAP
         if (end - start) * out <= 0:
             start = end - out * style.EXT_OVER
         if horizontal:

@@ -40,7 +40,7 @@ class View:
     @classmethod
     def fit(cls, rect: Rect, bbox: tuple[float, float, float, float],
             margin: float = 26.0, force_scale: float | None = None,
-            centre_y: bool = True, margin_top: float | None = None,
+            margin_top: float | None = None,
             margin_bottom: float | None = None) -> "View":
         """Place *bbox* in *rect*, reserving margins for annotation.
 
@@ -73,8 +73,7 @@ class View:
         # Centre within the space left after the margins, not within the whole
         # rectangle, or the view drifts into the smaller margin.
         inner_cy = rect.y + bottom + (rect.h - top - bottom) / 2
-        cy = inner_cy - (y0 + y1) / 2 * chosen if centre_y else \
-            rect.y1 - top - mh * chosen + y0 * chosen
+        cy = inner_cy - (y0 + y1) / 2 * chosen
         return cls(rect, x0, y0, x1, y1, chosen, label, cx, cy)
 
     # -- transforms ---------------------------------------------------------
