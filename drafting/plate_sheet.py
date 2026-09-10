@@ -37,6 +37,9 @@ PLATE_HOLE = "#006060"
 #: The USB-C outlines.  Distinct from both hole colours because it is neither
 #: a hole nor a plate feature: it is an opening a chassis has to provide.
 USB_MARK = "#7a4a00"
+#: A light wash of the same colour, so a five millimetre rectangle on the
+#: fitting guide reads as a marked area rather than an empty box.
+USB_FILL = "#f2e6d0"
 
 
 def draw_slot(c: Canvas, view: View, s: Slot, colour: str = BOARD_HOLE) -> None:
@@ -286,6 +289,7 @@ GUIDE_LEGEND = [
     ("outline", "Plate edge"),
     (BOARD_HOLE, "Hole or slot this revision uses"),
     ("phantom", "Holes it does not use, and its board outline"),
+    ("usbc", "USB-C connector on this revision"),
 ]
 
 
@@ -692,6 +696,16 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
         c.rect(*view.pt(dx, dy), view.d(bo.width), view.d(bo.height),
                weight=style.W_PHANTOM, colour=style.C_PHANTOM,
                dash=style.D_PHANTOM)
+
+    # This revision's USB-C, in the same colour it carries on TT-MP-01.  Only
+    # this one: the guide's whole job is to show one board at a time, and the
+    # other four positions are on the plate sheet.
+    # Filled rather than lettered: at 1:2 the connector is five millimetres
+    # across, which will not hold a 2.5 mm capital, and the legend on this
+    # sheet says what the colour is.
+    ux0, uy0, ux1, uy1 = USB_C[name]
+    c.rect(*view.pt(ux0, uy0), view.d(ux1 - ux0), view.d(uy1 - uy0),
+           weight=style.W_COMPONENT, colour=USB_MARK, fill=USB_FILL)
 
     for p in board.pmods:
         px, py = view.pt(p.cx + dx, p.cy + dy)
