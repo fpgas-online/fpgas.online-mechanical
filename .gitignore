@@ -1,0 +1,5 @@
+# Temporary working area (upstream clones, scratch renders)
+tmp/
+__pycache__/
+*.pyc
+.venv/
