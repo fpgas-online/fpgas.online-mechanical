@@ -24,12 +24,17 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
            text: str | None = None, places: int = 2, value: float | None = None,
            colour: str = style.C_DIM, size: float = style.T_DIM,
            extension: bool = True, flip_text: bool = False,
-           text_offset: float = 0.0) -> None:
+           text_offset: float = 0.0, ext_start: float | None = None) -> None:
     """Dimension between two sheet points, offset perpendicular to their span.
 
     *offset* is signed: positive puts the dimension line above a horizontal
     dimension, or to the right of a vertical one.  *value* is the number to
     print, in model units; pass *text* to override it entirely.
+
+    *ext_start* moves the start of the extension lines away from the feature.
+    An overall dimension placed outside an ordinate chain would otherwise run
+    its extension lines from the part all the way out, straight through the
+    ordinate labels on the way.
     """
     (x1, y1), (x2, y2) = p1, p2
     if horizontal is None:
@@ -41,10 +46,11 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
         a, b = (min(x1, x2), line_y), (max(x1, x2), line_y)
         if extension:
             for x, y in ((x1, y1), (x2, y2)):
-                gap = style.EXT_GAP * (1 if line_y > y else -1)
-                over = style.EXT_OVER * (1 if line_y > y else -1)
-                c.line(x, y + gap, x, line_y + over, w=style.W_THIN,
-                       colour=colour)
+                sign = 1 if line_y > y else -1
+                start = y + style.EXT_GAP * sign if ext_start is None \
+                    else ext_start
+                c.line(x, start, x, line_y + style.EXT_OVER * sign,
+                       w=style.W_THIN, colour=colour)
         span = abs(x2 - x1)
         shown = span if value is None else value
         label = text if text is not None else _fmt(shown, places)
@@ -73,10 +79,11 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
         lo, hi = min(y1, y2), max(y1, y2)
         if extension:
             for x, y in ((x1, y1), (x2, y2)):
-                gap = style.EXT_GAP * (1 if line_x > x else -1)
-                over = style.EXT_OVER * (1 if line_x > x else -1)
-                c.line(x + gap, y, line_x + over, y, w=style.W_THIN,
-                       colour=colour)
+                sign = 1 if line_x > x else -1
+                start = x + style.EXT_GAP * sign if ext_start is None \
+                    else ext_start
+                c.line(start, y, line_x + style.EXT_OVER * sign, y,
+                       w=style.W_THIN, colour=colour)
         span = hi - lo
         shown = span if value is None else value
         label = text if text is not None else _fmt(shown, places)
@@ -161,8 +168,9 @@ def datum_marker(c: Canvas, x: float, y: float, *, size: float = 4.0,
     c.path(f"M {x} {c._y(y)} L {x - size / 2} {c._y(y)} "
            f"A {size / 2} {size / 2} 0 0 1 {x} {c._y(y - size / 2)} Z",
            fill=colour, colour=colour, w=0.05)
-    c.text(x + label_dx, y + label_dy, label, size=style.T_TINY, colour=colour,
-           anchor="middle")
+    if label:
+        c.text(x + label_dx, y + label_dy, label, size=style.T_TINY,
+               colour=colour, anchor="middle")
 
 
 def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,

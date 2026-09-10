@@ -215,13 +215,12 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
         zero_pos=plate.y, zero_from=plate.x)
 
     dims.linear(c, (plate.x, plate.y), (plate.x1, plate.y),
-                x_extent - 7.0 - plate.y, horizontal=True, value=o.width)
+                x_extent - 7.0 - plate.y, horizontal=True, value=o.width,
+                ext_start=x_extent - 2.0)
     dims.linear(c, (plate.x, plate.y), (plate.x, plate.y1),
-                y_extent - 7.0 - plate.x, horizontal=False, value=o.height)
+                y_extent - 7.0 - plate.x, horizontal=False, value=o.height,
+                ext_start=y_extent - 2.0)
     dims.datum_marker(c, plate.x, plate.y, label="")
-    dims.leader(c, (plate.x, plate.y),
-                (min(y_extent, plate.x - 30.0), plate.y - 15.0),
-                "DATUM  X0 Y0", tail=2.0, anchor="start", dot=True)
     dims.leader(c, view.pt(o.width - o.corner_radius * 0.3,
                            o.height - o.corner_radius * 0.3),
                 (plate.x1 + 8.0, plate.y1 + 5.0),
@@ -251,8 +250,9 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
                 ["start", "end", "end", "end"])
 
     notes = [
-        "All dimensions in millimetres. Datum is the lower-left corner of the "
-        "plate; X right, Y up, viewed from the side the demo board mounts on.",
+        "All dimensions in millimetres. The datum symbol marks the origin: "
+        "the lower-left corner of the plate, X right, Y up, viewed from the "
+        "side the demo board mounts on.",
         "Hole positions are tabulated rather than dimensioned individually: "
         "there are too many to put on the view without it becoming unreadable.",
         "The three PMOD envelopes are not machined features. They mark where "

@@ -75,6 +75,44 @@ def boxes(svg: str) -> list[tuple[float, float, float, float, str, float]]:
     return out
 
 
+LINE_RE = re.compile(
+    r'<line x1="([-\d.]+)" y1="([-\d.]+)" x2="([-\d.]+)" y2="([-\d.]+)" '
+    r'stroke="([#\w]+)"')
+
+#: Lines a label must not sit on.  Table rules and heading underlines are drawn
+#: deliberately close to their text, so only annotation and geometry lines are
+#: checked: dimension and leader lines, feature outlines, and phantom parts.
+CHECKED_STROKES = {style.C_DIM, style.C_HIGHLIGHT, style.C_PHANTOM,
+                   style.C_COMPONENT}
+
+
+def lines(svg: str):
+    for m in LINE_RE.finditer(svg):
+        x1, y1, x2, y2 = (float(v) for v in m.groups()[:4])
+        if m.group(5) in CHECKED_STROKES:
+            yield x1, y1, x2, y2
+
+
+def box_hits_line(box, seg, tol: float) -> float:
+    """How far a segment reaches inside a text box, 0 if it stays clear."""
+    x0, y0, x1, y1 = box[0] + tol, box[1] + tol, box[2] - tol, box[3] - tol
+    if x1 <= x0 or y1 <= y0:
+        return 0.0
+    ax, ay, bx, by = seg
+    # Sample rather than clip: a few points is enough to say whether a line
+    # runs through a word, and the maths stays obvious.
+    inside = 0
+    steps = 40
+    for i in range(steps + 1):
+        t = i / steps
+        px, py = ax + (bx - ax) * t, ay + (by - ay) * t
+        if x0 <= px <= x1 and y0 <= py <= y1:
+            inside += 1
+    if not inside:
+        return 0.0
+    return math.hypot(bx - ax, by - ay) * inside / steps
+
+
 def overlap(a, b) -> float:
     dx = min(a[2], b[2]) - max(a[0], b[0])
     dy = min(a[3], b[3]) - max(a[1], b[1])
@@ -95,6 +133,7 @@ def main() -> None:
         # drawing frame, by design, so the bound is the trim line.
         trim = style.SHEET_MARGIN / 2
         items = boxes(svg)
+        svg_lines = list(lines(svg))
 
         problems: list[str] = []
         for i, a in enumerate(items):
@@ -111,6 +150,14 @@ def main() -> None:
                     problems.append(
                         f"text {a[4]!r} and {b[4]!r} overlap by {ov:.2f} mm "
                         f"near ({max(a[0], b[0]):.1f},{max(a[1], b[1]):.1f})")
+        for a in items:
+            for seg in svg_lines:
+                run = box_hits_line(a[:4], seg, tol=0.5)
+                if run > 1.0:
+                    problems.append(
+                        f"a line runs {run:.2f} mm through the text {a[4]!r} "
+                        f"at ({a[0]:.1f},{a[1]:.1f})")
+                    break
 
         name = path.relative_to(ROOT / "diagrams")
         if problems:

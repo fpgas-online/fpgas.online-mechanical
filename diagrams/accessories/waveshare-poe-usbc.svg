@@ -116,10 +116,6 @@
 <circle cx="113.05" cy="136.7" r="2" fill="none" stroke="#004c99" stroke-width="0.25"/>
 <path d="M 113.05000000000001 136.70000000000002 L 115.05000000000001 136.70000000000002 A 2.0 2.0 0 0 1 113.05000000000001 134.70000000000002 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M 113.05000000000001 136.70000000000002 L 111.05000000000001 136.70000000000002 A 2.0 2.0 0 0 1 113.05000000000001 138.70000000000002 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="113.05" cy="136.7" r="0.7" fill="#004c99" stroke="#004c99" stroke-width="0.05"/>
-<line x1="113.05" y1="136.7" x2="89.05" y2="152.7" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="89.05" y1="152.7" x2="87.05" y2="152.7" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<text x="85.85" y="151.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">DATUM  X0 Y0</text>
 <text x="240" y="21.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">ENVELOPE</text>
 <line x1="240" y1="22.9" x2="402" y2="22.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="240" y="25.1" width="39.833" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
@@ -154,9 +150,9 @@
 <text x="19" y="197.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
 <line x1="19" y1="198.9" x2="121.5" y2="198.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="19" y="203.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="23.542" y="203.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All dimensions in millimetres. Plan datum is the lower-left</text>
-<text x="23.542" y="208.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">corner of the body envelope, X along the length, Y across the</text>
-<text x="23.542" y="212.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">width, Z up.</text>
+<text x="23.542" y="203.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">All dimensions in millimetres. The datum symbol on the plan</text>
+<text x="23.542" y="208.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">marks the origin: the lower-left corner of the body envelope, X</text>
+<text x="23.542" y="212.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">along the length, Y across the width, Z up.</text>
 <text x="19" y="218.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
 <text x="23.542" y="218.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">First-angle projection. The plan is the view from above, placed</text>
 <text x="23.542" y="222.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">below the front elevation; the end view is the view from the</text>

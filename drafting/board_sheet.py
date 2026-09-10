@@ -204,8 +204,8 @@ def _point_segment_distance(px, py, x1, y1, x2, y2) -> float:
 
 #: Candidate balloon offsets, tried in order: close and to the side first,
 #: then further out.  Angles start at "up and right" and go round.
-_ANGLES = [i * 30 for i in range(12)]
-_RADII = [9.0, 12.5, 16.5, 21.0, 27.0, 34.0]
+_ANGLES = [i * 15 for i in range(24)]
+_RADII = [9.0, 12.5, 16.5, 21.0, 27.0, 34.0, 42.0]
 
 
 def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
@@ -229,12 +229,16 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
                 if not (bounds.x + BALLOON_R < cx < bounds.x1 - BALLOON_R
                         and bounds.y + BALLOON_R < cy < bounds.y1 - BALLOON_R):
                     continue
+                # A leader crossing something is nearly as bad as the balloon
+                # landing on it: at a low weight the placer would accept a
+                # leader straight through the balloon next door rather than
+                # move a few millimetres further out.
                 score = (obstacles.hits(cx, cy, BALLOON_R + 1.6) * 100
-                         + obstacles.leader_hits(tx, ty, cx, cy) * 12
+                         + obstacles.leader_hits(tx, ty, cx, cy) * 45
                          + radius)
                 if best_score is None or score < best_score:
                     best, best_score = (cx, cy), score
-            if best_score is not None and best_score < 12:
+            if best_score is not None and best_score < 45:
                 break
         if best is None:
             best = (tx + 10.0, ty + 10.0)
@@ -381,9 +385,22 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     obstacles = Obstacles()
     for f in spec.features:
         obstacles.add_rect(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1), pad=0.8)
+    # The radius callout is drawn after the balloons but occupies its space
+    # regardless, so reserve it now.
+    if o.corner_radius:
+        rlabel = f"R{o.corner_radius:.2f} (4 places), board outline" \
+            if overlay is not None else f"R{o.corner_radius:.2f} (4 places)"
+        rw = style.text_width(rlabel, style.T_LABEL)
+        obstacles.add_rect(board.x1 + 8.0, board.y1 + 3.0,
+                           board.x1 + 8.0 + rw + 8.0, board.y1 + 8.0, pad=1.0)
+        obstacles.add_segment(*view.pt(o.width - o.corner_radius * 0.3,
+                                       o.height - o.corner_radius * 0.3),
+                              board.x1 + 8.0, board.y1 + 5.0)
+
     if overlay is not None:
         # The phantom part is drawn on this view, so a balloon must keep off it
-        # too.  Its Pmod hosts are the parts that get in the way.
+        # too.  Its Pmod hosts, and the labels beside them, are what gets in
+        # the way.
         for p in overlay.pmods:
             half_a, half_b = p.pin_span / 2 + 1.6, p.row_span / 2 + 1.6
             if p.edge in ("bottom", "top"):
@@ -392,6 +409,17 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                 half_x, half_y = half_b, half_a
             obstacles.add_rect(*view.pt(p.cx - half_x, p.cy - half_y),
                                *view.pt(p.cx + half_x, p.cy + half_y), pad=1.0)
+            lw = style.text_width(p.label, style.T_LABEL, bold=True)
+            lx0, ly0 = view.pt(p.cx - half_x, p.cy - half_y)
+            lx1, ly1 = view.pt(p.cx + half_x, p.cy + half_y)
+            if p.edge == "left":
+                obstacles.add_rect(lx1, ly0, lx1 + lw + 3.0, ly1, pad=1.0)
+            elif p.edge == "right":
+                obstacles.add_rect(lx0 - lw - 3.0, ly0, lx0, ly1, pad=1.0)
+            else:
+                mid = (lx0 + lx1) / 2
+                obstacles.add_rect(mid - lw / 2, ly1, mid + lw / 2,
+                                   ly1 + style.T_LABEL + 3.0, pad=1.0)
     for h in spec.holes:
         obstacles.add_circle(*view.pt(h.x, h.y),
                              view.d(max(h.dia, h.keepout_dia or 0) / 2) + 1.0)
@@ -488,17 +516,18 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         board.x, leftmost - 9.0, horizontal=False,
         zero_pos=board.y, zero_from=board.x)
 
+    # Extension lines start outside the ordinate labels, not at the board, so
+    # they do not run through them on the way out.
     dims.linear(c, (board.x, board.y), (board.x1, board.y),
-                x_extent - 6.0 - board.y, horizontal=True, value=o.width)
+                x_extent - 6.0 - board.y, horizontal=True, value=o.width,
+                ext_start=x_extent - 2.0)
     dims.linear(c, (board.x, board.y), (board.x, board.y1),
-                y_extent - 6.0 - board.x, horizontal=False, value=o.height)
+                y_extent - 6.0 - board.x, horizontal=False, value=o.height,
+                ext_start=y_extent - 2.0)
     # The datum sits in the busiest corner of the sheet, so its label goes out
     # on a leader into the empty wedge below and left of the ordinate chains
     # rather than next to the marker.
     dims.datum_marker(c, board.x, board.y, label="")
-    dims.leader(c, (board.x, board.y),
-                (min(y_extent, board.x - 34.0), board.y - 16.0),
-                "DATUM  X0 Y0", tail=2.0, anchor="start", dot=True)
 
     if o.corner_radius:
         r = o.corner_radius
@@ -557,8 +586,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     # drawing.  The column is finite, and losing a provenance note to make room
     # for a description of ordinate dimensioning is a bad trade.
     notes = [
-        "All dimensions in millimetres. Datum is the lower-left corner of the "
-        "board outline; X right, Y up, viewed from the component side.",
+        "All dimensions in millimetres. The datum symbol marks the origin: "
+        "the lower-left corner of the board outline, X right, Y up, viewed "
+        "from the component side.",
     ]
     if overlay is not None:
         notes.append(

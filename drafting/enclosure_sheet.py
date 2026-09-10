@@ -128,8 +128,6 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                 (end.x1 + 9.0, end.y - 7.0),
                 f"R{o.corner_radius:.2f} nominal (4 places)")
     dims.datum_marker(c, plan.x, plan.y, label="")
-    dims.leader(c, (plan.x, plan.y), (plan.x - 24.0, plan.y - 16.0),
-                "DATUM  X0 Y0", tail=2.0, anchor="end", dot=True)
 
 
     rows = [["Overall length", f"{length:.2f}"],
@@ -148,8 +146,9 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                     ["start", "end", "end"])
 
     notes = [
-        "All dimensions in millimetres. Plan datum is the lower-left corner of "
-        "the body envelope, X along the length, Y across the width, Z up.",
+        "All dimensions in millimetres. The datum symbol on the plan marks the "
+        "origin: the lower-left corner of the body envelope, X along the "
+        "length, Y across the width, Z up.",
         "First-angle projection. The plan is the view from above, placed below "
         "the front elevation; the end view is the view from the RJ45 end, "
         "placed to the left of it.",
