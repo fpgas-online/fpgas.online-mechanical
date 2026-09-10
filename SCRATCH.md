@@ -32,7 +32,27 @@ document the request linked) for:
 
 ## Status
 
-Phase: **18 sheets generated; both reviews acted on; round 2 outstanding**.
+Phase: **complete; second drawing review outstanding**.
+
+Everything asked for exists and is committed:
+
+| Deliverable | Where |
+|-------------|-------|
+| 8 Tiny Tapeout demo board sheets | `diagrams/tinytapeout/` |
+| 5 Raspberry Pi sheets, Pmod HAT overlaid | `diagrams/raspberry-pi/` |
+| Digilent Pmod HAT Adapter, 2 PoE splitters | `diagrams/accessories/` |
+| Generic mounting plate, fabrication + fitting guide + DXF | `diagrams/mounting-plate/` |
+
+Each sheet as SVG, PDF and PNG.  A3, 1:1 except the fitting guide at 1:2.
+
+Automated checks, all passing:
+
+- `scripts/check_sheets.py` -- text collisions, lines through text,
+  out-of-frame content, anything under the 2.5 mm ISO 3098 cap-height floor.
+- `scripts/verify_mounting_plate.py` -- every revision's fasteners fit, every
+  Pmod host lands on its plate position, no board overhangs, connector faces
+  clear the plate front edge.
+- Arc and outline checks inside `scripts/extract_tinytapeout.py`.
 
 18 sheets exist under `diagrams/`, as SVG, PDF and PNG:
 8 Tiny Tapeout revisions, 5 Raspberry Pi models (each with the Pmod HAT

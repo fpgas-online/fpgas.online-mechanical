@@ -2,6 +2,9 @@
 
 Status key: `[ ]` not started, `[~]` in progress, `[x]` done.
 
+Everything the request asked for is done. What remains is the second drawing
+review and whatever it turns up.
+
 ## 1. Data collection  -- DONE
 - [x] Tiny Tapeout: identify every mechanically distinct demo board revision
 - [x] Tiny Tapeout: extract outline / holes / Pmods / USB-C / 7-seg / LEDs from KiCad
