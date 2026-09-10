@@ -60,21 +60,45 @@ STANDARD_HOLES = [(3.5, 3.5), (61.5, 3.5), (3.5, 52.5), (61.5, 52.5)]
 #: Said on every model, whatever that model's own drawing gives, so one plate
 #: can be designed for all five.
 KEEPOUT_DESIGN_NOTE = (
-    "Design mounting hole keep-outs to 6.2 mm diameter on every model. That is "
-    "what the Raspberry Pi HAT mechanical specification (github.com/raspberrypi"
-    "/hats) requires around each hole, and it is the largest of the figures "
-    "the individual models publish. The KEEPOUT column gives what this model's "
-    "own drawing shows, which is not always anything."
+    "Design mounting hole keep-outs to 6.2 mm diameter on every model: that "
+    "is what the Raspberry Pi HAT specification (github.com/raspberrypi/hats) "
+    "requires, and the largest figure the models themselves publish. The "
+    "KEEPOUT column gives what this model's drawing shows, which is not "
+    "always anything."
 )
+
+#: The order features are numbered in, on every Raspberry Pi sheet.  Numbered
+#: in table order instead, a reader comparing two sheets had to check the
+#: schedule to see that balloon 2 meant the same connector on both.  A model
+#: that lacks one of these simply skips it; the rest keep their places
+#: relative to each other.
+FEATURE_ORDER = ["gpio40", "usb_power", "ethernet", "usb_a_1", "usb_a_2"]
+
+#: Features whose position is fixed by the Raspberry Pi HAT specification and
+#: so must be the same on every model.  Each model's own drawing is still read
+#: and the readings compared; agreeing within SHARED_TOL they are snapped to
+#: one value, and outside it the extraction stops.  The two DXF sources agree
+#: exactly; the Pi 5's vector PDF reads a few hundredths out, which is plot
+#: noise and not a different board.
+SHARED_FEATURES = {"gpio40": "fixed by the Raspberry Pi HAT specification"}
+SHARED_TOL = 0.10
 
 MODELS = [
     dict(
-        key="rpi3b", title="Raspberry Pi 3 Model B", subtitle="85 x 56 mm",
+        key="rpi3b", title="Raspberry Pi 3 Model B and B+",
+        subtitle="85 x 56 mm, both models",
         kind="dxf", file="raspberry-pi-3-b-mechanical-drawing.dxf",
+        # One sheet for two models.  Not asserted: the 3B+ drawing is read
+        # separately and its outline, holes and every feature position are
+        # required to match, so the sheet only covers both while they agree.
+        also=[("Raspberry Pi 3 Model B+",
+               "raspberry-pi-3-b-plus-mechanical-drawing.dxf",
+               f"{DOC}/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.dxf")],
         width=85.0, height=56.0, corner_radius=3.0,
         hole_dia=2.75, hole_keepout=None, hole_tol=0.05,
-        hole_note="Drawing note, quoted: 4x M2.5 MOUNTING HOLES DRILLED TO "
-                  "2.75 +/- 0.05mm.",
+        hole_note="Drawing note on the Model B drawing, quoted: 4x M2.5 "
+                  "MOUNTING HOLES DRILLED TO 2.75 +/- 0.05mm. The B+ drawing "
+                  "gives no hole size, but its geometry is identical.",
         hole_source=f"{DOC}/rpi3/raspberry-pi-3-b-mechanical-drawing.pdf",
         drawing=f"{DOC}/rpi3/raspberry-pi-3-b-mechanical-drawing.dxf",
         parts=[
@@ -83,30 +107,6 @@ MODELS = [
             ("usb_a_1", "USB 2.0 type A (upper pair)", "usb_a", (78.15, 46.61), (17.7, 13.92)),
             ("usb_a_2", "USB 2.0 type A (lower pair)", "usb_a", (78.15, 28.61), (17.7, 13.92)),
             ("usb_power", "micro-USB power input", "usb_power", (10.6, 2.05), (7.5, 5.31)),
-            ("hdmi", "HDMI type A", "connector", (32.0, 4.57), (14.5, 12.15)),
-            ("av", "3.5 mm A/V jack", "connector", (53.5, 6.25), (7.0, 12.5)),
-        ],
-    ),
-    dict(
-        key="rpi3bplus", title="Raspberry Pi 3 Model B+", subtitle="85 x 56 mm",
-        kind="dxf", file="raspberry-pi-3-b-plus-mechanical-drawing.dxf",
-        width=85.0, height=56.0, corner_radius=3.0,
-        hole_dia=2.75, hole_keepout=None, hole_tol=None,
-        hole_note="Carried over from the Pi 3 Model B drawing, which states "
-                  "4x M2.5 holes drilled to 2.75 +/-0.05 mm; the two boards "
-                  "share an identical outline, hole pattern and DXF geometry. "
-                  "The 3B+ drawing gives neither a hole size nor a tolerance, "
-                  "so the +/-0.05 is not repeated.",
-        hole_source=f"{DOC}/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.pdf",
-        drawing=f"{DOC}/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.dxf",
-        parts=[
-            ("gpio40", "40-pin GPIO header", "header", (32.5, 52.5), (50.8, 5.0)),
-            ("ethernet", "Ethernet RJ45", "ethernet", (76.3, 10.25), (21.35, 15.51)),
-            ("usb_a_1", "USB 2.0 type A (upper pair)", "usb_a", (78.15, 46.61), (17.7, 13.92)),
-            ("usb_a_2", "USB 2.0 type A (lower pair)", "usb_a", (78.15, 28.61), (17.7, 13.92)),
-            ("usb_power", "micro-USB power input", "usb_power", (10.6, 2.05), (7.5, 5.31)),
-            ("hdmi", "HDMI type A", "connector", (32.0, 4.57), (14.5, 12.15)),
-            ("av", "3.5 mm A/V jack", "connector", (53.5, 6.25), (7.0, 12.5)),
         ],
     ),
     dict(
@@ -123,9 +123,6 @@ MODELS = [
             ("usb_a_1", "USB 3.0 type A (upper pair)", "usb_a", (79.25, 27.34), (17.5, 13.82)),
             ("usb_a_2", "USB 2.0 type A (lower pair)", "usb_a", (79.15, 8.61), (17.7, 13.92)),
             ("usb_power", "USB-C power input", "usb_power", (11.2, 2.45), (8.65, 7.4)),
-            ("hdmi0", "micro-HDMI 0", "connector", (26.0, 2.55), (7.2, 7.95)),
-            ("hdmi1", "micro-HDMI 1", "connector", (39.5, 2.55), (7.2, 7.95)),
-            ("av", "3.5 mm A/V jack", "connector", (54.0, 6.25), (7.0, 12.5)),
         ],
     ),
     dict(
@@ -147,8 +144,6 @@ MODELS = [
             ("usb_a_1", "USB 3.0 type A (upper pair)", "usb_a", (79.1, 47.0), (16.32, 12.31)),
             ("usb_a_2", "USB 3.0 type A (lower pair)", "usb_a", (79.1, 29.1), (16.32, 12.31)),
             ("usb_power", "USB-C power input", "usb_power", (11.2, 2.35), (6.72, 7.3)),
-            ("hdmi0", "micro-HDMI 0", "connector", (25.80, 3.02), (6.49, 7.69)),
-            ("hdmi1", "micro-HDMI 1", "connector", (39.24, 3.02), (6.49, 7.69)),
         ],
     ),
 ]
@@ -262,6 +257,16 @@ def extract(model: dict) -> dict:
         features.append(dict(key=key, label=label, kind=kind,
                              x0=x0, y0=y0, x1=x1, y1=y1))
 
+    # One numbering across the whole family.  Unknown keys fail rather than
+    # sorting to the front, so adding a connector is a decision about where it
+    # belongs in the sequence and not an accident of table order.
+    unknown = [f["key"] for f in features if f["key"] not in FEATURE_ORDER]
+    if unknown:
+        raise SystemExit(
+            f"{model['key']}: {', '.join(unknown)} not in FEATURE_ORDER; "
+            "decide where they belong in the schedule")
+    features.sort(key=lambda f: FEATURE_ORDER.index(f["key"]))
+
     holes = []
     if model.get("holes_from_source"):
         for (x, y), dias in dxf_holes(path).items():
@@ -316,6 +321,13 @@ BOARDS: dict[str, BoardSpec] = {}
 
 def render(rec: dict) -> str:
     m = rec["model"]
+
+    def also_sources() -> str:
+        return "".join(
+            f'        Source(label="Mechanical drawing", ref={ref!r},\n'
+            f'               note={f"Raspberry Pi Ltd, {name}"!r}),\n'
+            for name, _, ref in m.get("also", ()))
+
     holes = ",\n".join(
         f"        Hole(x={h['x']}, y={h['y']}, dia={h['dia']}, "
         f"label={h['label']!r}, kind={h['kind']!r}, "
@@ -334,6 +346,20 @@ def render(rec: dict) -> str:
              repr("Hole IDs are assigned by this drawing, bottom row first "
                   "then left to right, and mean the same thing on every "
                   "Raspberry Pi sheet here.")]
+    for name, _, _ in m.get("also", ()):
+        notes.append(repr(
+            f"This sheet covers the {m['title'].split(' and ')[0]} and the "
+            f"{name}. Every connector position was read from both drawings "
+            "separately and required to match, so the sheet covers both only "
+            "while they agree."))
+    for key, spread in rec.get("shared_spreads", {}).items():
+        label = next((f["label"] for f in rec["features"] if f["key"] == key),
+                     key)
+        notes.append(repr(
+            f"The {label} is {SHARED_FEATURES[key]} and carries the same "
+            "position on every Raspberry Pi sheet here. The drawings were "
+            f"read separately, agreed to {spread:.3f} mm, and were snapped to "
+            "one value."))
     notes.append(repr(KEEPOUT_DESIGN_NOTE))
     if m.get("hole_tol"):
         # The schedule's figure is tighter than the sheet's general block, and
@@ -388,7 +414,7 @@ BOARDS[{m["key"]!r}] = BoardSpec(
     sources=(
         Source(label="Mechanical drawing", ref={m["drawing"]!r},
                note="Raspberry Pi Ltd"),
-        Source(label="Mounting holes", ref={m["hole_source"]!r},
+{also_sources()}        Source(label="Mounting holes", ref={m["hole_source"]!r},
                note={m["hole_note"]!r}),
     ),
     notes=(
@@ -398,14 +424,93 @@ BOARDS[{m["key"]!r}] = BoardSpec(
 '''
 
 
+def cross_check(model: dict, rec: dict) -> None:
+    """Re-read a second drawing and require identical geometry.
+
+    A sheet that covers two models has to be able to say why.  Reading the
+    other model's own drawing and comparing every number is the only thing
+    that entitles it to; the alternative is a note asserting the two are the
+    same, which is a claim rather than a check.
+    """
+    for name, filename, _ in model.get("also", ()):
+        other = extract(dict(model, file=filename, also=()))
+        # Only what is actually read out of the drawing is worth comparing.
+        # The outline size is declared in the table above, so comparing it
+        # would be comparing this file with itself.
+        mine = sorted((h["x"], h["y"], h["dia"]) for h in rec["holes"])
+        theirs = sorted((h["x"], h["y"], h["dia"]) for h in other["holes"])
+        if mine != theirs:
+            raise SystemExit(
+                f"{model['key']}: {name} has a different hole pattern. "
+                "It needs its own sheet.")
+        mine = {f["key"]: (f["x0"], f["y0"], f["x1"], f["y1"])
+                for f in rec["features"]}
+        theirs = {f["key"]: (f["x0"], f["y0"], f["x1"], f["y1"])
+                  for f in other["features"]}
+        if mine != theirs:
+            differ = sorted(k for k in set(mine) | set(theirs)
+                            if mine.get(k) != theirs.get(k))
+            raise SystemExit(
+                f"{model['key']}: {name} differs at {', '.join(differ)}. "
+                "It needs its own sheet.")
+
+
+def snap_shared(records: list[dict]) -> dict[str, float]:
+    """Give the HAT-specified features one position across every model.
+
+    Returns the worst disagreement seen per feature, so the sheets can say how
+    far the sources were apart before they were snapped rather than presenting
+    a shared number as though every drawing had stated it.
+    """
+    spreads: dict[str, float] = {}
+    for key in SHARED_FEATURES:
+        boxes = {}
+        for rec in records:
+            for f in rec["features"]:
+                if f["key"] == key:
+                    boxes[rec["model"]["key"]] = (f["x0"], f["y0"],
+                                                  f["x1"], f["y1"])
+        if len(boxes) < 2:
+            continue
+        spread = max(abs(a - b)
+                     for one in boxes.values() for other in boxes.values()
+                     for a, b in zip(one, other))
+        if spread > SHARED_TOL:
+            worst = ", ".join(f"{k} {v}" for k, v in sorted(boxes.items()))
+            raise SystemExit(
+                f"{key} is {SHARED_FEATURES[key]} but the drawings disagree "
+                f"by {spread:.3f} mm, over the {SHARED_TOL} mm allowed: "
+                f"{worst}. Check the sources before snapping them together.")
+        # The value the most sources agree on, which is the DXF-derived one:
+        # two independent DXFs give it exactly, the PDF a few hundredths out.
+        common = max(set(boxes.values()), key=list(boxes.values()).count)
+        for rec in records:
+            for f in rec["features"]:
+                if f["key"] == key:
+                    f["x0"], f["y0"], f["x1"], f["y1"] = common
+        spreads[key] = spread
+    return spreads
+
+
 def main() -> None:
-    chunks = [HEADER]
+    records = []
     for model in MODELS:
         rec = extract(model)
+        cross_check(model, rec)
+        records.append(rec)
+    spreads = snap_shared(records)
+
+    chunks = [HEADER]
+    for rec in records:
+        model = rec["model"]
+        rec["shared_spreads"] = spreads
         chunks.append(render(rec))
         print(f"{model['key']:11s} {model['width']:5.1f} x {model['height']:4.1f} mm  "
               f"{len(rec['holes'])} holes  {len(rec['features'])} features  "
               f"scale={rec['scale']:.4f}")
+    for key, spread in spreads.items():
+        print(f"  {key}: snapped across {len(records)} models, "
+              f"sources agreed to {spread:.3f} mm")
     (ROOT / "data" / "raspberry_pi_boards.py").write_text("".join(chunks))
     print("wrote data/raspberry_pi_boards.py")
 

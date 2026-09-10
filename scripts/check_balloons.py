@@ -96,15 +96,15 @@ def _crossed(tip, centre, obstacles, samples: int = 200) -> list[str]:
             if v >= MIN_RUN_MM]
 
 
-#: Crossings that no placement can avoid, as {sheet: {balloon labels}}.  On
-#: both these boards the micro-HDMI connectors sit underneath the Pmod HAT
-#: Adapter's host JC, so a leader from them crosses the host whichever way it
-#: leaves.  Listed per balloon rather than as a count, so a new crossing
-#: somewhere else on the same sheet is still caught.
-ACCEPTED = {
-    "raspberry-pi/rpi4b": {"6"},
-    "raspberry-pi/rpi5": {"6"},
-}
+#: Crossings that no placement can avoid, as {sheet: {balloon labels}}.
+#: Listed per balloon rather than as a count, so a new crossing somewhere else
+#: on the same sheet is still caught.
+#:
+#: Empty at present.  The two entries that used to be here were the micro-HDMI
+#: connectors on the Pi 4B and Pi 5, which sit underneath the Pmod HAT
+#: Adapter's host JC; those connectors are no longer drawn, so the crossing
+#: they forced is gone with them.
+ACCEPTED: dict[str, set[str]] = {}
 
 
 def _on_a_feature(items, placed, obstacles) -> set[str]:

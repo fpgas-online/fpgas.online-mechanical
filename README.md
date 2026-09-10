@@ -44,17 +44,13 @@ a full-resolution PNG.
 
 | <a href="diagrams/tinytapeout/tt-demo-board-v3p2.pdf"><img src="diagrams/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-07 Tiny Tapeout Demo Board v3"></a> | <a href="diagrams/tinytapeout/tt-demo-board-v3p3.pdf"><img src="diagrams/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-08 Tiny Tapeout Demo Board v3"></a> |  |
 |---|---|---|
-| **TT-DB-07** Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.2 | **TT-DB-08** Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.3 |  |
+| **TT-DB-07** Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.2 (ETR) | **TT-DB-08** Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.3 |  |
 
 ### Raspberry Pi, with a Digilent Pmod HAT Adapter overlaid
 
-| <a href="diagrams/raspberry-pi/rpi3b.pdf"><img src="diagrams/previews/rpi3b.png" width="270" alt="RPI-01 Raspberry Pi 3 Model B"></a> | <a href="diagrams/raspberry-pi/rpi3bplus.pdf"><img src="diagrams/previews/rpi3bplus.png" width="270" alt="RPI-02 Raspberry Pi 3 Model B+"></a> | <a href="diagrams/raspberry-pi/rpi4b.pdf"><img src="diagrams/previews/rpi4b.png" width="270" alt="RPI-03 Raspberry Pi 4 Model B"></a> |
+| <a href="diagrams/raspberry-pi/rpi3b.pdf"><img src="diagrams/previews/rpi3b.png" width="270" alt="RPI-01 Raspberry Pi 3 Model B and B+"></a> | <a href="diagrams/raspberry-pi/rpi4b.pdf"><img src="diagrams/previews/rpi4b.png" width="270" alt="RPI-02 Raspberry Pi 4 Model B"></a> | <a href="diagrams/raspberry-pi/rpi5.pdf"><img src="diagrams/previews/rpi5.png" width="270" alt="RPI-03 Raspberry Pi 5"></a> |
 |---|---|---|
-| **RPI-01** Raspberry Pi 3 Model B<br>85 x 56 mm | **RPI-02** Raspberry Pi 3 Model B+<br>85 x 56 mm | **RPI-03** Raspberry Pi 4 Model B<br>85 x 56 mm |
-
-| <a href="diagrams/raspberry-pi/rpi5.pdf"><img src="diagrams/previews/rpi5.png" width="270" alt="RPI-04 Raspberry Pi 5"></a> |  |  |
-|---|---|---|
-| **RPI-04** Raspberry Pi 5<br>85 x 56 mm |  |  |
+| **RPI-01** Raspberry Pi 3 Model B and B+<br>85 x 56 mm, both models | **RPI-02** Raspberry Pi 4 Model B<br>85 x 56 mm | **RPI-03** Raspberry Pi 5<br>85 x 56 mm |
 
 ### Accessories
 

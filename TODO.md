@@ -27,7 +27,8 @@ phantom Pmod host JC; that is a physical overlap, not a placement fault, and
 
 ## 3. Diagrams  -- DONE
 - [x] Tiny Tapeout demo boards, 8 sheets, one per production revision
-- [x] Raspberry Pi 3B / 3B+ / 4B / 5  (the 3A+ was dropped on request)
+- [x] Raspberry Pi 3B/3B+ (combined) / 4B / 5  (the 3A+ was dropped on
+      request; HDMI and audio connectors dropped on request)
 - [x] Raspberry Pi + Digilent Pmod HAT Adapter overlay, on every Pi sheet
 - [x] Digilent Pmod HAT Adapter on its own
 - [x] Generic PoE -> micro-USB splitter

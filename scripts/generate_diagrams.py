@@ -33,7 +33,7 @@ OUT = ROOT / "diagrams"
 # read in.  Numbers are stable so a reference to a drawing keeps working.
 TT_ORDER = ["tt123-v2.2.6", "v1.2.2", "v1.2.3", "v2.0.1", "v2.1.0", "v2.1.2",
             "v3.2", "v3.3"]
-RPI_ORDER = ["rpi3b", "rpi3bplus", "rpi4b", "rpi5"]
+RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
 
 TT_NOTES = (
     "The Pmod host headers along the lower edge are what a mounting plate has "
@@ -43,10 +43,11 @@ TT_NOTES = (
 )
 
 RPI_NOTES = (
-    "Pmod host JC on the Pmod HAT Adapter overhangs the lower board edge in "
-    "the same region as this board's HDMI and power connectors. Digilent's "
-    "own reference manual warns to fit the two standoffs opposite the 40-pin "
-    "connector so that JC's pins cannot touch the HDMI shell.",
+    "Pmod host JC on the Pmod HAT Adapter overhangs the lower board edge, "
+    "where these boards carry their HDMI and power connectors. Digilent's "
+    "manual warns to fit the two standoffs opposite the 40-pin connector so "
+    "JC's pins cannot touch the HDMI shell. The HDMI connectors are not "
+    "drawn here.",
 )
 
 

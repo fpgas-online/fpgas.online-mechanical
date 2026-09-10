@@ -80,7 +80,7 @@ All source data is now in `data/`:
 |------|----------|------------|
 | `data/schema.py` | frozen dataclasses, coordinate convention | no |
 | `data/tinytapeout_boards.py` | 8 Tiny Tapeout demo board revisions | yes, from KiCad |
-| `data/raspberry_pi_boards.py` | Pi 3B, 3B+, 4B, 5 | yes, from DXF/PDF |
+| `data/raspberry_pi_boards.py` | Pi 3B/3B+ (one sheet), 4B, 5 | yes, from DXF/PDF |
 | `data/accessories.py` | Pmod spec, Pmod HAT Adapter, 2 PoE splitters | no, hand-curated |
 
 ## Sources found so far
@@ -507,3 +507,30 @@ Drawing review, round 4, all findings acted on:
   per-model flag: a flag has to be remembered, and a reduced source added later
   would otherwise be described as 1:1 by a sheet that never noticed.  The
   Raspberry Pi sheets renumbered from RPI-01..05 to RPI-01..04.
+
+## Changes after the reviews
+
+- **v3.2 has shipped.**  It said otherwise because the historic README, which
+  is where every other revision's shuttle mapping comes from, does not carry
+  it.  Tiny Tapeout's own board revision spreadsheet does: TT09, TTSKY25a,
+  TTSKY25b, TTGF0p2, and the name "ETR".  A revision can now cite its own
+  shuttle source instead of every sheet pointing at one document.
+- **Mounting holes are numbered in board-version order**, so each revision's
+  set is contiguous.  Numbered spatially, one board's pattern was H1, H3, H9,
+  H10.
+- **The USB-C is marked on the plate**, one outline per revision.  It moves
+  further between revisions than anything else on these boards.
+- **TT01-03's two Pmod hosts already aligned** with the later boards' second
+  and third.  The fitting guide said "3 Pmods starting at position 1" and left
+  the reader to work it out; it lists the plate positions now.
+- **HDMI and audio dropped from the Raspberry Pi sheets**, on request.  That
+  removed the two accepted balloon crossings with them: the micro-HDMI
+  connectors were what forced a leader across Pmod host JC.
+- **Pi 3B and 3B+ are one sheet.**  Not asserted: both drawings are read and
+  every connector position required to match, so the sheet covers both only
+  while they agree.
+- **One feature numbering across the Raspberry Pi family**, and the 40-pin
+  GPIO header in one position on every sheet.  The two DXFs agreed exactly and
+  the Pi 5's PDF read 0.060 mm out, which is plot noise; the readings are
+  checked against a tolerance and snapped, and the sheets say so rather than
+  presenting a shared number as though each drawing had stated it.

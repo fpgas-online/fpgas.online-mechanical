@@ -611,7 +611,10 @@ def _pcb_material(o) -> str:
 
 
 #: How tall one legend row is, and how long its line sample is.
-LEGEND_ROW = 5.2
+# 4.8 for 2.5 mm capitals: 2.3 mm of leading, which is comfortable for a
+# list of one-line entries and gives the notes back a few millimetres of
+# column on the fullest sheets.
+LEGEND_ROW = 4.8
 # Long enough to show a full period of the longest dash pattern: at 14 mm the
 # chain-dot and the chain-double-dot samples were indistinguishable, which
 # defeats the point of a legend.
@@ -701,17 +704,16 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
     ]
     if overlay is not None:
         notes.append(
-            f"Phantom outline is the {overlay.title} fitted to the 40-pin GPIO "
-            "header, drawn in this board's frame because its mounting holes "
-            "coincide with this board's.")
+            f"Phantom outline is the {overlay.title} on the 40-pin GPIO "
+            "header, drawn in this board's frame: its mounting holes coincide "
+            "with this board's.")
     notes += list(spec.notes) + list(extra_notes)
     if overlay is not None:
         notes.append(
             "Those host positions are DERIVED, not published: Digilent issue "
             "no mechanical drawing for the adapter. Good to about +/-0.75 mm. "
-            "JA and JB face out of the left edge, JC out of the lower edge, "
-            "all right-angle hosts whose bodies overhang the edge. The Pmod "
-            "HAT Adapter sheet has the derivation.")
+            "JA and JB face out of the left edge, JC out of the lower edge. "
+            "The Pmod HAT Adapter sheet has the derivation.")
     if spec.pmods:
         notes.append(
             "The chain-double-dot rectangle at each Pmod host is the "
@@ -723,10 +725,10 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
             "rest of this sheet. Rounded to two, adjacent hosts print 22.85 "
             "apart and contradict the 22.86 pitch dimensioned here.")
         notes.append(
-            "Port names differ by family: JA, JB, JC after Digilent on the "
-            "adapter and Raspberry Pi sheets; by signal direction on the demo "
-            "boards, after the silkscreen; PMOD 1 to 3 on the plate sheets, "
-            "which number plate positions. TT-MP-02 maps them.")
+            "Port names differ by family: JA, JB, JC after Digilent here and "
+            "on the adapter; by signal direction on the demo boards; PMOD 1 "
+            "to 3 on the plate sheets, which number positions. TT-MP-02 maps "
+            "them.")
     if o.thickness:
         nominal = _nominal_thickness(o)
         if nominal is not None:
@@ -804,12 +806,15 @@ def notes_spill_needed(sheet: Sheet, notes: list[str], sources: list[str],
         return 0.0
     spare = sheet.column_remaining
     h = 20.0
+    # Two millimetre steps, not four: the search returns the first height that
+    # works, so the step size is wasted space, and on the Pi 3B sheet that
+    # waste was the difference between fitting and not.
     while h <= spare:
         probe = Rect(sheet.column.x, sheet.column.y,
                      sheet.column.w - sheet.COLUMN_GUTTER, h)
         if sheet.notes_columns(cols + [probe], blocks, dry=True):
             return h
-        h += 4.0
+        h += 2.0
     return spare
 
 

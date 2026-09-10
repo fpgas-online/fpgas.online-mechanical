@@ -376,27 +376,27 @@
 <line x1="278.1522" y1="107.4222" x2="278.1522" y2="146.3111" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="155.8111" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
 <line x1="243" y1="157.2111" x2="405" y2="157.2111" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<line x1="243" y1="162.0111" x2="263" y2="162.0111" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
-<text x="266" y="163.2611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate edge</text>
-<circle cx="253" cy="167.2111" r="1.7" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
-<line x1="250.1" y1="167.2111" x2="255.9" y2="167.2111" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="253" y1="170.1111" x2="253" y2="164.3111" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="266" y="168.4611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole or slot for a demo board fastener</text>
-<circle cx="253" cy="172.4111" r="1.7" fill="#ffffff" stroke="#006060" stroke-width="0.5"/>
-<line x1="250.1" y1="172.4111" x2="255.9" y2="172.4111" stroke="#006060" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="253" y1="175.3111" x2="253" y2="169.5111" stroke="#006060" stroke-width="0.25" stroke-linecap="round"/>
-<text x="266" y="173.6611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate fixing, into the chassis</text>
-<line x1="243" y1="177.6111" x2="263" y2="177.6111" stroke="#000000" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="3.2,1.2,0.6,1.2"/>
-<text x="266" y="178.8611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Slot axis</text>
-<line x1="243" y1="182.8111" x2="263" y2="182.8111" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
-<text x="266" y="184.0611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host pin field, where a board&#x27;s hosts land</text>
-<line x1="243" y1="188.0111" x2="263" y2="188.0111" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<text x="266" y="189.2611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod connector body, overhanging the front edge</text>
-<line x1="243" y1="193.2111" x2="263" y2="193.2111" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<text x="266" y="194.4611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USB-C connector, one position per board version</text>
-<line x1="243" y1="198.4111" x2="263" y2="198.4111" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="263,198.4111 260,197.5111 260,199.3111" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="266" y="199.6611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
+<line x1="243" y1="161.8111" x2="263" y2="161.8111" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="266" y="163.0611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate edge</text>
+<circle cx="253" cy="166.6111" r="1.7" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
+<line x1="250.1" y1="166.6111" x2="255.9" y2="166.6111" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="253" y1="169.5111" x2="253" y2="163.7111" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="266" y="167.8611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole or slot for a demo board fastener</text>
+<circle cx="253" cy="171.4111" r="1.7" fill="#ffffff" stroke="#006060" stroke-width="0.5"/>
+<line x1="250.1" y1="171.4111" x2="255.9" y2="171.4111" stroke="#006060" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="253" y1="174.3111" x2="253" y2="168.5111" stroke="#006060" stroke-width="0.25" stroke-linecap="round"/>
+<text x="266" y="172.6611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate fixing, into the chassis</text>
+<line x1="243" y1="176.2111" x2="263" y2="176.2111" stroke="#000000" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="3.2,1.2,0.6,1.2"/>
+<text x="266" y="177.4611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Slot axis</text>
+<line x1="243" y1="181.0111" x2="263" y2="181.0111" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
+<text x="266" y="182.2611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host pin field, where a board&#x27;s hosts land</text>
+<line x1="243" y1="185.8111" x2="263" y2="185.8111" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="187.0611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod connector body, overhanging the front edge</text>
+<line x1="243" y1="190.6111" x2="263" y2="190.6111" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="191.8611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USB-C connector, one position per board version</text>
+<line x1="243" y1="195.4111" x2="263" y2="195.4111" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="263,195.4111 260,194.5111 260,196.3111" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="266" y="196.6611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
 <text x="24" y="180.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
 <line x1="24" y1="181.9" x2="125.5" y2="181.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="24" y="186.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
