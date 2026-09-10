@@ -66,24 +66,37 @@ def groups() -> list[tuple[str, str, list[tuple[str, str, str, str]]]]:
 
 
 def grid() -> str:
+    """One HTML table per family, three equal columns.
+
+    Not a Markdown table.  Markdown gives no way to set a column width, and
+    the renderer sizes columns to their content, so the cell with the longest
+    caption won the width and showed its preview at the full CELL_WIDTH while
+    the others were squeezed narrower by the image's own max-width rule -- the
+    first thumbnail came out visibly bigger than the two beside it.  A
+    Markdown table also needs a header row, so a group of eight sheets became
+    three separate tables with gaps between them rather than one grid.
+    """
     out = ["Each thumbnail links to the PDF. The same sheet is also there as "
            "SVG and as", "a full-resolution PNG.", ""]
+    width = f"{100 // COLUMNS}%"
     for heading, folder, rows in groups():
-        out += [f"### {heading}", ""]
+        out += [f"### {heading}", "", "<table>"]
         for i in range(0, len(rows), COLUMNS):
-            chunk = rows[i:i + COLUMNS]
-            cells, caps = [], []
-            for no, stem, title, sub in chunk:
+            out.append("<tr>")
+            for j in range(COLUMNS):
+                if i + j >= len(rows):
+                    out.append(f'<td width="{width}"></td>')
+                    continue
+                no, stem, title, sub = rows[i + j]
                 img = f"diagrams/previews/{stem}.png"
                 pdf = f"diagrams/{folder}/{stem}.pdf"
-                cells.append(f'<a href="{pdf}"><img src="{img}" '
-                             f'width="{CELL_WIDTH}" alt="{no} {title}"></a>')
-                caps.append(f"**{no}** {title}<br>{sub}")
-            pad = [""] * (COLUMNS - len(chunk))
-            out.append("| " + " | ".join(cells + pad) + " |")
-            out.append("|" + "---|" * COLUMNS)
-            out.append("| " + " | ".join(caps + pad) + " |")
-            out.append("")
+                out.append(f'<td width="{width}" valign="top" align="center">')
+                out.append(f'<a href="{pdf}"><img src="{img}" '
+                           f'width="{CELL_WIDTH}" alt="{no} {title}"></a><br>')
+                out.append(f'<b>{no}</b> {title}<br>{sub}')
+                out.append("</td>")
+            out.append("</tr>")
+        out += ["</table>", ""]
     return "\n".join(out).rstrip() + "\n"
 
 
