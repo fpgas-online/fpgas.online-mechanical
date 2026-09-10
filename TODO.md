@@ -2,8 +2,10 @@
 
 Status key: `[ ]` not started, `[~]` in progress, `[x]` done.
 
-Everything the request asked for is done. What remains is the second drawing
-review and whatever it turns up.
+Everything the request asked for is done, and both rounds of both reviews have
+been acted on. Two balloon leaders on the Pi 4B and Pi 5 still cross the
+phantom Pmod host JC; that is a physical overlap, not a placement fault, and
+`scripts/check_balloons.py` reports it every run.
 
 ## 1. Data collection  -- DONE
 - [x] Tiny Tapeout: identify every mechanically distinct demo board revision
@@ -42,13 +44,17 @@ review and whatever it turns up.
 - [x] Sub-agent code review, round 1 -- acted on
 - [x] Sub-agent mechanical drawing review, round 1 -- acted on
 - [x] Sub-agent code review, round 2 -- acted on
-- [~] Sub-agent mechanical drawing review, round 2
+- [x] Sub-agent mechanical drawing review, round 2 -- acted on
+      (S-2/M-8 fitting guide, M-13 PoE sheets, m-2 slot lengths, m-3 USED BY
+      key, m-4 ISO 128 line types, m-7 balloon leaders)
 - [x] Automated sheet checker (`scripts/check_sheets.py`): text collisions,
       out-of-frame content, text under the 2.5 mm ISO 3098 floor
 - [x] Automated arc check in the extractor: a resolved arc must pass through
       the point KiCad puts on it
 - [x] `scripts/verify_mounting_plate.py`: proves the finished plate accepts
       every revision, with a real M3 fastener clearance check
+- [x] `scripts/check_balloons.py`: reports every balloon leader that crosses a
+      hard obstacle, and by how much
 
 ## 6. Repository
 - [x] README explaining what is here and how the numbers were obtained

@@ -279,6 +279,57 @@ Drawing review, round 1:
 - Pi 4B hole IDs were in a different order from every other Pi.
 - Balloon leaders routed through neighbouring features.
 
+Drawing review, round 2:
+
+- **S-2 / M-8: the fitting guide did not say what a group was.**  The captions
+  gave only "TT01-03"; they now name the board revisions and shuttles in the
+  group, label the holes and slots that group uses, and cross-reference the
+  hole table on TT-MP-01.
+- **M-13: the PoE splitter sheets.**  The RJ45 aperture had no X position in
+  the end view; the aperture dimensions were quoted as if measured; the plan's
+  dimensions were split above and below the view and stacked longest first.
+  All four are photo-scaled, so they are now marked REF with the figure they
+  are good to in a note, and each view has one dimension stack per axis:
+  size nearest the view, then location, then overall.
+- **m-2 / m-3: the plate hole table.**  Slots had no length, and the USED BY
+  column mixed shuttle ranges with board revisions without saying so.  A LENGTH
+  column and a key note, the key generated from the data.
+- **m-4: line types had drifted.**  Six hand-written dash arrays, and the
+  fitting guide's board outlines were chain-dot, which is a centre line.  Named
+  D_CENTRE / D_PHANTOM / D_HIDDEN now carry one meaning each.
+- **m-7: balloon leaders ruled across the phantom Pmod hosts.**  See below;
+  this one went deep.
+
+## Balloon placement, what was actually wrong
+
+Chasing m-7 turned up five separate mis-prices in the placer, not one:
+
+- The leader could only start at the feature's centre.  On the Pi 3 sheets the
+  micro-USB sits under host JC, so every leader from its centre crossed JC.  A
+  leader may now anchor anywhere on its feature.
+- Every obstacle cost the same.  A leader across a connector outline is untidy;
+  a leader across another balloon, another leader or a phantom host is
+  unreadable.  Obstacles carry a weight now.
+- A leader was charged for crossing its own feature, which every leader has to
+  start on, so the balloon got wedged into whatever gap was nearest.
+- The board outline was charged to leaders as well as to balloons.  A leader
+  crossing the outline is how a balloon in the margin points at a part on the
+  board; only the balloon itself must keep off the line.
+- The ordinate witness lines are drawn after the balloons and so were invisible
+  to the placer.  A balloon sat on one, which is what `check_sheets` was
+  reporting.
+
+One more, found by the new checker rather than by eye: a Pmod host's label
+reserved the pin field's **full height** for a two-letter label, walling off
+the diagonal every leader from the lower-left corner wanted to take.  Sizing
+that box to the text took the crossings from 8 to 2.
+
+The two that remain are the same physical case on the Pi 4B and Pi 5: the
+micro-HDMI connectors sit directly beneath host JC, so a leader from them
+crosses the host whichever way it leaves.  Note 8 on those sheets says so.
+`scripts/check_balloons.py` reports it every run rather than letting it pass
+unremarked.
+
 ## Things that did not work
 
 - `curl` without `-L` against `datasheets.raspberrypi.com` returns a 301 with a
@@ -306,3 +357,17 @@ Drawing review, round 1:
 - Trying to pull the Digilent image out of a Playwright page with `fetch()` or
   a canvas both failed, on CSP and then on a hang.  Plain `curl` with the right
   headers was the answer.
+
+- **Making the board outline a hard obstacle for leaders as well as balloons**
+  pushed three balloons back onto the connectors they pointed at.  A leader
+  crossing the outline is normal; only the balloon must keep off it.  The two
+  costs had to be separated.
+- **Letting a leader off scot-free for crossing its own feature** then let the
+  balloon sit on top of that feature, because sitting on it had become the
+  cheapest option.  The exemption belongs to the leader only.
+- Widening the notes on the mounting plate and PoE sheets overflowed the notes
+  band, which fails loudly rather than trimming.  Both times the fix was to
+  cut prose, not to shrink the type.
+- Writing a tolerance inline on a short dimension (`17.00 +/-1.5`) makes the
+  value wider than the feature it dimensions, so the extension lines run
+  through it.  REF plus a note is both shorter and the correct notation.
