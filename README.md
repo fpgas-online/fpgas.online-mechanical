@@ -26,23 +26,30 @@ Each sheet is written as SVG, PDF and PNG. A3, mostly 1:1.
 ## Regenerating
 
 ```sh
-scripts/fetch_raspberry_pi.sh                       # official Pi drawings
-git clone https://github.com/TinyTapeout/tt-demo-pcb    tmp/src/tt-demo-pcb
-git clone https://github.com/TinyTapeout/tt123-demo-pcb tmp/src/tt123-demo-pcb
-
-uv run --no-project python scripts/extract_tinytapeout.py
-uv run --no-project --with ezdxf --with pdfplumber python scripts/extract_raspberry_pi.py
-uv run --no-project python scripts/design_mounting_plate.py
-uv run --no-project --with pillow python scripts/generate_diagrams.py
-uv run --no-project --with ezdxf python scripts/export_plate_dxf.py
-uv run --no-project --with pillow python scripts/check_sheets.py
+make fetch     # download the upstream sources into tmp/, once
+make data      # re-extract the mechanical database from them
+make check     # render every sheet, then run both checks
 ```
 
-`check_sheets.py` re-reads the generated SVGs, recomputes every text bounding
-box from the same font metrics the layout used, and reports text that collides,
-falls outside the frame, or drops below the 2.5 mm ISO 3098 floor. It found the
-notes block running through the sources heading on four of the Raspberry Pi
-sheets, which is not obvious at screen size.
+Rebuilding is deterministic: re-running the whole pipeline leaves the SVGs,
+PNGs and data modules byte-identical. Only the PDFs and the DXF change, because
+both formats embed a creation timestamp.
+
+Two checks run over the output, and each has caught a real defect:
+
+- `check_sheets.py` re-reads the generated SVGs, recomputes every text bounding
+  box from the same font metrics the layout used, and reports text that
+  collides, has a line running through it, falls outside the frame, or drops
+  below the 2.5 mm ISO 3098 floor. It found the notes block printing over the
+  sources heading on four Raspberry Pi sheets, a datum leader running back
+  through its own text, and overall dimension extension lines crossing the
+  ordinate labels.
+- `verify_mounting_plate.py` proves the plate does what it claims, from the
+  data rather than from the drawing: every revision's fasteners pass an M3,
+  every Pmod host lands exactly on its plate position, no board overhangs, and
+  the connector faces clear the front edge. It found that two revisions wanting
+  a fastener 0.613 mm apart had been merged into one 3.40 mm hole, which no M3
+  screw actually fits.
 
 ## How the numbers were obtained
 
