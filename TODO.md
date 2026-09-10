@@ -2,8 +2,8 @@
 
 Status key: `[ ]` not started, `[~]` in progress, `[x]` done.
 
-Everything the request asked for is done, and both rounds of both reviews have
-been acted on. Two balloon leaders on the Pi 4B and Pi 5 still cross the
+Everything the request asked for is done, and all three rounds of both reviews
+have been acted on. Two balloon leaders on the Pi 4B and Pi 5 still cross the
 phantom Pmod host JC; that is a physical overlap, not a placement fault, and
 `scripts/check_balloons.py` reports it every run.
 
@@ -47,6 +47,10 @@ phantom Pmod host JC; that is a physical overlap, not a placement fault, and
 - [x] Sub-agent mechanical drawing review, round 2 -- acted on
       (S-2/M-8 fitting guide, M-13 PoE sheets, m-2 slot lengths, m-3 USED BY
       key, m-4 ISO 128 line types, m-7 balloon leaders)
+- [x] Sub-agent code review, round 3 -- acted on
+- [x] Sub-agent mechanical drawing review, round 3 -- all 20 findings acted on
+      (dimension placement, note and title block contradictions, label
+      ownership, legends, ISO 5457 frame, URL breaking, lettering sizes)
 - [x] Automated sheet checker (`scripts/check_sheets.py`): text collisions,
       out-of-frame content, text under the 2.5 mm ISO 3098 floor
 - [x] Automated arc check in the extractor: a resolved arc must pass through

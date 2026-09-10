@@ -333,6 +333,61 @@ of board-specific notes before it differs; cite it by its opening words, not by
 number.  `scripts/check_balloons.py` now lists those two crossings as accepted
 by balloon, and fails on any other.
 
+Code review, round 3:
+
+- **The REF tolerance note on the Waveshare sheet was wrong.**  It quoted
+  "+/-1.5 mm to +/-2.0 mm"; the 2.0 belonged to the captive output cable, a
+  feature that carries a tolerance but is not dimensioned anywhere on the
+  sheet.  One definition now decides both which values are marked REF and what
+  the note says about them.
+- **Neither SVG-level check could fail a build.**  Both printed their findings
+  and exited 0.  `check_sheets.py` exits 1 on any problem now, and
+  `check_balloons.py` gates against a baseline listed per sheet and per
+  balloon so a new crossing is caught even on a sheet that already has one.
+- A balloon's own feature was exempted from its leader's obstacle set by
+  comparing rectangles by value, not by index.
+- `flip_text` had never been passed by any caller.
+
+Drawing review, round 3, all twenty findings acted on:
+
+- **Three dimensions pointed at nothing or at the wrong thing.**  The Pmod
+  setback ran on a fixed lane that went through MT2 on the v3 boards and MT3
+  on the adapter, with its value printed across the pin field.  The ordinate
+  witness line locating the Pmod hosts on the Pi sheets stopped six
+  millimetres short of the host, because it started inside the host's own body
+  and the break logic removed the first stretch.
+- **Notes and title blocks contradicted their own sheets.**  Note 9 on the
+  plate named H2/H3, 78 mm apart, for a 1.59 mm web that is between H1 and H2.
+  The v3 sheets were titled "(ETR)", an acronym defined nowhere and absent
+  from the KiCad title block.  ACC-01 claimed +/-0.20 on a board whose host
+  positions its own note says are +/-0.75.  ACC-03 called its envelope a
+  maximum while a note said gigabit variants are 15 mm longer.  TT-MP-01 and
+  TT-MP-02 carried different tolerances for one part.  The Model B's hole
+  tolerance had been carried onto two drawings that state none.
+- **Labels read as belonging to the wrong feature.**  "H3" and "PMOD 1"
+  printed as one word; H3 and slot S1 had swapped over each other's features;
+  two labels from neighbouring fitting-guide views landed on each other.
+- **baseline="middle" was off by a whole cap height**, so every balloon digit
+  sat high in its circle and every rotated ordinate label sat off its witness
+  line.  Found only after moving the frame to ISO 5457 margins pushed the zone
+  digits outside the trim line.
+- Meaning was carried by colour alone with no key on any sheet; there is a
+  legend on all eighteen now.
+- Making room for what the sheets had to say needed the notes band to spill
+  into the annotation column's dead space, and that exposed `notes_columns`'
+  dry pass drawing its "(continued)" headings.
+
+## What the third review asked for and did not get
+
+- **Bigger views.**  The board sheets stay at 1:1 so an A3 print can be laid
+  on the board; a 104 mm board on a 420 mm sheet leaves white space whatever
+  is done with it.  What that space is for is now the notes, the sources and
+  the legend.  Where a scale really was inconsistent -- the two PoE splitter
+  sheets, the smaller drawn at half the size of the larger -- it is fixed.
+- **A revision history block.**  Every sheet is Rev A, first issue, and the
+  date is in the title block; a one-row history would say nothing the title
+  block does not.  Worth adding at the first revision, not before.
+
 ## Things that did not work
 
 - `curl` without `-L` against `datasheets.raspberrypi.com` returns a 301 with a
@@ -374,3 +429,15 @@ by balloon, and fails on any other.
 - Writing a tolerance inline on a short dimension (`17.00 +/-1.5`) makes the
   value wider than the feature it dimensions, so the extension lines run
   through it.  REF plus a note is both shorter and the correct notation.
+
+- **Adding notes is not free.**  Four rounds of "the notes will not fit this
+  sheet at any band height".  The band is bounded by what the view leaves, and
+  the view's margins were set generously and never measured.  Measuring them --
+  the deepest dimension cleared the notes band by ten millimetres -- and
+  letting the band spill into the annotation column's dead space fixed it
+  properly; trimming prose four times had only moved the wall.
+- **Reserving space for something drawn later has to use the same geometry.**
+  Three separate faults, all the same shape: the radius callout reserved one
+  span and drew another, the Pmod envelopes were drawn after the labels that
+  had to avoid them, and the ordinate witness lines were drawn after the
+  balloons.  Each is now computed once and used for both.
