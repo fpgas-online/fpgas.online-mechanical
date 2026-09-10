@@ -32,7 +32,16 @@ document the request linked) for:
 
 ## Status
 
-Phase: **data collection**.
+Phase: **data collected, drawing engine next**.
+
+All source data is now in `data/`:
+
+| File | Contents | Generated? |
+|------|----------|------------|
+| `data/schema.py` | frozen dataclasses, coordinate convention | no |
+| `data/tinytapeout_boards.py` | 8 Tiny Tapeout demo board revisions | yes, from KiCad |
+| `data/raspberry_pi_boards.py` | Pi 3A+, 3B, 3B+, 4B, 5 | yes, from DXF/PDF |
+| `data/accessories.py` | Pmod spec, Pmod HAT Adapter, 2 PoE splitters | no, hand-curated |
 
 ## Sources found so far
 
@@ -91,19 +100,83 @@ now 301-redirects to `pip.raspberrypi.com`, so `curl -L` is required.
 - Pi 3A+, Pi 5: PDF only. The Pi 5 drawing is 1:1 vector on A4, so the geometry
   can be lifted out of the PDF content stream.
 
-### Still to find
+### Digilent Pmod
 
-- Digilent Pmod interface specification (header geometry, keep-outs).
-- Digilent Pmod HAT Adapter (410-366) board geometry -- where its three Pmod
-  headers sit relative to the Pi's 40-pin GPIO header.
-- Waveshare 25 W PoE -> USB-C splitter dimensions.
-- Generic AliExpress PoE -> micro-USB splitter dimensions.
+- Pmod Interface Specification 1.2.0 gives the numbers that matter: 2.54 mm
+  (.10 in) pin grid in both axes, and **22.86 mm (.90 in) centre-to-centre
+  spacing between adjacent host ports on a board edge**.  Host keep-out box is
+  10.16 mm (.40 in) across with a 3.81 mm (.15 in) margin from the pin
+  envelope.  The spec gives no numeric host-side board-edge setback.
+- **Digilent publish nothing mechanical for the Pmod HAT Adapter (410-366).**
+  No drawing, no DXF, no STEP, no board files anywhere under
+  github.com/Digilent.  Reference manual and schematic are electrical only.
+  So `scripts/measure_pmod_hat.py` measures the three host positions off
+  Digilent's official top-view photo, using the four HAT mounting screws to set
+  scale and origin.  Cross-check against the pin pitch says the result is good
+  to about +/-0.75 mm.  JA and JB measured 23.18 mm apart and are snapped to
+  the specified 22.86 mm.
+- Digilent's site is behind Cloudflare.  `curl` gets a 403 unless it sends a
+  browser User-Agent plus a matching `Referer` and `Sec-Fetch-*` headers.
+
+### PoE splitters
+
+- Waveshare PoE Splitter (25 W) Type-C: **102.5 x 29.6 x 24.8 mm**, from both
+  the product page specification table and Waveshare's own dimensioned image.
+  Finned aluminium extrusion, RJ45 in one end plate, captive lead at the other
+  ending in an RJ45 male plug and a USB-C male plug.  5 V 5 A out, 37-57 V in.
+  No panel mounting holes.
+- Generic AliExpress PoE -> micro-USB: no single authority.  Most AliExpress
+  listings quote the packaging, not the body.  Two independent sources agree on
+  an 80 mm body: DSLRKIT's own 80 x 27 x 22 mm and Adafruit's measured
+  80 x 30 x 24 mm.  Gigabit variants run longer, around 95 mm.  Glued plastic
+  clamshell, no mounting holes.
+
+### Tiny Tapeout shuttles after TT08
+
+Per tinytapeout.com/chips, **no shuttle after TT08 has shipped**.  TT09 shows
+TBD/TBD, TT10 was cancelled, and every IHP/SKY/GF run since carries only an
+estimated delivery date.  So there is no authoritative TT09+ board revision to
+find, and the v3.x boards are recorded without a shuttle.
 
 ## Decisions
 
 - Extract geometry from machine-readable sources (KiCad `.kicad_pcb` s-expr,
   DXF, 1:1 vector PDF) rather than transcribing dimension text by eye.
 - Hand-curated numbers are always tagged with their source in the data file.
+- Machine-read the *numbers*, hand-curate the *identification*.  Each extractor
+  carries a small table saying which designator, or which approximate position
+  and size, corresponds to which mechanical role.  A source that changes makes
+  the selector miss and the script fail loudly.
+- Coordinate frame for everything: origin at the lower-left corner of the
+  board's bounding box, X right, Y up, top view, millimetres.
+
+## Key facts for the mounting plate
+
+- **Pmod host pitch is 22.86 mm on every Tiny Tapeout revision**, TT01 through
+  v3.3, because the Digilent spec mandates it.  That is what makes a single
+  generic plate possible.
+- The distance from the front board edge to the Pmod pin-field centre does
+  change between generations:
+
+  | Board | Pin-field centre Y | Pmod centre X positions |
+  |-------|-------------------|--------------------------|
+  | mpw-mb1 2.2.6 (TT01-03) | 4.465 | 41.85, 64.71 (two only) |
+  | v1.2.2 / v1.2.3 (TT04/05) | 4.275 | 27.695, 50.555, 73.415 |
+  | v2.0.1 / v2.1.0 / v2.1.2 (TT06-08) | 3.775 | 28.005, 50.865, 73.725 |
+  | v3.2 / v3.3 | 3.23 | 19.35, 42.21, 65.07 |
+
+- Mounting hole patterns differ per generation, and v3 has only two holes,
+  on a diagonal:
+
+  | Board | Size | Holes (dia 3.2 mm) |
+  |-------|------|--------------------|
+  | mpw-mb1 2.2.6, v1.2.x | 104.5 x 81.0 | 3.75/3.75, 100.75/3.75, 3.75/77.25, 100.75/77.25 |
+  | v2.x | 99.5 x 78.0 | 3.5/3.5, 96.0/8.0, 3.5/74.5, 96.0/74.5 |
+  | v3.2 | 85.0 x 80.0 | 4.0/76.0, 77.0/8.5 |
+  | v3.3 | 85.0 x 85.0 | 4.0/81.0, 77.0/8.5 |
+
+  Note the v2.x lower-right hole is at Y = 8.0, not 3.5: that pattern is not
+  symmetric.
 
 ## Things that did not work
 
@@ -112,3 +185,23 @@ now 301-redirects to `pip.raspberrypi.com`, so `curl -L` is required.
 - Cloning `tt-demo-pcb` with `--filter=blob:none` makes walking history
   painfully slow (each `git show` is a network round trip). Re-fetched all
   blobs with `git fetch --refetch`.
+- **The KiCad footprint rotation transform was wrong at first** and silently
+  mirrored every rotated footprint about its own origin.  KiCad measures
+  rotation counter-clockwise on a Y-down screen, so the transform is the
+  transpose of the usual maths-frame one.  Parts at 0 and 180 degrees come out
+  identical either way, which is why it survived a first look.  Caught by
+  plotting the extraction over the official board render: the 2x16 ANALOG
+  header came out hanging off the left edge of the board.
+- Connector footprints can carry their own `Edge.Cuts` geometry.  Reading only
+  board-level edge cuts lost the USB-C recess in the TT04/TT05 board's upper
+  edge.
+- `pdfplumber` reports path points as `(x, top)`, Y down from the top of the
+  sheet.  Using them directly mirrors the whole board vertically, and the
+  mounting hole pattern is symmetric enough to hide it.  Caught because the
+  40-pin GPIO header came out along the bottom edge instead of the top.
+- Fetching Digilent images with plain `curl` returns a Cloudflare challenge
+  page with a `.png` name.  A browser User-Agent plus `Referer` and
+  `Sec-Fetch-*` headers gets the real file.
+- Trying to pull the Digilent image out of a Playwright page with `fetch()` or
+  a canvas both failed, on CSP and then on a hang.  Plain `curl` with the right
+  headers was the answer.

@@ -2,20 +2,20 @@
 
 Status key: `[ ]` not started, `[~]` in progress, `[x]` done.
 
-## 1. Data collection
-- [~] Tiny Tapeout: identify every mechanically distinct demo board revision
-- [ ] Tiny Tapeout: extract outline / holes / Pmods / USB-C / 7-seg / LEDs from KiCad
-- [~] Raspberry Pi: download official mechanical drawings (3B, 3B+, 3A+, 4B, 5)
-- [ ] Raspberry Pi: extract outline / holes / USB / Ethernet from DXF
-- [ ] Raspberry Pi: extract Pi 5 and Pi 3A+ geometry from 1:1 vector PDF
-- [ ] Digilent Pmod interface specification header geometry
-- [ ] Digilent Pmod HAT Adapter geometry
-- [ ] Waveshare 25 W PoE -> USB-C splitter dimensions
-- [ ] Generic AliExpress PoE -> micro-USB splitter dimensions
-- [ ] Consolidate everything into `data/*.py` with per-value source attribution
+## 1. Data collection  -- DONE
+- [x] Tiny Tapeout: identify every mechanically distinct demo board revision
+- [x] Tiny Tapeout: extract outline / holes / Pmods / USB-C / 7-seg / LEDs from KiCad
+- [x] Raspberry Pi: download official mechanical drawings (3B, 3B+, 3A+, 4B, 5)
+- [x] Raspberry Pi: extract outline / holes / USB / Ethernet from DXF
+- [x] Raspberry Pi: extract Pi 5 and Pi 3A+ geometry from vector PDF
+- [x] Digilent Pmod interface specification header geometry
+- [x] Digilent Pmod HAT Adapter geometry (photogrammetry, +/-0.75 mm)
+- [x] Waveshare 25 W PoE -> USB-C splitter dimensions
+- [x] Generic AliExpress PoE -> micro-USB splitter dimensions
+- [x] Consolidate everything into `data/*.py` with per-value source attribution
 
 ## 2. Drawing engine
-- [ ] Minimal 2D drafting library: sheet, border, title block, views
+- [~] Minimal 2D drafting library: sheet, border, title block, views
 - [ ] Dimension primitives: linear, ordinate, diameter, leader/balloon
 - [ ] Hole tables
 - [ ] SVG output plus PDF/PNG conversion
