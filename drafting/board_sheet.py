@@ -283,15 +283,17 @@ def _place_notes_and_sources(sheet: Sheet, notes: list[str],
     commentary about it.
     """
     width = sheet.column.w - sheet.COLUMN_GUTTER
-    for note_size in (style.T_NOTE, 2.7, style.T_TINY):
-        for src in (sources, [s.split(" - ")[0] for s in sources]):
-            nh = sheet.notes_height(width, "NOTES", notes, note_size)
-            sh = sheet.notes_height(width, "SOURCES", src, style.T_TINY)
-            if nh + sh + 6.0 <= sheet.column_remaining:
-                sheet.notes(sheet.column_block(nh), "NOTES", notes, note_size)
-                sheet.notes(sheet.column_block(sh), "SOURCES", src,
-                            size=style.T_TINY)
-                return
+    # Text size is never traded away: 2.5 mm caps is the ISO 3098 floor and
+    # everything here already sits on it.  What gives, in order, is the source
+    # commentary and then notes from the end.
+    for src in (sources, [s.split(" - ")[0] for s in sources]):
+        nh = sheet.notes_height(width, "NOTES", notes, style.T_NOTE)
+        sh = sheet.notes_height(width, "SOURCES", src, style.T_TINY)
+        if nh + sh + 6.0 <= sheet.column_remaining:
+            sheet.notes(sheet.column_block(nh), "NOTES", notes, style.T_NOTE)
+            sheet.notes(sheet.column_block(sh), "SOURCES", src,
+                        size=style.T_TINY)
+            return
     # Still too much. Drop notes from the end until it fits and say how many
     # went, rather than letting one block run through another.
     src = [s.split(" - ")[0] for s in sources]
@@ -301,9 +303,9 @@ def _place_notes_and_sources(sheet: Sheet, notes: list[str],
         shown = kept + [f"{len(notes) - len(kept)} further note(s) omitted for "
                         f"space; the full set is in the data module this sheet "
                         f"was generated from."]
-        nh = sheet.notes_height(width, "NOTES", shown, style.T_TINY)
+        nh = sheet.notes_height(width, "NOTES", shown, style.T_NOTE)
         if nh + sh + 6.0 <= sheet.column_remaining:
-            sheet.notes(sheet.column_block(nh), "NOTES", shown, style.T_TINY)
+            sheet.notes(sheet.column_block(nh), "NOTES", shown, style.T_NOTE)
             sheet.notes(sheet.column_block(sh), "SOURCES", src,
                         size=style.T_TINY)
             return
@@ -324,6 +326,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         date=date,
         drawn_by="generated",
         units="mm",
+        material="PCB",
     ))
     sheet.draw_frame()
     c = sheet.canvas
@@ -428,32 +431,42 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                         text=label)
             leftmost -= 6.0 + style.T_DIM + 2.0
 
-    xvals = {round(h.x, 3) for h in spec.holes}
-    yvals = {round(h.y, 3) for h in spec.holes}
+    # Each ordinate entry carries the feature's other-axis coordinate too, so
+    # its witness line can start at the feature rather than at a board edge.
+    xvals: dict[float, float] = {}
+    yvals: dict[float, float] = {}
+
+    def note_x(x, y):
+        xvals[round(x, 3)] = max(xvals.get(round(x, 3), y), y) \
+            if spec.front_edge == "top" else min(xvals.get(round(x, 3), y), y)
+
+    def note_y(y, x):
+        yvals[round(y, 3)] = min(yvals.get(round(y, 3), x), x)
+
+    for h in spec.holes:
+        note_x(h.x, h.y)
+        note_y(h.y, h.x)
     # A host on a horizontal edge is located along that edge by its X, one on a
     # vertical edge by its Y: that is the coordinate a mating peripheral cares
     # about.  The board's own hosts also get their depth in from the edge
     # dimensioned, since that is what a plate has to clear.
     for p in spec.pmods:
-        if p.edge in ("bottom", "top"):
-            xvals.add(round(p.cx, 3))
-            yvals.add(round(p.cy, 3))
-        else:
-            yvals.add(round(p.cy, 3))
-            xvals.add(round(p.cx, 3))
+        note_x(p.cx, p.cy)
+        note_y(p.cy, p.cx)
     for p in (overlay.pmods if overlay else ()):
         if p.edge in ("bottom", "top"):
-            xvals.add(round(p.cx, 3))
+            note_x(p.cx, p.cy)
         else:
-            yvals.add(round(p.cy, 3))
-    xvals = sorted(xvals)
-    yvals = sorted(yvals)
+            note_y(p.cy, p.cx)
+
     x_extent = dims.ordinate_chain(
-        c, [(view.x(v), f"{v:.2f}") for v in xvals], board.y, lowest - 9.0,
-        horizontal=True)
+        c, [(view.x(v), f"{v:.2f}", view.y(f)) for v, f in xvals.items()],
+        board.y, lowest - 9.0, horizontal=True,
+        zero_pos=board.x, zero_from=board.y)
     y_extent = dims.ordinate_chain(
-        c, [(view.y(v), f"{v:.2f}") for v in yvals], board.x, leftmost - 9.0,
-        horizontal=False)
+        c, [(view.y(v), f"{v:.2f}", view.x(f)) for v, f in yvals.items()],
+        board.x, leftmost - 9.0, horizontal=False,
+        zero_pos=board.y, zero_from=board.x)
 
     dims.linear(c, (board.x, board.y), (board.x1, board.y),
                 x_extent - 6.0 - board.y, horizontal=True, value=o.width)
@@ -479,7 +492,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                  f"{h.dia:.2f}" + (f" +/-{h.tol:.2f}" if h.tol else ""),
                  f"{h.keepout_dia:.2f}" if h.keepout_dia else "not given"]
                 for i, h in enumerate(spec.holes, 1)]
-        block = sheet.column_block(len(rows) * style.T_TABLE * 1.75 + 14.0)
+        block = sheet.column_block(sheet.table_height("HOLE SCHEDULE", len(rows)))
         sheet.table(block, "HOLE SCHEDULE",
                     ["ID", "X", "Y", "DIA", "KEEPOUT"], rows,
                     ["start", "end", "end", "end", "end"])
@@ -487,13 +500,13 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     if spec.pmods:
         rows = [[p.label, p.designator, f"{p.cx:.2f}", f"{p.cy:.2f}",
                  f"{p.pin1_x:.2f}", f"{p.pin1_y:.2f}"] for p in spec.pmods]
-        block = sheet.column_block(len(rows) * style.T_TABLE * 1.75 + 14.0)
+        block = sheet.column_block(sheet.table_height("PMOD HOST HEADERS", len(rows)))
         sheet.table(block, "PMOD HOST HEADERS",
                     ["PORT", "REF", "CX", "CY", "PIN1 X", "PIN1 Y"], rows,
                     ["start", "start", "end", "end", "end", "end"])
 
     if schedule:
-        block = sheet.column_block(len(schedule) * style.T_TABLE * 1.75 + 14.0)
+        block = sheet.column_block(sheet.table_height("FEATURE SCHEDULE", len(schedule)))
         sheet.table(block, "FEATURE SCHEDULE",
                     ["#", "FEATURE", "X EXTENT", "Y EXTENT"], schedule,
                     ["middle", "start", "end", "end"])
@@ -501,7 +514,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     if overlay is not None and overlay.pmods:
         rows = [[p.label, f"{p.edge} edge", f"{p.cx:.2f}", f"{p.cy:.2f}"]
                 for p in overlay.pmods]
-        block = sheet.column_block(len(rows) * style.T_TABLE * 1.75 + 14.0)
+        block = sheet.column_block(sheet.table_height("PMOD HAT ADAPTER HOSTS", len(rows)))
         sheet.table(block, "PMOD HAT ADAPTER HOSTS",
                     ["PORT", "EDGE", "CX", "CY"], rows,
                     ["start", "start", "end", "end"])
@@ -528,9 +541,6 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
             "out of the lower edge; all three are right-angle hosts whose "
             "bodies overhang the edge. See the Pmod HAT Adapter sheet for the "
             "full derivation.")
-    notes.append(
-        "Tolerance, unless a dimension says otherwise: +/-0.20 on the routed "
-        "board edge, +/-0.10 on hole position, +/-0.08 on hole diameter.")
     if o.profile_note:
         notes.append(o.profile_note)
     src_lines = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")

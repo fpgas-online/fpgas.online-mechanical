@@ -161,6 +161,8 @@ MODELS = [
             ("usb_a_1", "USB 3.0 type A (upper pair)", "usb_a", (79.1, 47.0), (16.32, 12.31)),
             ("usb_a_2", "USB 3.0 type A (lower pair)", "usb_a", (79.1, 29.1), (16.32, 12.31)),
             ("usb_power", "USB-C power input", "usb_power", (11.2, 2.35), (6.72, 7.3)),
+            ("hdmi0", "micro-HDMI 0", "connector", (25.80, 3.02), (6.49, 7.69)),
+            ("hdmi1", "micro-HDMI 1", "connector", (39.24, 3.02), (6.49, 7.69)),
         ],
     ),
 ]
@@ -210,7 +212,15 @@ def pdf_rects(path: Path, width: float, height: float):
 
 
 def pick(rects, key, centre, size, tol_pos=2.5, tol_size=1.2):
-    """Choose the outline matching a selector, and complain if it is ambiguous."""
+    """Choose the outline matching a selector, and complain if it is ambiguous.
+
+    Several near-identical candidates can survive the filter, because the
+    rectangle recovery offers both the raw segments and collinear merges of
+    them.  The tightest fit is taken, since a merge can only over-extend an
+    edge, never under-extend it.  A disagreement wider than a fifth of a
+    millimetre is printed, because that means the selector is not pinning down
+    one feature.
+    """
     cx, cy = centre
     w, h = size
     hits = [r for r in rects
@@ -220,8 +230,14 @@ def pick(rects, key, centre, size, tol_pos=2.5, tol_size=1.2):
             and abs((r[3] - r[1]) - h) < tol_size]
     if not hits:
         raise SystemExit(f"{key}: no outline near {centre} sized {size}")
-    hits.sort(key=lambda r: abs((r[2] - r[0]) * (r[3] - r[1]) - w * h))
+    hits.sort(key=lambda r: ((r[2] - r[0]) * (r[3] - r[1]),
+                             abs((r[0] + r[2]) / 2 - cx)
+                             + abs((r[1] + r[3]) / 2 - cy)))
     best = hits[0]
+    spread = max(max(abs(a - b) for a, b in zip(best, r)) for r in hits)
+    if spread > 0.2:
+        print(f"    note: {key} matched {len(hits)} outlines spanning "
+              f"{spread:.3f} mm; took the tightest")
     return tuple(round(v, 3) for v in best)
 
 

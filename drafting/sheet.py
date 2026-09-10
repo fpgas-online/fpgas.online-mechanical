@@ -20,6 +20,11 @@ class TitleBlock:
     drawn_by: str = ""
     material: str = ""
     units: str = "mm"
+    #: Kept in the title block rather than the notes, which is where a real
+    #: drawing puts it and, more practically, means it can never be the note
+    #: that gets trimmed when the column runs short.
+    tolerance: str = "+/-0.20 edge, +/-0.10 hole pos, +/-0.08 hole dia"
+    projection: str = "first angle"
 
 
 @dataclass
@@ -58,8 +63,11 @@ class Sheet:
     them colliding with dimension lines.
     """
 
-    COLUMN_WIDTH = 162.0
-    TITLE_HEIGHT = 42.0
+    #: Wide enough for the tables at a true 2.5 mm cap height, and no wider:
+    #: the drawing area has to keep every board at 1:1, and the mounting plate
+    #: at 135 mm is the widest thing that has to fit.
+    COLUMN_WIDTH = 165.0
+    TITLE_HEIGHT = 48.0
 
     def __init__(self, size: str = "A3", title: TitleBlock | None = None,
                  column_width: float | None = None):
@@ -124,23 +132,27 @@ class Sheet:
         c, r, t = self.canvas, self.title_rect, self.title
         c.rect(r.x, r.y, r.w, r.h, weight=style.W_FRAME)
 
-        band = 13.0
+        band = 15.0
         c.line(r.x, r.y1 - band, r.x1, r.y1 - band, w=style.W_TABLE_HEAVY)
-        c.text(r.x + 2.5, r.y1 - band + 4.6, t.title, size=style.T_TITLE,
+        c.text(r.x + 2.5, r.y1 - band + 6.2, t.title, size=style.T_TITLE,
                face="sans", bold=True)
         if t.subtitle:
-            c.text(r.x + 2.5, r.y1 - band + 1.2, t.subtitle,
+            c.text(r.x + 2.5, r.y1 - band + 1.6, t.subtitle,
                    size=style.T_LABEL, colour="#333333")
 
-        cells = [
+        # Two rows of narrow fields, then one full-width row for the fields
+        # whose values are long enough to run out of a quarter-width cell.
+        grid = [
             ("DRAWN", t.drawn_by), ("DATE", t.date), ("UNITS", t.units),
             ("SCALE", t.scale), ("SIZE", self.size_name), ("SHEET", t.sheet),
             ("DRAWING NO", t.drawing_no), ("REV", t.rev),
         ]
-        rows, cols = 2, 4
+        wide = [("MATERIAL", t.material, 0.34),
+                ("GENERAL TOLERANCE", t.tolerance, 0.66)]
+        rows, cols = 3, 4
         ch = (r.h - band) / rows
         cw = r.w / cols
-        for i, (label, value) in enumerate(cells):
+        for i, (label, value) in enumerate(grid):
             col, row = i % cols, i // cols
             x = r.x + col * cw
             y = r.y1 - band - (row + 1) * ch
@@ -148,10 +160,22 @@ class Sheet:
                 c.line(x, y, x, y + ch, w=style.W_TABLE)
             if row:
                 c.line(x, y + ch, x + cw, y + ch, w=style.W_TABLE)
-            c.text(x + 1.6, y + ch - 3.2, label, size=style.T_TINY,
-                   colour="#666666")
-            c.text(x + 1.6, y + 1.6, value or "-", size=style.T_LABEL,
-                   bold=True)
+            self._title_cell(x, y, ch, label, value)
+        y = r.y
+        c.line(r.x, y + ch, r.x1, y + ch, w=style.W_TABLE)
+        x = r.x
+        for label, value, frac in wide:
+            if x > r.x:
+                c.line(x, y, x, y + ch, w=style.W_TABLE)
+            self._title_cell(x, y, ch, label, value)
+            x += r.w * frac
+
+    def _title_cell(self, x: float, y: float, ch: float, label: str,
+                    value: str) -> None:
+        c = self.canvas
+        c.text(x + 1.6, y + ch - style.T_TINY - 1.0, label, size=style.T_TINY,
+               colour="#666666")
+        c.text(x + 1.6, y + 1.6, value or "-", size=style.T_LABEL, bold=True)
 
     def projection_symbol(self, x: float, y: float, scale: float = 1.0) -> None:
         """First-angle projection symbol (ISO 128), drawn as a truncated cone."""
@@ -206,7 +230,8 @@ class Sheet:
         indent = 5.0 if numbered else 0.0
         total = self.HEADING_HEIGHT if title else 0.0
         for line in lines:
-            total += len(wrap(line, width - indent, size)) * size * 1.32 + 1.0
+            total += (len(wrap(line, width - indent, size))
+                      * style.line_pitch(size)) + 1.0
         return total
 
     def notes(self, rect: Rect, title: str, lines: list[str],
@@ -221,9 +246,15 @@ class Sheet:
                 c.text(rect.x, y - size, f"{i}.", size=size)
             for part in wrapped:
                 c.text(rect.x + indent, y - size, part, size=size)
-                y -= size * 1.32
+                y -= style.line_pitch(size)
             y -= 1.0
         return y
+
+    def table_height(self, title: str, rows: int,
+                     size: float = style.T_TABLE) -> float:
+        """Height a table will occupy, heading included."""
+        return ((self.HEADING_HEIGHT if title else 0.0)
+                + (rows + 1) * style.em(size) * 1.62 + 2.0)
 
     def table(self, rect: Rect, title: str, headers: list[str],
               rows: list[list[str]], aligns: list[str] | None = None,
@@ -241,10 +272,17 @@ class Sheet:
                               for t in cells) + 2 * pad)
         total = sum(widths)
         if total > rect.w:
-            widths = [w * rect.w / total for w in widths]
-            total = rect.w
+            # Squashing columns proportionally clips their text.  Take the
+            # padding out first, and only then scale, so the damage is spread
+            # across the gutters rather than the words.
+            widths = [w - 2 * pad + 2 * 0.6 for w in widths]
+            total = sum(widths)
+            if total > rect.w:
+                widths = [w * rect.w / total for w in widths]
+                total = rect.w
+            pad = 0.6
 
-        rh = size * 1.75
+        rh = style.em(size) * 1.62
         top = y
         c.rect(rect.x, y - rh, total, rh, weight=style.W_TABLE,
                fill=style.C_FILL_TABLE_HEAD)
@@ -278,9 +316,33 @@ def _cell_x(x: float, w: float, pad: float, align: str) -> float:
     return {"start": x + pad, "end": x + w - pad, "middle": x + w / 2}[align]
 
 
+def _split_long(word: str, width: float, size: float) -> list[str]:
+    """Break a token too long to fit on its own line, such as a bare URL."""
+    parts, cur = [], ""
+    for ch in word:
+        if style.text_width(cur + ch, size) > width and cur:
+            parts.append(cur)
+            cur = ch
+        else:
+            cur += ch
+    if cur:
+        parts.append(cur)
+    return parts
+
+
 def wrap(text: str, width: float, size: float) -> list[str]:
-    """Greedy word wrap to *width* millimetres, using real font metrics."""
-    words = text.split()
+    """Greedy word wrap to *width* millimetres, using real font metrics.
+
+    Long unbreakable tokens are split rather than allowed to run past the
+    column: source entries are mostly URLs, and one of them is long enough to
+    reach the sheet frame.
+    """
+    words = []
+    for word in text.split():
+        if style.text_width(word, size) > width:
+            words += _split_long(word, width, size)
+        else:
+            words.append(word)
     lines: list[str] = []
     cur = ""
     for word in words:

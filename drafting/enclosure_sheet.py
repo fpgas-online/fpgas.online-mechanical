@@ -39,7 +39,9 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
 
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle,
-        drawing_no=drawing_no, rev="A", date=date, drawn_by="generated"))
+        drawing_no=drawing_no, rev="A", date=date, drawn_by="generated",
+        material="moulded / extruded enclosure",
+        tolerance="envelope +/-1.0 unless a note says otherwise"))
     sheet.draw_frame()
     c = sheet.canvas
     area = sheet.area
@@ -113,14 +115,14 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
     rows = [["Overall length", f"{length:.2f}"],
             ["Overall width", f"{depth:.2f}"],
             ["Overall height", f"{height:.2f}"]]
-    block = sheet.column_block(len(rows) * style.T_TABLE * 1.75 + 14.0)
+    block = sheet.column_block(sheet.table_height("ENVELOPE", len(rows)))
     sheet.table(block, "ENVELOPE", ["DIMENSION", "mm"], rows,
                 ["start", "end"])
 
     if spec.features:
         rows = [[f.label, f"{f.x0:.2f} to {f.x1:.2f}",
                  f"{f.y0:.2f} to {f.y1:.2f}"] for f in spec.features]
-        block = sheet.column_block(len(rows) * style.T_TABLE * 1.75 + 20.0)
+        block = sheet.column_block(sheet.table_height("FEATURES (PLAN VIEW)", len(rows)))
         sheet.table(block, "FEATURES (PLAN VIEW)",
                     ["FEATURE", "X EXTENT", "Y EXTENT"], rows,
                     ["start", "end", "end"])

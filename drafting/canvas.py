@@ -87,7 +87,12 @@ class Canvas:
     def text(self, x, y, s, *, size=style.T_NOTE, colour=style.C_NOTE,
              anchor="start", face="condensed", bold=False, baseline="alphabetic",
              rotate=0.0):
-        """Draw *s*.  ``baseline='middle'`` centres it vertically on *y*."""
+        """Draw *s* with *size* millimetre capitals, per ISO 3098.
+
+        ``size`` is a cap height, not a font size; the conversion to an em
+        happens here so that no caller has to think about it.
+        ``baseline='middle'`` centres the capitals vertically on *y*.
+        """
         if not s:
             return
         dy = 0.0
@@ -102,8 +107,8 @@ class Canvas:
         weight = ' font-weight="bold"' if bold else ""
         self.parts.append(
             f'<text x="{fmt(x)}" y="{fmt(sy)}" font-family="{style.FONT_FAMILY[face]}" '
-            f'font-size="{fmt(size)}" fill="{colour}" text-anchor="{anchor}"'
-            f'{weight}{transform}>{html.escape(s)}</text>')
+            f'font-size="{fmt(style.em(size))}" fill="{colour}" '
+            f'text-anchor="{anchor}"{weight}{transform}>{html.escape(s)}</text>')
 
     def arrow(self, tip_x, tip_y, angle_deg, *, length=style.ARROW_LEN,
               half_width=style.ARROW_HALF_WIDTH, colour=style.C_DIM):

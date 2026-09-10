@@ -89,39 +89,85 @@ def find_origin(page):
 
 
 def rectangles(segments):
-    """Recover axis-aligned rectangles from a soup of straight segments."""
+    """Recover axis-aligned rectangles from a soup of straight segments.
+
+    Two passes, because a connector outline may be closed in either direction:
+    some are drawn as a pair of full-width horizontals with the vertical sides
+    broken up by shell detail, others as a pair of full-height verticals with
+    the horizontals broken up.  The Pi 5's micro-HDMI connectors are the second
+    kind, and a horizontal-only pass misses them entirely.
+    """
     horiz, vert = [], []
     for x0, y0, x1, y1 in segments:
         if abs(y1 - y0) < TOL and abs(x1 - x0) > TOL:
             horiz.append((min(x0, x1), max(x0, x1), (y0 + y1) / 2))
         elif abs(x1 - x0) < TOL and abs(y1 - y0) > TOL:
             vert.append((min(y0, y1), max(y0, y1), (x0 + x1) / 2))
+    # Keep the raw segments as well as the merged ones.  Merging is what lets a
+    # connector drawn as many short pieces close a rectangle at all, but it can
+    # also swallow a genuine edge into a longer collinear run belonging to
+    # something else, so both sets are offered to the matcher.
+    horiz += _merge_collinear(horiz)
+    vert += _merge_collinear(vert)
 
+    rects = set()
+    rects |= _pairs(horiz, vert, flip=False)
+    rects |= {(a, b, c, d) for (b, a, d, c) in _pairs(vert, horiz, flip=True)}
+    return sorted(rects)
+
+
+def _merge_collinear(lines):
+    """Join segments that lie on the same line and touch or overlap.
+
+    A connector outline is often drawn as many short pieces, so the full-width
+    edge only exists once they are joined.  Without this, the Pi 5's micro-HDMI
+    connectors have no edge long enough to close a rectangle.
+    """
+    by_pos = defaultdict(list)
+    for lo, hi, pos in lines:
+        by_pos[round(pos / TOL)].append((lo, hi))
+    out = []
+    for key, spans in by_pos.items():
+        pos = key * TOL
+        spans.sort()
+        cur_lo, cur_hi = spans[0]
+        for lo, hi in spans[1:]:
+            if lo <= cur_hi + TOL:
+                cur_hi = max(cur_hi, hi)
+            else:
+                out.append((cur_lo, cur_hi, pos))
+                cur_lo, cur_hi = lo, hi
+        out.append((cur_lo, cur_hi, pos))
+    return out
+
+
+def _pairs(along, across, flip: bool):
+    """Find rectangles from two parallel *along* lines closed by *across* ones.
+
+    A side counts if a crossing segment spans the gap; it may run past it,
+    because connector shells are drawn with tabs that overshoot the body.
+    """
     by_span = defaultdict(list)
-    for xa, xb, y in horiz:
-        by_span[(round(xa / TOL), round(xb / TOL))].append(y)
+    for lo, hi, pos in along:
+        by_span[(round(lo / TOL), round(hi / TOL))].append(pos)
 
-    rects = []
-    for (ka, kb), ys in by_span.items():
-        if len(ys) < 2:
+    found = set()
+    for (klo, khi), positions in by_span.items():
+        if len(positions) < 2:
             continue
-        xa, xb = ka * TOL, kb * TOL
-        ys = sorted(ys)
-        for i, ylo in enumerate(ys):
-            for yhi in ys[i + 1:]:
-                if yhi - ylo < TOL:
+        lo, hi = klo * TOL, khi * TOL
+        positions = sorted(positions)
+        for i, p0 in enumerate(positions):
+            for p1 in positions[i + 1:]:
+                if p1 - p0 < TOL:
                     continue
-                # A side counts if a vertical segment at either end spans the
-                # gap -- it may run past it, because connector shells are drawn
-                # with mounting tabs that overshoot the body outline.
                 sides = sum(
-                    1 for (va, vb, vx) in vert
-                    if va <= ylo + TOL and vb >= yhi - TOL
-                    and (abs(vx - xa) < TOL or abs(vx - xb) < TOL)
-                )
+                    1 for (va, vb, vx) in across
+                    if va <= p0 + TOL and vb >= p1 - TOL
+                    and (abs(vx - lo) < TOL or abs(vx - hi) < TOL))
                 if sides >= 1:
-                    rects.append((xa, ylo, xb, yhi))
-    return rects
+                    found.add((lo, p0, hi, p1) if not flip else (p0, lo, p1, hi))
+    return found
 
 
 def main() -> None:

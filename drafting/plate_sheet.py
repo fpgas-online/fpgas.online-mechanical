@@ -20,7 +20,7 @@ from data.schema import BoardSpec, Hole, Slot
 from data.tinytapeout_boards import BOARDS as TT_BOARDS
 
 from . import dims, style
-from .board_sheet import Obstacles, outline_path
+from .board_sheet import Obstacles, _place_notes_and_sources, outline_path
 from .canvas import Canvas
 from .sheet import Rect, Sheet, TitleBlock
 from .view import View
@@ -131,7 +131,7 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     sheet.draw_frame()
     c = sheet.canvas
 
-    view = View.fit(sheet.area, (0, 0, o.width, o.height), margin=40.0)
+    view = View.fit(sheet.area, (0, 0, o.width, o.height), margin=38.0)
     sheet.title.scale = view.scale_label
     plate = Rect(view.x(0), view.y(0), view.d(o.width), view.d(o.height))
 
@@ -177,12 +177,13 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
                 text=f"{PMOD_SLOT_X[1] - PMOD_SLOT_X[0]:.2f} TYP")
 
     x_extent = dims.ordinate_chain(
-        c, [(view.x(v), f"{v:.2f}") for v in
-            (PMOD_SLOT_X[0], PMOD_SLOT_X[1], PMOD_SLOT_X[2])],
-        plate.y, plate.y - 17.0, horizontal=True)
+        c, [(view.x(v), f"{v:.2f}", view.y(PMOD_ROW_Y)) for v in PMOD_SLOT_X],
+        plate.y, plate.y - 17.0, horizontal=True,
+        zero_pos=plate.x, zero_from=plate.y)
     y_extent = dims.ordinate_chain(
-        c, [(view.y(PMOD_ROW_Y), f"{PMOD_ROW_Y:.2f}")],
-        plate.x, plate.x - 12.0, horizontal=False)
+        c, [(view.y(PMOD_ROW_Y), f"{PMOD_ROW_Y:.2f}", view.x(PMOD_SLOT_X[0]))],
+        plate.x, plate.x - 12.0, horizontal=False,
+        zero_pos=plate.y, zero_from=plate.x)
 
     dims.linear(c, (plate.x, plate.y), (plate.x1, plate.y),
                 x_extent - 7.0 - plate.y, horizontal=True, value=o.width)
@@ -207,14 +208,14 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
         rows.append([f"S{n}", f"{s.x0:.3f} / {s.x1:.3f}",
                      f"{s.y0:.3f} / {s.y1:.3f}",
                      f"{s.width:.2f} slot", s.label.replace("+", ", ")])
-    block = sheet.column_block(len(rows) * style.T_TABLE * 1.75 + 14.0)
+    block = sheet.column_block(sheet.table_height("BOARD MOUNTING HOLES", len(rows)))
     sheet.table(block, "BOARD MOUNTING HOLES",
                 ["ID", "X", "Y", "SIZE", "USED BY"], rows,
                 ["start", "end", "end", "end", "start"])
 
     rows = [[labels[i], f"{spec.holes[i].x:.3f}", f"{spec.holes[i].y:.3f}",
              f"{spec.holes[i].dia:.2f}"] for i in plate_ids]
-    block = sheet.column_block(len(rows) * style.T_TABLE * 1.75 + 14.0)
+    block = sheet.column_block(sheet.table_height("PLATE FIXING HOLES", len(rows)))
     sheet.table(block, "PLATE FIXING HOLES", ["ID", "X", "Y", "DIA"], rows,
                 ["start", "end", "end", "end"])
 
@@ -231,16 +232,10 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
         "fixings sit in the border, but the board overhangs part of it.",
         "Suggested material 3 mm acrylic or 1.6 mm FR4. Least material between "
         "any two features is about 1.6 mm, between H2 and H3.",
-        "Tolerance: +/-0.20 on the outline, +/-0.10 on hole position, "
-        "+/-0.08 on hole diameter.",
     ]
-    block = sheet.column_block(min(sheet.column_remaining * 0.7, 92.0))
-    sheet.notes(block, "NOTES", notes)
-
     src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
            for s in spec.sources]
-    block = sheet.column_block(max(sheet.column_remaining - 2.0, 20.0))
-    sheet.notes(block, "SOURCES", src, size=style.T_TINY)
+    _place_notes_and_sources(sheet, notes, src)
 
     sheet.draw_title_block()
     return sheet
@@ -275,8 +270,10 @@ def render_fitting_guide(*, drawing_no: str, date: str,
         used = ", ".join(pl["shuttles"]) or "not yet shipped"
         rows_t.append([name, used, f"{pl['dx']:.3f}", f"{pl['dy']:.3f}",
                        str(pl["pmod_count"]), str(pl["first_pmod_slot"])])
-    cell = Rect(area.x + cell_w, area.y1 - 3 * cell_h, cell_w, cell_h)
-    block = Rect(cell.x + 4.0, cell.y + 6.0, cell.w - 8.0, cell.h - 12.0)
+    # In the annotation column, not in a half-width cell: at a true 2.5 mm cap
+    # height this table does not fit in half the drawing area.
+    block = sheet.column_block(sheet.table_height("BOARD PLACEMENT ON THE PLATE",
+                                                  len(rows_t)))
     sheet.table(block, "BOARD PLACEMENT ON THE PLATE",
                 ["REVISION", "SHUTTLES", "dX", "dY", "PMODS", "FIRST SLOT"],
                 rows_t, ["start", "start", "end", "end", "middle", "middle"])

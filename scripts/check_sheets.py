@@ -30,9 +30,9 @@ TEXT_RE = re.compile(
     r'text-anchor="(\w+)"([^>]*)>(.*?)</text>')
 ROTATE_RE = re.compile(r'rotate\(([-\d.]+) ([-\d.]+) ([-\d.]+)\)')
 
-#: Text this small anywhere on a sheet is a defect: ISO 3098 puts the floor at
-#: 2.5 mm and nothing here should go under it.
-MIN_TEXT_MM = 2.4
+#: Cap height below which text on a sheet is a defect.  ISO 3098 puts the floor
+#: at 2.5 mm; the slack is for floating point, not for smaller text.
+MIN_TEXT_MM = 2.45
 
 #: Overlaps smaller than this are touching, not colliding.
 OVERLAP_TOL = 0.35
@@ -46,13 +46,15 @@ def unescape(s: str) -> str:
 def boxes(svg: str) -> list[tuple[float, float, float, float, str, float]]:
     out = []
     for m in TEXT_RE.finditer(svg):
-        x, y, size = float(m.group(1)), float(m.group(2)), float(m.group(3))
+        x, y = float(m.group(1)), float(m.group(2))
+        # The SVG carries an em; the layout works in cap heights.
+        size = float(m.group(3)) * style.CAP_RATIO
         anchor, rest, text = m.group(4), m.group(5), unescape(m.group(6))
         if not text.strip():
             continue
         bold = "font-weight=" in rest
         w = style.text_width(text, size, bold=bold)
-        asc, desc = style.text_height(size), size * 0.22
+        asc, desc = style.text_height(size), style.descender(size)
         x0 = {"start": x, "middle": x - w / 2, "end": x - w}[anchor]
         box = (x0, y - asc, x0 + w, y + desc)
         rot = ROTATE_RE.search(rest)
@@ -89,7 +91,9 @@ def main() -> None:
         svg = path.read_text()
         page_w = float(re.search(r'width="([\d.]+)mm"', svg).group(1))
         page_h = float(re.search(r'height="([\d.]+)mm"', svg).group(1))
-        margin = style.SHEET_MARGIN + 5.0
+        # The zone markings live in the strip between the trim line and the
+        # drawing frame, by design, so the bound is the trim line.
+        trim = style.SHEET_MARGIN / 2
         items = boxes(svg)
 
         problems: list[str] = []
@@ -97,8 +101,8 @@ def main() -> None:
             if a[5] < MIN_TEXT_MM:
                 problems.append(f"text {a[4]!r} is {a[5]:.2f} mm, under the "
                                 f"{MIN_TEXT_MM} mm floor")
-            if a[0] < margin - 6 or a[2] > page_w - margin + 6 \
-                    or a[1] < 0 or a[3] > page_h:
+            if a[0] < trim or a[2] > page_w - trim \
+                    or a[1] < trim or a[3] > page_h - trim:
                 problems.append(f"text {a[4]!r} at ({a[0]:.1f},{a[1]:.1f}) "
                                 f"lies outside the drawing frame")
             for b in items[i + 1:]:

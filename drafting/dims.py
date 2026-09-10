@@ -165,27 +165,52 @@ def datum_marker(c: Canvas, x: float, y: float, *, size: float = 4.0,
            anchor="middle")
 
 
-def ordinate_chain(c: Canvas, values: list[tuple[float, str]], base: float,
-                   line_pos: float, *, horizontal: bool,
-                   colour: str = style.C_DIM, size: float = style.T_DIM,
-                   text_gap: float = 2.0, stagger: float = 6.5) -> float:
+def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
+                   horizontal: bool, colour: str = style.C_DIM,
+                   size: float = style.T_DIM, text_gap: float = 2.0,
+                   stagger: float | None = None, zero_label: str = "0",
+                   zero_pos: float | None = None,
+                   zero_from: float | None = None) -> float:
     """Ordinate dimensions: every value measured from one datum, no chains.
 
-    *values* are ``(sheet coordinate, label)`` pairs, *base* is the datum's
-    sheet coordinate, and *line_pos* is where the witness lines end.
+    *values* are ``(pos, label, from_pos)`` triples: where the feature sits
+    along the chain's axis, what to print, and where it sits on the other axis
+    so the witness line can start **at the feature**.  A witness line that
+    starts at the board edge instead tells the reader nothing about which
+    feature the number belongs to, which is the usual failing of a generated
+    ordinate chain.
 
-    Labels that would land on top of each other are pushed out to a second or
-    third lane, with the witness line extended to match.  Staggering like this
-    is what ordinate dimensioning does on a real drawing when features are
-    closer together than the text is tall.  Returns the outermost extent used,
-    so the caller can place the overall dimensions clear of it.
+    Labels that would land on top of each other are pushed out to a further
+    lane, with the witness line extended to match.  A zero ordinate is drawn at
+    the datum so the origin of the chain is explicit.
+
+    Returns the outermost extent used, so the caller can place the overall
+    dimensions clear of it.
     """
     out = 1 if line_pos > base else -1
-    need = (style.text_height(size) + 1.6) if horizontal else \
-        (style.text_height(size) + 1.6)
+
+    # A label in the next lane out must clear the one before it.  For a
+    # horizontal chain the labels are turned on their side, so what has to
+    # clear is their height; for a vertical chain it is their width.
+    labels = [v[1] for v in values] + [zero_label]
+    widest = max((style.text_width(t, size) for t in labels), default=0.0)
+    tall = style.text_height(size) + style.descender(size)
+    if stagger is None:
+        stagger = (tall + text_gap + 1.6) if horizontal \
+            else (widest + text_gap + 1.6)
+    need = tall + 1.6
+
+    # The zero ordinate marks the datum on the chain's own axis.  Using the
+    # chain's *base*, which is the perpendicular coordinate, drops it somewhere
+    # arbitrary along the chain.
+    entries = list(values)
+    if zero_pos is not None:
+        entries = [(zero_pos, zero_label,
+                    base if zero_from is None else zero_from)] + entries
+
     lanes: list[float] = []
-    placed: list[tuple[float, str, int]] = []
-    for pos, label in sorted(values):
+    placed = []
+    for pos, label, from_pos in sorted(entries, key=lambda e: e[0]):
         lane = 0
         while lane < len(lanes) and pos - lanes[lane] < need:
             lane += 1
@@ -193,25 +218,27 @@ def ordinate_chain(c: Canvas, values: list[tuple[float, str]], base: float,
             lanes.append(pos)
         else:
             lanes[lane] = pos
-        placed.append((pos, label, lane))
+        placed.append((pos, label, from_pos, lane))
 
     extent = line_pos
-    for pos, label, lane in placed:
+    for pos, label, from_pos, lane in placed:
         end = line_pos + out * lane * stagger
-        extent = max(extent, end, key=abs) if out > 0 else min(extent, end)
+        # Start clear of the feature, as ISO 129-1 asks of an extension line.
+        start = from_pos - out * style.EXT_GAP
+        if (end - start) * out <= 0:
+            start = end - out * style.EXT_OVER
         if horizontal:
-            c.line(pos, base, pos, end, w=style.W_THIN, colour=colour)
-            ty = end + (text_gap if out > 0 else -text_gap -
-                        style.text_height(size))
+            c.line(pos, start, pos, end, w=style.W_THIN, colour=colour)
+            ty = end + (text_gap if out > 0 else
+                        -text_gap - style.text_height(size))
             c.text(pos, ty, label, size=size, colour=colour, anchor="middle",
                    rotate=90)
-            extent = ty + (style.text_width(label, size) if out > 0
-                           else -style.text_width(label, size))
+            reach = ty + out * style.text_width(label, size)
         else:
-            c.line(base, pos, end, pos, w=style.W_THIN, colour=colour)
+            c.line(start, pos, end, pos, w=style.W_THIN, colour=colour)
             tx = end + (text_gap if out > 0 else -text_gap)
             c.text(tx, pos, label, size=size, colour=colour,
                    anchor="start" if out > 0 else "end", baseline="middle")
-            extent = tx + (style.text_width(label, size) if out > 0
-                           else -style.text_width(label, size))
+            reach = tx + out * style.text_width(label, size)
+        extent = max(extent, reach) if out > 0 else min(extent, reach)
     return extent

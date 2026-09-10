@@ -30,6 +30,21 @@ FONT_FAMILY = {
 
 _MEASURE_PX = 200.0     # measure at a large size, then scale, for precision
 
+#: Cap height of the DejaVu faces, as a fraction of the em.  Measured, not
+#: assumed: ``ImageFont.getbbox("H")`` gives 0.7290 for all four faces used.
+#:
+#: This matters because ISO 3098 specifies lettering by *character height*, the
+#: height of a capital, while a font size is the em.  Setting font-size to 2.5
+#: gives a 1.82 mm capital, well under the 2.5 mm floor, so every text size in
+#: this module is a cap height and is converted to an em on the way out.
+CAP_RATIO = 0.7290
+DESCENDER_RATIO = 0.2360    # em below the baseline
+
+
+def em(cap_height: float) -> float:
+    """Font size, in millimetres, that gives *cap_height* millimetre capitals."""
+    return cap_height / CAP_RATIO
+
 
 @functools.lru_cache(maxsize=8)
 def _font(face: str, bold: bool):
@@ -37,9 +52,9 @@ def _font(face: str, bold: bool):
 
 
 @functools.lru_cache(maxsize=8192)
-def text_width(text: str, size: float, face: str = "condensed",
+def text_width(text: str, cap_height: float, face: str = "condensed",
                bold: bool = False) -> float:
-    """Width of *text* in millimetres when set at *size* mm cap-to-descender.
+    """Width of *text* in millimetres when set to *cap_height* millimetre caps.
 
     Real metrics matter here: the layout code packs tables and dimension text
     into fixed columns, and guessing at an average character width is how
@@ -48,12 +63,21 @@ def text_width(text: str, size: float, face: str = "condensed",
     if not text:
         return 0.0
     f = _font(face, bold)
-    return f.getlength(text) * size / _MEASURE_PX
+    return f.getlength(text) * em(cap_height) / _MEASURE_PX
 
 
-def text_height(size: float) -> float:
-    """Nominal cap height, used for vertical centring."""
-    return size * 0.72
+def text_height(cap_height: float) -> float:
+    """Height above the baseline, i.e. the cap height itself."""
+    return cap_height
+
+
+def descender(cap_height: float) -> float:
+    return em(cap_height) * DESCENDER_RATIO
+
+
+def line_pitch(cap_height: float) -> float:
+    """Baseline-to-baseline spacing for running text."""
+    return em(cap_height) * 1.32
 
 
 # --- line weights (mm) -----------------------------------------------------
@@ -68,17 +92,21 @@ W_TABLE_HEAVY = 0.40
 W_COMPONENT = 0.35      # component body outlines on the board
 W_PHANTOM = 0.25        # adjacent parts, drawn as phantom outlines
 
-# --- text sizes (mm) -------------------------------------------------------
+# --- text sizes (mm of CAP HEIGHT, per ISO 3098) ---------------------------
+#
+# 2.5 mm is the floor for a drawing meant to be read at A3.  Nothing here goes
+# below it; T_TINY is that floor, not something smaller.
 
+T_MIN = 2.5             # ISO 3098 floor
 T_DIM = 2.5             # dimension values
 T_LABEL = 2.5           # balloons, feature labels
 T_NOTE = 2.5            # notes
 T_TABLE = 2.5
 T_TABLE_HEAD = 2.5
+T_TINY = 2.5
 T_SUBHEAD = 3.5
 T_TITLE = 5.0
 T_SHEET_TITLE = 6.0
-T_TINY = 2.5            # ISO 3098 floor: nothing on a sheet is smaller
 
 # --- dimension geometry (mm) ----------------------------------------------
 
