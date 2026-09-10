@@ -193,6 +193,22 @@ class Sheet:
         c.line(rect.x, y, rect.x1, y, w=style.W_TABLE_HEAVY)
         return y - 2.2
 
+    #: Height a heading occupies, including its rule and the gap under it.
+    HEADING_HEIGHT = style.T_SUBHEAD + 3.6
+
+    def notes_height(self, width: float, title: str, lines: list[str],
+                     size: float = style.T_NOTE, numbered: bool = True) -> float:
+        """Height a note block will occupy, so a caller can reserve it exactly.
+
+        Reserving a guessed height and then drawing whatever fits is how the
+        notes ended up running through the sources heading.
+        """
+        indent = 5.0 if numbered else 0.0
+        total = self.HEADING_HEIGHT if title else 0.0
+        for line in lines:
+            total += len(wrap(line, width - indent, size)) * size * 1.32 + 1.0
+        return total
+
     def notes(self, rect: Rect, title: str, lines: list[str],
               size: float = style.T_NOTE, numbered: bool = True) -> float:
         """Draw a numbered note block, wrapping to the column width."""
@@ -203,7 +219,7 @@ class Sheet:
             wrapped = wrap(line, rect.w - indent, size)
             if numbered:
                 c.text(rect.x, y - size, f"{i}.", size=size)
-            for j, part in enumerate(wrapped):
+            for part in wrapped:
                 c.text(rect.x + indent, y - size, part, size=size)
                 y -= size * 1.32
             y -= 1.0

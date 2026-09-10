@@ -34,7 +34,15 @@ uv run --no-project python scripts/extract_tinytapeout.py
 uv run --no-project --with ezdxf --with pdfplumber python scripts/extract_raspberry_pi.py
 uv run --no-project python scripts/design_mounting_plate.py
 uv run --no-project --with pillow python scripts/generate_diagrams.py
+uv run --no-project --with ezdxf python scripts/export_plate_dxf.py
+uv run --no-project --with pillow python scripts/check_sheets.py
 ```
+
+`check_sheets.py` re-reads the generated SVGs, recomputes every text bounding
+box from the same font metrics the layout used, and reports text that collides,
+falls outside the frame, or drops below the 2.5 mm ISO 3098 floor. It found the
+notes block running through the sources heading on four of the Raspberry Pi
+sheets, which is not obvious at screen size.
 
 ## How the numbers were obtained
 

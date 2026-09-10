@@ -287,15 +287,14 @@
 <text x="248" y="148.3" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">The Pmod host headers along the lower edge are what a mounting plate has to register against. Their 22.86 mm pitch is identical on</text>
 <text x="248" y="151.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">every Tiny Tapeout demo board revision, but their distance from the lower board edge and their absolute position along it are not.</text>
 <text x="243" y="155.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">6.</text>
-<text x="248" y="155.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Fabrication tolerance is not called out per dimension. Assume +/-0.20 on the routed board edge, +/-0.10 on drilled hole position and</text>
-<text x="248" y="159.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">+/-0.08 on plated hole diameter unless the board house states otherwise.</text>
-<text x="243" y="199.99" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="243" y1="201.39" x2="402" y2="201.39" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="243" y="206.09" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">1.</text>
-<text x="248" y="206.09" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">KiCad board file: https://github.com/TinyTapeout/tt123-demo-pcb mpw-mb1.kicad_pcb @ 3d721a6 - title block: TinyTapeout 1,2,3 Demo</text>
-<text x="248" y="209.39" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Board rev 2.2.6, dated 2024-02-14</text>
-<text x="243" y="213.69" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">2.</text>
-<text x="248" y="213.69" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Shuttle mapping: https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md - used by: TT01, TT02, TT03</text>
+<text x="248" y="155.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Tolerance, unless a dimension says otherwise: +/-0.20 on the routed board edge, +/-0.10 on hole position, +/-0.08 on hole diameter.</text>
+<text x="243" y="165.2" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.5" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
+<line x1="243" y1="166.6" x2="402" y2="166.6" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="243" y="171.3" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">1.</text>
+<text x="248" y="171.3" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">KiCad board file: https://github.com/TinyTapeout/tt123-demo-pcb mpw-mb1.kicad_pcb @ 3d721a6 - title block: TinyTapeout 1,2,3 Demo</text>
+<text x="248" y="174.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Board rev 2.2.6, dated 2024-02-14</text>
+<text x="243" y="178.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">2.</text>
+<text x="248" y="178.9" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="2.5" fill="#000000" text-anchor="start">Shuttle mapping: https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md - used by: TT01, TT02, TT03</text>
 <rect x="243" y="240" width="162" height="42" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="243" y1="253" x2="405" y2="253" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="245.5" y="248.4" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="5" fill="#000000" text-anchor="start" font-weight="bold">TINY TAPEOUT TT01/02/03 DEMO BOARD</text>

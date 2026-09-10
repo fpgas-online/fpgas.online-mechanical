@@ -272,6 +272,44 @@ def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
                else "alphabetic", bold=True)
 
 
+def _place_notes_and_sources(sheet: Sheet, notes: list[str],
+                             sources: list[str]) -> None:
+    """Fit the notes and the sources into whatever column space is left.
+
+    Both blocks are measured before either is drawn, and the note text is
+    stepped down within the ISO 3098 range until the pair fits.  If they still
+    will not fit, the source annotations are dropped before the sources
+    themselves: which document a number came from matters more than the
+    commentary about it.
+    """
+    width = sheet.column.w - sheet.COLUMN_GUTTER
+    for note_size in (style.T_NOTE, 2.7, style.T_TINY):
+        for src in (sources, [s.split(" - ")[0] for s in sources]):
+            nh = sheet.notes_height(width, "NOTES", notes, note_size)
+            sh = sheet.notes_height(width, "SOURCES", src, style.T_TINY)
+            if nh + sh + 6.0 <= sheet.column_remaining:
+                sheet.notes(sheet.column_block(nh), "NOTES", notes, note_size)
+                sheet.notes(sheet.column_block(sh), "SOURCES", src,
+                            size=style.T_TINY)
+                return
+    # Still too much. Drop notes from the end until it fits and say how many
+    # went, rather than letting one block run through another.
+    src = [s.split(" - ")[0] for s in sources]
+    sh = sheet.notes_height(width, "SOURCES", src, style.T_TINY)
+    kept = list(notes)
+    while kept:
+        shown = kept + [f"{len(notes) - len(kept)} further note(s) omitted for "
+                        f"space; the full set is in the data module this sheet "
+                        f"was generated from."]
+        nh = sheet.notes_height(width, "NOTES", shown, style.T_TINY)
+        if nh + sh + 6.0 <= sheet.column_remaining:
+            sheet.notes(sheet.column_block(nh), "NOTES", shown, style.T_TINY)
+            sheet.notes(sheet.column_block(sh), "SOURCES", src,
+                        size=style.T_TINY)
+            return
+        kept.pop()
+
+
 def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                  sheet_size: str = "A3", extra_notes: tuple[str, ...] = (),
                  force_scale: float | None = None,
@@ -482,21 +520,22 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
             "with this board's.")
     notes += list(spec.notes) + list(extra_notes)
     if overlay is not None:
-        notes += [f"Pmod HAT Adapter: {n}" for n in overlay.notes]
+        # Summarised, not copied: the overlay has its own sheet, and repeating
+        # all of its notes here pushes this sheet's column over.
+        notes.append(
+            f"{overlay.title} positions are DERIVED, not published, and are "
+            "good to about +/-0.75 mm. JA and JB face out of the left edge, JC "
+            "out of the lower edge; all three are right-angle hosts whose "
+            "bodies overhang the edge. See the Pmod HAT Adapter sheet for the "
+            "full derivation.")
     notes.append(
-        f"Fabrication tolerance is not called out per dimension. Assume "
-        f"+/-{0.20:.2f} on the routed board edge, +/-{0.10:.2f} on drilled "
-        f"hole position and +/-{0.08:.2f} on plated hole diameter unless the "
-        f"board house states otherwise.")
+        "Tolerance, unless a dimension says otherwise: +/-0.20 on the routed "
+        "board edge, +/-0.10 on hole position, +/-0.08 on hole diameter.")
     if o.profile_note:
         notes.append(o.profile_note)
-    block = sheet.column_block(min(sheet.column_remaining * 0.62, 96.0))
-    sheet.notes(block, "NOTES", notes)
-
     src_lines = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
                  for s in spec.sources]
-    block = sheet.column_block(max(sheet.column_remaining - 2.0, 20.0))
-    sheet.notes(block, "SOURCES", src_lines, size=style.T_TINY)
+    _place_notes_and_sources(sheet, notes, src_lines)
 
     sheet.draw_title_block()
     return sheet
