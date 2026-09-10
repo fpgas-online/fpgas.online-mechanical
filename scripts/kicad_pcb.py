@@ -170,12 +170,21 @@ class Footprint:
 def _rotate(x: float, y: float, deg: float) -> tuple[float, float]:
     """Rotate a footprint-local offset into board coordinates.
 
-    KiCad stores footprint rotation counter-clockwise in a Y-down frame, which
-    works out to this sign convention for the local-to-board transform.
+    KiCad measures footprint rotation counter-clockwise *as seen on screen*,
+    but its Y axis points down.  The local-to-board transform is therefore::
+
+        X = x*cos(t) + y*sin(t)
+        Y = -x*sin(t) + y*cos(t)
+
+    which is the transpose of the usual maths-frame rotation.  Getting this
+    backwards mirrors every rotated footprint about its origin; it is easy to
+    miss because parts at 0 and 180 degrees come out identical either way.
+    Verified against the v3 demo board, where the 2x16 ANALOG header at 90
+    degrees only lands on the board under this convention.
     """
     a = math.radians(deg)
     ca, sa = math.cos(a), math.sin(a)
-    return x * ca - y * sa, x * sa + y * ca
+    return x * ca + y * sa, -x * sa + y * ca
 
 
 class Board:
