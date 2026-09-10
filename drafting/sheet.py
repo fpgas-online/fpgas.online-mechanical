@@ -347,9 +347,12 @@ class Sheet:
                 if probe.notes_columns(cols, blocks, dry=True):
                     return h, count
                 h += 4.0
-        raise SystemExit(
-            "the notes will not fit this sheet at any band height; shorten "
-            "them or use a bigger sheet")
+        # Nothing fits the band alone.  Take the tallest band the view can
+        # spare and let the caller spill the tail into whatever is left at the
+        # bottom of the annotation column, which on most of these sheets is a
+        # large empty rectangle.  Failing here instead sized the notes to the
+        # emptiest part of the sheet rather than to the sheet.
+        return max(40.0, max_height - (max_height - 40.0) % 4.0), 2
 
     def notes_columns(self, columns: list[Rect],
                       blocks: list[tuple[str, list[str], float]],
@@ -422,8 +425,13 @@ class Sheet:
                 # note ends up floating with nothing to say what it belongs to.
                 if kind == "line" and len(items[i]) > 3 and items[i][3]:
                     hh = self.HEADING_HEIGHT
-                    self.heading(Rect(columns[col].x, y - hh, columns[col].w,
-                                      hh), f"{items[i][3]} (continued)")
+                    # Respect the dry pass.  It draws nowhere else, and a dry
+                    # run against the real sheet rather than a probe was
+                    # printing a continuation heading on top of the real one.
+                    if not dry:
+                        self.heading(
+                            Rect(columns[col].x, y - hh, columns[col].w, hh),
+                            f"{items[i][3]} (continued)")
                     y -= hh
                 continue
             here = columns[col]

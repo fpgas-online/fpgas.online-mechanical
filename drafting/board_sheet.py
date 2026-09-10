@@ -478,6 +478,28 @@ def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None) -> float:
     return (max(ys) - min(ys)) + VIEW_MARGIN_TOP + VIEW_MARGIN_BOTTOM
 
 
+#: Finished PCB thicknesses a fabricator actually offers.  A KiCad board file
+#: does not carry a specified thickness; what it carries is the sum of the
+#: stackup, which lands a few hundredths off the nominal once copper, prepreg
+#: and solder mask are counted.
+STANDARD_PCB_THICKNESS = (0.6, 0.8, 1.0, 1.2, 1.6, 2.0, 2.4)
+
+
+def _pcb_material(o) -> str:
+    """The MATERIAL field for a bare board.
+
+    Printing the stackup sum to two decimals made 1.56252 and 1.561 both read
+    as "1.56 thick", and made the one board whose file happens to say 1.6 look
+    like a thicker board than the rest.  They are all nominal 1.6 mm.
+    """
+    if not o.thickness:
+        return "PCB, thickness not stated"
+    nominal = min(STANDARD_PCB_THICKNESS, key=lambda t: abs(t - o.thickness))
+    if abs(nominal - o.thickness) <= 0.05:
+        return f"PCB, {nominal:.1f} nominal"
+    return f"PCB, {o.thickness:.3f} stackup sum"
+
+
 def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
                 extra_notes: tuple[str, ...]) -> tuple[list[str], list[str]]:
     """The notes and sources this sheet will carry."""
@@ -500,6 +522,35 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
             "JA and JB face out of the left edge, JC out of the lower edge, "
             "all right-angle hosts whose bodies overhang the edge. The Pmod "
             "HAT Adapter sheet has the derivation.")
+    if spec.pmods:
+        notes.append(
+            "The chain-double-dot rectangle around each Pmod host pin field "
+            "is the connector body, drawn where it overhangs the board edge. "
+            "It is not a board feature; it is what a mating peripheral and "
+            "any bracket have to clear.")
+    if spec.pmods or (overlay is not None and overlay.pmods):
+        notes.append(
+            "Pmod host coordinates are tabulated to three decimals, unlike "
+            "everything else on this sheet. That is not a claim to micrometre "
+            "accuracy: rounded to two, two adjacent hosts print 22.85 apart "
+            "and contradict the 22.86 pitch the specification mandates and "
+            "this drawing dimensions.")
+        notes.append(
+            "Pmod host ports are lettered JA, JB, JC on the Pmod HAT Adapter "
+            "and on the Raspberry Pi sheets, after Digilent's own labelling; "
+            "named by signal direction on the Tiny Tapeout demo boards, after "
+            "the silkscreen; and numbered PMOD 1 to 3 on the mounting plate "
+            "sheets, which number positions rather than ports. The fitting "
+            "guide TT-MP-02 maps a board's first host to a plate position.")
+    if o.thickness:
+        nominal = min(STANDARD_PCB_THICKNESS,
+                      key=lambda t: abs(t - o.thickness))
+        if abs(nominal - o.thickness) <= 0.05:
+            notes.append(
+                f"Board thickness is {nominal:.1f} mm nominal. The KiCad file "
+                f"states {o.thickness:.5f} mm, which is the sum of its stackup "
+                "layers rather than a specified finished thickness, so it is "
+                "not quoted as one.")
     if o.profile_note:
         notes.append(o.profile_note)
     sources = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
@@ -518,12 +569,20 @@ def _place_notes_and_sources(sheet: Sheet, notes: list[str],
                              sources: list[str], columns: int = 2) -> None:
     """Draw the notes and sources in the band across the bottom of the sheet.
 
-    Everything stays in the band.  Spilling the tail into the annotation column
-    put a continuation above the block it continued, which reads badly: a
-    reader scanning down the sheet meets note 10 before note 1.
+    The band comes first and is used in full.  Only when it cannot hold
+    everything does the tail spill into whatever is left at the bottom of the
+    annotation column, which is to the right of the band and level with it, so
+    a reader still meets note 1 before note 10.  Spilling into the column
+    higher up, above the tables, is what read badly and is not what happens
+    here: the leftover starts below the last table.
     """
-    sheet.notes_columns(sheet.band_columns(sheet.notes_band, count=columns),
-                        note_blocks(notes, sources))
+    blocks = note_blocks(notes, sources)
+    cols = sheet.band_columns(sheet.notes_band, count=columns)
+    if not sheet.notes_columns(cols, blocks, dry=True):
+        spare = sheet.column_remaining
+        if spare > 20.0:
+            cols = cols + [sheet.column_block(spare)]
+    sheet.notes_columns(cols, blocks)
 
 
 def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
@@ -640,8 +699,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         drawn_by="generated",
         units="mm",
         # Board thickness matters: standoff and screw length depend on it.
-        material=(f"PCB, {o.thickness:.2f} thick" if o.thickness
-                  else "PCB, thickness not stated"),
+        material=_pcb_material(o),
         **({"tolerance": spec.tolerance} if spec.tolerance else {}),
     ), notes_band_height=band_h)
     sheet.draw_frame()
@@ -939,7 +997,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
             ["start", "end", "end", "end", "end"]
         # Three decimals here on purpose: at two, 27.695 and 50.555 print as
         # 27.70 and 50.55, whose difference is 22.85, contradicting the 22.86
-        # pitch dimensioned on the view.
+        # pitch dimensioned on the view.  A note on the sheet says so, because
+        # a third decimal otherwise reads as a claim to micrometre accuracy
+        # that neither the source nor the general tolerance supports.
         rows = [[p.label] + ([p.designator] if show_ref else [])
                 + [p.edge, f"{p.cx:.3f}", f"{p.cy:.3f}",
                    f"{p.pin1_x:.3f}", f"{p.pin1_y:.3f}"] for p in spec.pmods]
@@ -955,8 +1015,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
     if overlay is not None and overlay.pmods:
         # Pin 1 is included here as well: it is what a plate has to register
         # a mating peripheral against.
-        rows = [[p.label, f"{p.edge} edge", f"{p.cx:.2f}", f"{p.cy:.2f}",
-                 f"{p.pin1_x:.2f}", f"{p.pin1_y:.2f}"] for p in overlay.pmods]
+        # Same numbers as the adapter's own sheet, so the same precision.
+        rows = [[p.label, f"{p.edge} edge", f"{p.cx:.3f}", f"{p.cy:.3f}",
+                 f"{p.pin1_x:.3f}", f"{p.pin1_y:.3f}"] for p in overlay.pmods]
         block = sheet.column_block(sheet.table_height("PMOD HAT ADAPTER HOSTS", len(rows)))
         sheet.table(block, "PMOD HAT ADAPTER HOSTS",
                     ["PORT", "EDGE", "CX mm", "CY mm", "PIN1 X mm",
