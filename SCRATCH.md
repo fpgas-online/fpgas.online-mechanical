@@ -32,7 +32,16 @@ document the request linked) for:
 
 ## Status
 
-Phase: **data collected, drawing engine next**.
+Phase: **all 18 sheets generated; drawing review outstanding**.
+
+18 sheets exist under `diagrams/`, as SVG, PDF and PNG:
+8 Tiny Tapeout revisions, 5 Raspberry Pi models (each with the Pmod HAT
+Adapter overlaid), 3 accessories, and 2 mounting plate sheets.
+
+The first code review has been acted on.  Its most important finding was that
+the Raspberry Pi keep-out figures were being presented as if all equally
+authoritative when only the Pi 4B's is machine-read and three models publish no
+keep-out at all.
 
 All source data is now in `data/`:
 
@@ -149,6 +158,23 @@ find, and the v3.x boards are recorded without a shuttle.
   the selector miss and the script fail loudly.
 - Coordinate frame for everything: origin at the lower-left corner of the
   board's bounding box, X right, Y up, top view, millimetres.
+
+## The mounting plate design
+
+Plate is **135 x 101 mm**, corner radius 4.  Origin at its lower-left corner.
+
+- Pmod host pin-field centres land at plate **x = 38.75, 61.61, 84.47** and
+  **y = 9.00**, for every board revision.
+- The plate's front edge sits 9.00 mm below the Pmod row, so the connector
+  bodies overhang it by 2.78 mm and a peripheral plugs into clear air.  This
+  works because the pin-field-centre to connector-face distance is **11.78 mm
+  on every revision**, the footprint being unchanged throughout.
+- 11 holes + 1 slot serve all five distinct board geometries, plus 6 M4 plate
+  fixings in the clear border.  Rules: under 1 mm apart share one hole; too
+  close to drill separately become a slot; otherwise separate holes.
+- The TT01/02/03 board's two Pmods go on plate positions **2 and 3**, not 1 and
+  2: that makes the plate 5.15 mm narrower, because that board is both the
+  widest and the one whose Pmods sit furthest right.
 
 ## Key facts for the mounting plate
 

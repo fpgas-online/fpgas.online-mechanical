@@ -14,24 +14,33 @@ Status key: `[ ]` not started, `[~]` in progress, `[x]` done.
 - [x] Generic AliExpress PoE -> micro-USB splitter dimensions
 - [x] Consolidate everything into `data/*.py` with per-value source attribution
 
-## 2. Drawing engine
-- [~] Minimal 2D drafting library: sheet, border, title block, views
-- [ ] Dimension primitives: linear, ordinate, diameter, leader/balloon
-- [ ] Hole tables
-- [ ] SVG output plus PDF/PNG conversion
+## 2. Drawing engine  -- DONE
+- [x] Minimal 2D drafting library: sheet, border, title block, views
+- [x] Dimension primitives: linear, ordinate, leader, balloon, datum
+- [x] Hole tables, feature schedules, notes and source blocks
+- [x] SVG output plus PDF/PNG conversion
 
-## 3. Diagrams
-- [ ] Tiny Tapeout demo boards, one sheet per mechanically distinct revision
-- [ ] Raspberry Pi 3B / 3B+ / 3A+ / 4B / 5
-- [ ] Raspberry Pi + Digilent Pmod HAT Adapter overlay
-- [ ] Generic PoE -> micro-USB splitter
-- [ ] Waveshare 25 W PoE -> USB-C splitter
+## 3. Diagrams  -- DONE
+- [x] Tiny Tapeout demo boards, 8 sheets, one per production revision
+- [x] Raspberry Pi 3A+ / 3B / 3B+ / 4B / 5
+- [x] Raspberry Pi + Digilent Pmod HAT Adapter overlay, on every Pi sheet
+- [x] Digilent Pmod HAT Adapter on its own
+- [x] Generic PoE -> micro-USB splitter
+- [x] Waveshare 25 W PoE -> USB-C splitter
 
-## 4. Tiny Tapeout generic mounting plate
-- [ ] Overlay every TT board revision in a common Pmod-referenced frame
-- [ ] Choose plate outline and hole pattern
-- [ ] Mounting plate drawing plus a cut file
+## 4. Tiny Tapeout generic mounting plate  -- DONE
+- [x] Overlay every TT board revision in a common Pmod-referenced frame
+- [x] Choose plate outline and hole pattern
+- [x] Mounting plate fabrication drawing
+- [x] Board fitting guide, one view per revision
+- [ ] Cut file (DXF or SVG outline only) for a laser or router
 
 ## 5. Review
-- [ ] Sub-agent code review
-- [ ] Sub-agent mechanical drawing review
+- [x] Sub-agent code review, round 1 -- acted on, see commit "Design the
+      generic mounting plate; act on the code review"
+- [~] Sub-agent mechanical drawing review, round 1
+- [ ] Sub-agent review, round 2, after the drawing review fixes
+
+## 6. Repository
+- [x] README explaining what is here and how the numbers were obtained
+- [x] Apache 2.0 licence
