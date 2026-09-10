@@ -126,6 +126,10 @@ T_SUBHEAD = 3.5
 T_TITLE = 5.0
 T_SHEET_TITLE = 6.0
 
+#: The ISO 3098 preferred lettering heights, largest first.  Anything that has
+#: to shrink to fit steps down this ladder rather than to an arbitrary size.
+TEXT_LADDER = (10.0, 7.0, 5.0, 3.5, 2.5)
+
 # --- dimension geometry (mm) ----------------------------------------------
 
 ARROW_LEN = 3.0

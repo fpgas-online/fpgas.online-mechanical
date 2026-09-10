@@ -167,7 +167,7 @@ PMOD_HAT = BoardSpec(
 
 WAVESHARE_POE = BoardSpec(
     key="waveshare-poe-usbc",
-    title="Waveshare PoE Splitter (25 W), Type-C",
+    title="Waveshare PoE Splitter 25 W, Type-C",
     subtitle="POE-SPLITTER-25W-TYPE-C, extruded aluminium body",
     family="accessory",
     body="enclosure",

@@ -418,7 +418,7 @@ def render_fitting_guide(*, drawing_no: str, date: str,
     spec = PLATE
     o = spec.outline
     sheet = Sheet(sheet_size, TitleBlock(
-        title="TT MOUNTING PLATE - BOARD FITTING GUIDE",
+        title="TT MOUNTING PLATE FITTING GUIDE",
         subtitle="Which holes each demo board revision uses",
         drawing_no=drawing_no, rev="A", date=date, drawn_by="generated",
         material="-  not a made part",

@@ -151,15 +151,24 @@ class Sheet:
 
         band = 15.0
         c.line(r.x, r.y1 - band, r.x1, r.y1 - band, w=style.W_TABLE_HEAVY)
-        # Shrink the title until it fits its band rather than letting it run
-        # out of the title block, which is where the longest of these titles,
-        # the mounting plate's, ended up.
+        # Shrink the title only through the ISO 3098 preferred sizes rather
+        # than in arbitrary steps: 4.8 and 4.4 mm capitals are not lettering
+        # sizes, and three sheets in a set set at three different heights read
+        # as three different drawing standards.  Every title here fits at the
+        # full size; the ladder is there so that a longer one degrades to a
+        # real size instead of an invented one.
         room = r.w - 5.0
         size = style.T_TITLE
-        while size > style.T_SUBHEAD and \
-                style.text_width(t.title, size, face="sans",
-                                 bold=True) > room:
-            size -= 0.2
+        for step in style.TEXT_LADDER:
+            if step > style.T_TITLE:
+                continue
+            size = step
+            if style.text_width(t.title, size, face="sans", bold=True) <= room:
+                break
+        else:
+            raise SystemExit(
+                f"title {t.title!r} does not fit the title block at any ISO "
+                "3098 lettering size; shorten it")
         c.text(r.x + 2.5, r.y1 - band + 6.2, t.title, size=size,
                face="sans", bold=True)
         if t.subtitle:
@@ -513,13 +522,32 @@ def _cell_x(x: float, w: float, pad: float, align: str) -> float:
     return {"start": x + pad, "end": x + w - pad, "middle": x + w / 2}[align]
 
 
+#: Characters a long token may be broken after.  A URL broken mid-token gives
+#: a reader retyping it no way to tell whether a hyphen or a space belongs at
+#: the break; broken after a separator, the break is unambiguous.
+BREAK_AFTER = "/?&=#"
+
+
 def _split_long(word: str, width: float, size: float) -> list[str]:
-    """Break a token too long to fit on its own line, such as a bare URL."""
+    """Break a token too long to fit on its own line, such as a bare URL.
+
+    Broken after a separator where one is available late enough in the line to
+    be worth using, and only mid-token when there is none: a path segment can
+    be longer than the column.
+    """
     parts, cur = [], ""
     for ch in word:
         if style.text_width(cur + ch, size) > width and cur:
-            parts.append(cur)
-            cur = ch
+            cut = max((i for i, c in enumerate(cur) if c in BREAK_AFTER),
+                      default=-1)
+            # Worth taking unless it leaves the line nearly empty: a short
+            # line in a URL is normal, an ambiguous break is not.
+            if cut >= 0 and style.text_width(cur[:cut + 1], size) > width * 0.3:
+                parts.append(cur[:cut + 1])
+                cur = cur[cut + 1:] + ch
+            else:
+                parts.append(cur)
+                cur = ch
         else:
             cur += ch
     if cur:

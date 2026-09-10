@@ -291,7 +291,7 @@ PLACEMENTS = {{
 
 PLATE = BoardSpec(
     key="tt-generic-mounting-plate",
-    title="Tiny Tapeout Generic Mounting Plate",
+    title="TT Generic Mounting Plate",
     subtitle="Accepts every demo board revision, Pmod hosts fixed in place",
     family="mountingplate",
     outline=Outline(width={w}, height={h}, corner_radius={r}, thickness=3.0),
