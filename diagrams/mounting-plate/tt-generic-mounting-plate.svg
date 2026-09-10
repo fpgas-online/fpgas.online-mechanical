@@ -369,6 +369,25 @@
 <text x="134.042" y="259.0745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pmod-interface-specification-1_2_0.pdf - Digilent mandate .90</text>
 <text x="134.042" y="263.6012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">in (22.86 mm) between adjacent host ports on a board edge,</text>
 <text x="134.042" y="268.128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">which is why one plate can serve every revision.</text>
+<text x="240" y="158.8111" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
+<line x1="240" y1="160.2111" x2="402" y2="160.2111" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="240" y1="165.0111" x2="260" y2="165.0111" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="263" y="166.2611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate edge</text>
+<circle cx="250" cy="170.2111" r="1.7" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
+<line x1="247.1" y1="170.2111" x2="252.9" y2="170.2111" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="250" y1="173.1111" x2="250" y2="167.3111" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="263" y="171.4611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole or slot for a demo board fastener</text>
+<circle cx="250" cy="175.4111" r="1.7" fill="#ffffff" stroke="#006060" stroke-width="0.5"/>
+<line x1="247.1" y1="175.4111" x2="252.9" y2="175.4111" stroke="#006060" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="250" y1="178.3111" x2="250" y2="172.5111" stroke="#006060" stroke-width="0.25" stroke-linecap="round"/>
+<text x="263" y="176.6611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate fixing, into the chassis</text>
+<line x1="240" y1="180.6111" x2="260" y2="180.6111" stroke="#000000" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="3.2,1.2,0.6,1.2"/>
+<text x="263" y="181.8611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Slot axis</text>
+<line x1="240" y1="185.8111" x2="260" y2="185.8111" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="263" y="187.0611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host envelope, not a machined feature</text>
+<line x1="240" y1="191.0111" x2="260" y2="191.0111" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="260,191.0111 257,190.1111 257,191.9111" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="263" y="192.2611" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
 <rect x="240" y="234" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="240" y1="249" x2="405" y2="249" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="242.5" y="242.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">TT GENERIC MOUNTING PLATE</text>

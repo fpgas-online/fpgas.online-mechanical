@@ -11,7 +11,8 @@ from __future__ import annotations
 from data.schema import BoardSpec
 
 from . import dims, style
-from .board_sheet import _place_notes_and_sources, note_blocks
+from .board_sheet import (_place_notes_and_sources, draw_legend,
+                          note_blocks)
 from .sheet import Rect, Sheet, TitleBlock
 from .view import STANDARD_SCALES, View, scale_text
 
@@ -265,6 +266,12 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                     ["start", "end", "end"])
 
     _place_notes_and_sources(sheet, notes, src, columns=band_cols)
+    draw_legend(sheet, [
+        ("outline", "Body envelope"),
+        ("component", "Aperture or cable exit"),
+        ("centre", "Projection symbol axis"),
+        ("dimension", "Dimension, extension and leader"),
+    ])
 
     sheet.draw_title_block()
     return sheet

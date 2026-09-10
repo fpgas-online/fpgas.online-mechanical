@@ -500,6 +500,85 @@ def _pcb_material(o) -> str:
     return f"PCB, {o.thickness:.3f} stackup sum"
 
 
+#: How tall one legend row is, and how long its line sample is.
+LEGEND_ROW = 5.2
+# Long enough to show a full period of the longest dash pattern: at 14 mm the
+# chain-dot and the chain-double-dot samples were indistinguishable, which
+# defeats the point of a legend.
+LEGEND_SWATCH = 20.0
+
+#: Every line style these sheets use, keyed by the name a legend entry gives.
+#: Drawn from the same constants the views are drawn from, so a legend cannot
+#: describe a style the sheet no longer uses.
+#: shape, weight, colour, dash.  "hole" entries exist because on the mounting
+#: plate sheets the only thing separating a board fastener from a plate fixing
+#: is the colour of its circle, and these sheets are meant to be printed.
+LEGEND_STYLES = {
+    "outline": ("line", style.W_OUTLINE, style.C_LINE, None),
+    "component": ("line", style.W_COMPONENT, style.C_HIGHLIGHT, None),
+    "dnp": ("line", style.W_COMPONENT, style.C_PHANTOM, style.D_HIDDEN),
+    "phantom": ("line", style.W_PHANTOM, style.C_PHANTOM, style.D_PHANTOM),
+    "centre": ("line", style.W_CENTRE, style.C_LINE, style.D_CENTRE),
+    "dimension": ("arrow", style.W_THIN, style.C_DIM, None),
+}
+
+
+def legend_height(rows: int) -> float:
+    return Sheet.HEADING_HEIGHT + rows * LEGEND_ROW + 1.0
+
+
+def draw_legend(sheet: Sheet, entries: list[tuple[str, str]]) -> None:
+    """A key to the line styles, in the annotation column.
+
+    Without one, the only thing telling a reader that a grey chain-double-dot
+    rectangle is an adjacent part and a red one is a component is the colour,
+    and these sheets are meant to be printed.
+    """
+    if not entries:
+        return
+    rect = sheet.column_block(legend_height(len(entries)))
+    c = sheet.canvas
+    y = sheet.heading(rect, "LEGEND")
+    for kind, label in entries:
+        if kind.startswith("#"):
+            shape, w, colour, dash = "hole", style.W_OUTLINE, kind, None
+        else:
+            shape, w, colour, dash = LEGEND_STYLES[kind]
+        cy = y - LEGEND_ROW / 2
+        if shape == "hole":
+            mid = rect.x + LEGEND_SWATCH / 2
+            c.circle(mid, cy, 1.7, w=w, colour=colour, fill="#ffffff")
+            dims.centre_mark(c, mid, cy, 1.7, colour=colour, over=1.2)
+        else:
+            c.line(rect.x, cy, rect.x + LEGEND_SWATCH, cy, w=w, colour=colour,
+                   dash=dash)
+            if shape == "arrow":
+                c.arrow(rect.x + LEGEND_SWATCH, cy, 0, colour=colour)
+        c.text(rect.x + LEGEND_SWATCH + 3.0, cy - style.T_NOTE / 2, label,
+               size=style.T_NOTE)
+        y -= LEGEND_ROW
+
+
+def _legend_entries(spec: BoardSpec, overlay: BoardSpec | None
+                    ) -> list[tuple[str, str]]:
+    """Only the styles this particular sheet actually uses."""
+    entries = [("outline", "Board outline")]
+    if spec.features:
+        entries.append(("component", "Component body, scheduled"))
+    if any("not fitted" in f.label.lower() for f in spec.features):
+        entries.append(("dnp", "Position not fitted on this revision"))
+    phantom = ["Pmod connector body" if spec.pmods else ""]
+    if overlay is not None:
+        phantom.append("adjacent part")
+    if any(h.keepout_dia for h in spec.holes):
+        phantom.append("hole keep-out")
+    phantom = [t for t in phantom if t]
+    if phantom:
+        entries.append(("phantom", ", ".join(phantom).capitalize()))
+    entries.append(("dimension", "Dimension, extension and leader"))
+    return entries
+
+
 def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
                 extra_notes: tuple[str, ...]) -> tuple[list[str], list[str]]:
     """The notes and sources this sheet will carry."""
@@ -524,33 +603,27 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
             "HAT Adapter sheet has the derivation.")
     if spec.pmods:
         notes.append(
-            "The chain-double-dot rectangle around each Pmod host pin field "
-            "is the connector body, drawn where it overhangs the board edge. "
-            "It is not a board feature; it is what a mating peripheral and "
-            "any bracket have to clear.")
+            "The chain-double-dot rectangle at each Pmod host is the "
+            "connector body where it overhangs the board edge. Not a board "
+            "feature: it is what a peripheral and a bracket must clear.")
     if spec.pmods or (overlay is not None and overlay.pmods):
         notes.append(
-            "Pmod host coordinates are tabulated to three decimals, unlike "
-            "everything else on this sheet. That is not a claim to micrometre "
-            "accuracy: rounded to two, two adjacent hosts print 22.85 apart "
-            "and contradict the 22.86 pitch the specification mandates and "
-            "this drawing dimensions.")
+            "Pmod host coordinates are given to three decimals, unlike the "
+            "rest of this sheet. Rounded to two, adjacent hosts print 22.85 "
+            "apart and contradict the 22.86 pitch dimensioned here.")
         notes.append(
-            "Pmod host ports are lettered JA, JB, JC on the Pmod HAT Adapter "
-            "and on the Raspberry Pi sheets, after Digilent's own labelling; "
-            "named by signal direction on the Tiny Tapeout demo boards, after "
-            "the silkscreen; and numbered PMOD 1 to 3 on the mounting plate "
-            "sheets, which number positions rather than ports. The fitting "
-            "guide TT-MP-02 maps a board's first host to a plate position.")
+            "Port names differ by family: JA, JB, JC after Digilent on the "
+            "adapter and Raspberry Pi sheets; by signal direction on the demo "
+            "boards, after the silkscreen; PMOD 1 to 3 on the plate sheets, "
+            "which number plate positions. TT-MP-02 maps them.")
     if o.thickness:
         nominal = min(STANDARD_PCB_THICKNESS,
                       key=lambda t: abs(t - o.thickness))
         if abs(nominal - o.thickness) <= 0.05:
             notes.append(
-                f"Board thickness is {nominal:.1f} mm nominal. The KiCad file "
-                f"states {o.thickness:.5f} mm, which is the sum of its stackup "
-                "layers rather than a specified finished thickness, so it is "
-                "not quoted as one.")
+                f"Board thickness is {nominal:.1f} mm nominal. The KiCad "
+                f"file's {o.thickness:.5f} mm is its stackup sum, not a "
+                "specified finished thickness.")
     if o.profile_note:
         notes.append(o.profile_note)
     sources = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
@@ -579,9 +652,21 @@ def _place_notes_and_sources(sheet: Sheet, notes: list[str],
     blocks = note_blocks(notes, sources)
     cols = sheet.band_columns(sheet.notes_band, count=columns)
     if not sheet.notes_columns(cols, blocks, dry=True):
+        # Take only as much of the column as the tail actually needs, so that
+        # whatever else wants the leftover -- the legend -- still has it.
         spare = sheet.column_remaining
-        if spare > 20.0:
-            cols = cols + [sheet.column_block(spare)]
+        need = None
+        h = 20.0
+        while h <= spare:
+            probe = Rect(sheet.column.x, sheet.column.y,
+                         sheet.column.w - sheet.COLUMN_GUTTER, h)
+            if sheet.notes_columns(cols + [probe], blocks, dry=True):
+                need = h
+                break
+            h += 4.0
+        if need is None:
+            need = spare
+        cols = cols + [sheet.column_block(need)]
     sheet.notes_columns(cols, blocks)
 
 
@@ -1024,10 +1109,20 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                      "PIN1 Y mm"], rows,
                     ["start", "start", "end", "end", "end", "end"])
 
+    # Notes first: they are the sheet's content and must fit.  The legend is
+    # a reading aid and takes whatever the notes leave, which on every sheet
+    # here is more than enough.
     # Notes carry facts about this board, not an explanation of how to read a
     # drawing.  The column is finite, and losing a provenance note to make room
     # for a description of ordinate dimensioning is a bad trade.
     _place_notes_and_sources(sheet, notes, src_lines, columns=band_cols)
+    entries = _legend_entries(spec, overlay)
+    if sheet.column_remaining >= legend_height(len(entries)):
+        draw_legend(sheet, entries)
+    else:
+        raise SystemExit(
+            f"{spec.key}: no room left in the annotation column for the "
+            "legend; shorten the notes or drop a table")
 
     sheet.draw_title_block()
     return sheet

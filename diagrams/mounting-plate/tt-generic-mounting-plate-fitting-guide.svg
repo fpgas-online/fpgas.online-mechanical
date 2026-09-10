@@ -479,6 +479,16 @@
 <text x="23.542" y="266.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Every revision puts its Pmod host pin fields on the same three</text>
 <text x="23.542" y="270.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">positions, at the same height above the plate&#x27;s front edge. See</text>
 <text x="23.542" y="275.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">drawing TT-MP-01 for the plate itself.</text>
+<text x="240" y="67.9333" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
+<line x1="240" y1="69.3333" x2="402" y2="69.3333" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="240" y1="74.1333" x2="260" y2="74.1333" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="263" y="75.3833" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate edge</text>
+<circle cx="250" cy="79.3333" r="1.7" fill="#ffffff" stroke="#a00000" stroke-width="0.5"/>
+<line x1="247.1" y1="79.3333" x2="252.9" y2="79.3333" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="250" y1="82.2333" x2="250" y2="76.4333" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="263" y="80.5833" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole or slot this revision uses</text>
+<line x1="240" y1="84.5333" x2="260" y2="84.5333" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="263" y="85.7833" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Holes it does not use, and its board outline</text>
 <rect x="240" y="234" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="240" y1="249" x2="405" y2="249" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="242.5" y="242.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">TT MOUNTING PLATE FITTING GUIDE</text>

@@ -315,37 +315,40 @@
 <text x="129.5" y="193.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
 <line x1="129.5" y1="194.9" x2="232" y2="194.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="129.5" y="199.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
-<text x="134.042" y="199.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The chain-double-dot rectangle around each Pmod host pin</text>
-<text x="134.042" y="204.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">field is the connector body, drawn where it overhangs the</text>
-<text x="134.042" y="208.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board edge. It is not a board feature; it is what a mating</text>
-<text x="134.042" y="213.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">peripheral and any bracket have to clear.</text>
+<text x="134.042" y="199.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The chain-double-dot rectangle at each Pmod host is the</text>
+<text x="134.042" y="204.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">connector body where it overhangs the board edge. Not a</text>
+<text x="134.042" y="208.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board feature: it is what a peripheral and a bracket must clear.</text>
 <text x="129.5" y="218.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">8.</text>
-<text x="134.042" y="218.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host coordinates are tabulated to three decimals, unlike</text>
-<text x="134.042" y="223.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">everything else on this sheet. That is not a claim to</text>
-<text x="134.042" y="227.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">micrometre accuracy: rounded to two, two adjacent hosts print</text>
-<text x="134.042" y="232.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">22.85 apart and contradict the 22.86 pitch the specification</text>
-<text x="134.042" y="236.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mandates and this drawing dimensions.</text>
-<text x="129.5" y="242.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">9.</text>
-<text x="134.042" y="242.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host ports are lettered JA, JB, JC on the Pmod HAT</text>
-<text x="134.042" y="246.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Adapter and on the Raspberry Pi sheets, after Digilent&#x27;s own</text>
-<text x="134.042" y="251.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">labelling; named by signal direction on the Tiny Tapeout demo</text>
-<text x="134.042" y="255.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">boards, after the silkscreen; and numbered PMOD 1 to 3 on the</text>
-<text x="134.042" y="260.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mounting plate sheets, which number positions rather than</text>
-<text x="134.042" y="264.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">ports. The fitting guide TT-MP-02 maps a board&#x27;s first host to a</text>
-<text x="134.042" y="269.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">plate position.</text>
-<text x="240" y="138.5778" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<text x="134.042" y="218.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host coordinates are given to three decimals, unlike the</text>
+<text x="134.042" y="223.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">rest of this sheet. Rounded to two, adjacent hosts print 22.85</text>
+<text x="134.042" y="227.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">apart and contradict the 22.86 pitch dimensioned here.</text>
+<text x="129.5" y="233.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">9.</text>
+<text x="134.042" y="233.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Port names differ by family: JA, JB, JC after Digilent on the</text>
+<text x="134.042" y="237.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">adapter and Raspberry Pi sheets; by signal direction on the</text>
+<text x="134.042" y="242.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">demo boards, after the silkscreen; PMOD 1 to 3 on the plate</text>
+<text x="134.042" y="246.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">sheets, which number plate positions. TT-MP-02 maps them.</text>
+<text x="129.5" y="252.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">10.</text>
+<text x="136.0045" y="252.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board thickness is 1.6 mm nominal. The KiCad file&#x27;s 1.56100</text>
+<text x="136.0045" y="256.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm is its stackup sum, not a specified finished thickness.</text>
+<text x="240" y="138.5778" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
 <line x1="240" y1="139.9778" x2="402" y2="139.9778" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="240" y="144.6778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">10.</text>
-<text x="246.5045" y="144.6778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board thickness is 1.6 mm nominal. The KiCad file states 1.56100 mm, which is the sum of its</text>
-<text x="246.5045" y="149.2045" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">stackup layers rather than a specified finished thickness, so it is not quoted as one.</text>
-<text x="240" y="155.7313" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="240" y1="157.1313" x2="402" y2="157.1313" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="240" y="161.8313" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="244.542" y="161.8313" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">KiCad board file: https://github.com/TinyTapeout/tt-demo-pcb tinytapeout-demo.kicad_pcb @</text>
-<text x="244.542" y="166.358" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">ecb636ace - title block: Tiny Tapeout Demoboard v3 rev 3.3, dated 2026-06-23</text>
-<text x="240" y="171.8848" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="244.542" y="171.8848" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Shuttle mapping: https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md -</text>
-<text x="244.542" y="176.4115" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">used by: no shipped shuttle yet</text>
+<text x="240" y="144.6778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="244.542" y="144.6778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">KiCad board file: https://github.com/TinyTapeout/tt-demo-pcb tinytapeout-demo.kicad_pcb @</text>
+<text x="244.542" y="149.2045" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">ecb636ace - title block: Tiny Tapeout Demoboard v3 rev 3.3, dated 2026-06-23</text>
+<text x="240" y="154.7313" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="244.542" y="154.7313" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Shuttle mapping: https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md -</text>
+<text x="244.542" y="159.258" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">used by: no shipped shuttle yet</text>
+<text x="240" y="170.5778" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
+<line x1="240" y1="171.9778" x2="402" y2="171.9778" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="240" y1="176.7778" x2="260" y2="176.7778" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="263" y="178.0278" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline</text>
+<line x1="240" y1="181.9778" x2="260" y2="181.9778" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
+<text x="263" y="183.2278" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Component body, scheduled</text>
+<line x1="240" y1="187.1778" x2="260" y2="187.1778" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="263" y="188.4278" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod connector body, hole keep-out</text>
+<line x1="240" y1="192.3778" x2="260" y2="192.3778" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="260,192.3778 257,191.4778 257,193.2778" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="263" y="193.6278" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
 <rect x="240" y="234" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="240" y1="249" x2="405" y2="249" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="242.5" y="242.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">TINY TAPEOUT DEMO BOARD V3</text>

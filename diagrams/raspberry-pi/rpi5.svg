@@ -368,27 +368,34 @@
 <text x="136.0045" y="225.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">lower edge, all right-angle hosts whose bodies overhang the</text>
 <text x="136.0045" y="230.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">edge. The Pmod HAT Adapter sheet has the derivation.</text>
 <text x="129.5" y="236.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">12.</text>
-<text x="136.0045" y="236.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host coordinates are tabulated to three decimals,</text>
-<text x="136.0045" y="240.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">unlike everything else on this sheet. That is not a claim to</text>
-<text x="136.0045" y="245.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">micrometre accuracy: rounded to two, two adjacent hosts</text>
-<text x="136.0045" y="249.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">print 22.85 apart and contradict the 22.86 pitch the</text>
-<text x="136.0045" y="254.135" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">specification mandates and this drawing dimensions.</text>
-<text x="240" y="166.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<text x="136.0045" y="236.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host coordinates are given to three decimals, unlike the</text>
+<text x="136.0045" y="240.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">rest of this sheet. Rounded to two, adjacent hosts print 22.85</text>
+<text x="136.0045" y="245.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">apart and contradict the 22.86 pitch dimensioned here.</text>
+<text x="129.5" y="250.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">13.</text>
+<text x="136.0045" y="250.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Port names differ by family: JA, JB, JC after Digilent on the</text>
+<text x="136.0045" y="255.135" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">adapter and Raspberry Pi sheets; by signal direction on the</text>
+<text x="136.0045" y="259.6617" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">demo boards, after the silkscreen; PMOD 1 to 3 on the plate</text>
+<text x="136.0045" y="264.1885" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">sheets, which number plate positions. TT-MP-02 maps them.</text>
+<text x="240" y="166.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
 <line x1="240" y1="167.7556" x2="402" y2="167.7556" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="240" y="172.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">13.</text>
-<text x="246.5045" y="172.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host ports are lettered JA, JB, JC on the Pmod HAT Adapter and on the Raspberry Pi sheets,</text>
-<text x="246.5045" y="176.9823" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">after Digilent&#x27;s own labelling; named by signal direction on the Tiny Tapeout demo boards, after the</text>
-<text x="246.5045" y="181.5091" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">silkscreen; and numbered PMOD 1 to 3 on the mounting plate sheets, which number positions</text>
-<text x="246.5045" y="186.0358" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">rather than ports. The fitting guide TT-MP-02 maps a board&#x27;s first host to a plate position.</text>
-<text x="240" y="192.5626" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="240" y1="193.9626" x2="402" y2="193.9626" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="240" y="198.6626" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="244.542" y="198.6626" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mechanical drawing: https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf</text>
-<text x="244.542" y="203.1893" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">- Raspberry Pi Ltd</text>
-<text x="240" y="208.716" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="244.542" y="208.716" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mounting holes: https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf -</text>
-<text x="244.542" y="213.2428" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole diameter dimensioned on the drawing as ø2.7 mm; the keep-out circle is drawn and measures</text>
-<text x="244.542" y="217.7695" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.80 mm.</text>
+<text x="240" y="172.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="244.542" y="172.4556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mechanical drawing: https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf</text>
+<text x="244.542" y="176.9823" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">- Raspberry Pi Ltd</text>
+<text x="240" y="182.5091" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="244.542" y="182.5091" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Mounting holes: https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf -</text>
+<text x="244.542" y="187.0358" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Hole diameter dimensioned on the drawing as ø2.7 mm; the keep-out circle is drawn and measures</text>
+<text x="244.542" y="191.5626" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.80 mm.</text>
+<text x="240" y="202.3556" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
+<line x1="240" y1="203.7556" x2="402" y2="203.7556" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="240" y1="208.5556" x2="260" y2="208.5556" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="263" y="209.8056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline</text>
+<line x1="240" y1="213.7556" x2="260" y2="213.7556" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
+<text x="263" y="215.0056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Component body, scheduled</text>
+<line x1="240" y1="218.9556" x2="260" y2="218.9556" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="263" y="220.2056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Adjacent part, hole keep-out</text>
+<line x1="240" y1="224.1556" x2="260" y2="224.1556" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="260,224.1556 257,223.2556 257,225.0556" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="263" y="225.4056" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
 <rect x="240" y="234" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="240" y1="249" x2="405" y2="249" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="242.5" y="242.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">RASPBERRY PI 5</text>

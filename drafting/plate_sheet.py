@@ -20,7 +20,8 @@ from data.schema import BoardSpec, Hole, Slot
 from data.tinytapeout_boards import BOARDS as TT_BOARDS
 
 from . import dims, style
-from .board_sheet import (Obstacles, _place_notes_and_sources, note_blocks,
+from .board_sheet import (Obstacles, _place_notes_and_sources,
+                          draw_legend, legend_height, note_blocks,
                           outline_path)
 from .canvas import Canvas
 from .sheet import Rect, Sheet, TitleBlock
@@ -242,6 +243,25 @@ def _plate_text(spec) -> tuple[list[str], list[str]]:
     return notes, src
 
 
+#: The plate sheets' key.  A board fastener and a plate fixing differ only in
+#: the colour of their circle, which a monochrome print loses, so both are
+#: named here as well as being tabulated separately.
+PLATE_LEGEND = [
+    ("outline", "Plate edge"),
+    (BOARD_HOLE, "Hole or slot for a demo board fastener"),
+    (PLATE_HOLE, "Plate fixing, into the chassis"),
+    ("centre", "Slot axis"),
+    ("phantom", "Pmod host envelope, not a machined feature"),
+    ("dimension", "Dimension, extension and leader"),
+]
+
+GUIDE_LEGEND = [
+    ("outline", "Plate edge"),
+    (BOARD_HOLE, "Hole or slot this revision uses"),
+    ("phantom", "Holes it does not use, and its board outline"),
+]
+
+
 def hole_ids(spec) -> tuple[dict[int, str], list[int], list[int]]:
     """Assign H1.. to the board holes and P1.. to the plate fixings.
 
@@ -408,6 +428,7 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
                 ["start", "end", "end", "end"])
 
     _place_notes_and_sources(sheet, notes, src, columns=band_cols)
+    draw_legend(sheet, PLATE_LEGEND)
 
     sheet.draw_title_block()
     return sheet
@@ -481,6 +502,7 @@ def render_fitting_guide(*, drawing_no: str, date: str,
         "drawing TT-MP-01 for the plate itself.",
     ]
     _place_notes_and_sources(sheet, notes, [])
+    draw_legend(sheet, GUIDE_LEGEND)
     sheet.draw_title_block()
     return sheet
 
