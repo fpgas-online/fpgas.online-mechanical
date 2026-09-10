@@ -306,10 +306,10 @@ def _place_notes_and_sources(sheet: Sheet, notes: list[str],
     if spare > 30.0:
         columns.append(Rect(sheet.column.x, sheet.column.y,
                             sheet.column.w - sheet.COLUMN_GUTTER, spare))
-    sheet.notes_columns(columns, [
-        ("NOTES", notes, style.T_NOTE),
-        ("SOURCES", sources, style.T_TINY),
-    ])
+    blocks = [("NOTES", notes, style.T_NOTE)]
+    if sources:
+        blocks.append(("SOURCES", sources, style.T_TINY))
+    sheet.notes_columns(columns, blocks)
 
 
 def render_board(spec: BoardSpec, *, drawing_no: str, date: str,

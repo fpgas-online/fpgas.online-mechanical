@@ -271,9 +271,12 @@ def render_fitting_guide(*, drawing_no: str, date: str,
 
     scale = 0.5
     sheet.title.scale = "1:2"
-    cols, rows = 2, 3
+    # Three across, two down: at 1:2 a plate view is 67.5 x 50.5 mm, so three
+    # fit the drawing width and two rows leave room for the captions without
+    # running into the notes band.
+    cols, rows = 3, 2
     cell_w = area.w / cols
-    cell_h = (area.h - 6.0) / rows
+    cell_h = area.h / rows
 
     for n, (name, pl) in enumerate(PLACEMENTS.items()):
         col, row = n % cols, n // cols
@@ -354,8 +357,10 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
                   colour=BOARD_HOLE if i in used_slots else style.C_PHANTOM)
 
     shuttles = ", ".join(pl["shuttles"]) or "no shipped shuttle yet"
-    c.text(cell.cx, view.y(0) - 6.0, f"{name}  ({shuttles})",
-           size=style.T_SUBHEAD, anchor="middle", bold=True, face="sans")
-    c.text(cell.cx, view.y(0) - 10.0,
-           f"board rev {pl['revision']}   offset X {dx:.2f}  Y {dy:.2f} mm",
+    c.text(cell.cx, view.y(0) - 7.0, f"{name}  ({shuttles})",
+           size=style.T_LABEL, anchor="middle", bold=True, face="sans")
+    c.text(cell.cx, view.y(0) - 12.0, f"board rev {pl['revision']}",
+           size=style.T_LABEL, anchor="middle", colour="#444444")
+    c.text(cell.cx, view.y(0) - 17.0,
+           f"offset X {dx:.2f}  Y {dy:.2f} mm",
            size=style.T_LABEL, anchor="middle", colour="#444444")
