@@ -95,6 +95,11 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
             dims.linear(c, (plan.x + f.x0 * scale, plan.y1),
                         (plan.x + f.x1 * scale, plan.y1), 9.0,
                         horizontal=True, value=f.x1 - f.x0)
+            # Where along the body the jack sits, which is what a bracket or
+            # cradle actually has to place.  Below the plan, stacked under the
+            # overall length: above it would run into the view caption.
+            dims.linear(c, (plan.x, plan.y), (plan.x + f.x0 * scale, plan.y),
+                        -25.0, horizontal=True, value=f.x0)
 
     dims.linear(c, (plan.x, plan.y), (plan.x1, plan.y), -14.0,
                 horizontal=True, value=length)
