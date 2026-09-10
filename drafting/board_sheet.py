@@ -165,6 +165,27 @@ class Obstacles:
     def add_segment(self, x1, y1, x2, y2) -> None:
         self.segments.append((x1, y1, x2, y2))
 
+    def crossings(self, x1: float, y1: float, x2: float, y2: float) -> int:
+        """How many recorded segments a proposed leader actually crosses.
+
+        Sampling a leader against obstacles misses a clean crossing: two lines
+        can intersect at a point that falls between samples.  A proper segment
+        intersection test catches it, which is what stops two balloons swapping
+        sides and crossing each other's leaders.
+        """
+        def side(ax, ay, bx, by, px, py):
+            return (bx - ax) * (py - ay) - (by - ay) * (px - ax)
+
+        n = 0
+        for ax, ay, bx, by in self.segments:
+            d1 = side(x1, y1, x2, y2, ax, ay)
+            d2 = side(x1, y1, x2, y2, bx, by)
+            d3 = side(ax, ay, bx, by, x1, y1)
+            d4 = side(ax, ay, bx, by, x2, y2)
+            if ((d1 > 0) != (d2 > 0)) and ((d3 > 0) != (d4 > 0)):
+                n += 1
+        return n
+
     def leader_hits(self, x1: float, y1: float, x2: float, y2: float,
                     clearance: float = 1.0, samples: int = 14) -> int:
         """How much of a leader from (x1,y1) to (x2,y2) runs over something.
@@ -205,22 +226,38 @@ def _point_segment_distance(px, py, x1, y1, x2, y2) -> float:
 #: Candidate balloon offsets, tried in order: close and to the side first,
 #: then further out.  Angles start at "up and right" and go round.
 _ANGLES = [i * 15 for i in range(24)]
-_RADII = [9.0, 12.5, 16.5, 21.0, 27.0, 34.0, 42.0]
+_RADII = [9.0, 12.5, 16.5, 21.0, 27.0, 34.0]
 
 
 def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
-                   bounds: Rect, c: Canvas) -> None:
-    """Put each balloon near its feature, in the first free spot found.
+                   bounds: Rect, c: Canvas, passes: int = 4) -> None:
+    """Put each balloon near its feature, clear of everything else.
 
-    Balloons sit inside the drawing area rather than in a ring outside the
-    part, because a ring forces long leaders that cross the view.  Placement is
-    greedy: each balloon becomes an obstacle for the ones after it, so they
-    never stack up.
+    A single greedy sweep is very order-sensitive: whichever balloon is placed
+    first takes the best spot and the last one is left with whatever remains,
+    which is how two balloons ended up touching and a leader ended up clipping
+    a third.  So the greedy pass is followed by relaxation sweeps that re-place
+    each balloon in turn against the others' final positions.  It converges in
+    a couple of passes on drawings this size.
     """
-    for item in items:
-        tx, ty = item.tip
-        best = None
-        best_score = None
+    placed: list[tuple[float, float] | None] = [None] * len(items)
+
+    def scene(skip: int) -> Obstacles:
+        o = Obstacles()
+        o.rects = list(obstacles.rects)
+        o.circles = list(obstacles.circles)
+        o.segments = list(obstacles.segments)
+        for k, pos in enumerate(placed):
+            if pos is None or k == skip:
+                continue
+            o.add_circle(pos[0], pos[1], BALLOON_R + 2.0)
+            o.add_segment(items[k].tip[0], items[k].tip[1], pos[0], pos[1])
+        return o
+
+    def best_spot(index: int) -> tuple[float, float]:
+        tx, ty = items[index].tip
+        world = scene(index)
+        best, best_score = None, None
         for radius in _RADII:
             for ang in _ANGLES:
                 a = math.radians(ang)
@@ -229,22 +266,51 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
                 if not (bounds.x + BALLOON_R < cx < bounds.x1 - BALLOON_R
                         and bounds.y + BALLOON_R < cy < bounds.y1 - BALLOON_R):
                     continue
-                # A leader crossing something is nearly as bad as the balloon
-                # landing on it: at a low weight the placer would accept a
-                # leader straight through the balloon next door rather than
-                # move a few millimetres further out.
-                score = (obstacles.hits(cx, cy, BALLOON_R + 1.6) * 100
-                         + obstacles.leader_hits(tx, ty, cx, cy) * 45
-                         + radius)
+                # Landing on something is worst; crossing a leader is next; a
+                # long leader is a real cost too, or a balloon will travel
+                # halfway across the view to dodge a crossing it could have
+                # avoided by moving a few millimetres.
+                score = (world.hits(cx, cy, BALLOON_R + 2.0) * 100
+                         + world.crossings(tx, ty, cx, cy) * 60
+                         + world.leader_hits(tx, ty, cx, cy) * 30
+                         + radius * 2.0)
                 if best_score is None or score < best_score:
                     best, best_score = (cx, cy), score
-            if best_score is not None and best_score < 45:
+            if best_score is not None and best_score < radius * 2.0 + 1:
                 break
-        if best is None:
-            best = (tx + 10.0, ty + 10.0)
-        dims.balloon(c, item.tip, best, item.label, radius=BALLOON_R)
-        obstacles.add_circle(best[0], best[1], BALLOON_R + 1.2)
-        obstacles.add_segment(item.tip[0], item.tip[1], best[0], best[1])
+        return best or (tx + 10.0, ty + 10.0)
+
+    for i in range(len(items)):
+        placed[i] = best_spot(i)
+    for _ in range(passes):
+        for i in range(len(items)):
+            placed[i] = best_spot(i)
+
+    for item, pos in zip(items, placed):
+        dims.balloon(c, item.tip, pos, item.label, radius=BALLOON_R)
+
+
+def _place_notes_and_sources(sheet: Sheet, notes: list[str],
+                             sources: list[str]) -> None:
+    """Draw the notes and sources in the band across the bottom of the sheet.
+
+    They used to share the annotation column with the schedules, which meant
+    notes were dropped whenever a board had a long feature list.  The band is
+    wide enough to flow them into columns and lose nothing.
+    """
+    columns = sheet.band_columns(sheet.notes_band)
+    # Whatever is left at the foot of the annotation column, once the schedules
+    # have been placed, becomes one more column.  A board with a long feature
+    # list has a short leftover and a long note list, and vice versa, so this
+    # is where the slack actually is.
+    spare = sheet.column_remaining
+    if spare > 30.0:
+        columns.append(Rect(sheet.column.x, sheet.column.y,
+                            sheet.column.w - sheet.COLUMN_GUTTER, spare))
+    blocks = [("NOTES", notes, style.T_NOTE)]
+    if sources:
+        blocks.append(("SOURCES", sources, style.T_TINY))
+    sheet.notes_columns(columns, blocks)
 
 
 def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
