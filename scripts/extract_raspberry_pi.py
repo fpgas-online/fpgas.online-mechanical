@@ -1,0 +1,333 @@
+#!/usr/bin/env python3
+"""Generate ``data/raspberry_pi_boards.py`` from Raspberry Pi Ltd drawings.
+
+Sources, all from Raspberry Pi Ltd and downloaded into ``tmp/rpi``:
+
+============  ==========================================================
+Pi 3B, 3B+    layered DXF (BOARD_OUTLINE / PARTS_TOP / SILK_TOP / ...)
+Pi 4B         layered DXF, and the only one whose DXF carries the holes
+Pi 5          1:1 vector PDF plot on A4
+Pi 3A+        vector PDF plot, reduced to fit the sheet
+============  ==========================================================
+
+Fetch them with ``scripts/fetch_raspberry_pi.sh``.
+
+Identification is human: the ``PARTS`` table gives, for each connector, roughly
+where it sits and roughly how big it is.  The script then finds the one outline
+in the source that matches and emits *its* exact numbers.  If a source ever
+changes, the selector stops matching and the script fails, rather than quietly
+emitting a wrong dimension.
+
+Run: uv run --no-project --with ezdxf --with pdfplumber python \\
+         scripts/extract_raspberry_pi.py
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import ezdxf
+import pdfplumber
+
+sys.path.insert(0, str(Path(__file__).parent))
+from dump_rpi_pdf import find_origin, points_mm, rectangles  # noqa: E402
+
+ROOT = Path(__file__).resolve().parent.parent
+RPI = ROOT / "tmp" / "rpi"
+
+DOC = "https://datasheets.raspberrypi.com"
+
+# Every Model B sized Raspberry Pi shares this hole pattern.  It is dimensioned
+# on each model's own mechanical drawing (3.5 mm in from the edges, 58 x 49 mm
+# spacing); the Pi 3B/3B+ DXFs omit the holes, so the figures below come from
+# the corresponding PDF drawings.
+STANDARD_HOLES = [(3.5, 3.5), (61.5, 3.5), (3.5, 52.5), (61.5, 52.5)]
+
+MODELS = [
+    dict(
+        key="rpi3b", title="Raspberry Pi 3 Model B", subtitle="85 x 56 mm",
+        kind="dxf", file="raspberry-pi-3-b-mechanical-drawing.dxf",
+        width=85.0, height=56.0, corner_radius=3.0,
+        hole_dia=2.75, hole_keepout=6.2,
+        hole_source=f"{DOC}/rpi3/raspberry-pi-3-b-mechanical-drawing.pdf",
+        drawing=f"{DOC}/rpi3/raspberry-pi-3-b-mechanical-drawing.dxf",
+        parts=[
+            ("gpio40", "40-pin GPIO header", "header", (32.5, 52.5), (50.8, 5.0)),
+            ("ethernet", "Ethernet RJ45", "ethernet", (76.3, 10.25), (21.35, 15.51)),
+            ("usb_a_1", "USB 2.0 type A (upper pair)", "usb_a", (78.15, 46.61), (17.7, 13.92)),
+            ("usb_a_2", "USB 2.0 type A (lower pair)", "usb_a", (78.15, 28.61), (17.7, 13.92)),
+            ("usb_power", "micro-USB power input", "usb_power", (10.6, 2.05), (7.5, 5.31)),
+            ("hdmi", "HDMI type A", "connector", (32.0, 4.57), (14.5, 12.15)),
+            ("av", "3.5 mm A/V jack", "connector", (53.5, 6.25), (7.0, 12.5)),
+        ],
+    ),
+    dict(
+        key="rpi3bplus", title="Raspberry Pi 3 Model B+", subtitle="85 x 56 mm",
+        kind="dxf", file="raspberry-pi-3-b-plus-mechanical-drawing.dxf",
+        width=85.0, height=56.0, corner_radius=3.0,
+        hole_dia=2.75, hole_keepout=6.2,
+        hole_source=f"{DOC}/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.pdf",
+        drawing=f"{DOC}/rpi3/raspberry-pi-3-b-plus-mechanical-drawing.dxf",
+        parts=[
+            ("gpio40", "40-pin GPIO header", "header", (32.5, 52.5), (50.8, 5.0)),
+            ("ethernet", "Ethernet RJ45", "ethernet", (76.3, 10.25), (21.35, 15.51)),
+            ("usb_a_1", "USB 2.0 type A (upper pair)", "usb_a", (78.15, 46.61), (17.7, 13.92)),
+            ("usb_a_2", "USB 2.0 type A (lower pair)", "usb_a", (78.15, 28.61), (17.7, 13.92)),
+            ("usb_power", "micro-USB power input", "usb_power", (10.6, 2.05), (7.5, 5.31)),
+            ("hdmi", "HDMI type A", "connector", (32.0, 4.57), (14.5, 12.15)),
+            ("av", "3.5 mm A/V jack", "connector", (53.5, 6.25), (7.0, 12.5)),
+        ],
+    ),
+    dict(
+        key="rpi3aplus", title="Raspberry Pi 3 Model A+", subtitle="65 x 56 mm",
+        kind="pdf", file="raspberry-pi-3-a-plus-mechanical-drawing.pdf",
+        width=65.0, height=56.0, corner_radius=3.0,
+        hole_dia=2.75, hole_keepout=6.2,
+        hole_source=f"{DOC}/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf",
+        drawing=f"{DOC}/rpi3/raspberry-pi-3-a-plus-mechanical-drawing.pdf",
+        reduced=True,
+        parts=[
+            ("gpio40", "40-pin GPIO header", "header", (32.5, 52.5), (50.8, 5.0)),
+            ("usb_a_1", "USB 2.0 type A (single)", "usb_a", (60.4, 31.5), (14.3, 13.1)),
+            ("usb_power", "micro-USB power input", "usb_power", (10.6, 2.05), (7.5, 5.31)),
+            ("hdmi", "HDMI type A", "connector", (32.0, 4.57), (14.5, 12.15)),
+            ("av", "3.5 mm A/V jack", "connector", (53.5, 6.25), (7.0, 12.5)),
+        ],
+    ),
+    dict(
+        key="rpi4b", title="Raspberry Pi 4 Model B", subtitle="85 x 56 mm",
+        kind="dxf", file="raspberry-pi-4-mechanical-drawing.dxf",
+        width=85.0, height=56.0, corner_radius=3.0,
+        hole_dia=2.70, hole_keepout=6.0, holes_from_source=True,
+        hole_source=f"{DOC}/rpi4/raspberry-pi-4-mechanical-drawing.dxf",
+        drawing=f"{DOC}/rpi4/raspberry-pi-4-mechanical-drawing.dxf",
+        parts=[
+            ("gpio40", "40-pin GPIO header", "header", (32.5, 52.5), (50.8, 5.0)),
+            ("ethernet", "Ethernet RJ45", "ethernet", (77.3, 45.75), (21.35, 15.51)),
+            ("usb_a_1", "USB 3.0 type A (upper pair)", "usb_a", (79.25, 27.34), (17.5, 13.82)),
+            ("usb_a_2", "USB 2.0 type A (lower pair)", "usb_a", (79.15, 8.61), (17.7, 13.92)),
+            ("usb_power", "USB-C power input", "usb_power", (11.2, 2.45), (8.65, 7.4)),
+            ("hdmi0", "micro-HDMI 0", "connector", (26.0, 2.55), (7.2, 7.95)),
+            ("hdmi1", "micro-HDMI 1", "connector", (39.5, 2.55), (7.2, 7.95)),
+            ("av", "3.5 mm A/V jack", "connector", (54.0, 6.25), (7.0, 12.5)),
+        ],
+    ),
+    dict(
+        key="rpi5", title="Raspberry Pi 5", subtitle="85 x 56 mm",
+        kind="pdf", file="raspberry-pi-5-mechanical-drawing.pdf",
+        width=85.0, height=56.0, corner_radius=3.0,
+        hole_dia=2.70, hole_keepout=5.8,
+        hole_source=f"{DOC}/rpi5/raspberry-pi-5-mechanical-drawing.pdf",
+        drawing=f"{DOC}/rpi5/raspberry-pi-5-mechanical-drawing.pdf",
+        # Snapped from the measured 3.482 / 61.480, which are within the
+        # +/-0.02 mm noise the same extraction shows on the mounting holes
+        # (3.500 / 61.497 / 52.501 against nominal 3.5 / 61.5 / 52.5).
+        aux_holes=[(3.5, 9.497, 3.0), (61.5, 46.504, 3.0)],
+        parts=[
+            ("gpio40", "40-pin GPIO header", "header", (32.5, 52.5), (50.8, 5.0)),
+            ("ethernet", "Ethernet RJ45", "ethernet", (77.3, 10.2), (21.24, 15.98)),
+            ("usb_a_1", "USB 3.0 type A (upper pair)", "usb_a", (79.1, 47.0), (16.32, 12.31)),
+            ("usb_a_2", "USB 3.0 type A (lower pair)", "usb_a", (79.1, 29.1), (16.32, 12.31)),
+            ("usb_power", "USB-C power input", "usb_power", (11.2, 2.35), (6.72, 7.3)),
+        ],
+    ),
+]
+
+
+def dxf_rects(path: Path):
+    doc = ezdxf.readfile(str(path))
+    msp = doc.modelspace()
+    out = []
+    for layer in ("PARTS_TOP",):
+        for e in list(msp.query(f'LWPOLYLINE[layer=="{layer}"]')) + \
+                 list(msp.query(f'POLYLINE[layer=="{layer}"]')):
+            if e.dxftype() == "LWPOLYLINE":
+                pts = [(p[0], p[1]) for p in e.get_points("xy")]
+            else:
+                pts = [(v.dxf.location.x, v.dxf.location.y) for v in e.vertices]
+            if len(pts) < 3:
+                continue
+            xs = [p[0] for p in pts]
+            ys = [p[1] for p in pts]
+            out.append((min(xs), min(ys), max(xs), max(ys)))
+    return out
+
+
+def dxf_holes(path: Path):
+    doc = ezdxf.readfile(str(path))
+    found = {}
+    for e in doc.modelspace().query('CIRCLE[layer=="0"]'):
+        c = e.dxf.center
+        found.setdefault((round(c.x, 3), round(c.y, 3)), []).append(2 * e.dxf.radius)
+    return {k: sorted(v) for k, v in found.items()}
+
+
+def pdf_rects(path: Path, width: float, height: float):
+    page = pdfplumber.open(str(path)).pages[0]
+    ox, oy, scale = find_origin(page)
+    segs = []
+    for obj in page.lines + page.curves:
+        pts = points_mm(page, obj)
+        for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+            p0 = ((ax - ox) * scale, (ay - oy) * scale)
+            p1 = ((bx - ox) * scale, (by - oy) * scale)
+            if all(-12 < p[0] < width + 12 and -12 < p[1] < height + 12
+                   for p in (p0, p1)):
+                segs.append((p0[0], p0[1], p1[0], p1[1]))
+    return rectangles(segs), scale
+
+
+def pick(rects, key, centre, size, tol_pos=2.5, tol_size=1.2):
+    """Choose the outline matching a selector, and complain if it is ambiguous."""
+    cx, cy = centre
+    w, h = size
+    hits = [r for r in rects
+            if abs((r[0] + r[2]) / 2 - cx) < tol_pos
+            and abs((r[1] + r[3]) / 2 - cy) < tol_pos
+            and abs((r[2] - r[0]) - w) < tol_size
+            and abs((r[3] - r[1]) - h) < tol_size]
+    if not hits:
+        raise SystemExit(f"{key}: no outline near {centre} sized {size}")
+    hits.sort(key=lambda r: abs((r[2] - r[0]) * (r[3] - r[1]) - w * h))
+    best = hits[0]
+    return tuple(round(v, 3) for v in best)
+
+
+def extract(model: dict) -> dict:
+    path = RPI / model["file"]
+    if not path.exists():
+        raise SystemExit(f"missing source {path}; run scripts/fetch_raspberry_pi.sh")
+
+    scale = 1.0
+    if model["kind"] == "dxf":
+        rects = dxf_rects(path)
+    else:
+        rects, scale = pdf_rects(path, model["width"], model["height"])
+
+    features = []
+    for key, label, kind, centre, size in model["parts"]:
+        tol_pos, tol_size = (3.5, 2.0) if model.get("reduced") else (2.5, 1.2)
+        x0, y0, x1, y1 = pick(rects, key, centre, size, tol_pos, tol_size)
+        features.append(dict(key=key, label=label, kind=kind,
+                             x0=x0, y0=y0, x1=x1, y1=y1))
+
+    holes = []
+    if model.get("holes_from_source"):
+        for (x, y), dias in sorted(dxf_holes(path).items()):
+            holes.append(dict(x=x, y=y, dia=round(min(dias), 3),
+                              keepout_dia=round(max(dias), 3), kind="mount"))
+        if len(holes) != 4:
+            raise SystemExit(f"{model['key']}: expected 4 holes, got {len(holes)}")
+    else:
+        for x, y in STANDARD_HOLES:
+            if x > model["width"] - 3.0:
+                continue
+            holes.append(dict(x=x, y=y, dia=model["hole_dia"],
+                              keepout_dia=model["hole_keepout"], kind="mount"))
+    for x, y, d in model.get("aux_holes", []):
+        holes.append(dict(x=round(x, 3), y=round(y, 3), dia=d,
+                          keepout_dia=None, kind="aux"))
+
+    return dict(model=model, features=features, holes=holes, scale=scale)
+
+
+HEADER = '''"""Raspberry Pi mechanical data, from Raspberry Pi Ltd drawings.
+
+GENERATED FILE -- do not edit by hand.
+Regenerate with::
+
+    uv run --no-project --with ezdxf --with pdfplumber python \\\\
+        scripts/extract_raspberry_pi.py
+
+Coordinates follow :mod:`data.schema`: origin at the lower-left corner of the
+board, X right, Y up, top view, millimetres.  This is the same way up as
+Raspberry Pi Ltd draw their own plan views, with the 40-pin GPIO header along
+the upper edge.
+
+Note the Ethernet jack and the USB type A ports swap places between the Pi 3
+and the Pi 4: on the Pi 3B/3B+ and on the Pi 5 the RJ45 sits in the lower right
+corner with the USB ports above it, while on the Pi 4B the RJ45 is in the upper
+right corner with the USB ports below.
+"""
+
+from __future__ import annotations
+
+from .schema import BoardSpec, Feature, Hole, Outline, Source
+
+BOARDS: dict[str, BoardSpec] = {}
+
+'''
+
+
+def render(rec: dict) -> str:
+    m = rec["model"]
+    holes = ",\n".join(
+        f"        Hole(x={h['x']}, y={h['y']}, dia={h['dia']}, kind={h['kind']!r}, "
+        f"keepout_dia={h['keepout_dia']})"
+        for h in rec["holes"])
+    feats = ",\n".join(
+        f"        Feature(key={f['key']!r}, label={f['label']!r}, kind={f['kind']!r},\n"
+        f"                x0={f['x0']}, y0={f['y0']}, x1={f['x1']}, y1={f['y1']})"
+        for f in rec["features"])
+
+    notes = ['"Connector outlines are the component body as drawn by '
+             'Raspberry Pi Ltd, including any overhang past the board edge."']
+    if m.get("reduced"):
+        notes.append('"The source drawing is a reduced plot, not 1:1, so '
+                     f'dimensions carry more uncertainty than the other models; '
+                     f'the recovered plot scale was {rec["scale"]:.4f}."')
+    if m.get("aux_holes"):
+        notes.append('"The two 3.0 mm holes are additional to the four M2.5 '
+                     'mounting holes, and sit 6.0 mm from the nearer mounting '
+                     'hole on the board diagonal."')
+    if not m.get("holes_from_source"):
+        notes.append('"The source DXF does not carry the mounting holes; hole '
+                     'positions and diameter are taken from the same model\'s '
+                     'PDF mechanical drawing."'
+                     if m["kind"] == "dxf" else
+                     '"Mounting hole diameter is the figure dimensioned on the '
+                     'drawing."')
+
+    return f'''
+BOARDS[{m["key"]!r}] = BoardSpec(
+    key={m["key"]!r},
+    title={m["title"]!r},
+    subtitle={m["subtitle"]!r},
+    family="raspberrypi",
+    front_edge="top",
+    outline=Outline(width={m["width"]}, height={m["height"]},
+                    corner_radius={m["corner_radius"]}),
+    holes=(
+{holes},
+    ),
+    features=(
+{feats},
+    ),
+    sources=(
+        Source(label="Mechanical drawing", ref={m["drawing"]!r},
+               note="Raspberry Pi Ltd"),
+        Source(label="Mounting holes", ref={m["hole_source"]!r},
+               note="Raspberry Pi Ltd"),
+    ),
+    notes=(
+        {",\n        ".join(notes)},
+    ),
+)
+'''
+
+
+def main() -> None:
+    chunks = [HEADER]
+    for model in MODELS:
+        rec = extract(model)
+        chunks.append(render(rec))
+        print(f"{model['key']:11s} {model['width']:5.1f} x {model['height']:4.1f} mm  "
+              f"{len(rec['holes'])} holes  {len(rec['features'])} features  "
+              f"scale={rec['scale']:.4f}")
+    (ROOT / "data" / "raspberry_pi_boards.py").write_text("".join(chunks))
+    print("wrote data/raspberry_pi_boards.py")
+
+
+if __name__ == "__main__":
+    main()

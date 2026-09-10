@@ -111,12 +111,15 @@ def rectangles(segments):
             for yhi in ys[i + 1:]:
                 if yhi - ylo < TOL:
                     continue
+                # A side counts if a vertical segment at either end spans the
+                # gap -- it may run past it, because connector shells are drawn
+                # with mounting tabs that overshoot the body outline.
                 sides = sum(
                     1 for (va, vb, vx) in vert
-                    if abs(va - ylo) < TOL and abs(vb - yhi) < TOL
+                    if va <= ylo + TOL and vb >= yhi - TOL
                     and (abs(vx - xa) < TOL or abs(vx - xb) < TOL)
                 )
-                if sides >= 2:
+                if sides >= 1:
                     rects.append((xa, ylo, xb, yhi))
     return rects
 
