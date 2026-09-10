@@ -51,17 +51,38 @@ def _pick_scale(length: float, depth: float, height: float,
     return 1.0, "1:1"
 
 
+#: The kinds of feature this sheet projects into the end view and dimensions.
+#: A feature of any other kind appears in the plan and in the feature table but
+#: contributes no dimension, so its tolerance says nothing about the sheet.
+DIMENSIONED_KINDS = ("ethernet",)
+
+
+def ref_features(spec) -> tuple:
+    """The features whose dimensions are drawn REF on this sheet.
+
+    One definition, used both to decide which values get the REF suffix and to
+    work out what the note should say they are good to.  Read off all of
+    ``spec.features`` instead, the note on the Waveshare sheet quoted
+    "+/-1.5 mm to +/-2.0 mm", where the 2.0 belonged to the captive output
+    cable: a feature that carries a tolerance but is not dimensioned anywhere
+    on the sheet.
+    """
+    return tuple(f for f in spec.features
+                 if f.kind in DIMENSIONED_KINDS and f.tol)
+
+
 def _ref_tol(spec) -> str:
     """How good the REF dimensions on this sheet are, read from the data.
 
     Written out rather than quoted from memory: the two splitters are scaled
     from different photographs and are not equally good.
     """
-    tols = sorted({f.tol for f in spec.features if f.tol})
+    tols = sorted({f.tol for f in ref_features(spec)})
     if not tols:
         return "the general tolerance"
-    return " to ".join(f"+/-{t:.1f} mm" for t in (tols[0], tols[-1])) \
-        if tols[0] != tols[-1] else f"+/-{tols[0]:.1f} mm"
+    if tols[0] == tols[-1]:
+        return f"+/-{tols[0]:.1f} mm"
+    return f"+/-{tols[0]:.1f} mm to +/-{tols[-1]:.1f} mm"
 
 
 def _enclosure_text(spec) -> tuple[list[str], list[str]]:
@@ -153,7 +174,7 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
         c.rect(px, py, (f.x1 - f.x0) * scale, (f.y1 - f.y0) * scale,
                weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT,
                fill=style.C_FILL_LIGHT)
-        if f.kind == "ethernet":
+        if f.kind in DIMENSIONED_KINDS:
             if f.z0 is None or f.z1 is None:
                 raise SystemExit(
                     f"{spec.key}: feature {f.key} is drawn in the end view, "
@@ -173,7 +194,7 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
             # inspection.  The figure it is good to is in a note, because
             # spelling the tolerance out on each dimension makes the text
             # wider than the feature it dimensions.
-            ap = " REF" if f.tol else ""
+            ap = " REF" if f in ref_features(spec) else ""
             # One stack per axis, all measured off the same corner of the end
             # view and ordered shortest first, so a reader works outwards from
             # the aperture instead of picking between two baselines.
@@ -204,7 +225,8 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
                         horizontal=True, text=f"{f.x1 - f.x0:.2f}{ap}",
                         text_side="high")
             dims.linear(c, (plan.x, plan.y), (plan.x + f.x0 * scale, plan.y),
-                        -25.0, horizontal=True, text=f"{f.x0:.2f}{ap}")
+                        -25.0, horizontal=True, text=f"{f.x0:.2f}{ap}",
+                        text_side="low")
             plan_stack = -36.0
 
     dims.linear(c, (plan.x, plan.y), (plan.x1, plan.y), plan_stack,

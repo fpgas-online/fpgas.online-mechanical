@@ -68,11 +68,13 @@ class _Ballooned:
     label: str
     tip: tuple[float, float]
     tips: tuple[tuple[float, float], ...] = ()
-    #: The obstacle rectangle this balloon's own feature contributes, if any.
-    #: A leader has to start on its feature, so scoring it against that
-    #: feature charges every leader for something it cannot avoid, and the
-    #: balloon ends up wedged into whatever gap is nearest.
-    own: tuple[float, float, float, float] | None = None
+    #: Index into ``Obstacles.rects`` of the rectangle this balloon's own
+    #: feature contributes, if any.  A leader has to start on its feature, so
+    #: scoring it against that feature charges every leader for something it
+    #: cannot avoid, and the balloon ends up wedged into whatever gap is
+    #: nearest.  Held as an index, not as the rectangle itself: two features
+    #: with the same bounding box would otherwise both be exempted.
+    own: int | None = None
 
     def anchors(self) -> tuple[tuple[float, float], ...]:
         return self.tips or (self.tip,)
@@ -330,9 +332,10 @@ def _ordinate_values(spec: BoardSpec, overlay: BoardSpec | None
 def _feature_anchors(view: View, f) -> tuple[tuple[float, float], ...]:
     """Where a leader may touch feature *f*, best first.
 
-    The centre first, then the midpoints of the four quadrants.  Everything
-    stays well inside the outline, so the dot always reads as belonging to
-    this feature and not to whatever is next to it.
+    The centre first, then the four edge midpoints, then the four quadrant
+    centres, all a quarter of the feature's width and height from the centre.
+    Everything stays well inside the outline, so the dot always reads as
+    belonging to this feature and not to whatever is next to it.
     """
     qx, qy = f.width / 4.0, f.height / 4.0
     return tuple(view.pt(f.cx + dx, f.cy + dy) for dx, dy in
@@ -366,7 +369,8 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
         """
         o = Obstacles()
         own = items[skip].own
-        o.rects = [r for r in obstacles.rects if not (route and r == own)]
+        o.rects = [r for i, r in enumerate(obstacles.rects)
+                   if not (route and i == own)]
         o.circles = list(obstacles.circles)
         o.segments = list(obstacles.segments)
         if not route and position_only is not None:
@@ -668,10 +672,10 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
                           sheet.area.y1 - chain_y - 4.0)
 
     obstacles = Obstacles()
-    feature_rect: dict[int, tuple[float, float, float, float]] = {}
+    feature_rect: dict[int, int] = {}
     for i, f in enumerate(spec.features):
         obstacles.add_rect(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1), pad=0.8)
-        feature_rect[i] = obstacles.rects[-1]
+        feature_rect[i] = len(obstacles.rects) - 1
     # The radius callout is drawn after the balloons but occupies its space
     # regardless, so reserve it now.
     if o.corner_radius:

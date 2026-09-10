@@ -119,7 +119,7 @@ def overlap(a, b) -> float:
     return min(dx, dy) if dx > 0 and dy > 0 else 0.0
 
 
-def main() -> None:
+def main() -> int:
     sheets = sorted((ROOT / "diagrams").rglob("*.svg"))
     if not sheets:
         raise SystemExit("no sheets found; run scripts/generate_diagrams.py")
@@ -170,7 +170,10 @@ def main() -> None:
         else:
             print(f"{name}: clean ({len(items)} text elements)")
     print(f"\n{total} problem(s) across {len(sheets)} sheets")
+    # A non-zero exit, so `make check` actually fails.  Printing the problems
+    # and exiting 0 meant a build could go green with fifty collisions on it.
+    return 1 if total else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -326,9 +326,12 @@ that box to the text took the crossings from 8 to 2.
 
 The two that remain are the same physical case on the Pi 4B and Pi 5: the
 micro-HDMI connectors sit directly beneath host JC, so a leader from them
-crosses the host whichever way it leaves.  Note 8 on those sheets says so.
-`scripts/check_balloons.py` reports it every run rather than letting it pass
-unremarked.
+crosses the host whichever way it leaves.  Both sheets carry a note saying so,
+the one beginning "Pmod host JC on the Pmod HAT Adapter overhangs the lower
+board edge".  Its number is not the same on the two sheets, because the number
+of board-specific notes before it differs; cite it by its opening words, not by
+number.  `scripts/check_balloons.py` now lists those two crossings as accepted
+by balloon, and fails on any other.
 
 ## Things that did not work
 

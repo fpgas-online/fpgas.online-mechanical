@@ -171,15 +171,14 @@
 <text x="23.542" y="228.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The RJ45 aperture in the end view is a standard 8P8C jack</text>
 <text x="23.542" y="233.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">envelope, placed centrally because the vendor does not</text>
 <text x="23.542" y="237.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">dimension it. Every dimension marked REF is scaled from</text>
-<text x="23.542" y="242.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">vendor photographs, is good to about +/-1.5 mm to +/-2.0</text>
-<text x="23.542" y="246.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm, and is not for inspection. The body envelope is the</text>
-<text x="23.542" y="251.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">dimension to trust.</text>
-<text x="19" y="256.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="23.542" y="256.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The corner radius is nominal. It belongs to the body</text>
-<text x="23.542" y="261.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">cross-section, so it appears in the end view only.</text>
-<text x="19" y="266.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
-<text x="23.542" y="266.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Output is 5 V at up to 5 A (25 W) on a USB-C male plug on a</text>
-<text x="23.542" y="271.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">captive lead, not a panel-mounted receptacle.</text>
+<text x="23.542" y="242.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">vendor photographs, is good to about +/-1.5 mm, and is not</text>
+<text x="23.542" y="246.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">for inspection. The body envelope is the dimension to trust.</text>
+<text x="19" y="252.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="23.542" y="252.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The corner radius is nominal. It belongs to the body</text>
+<text x="23.542" y="256.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">cross-section, so it appears in the end view only.</text>
+<text x="19" y="262.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
+<text x="23.542" y="262.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Output is 5 V at up to 5 A (25 W) on a USB-C male plug on a</text>
+<text x="23.542" y="266.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">captive lead, not a panel-mounted receptacle.</text>
 <text x="129.5" y="193.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
 <line x1="129.5" y1="194.9" x2="232" y2="194.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="129.5" y="199.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>

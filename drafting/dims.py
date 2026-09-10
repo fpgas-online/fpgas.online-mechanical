@@ -23,7 +23,7 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
            offset: float, *, horizontal: bool | None = None,
            text: str | None = None, places: int = 2, value: float | None = None,
            colour: str = style.C_DIM, size: float = style.T_DIM,
-           extension: bool = True, flip_text: bool = False,
+           extension: bool = True,
            text_offset: float = 0.0, ext_start: float | None = None,
            text_side: str | None = None) -> None:
     """Dimension between two sheet points, offset perpendicular to their span.
@@ -100,8 +100,6 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
             else:
                 tx, anchor = b[0] + stub, "start"
         ty = line_y + below + text_offset
-        if flip_text:
-            ty = line_y - below - style.text_height(size) - text_offset
         c.text(tx, ty, label, size=size, colour=colour, anchor=anchor)
     else:
         dx = offset
@@ -145,8 +143,6 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
             else:
                 ty, anchor = hi + stub, "start"
         tx = line_x - aside - text_offset
-        if flip_text:
-            tx = line_x + aside + text_offset
         # Vertical dimension text reads from the right, per ISO 129-1.
         c.text(tx, ty, label, size=size, colour=colour, anchor=anchor,
                rotate=90)

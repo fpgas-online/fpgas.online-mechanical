@@ -7,15 +7,16 @@ from, and reports every leader whose final route crosses a *hard* obstacle: a
 phantom Pmod host, another balloon, another leader, or an ordinate witness
 line.  Those are the things a reader cannot afford to have a line ruled over.
 
-It is a report, not a gate.  One case is unavoidable and is expected in the
-output: on the Raspberry Pi 5 the micro-HDMI connectors sit directly beneath
-the Pmod HAT Adapter's host JC, so a leader from those connectors has to cross
-the host whichever way it leaves.  That physical overlap is the subject of a
-note on the sheet.
+Two crossings are unavoidable and are listed in ACCEPTED below: on the
+Raspberry Pi 4B and Pi 5 the micro-HDMI connectors sit directly beneath the
+Pmod HAT Adapter's host JC, so a leader from those connectors has to cross the
+host whichever way it leaves.  That physical overlap is the subject of a note
+on both sheets.  Anything else fails, so a regression cannot pass unremarked
+just because the total happens to look familiar.
 
 Run with::
 
-    uv run --no-project --with pillow --with pyyaml python scripts/check_balloons.py
+    uv run --no-project --with pillow python scripts/check_balloons.py
 """
 
 from __future__ import annotations
@@ -94,33 +95,67 @@ def _crossed(tip, centre, obstacles, samples: int = 200) -> list[str]:
             if v >= MIN_RUN_MM]
 
 
-def check(name: str, spec, overlay=None) -> int:
+#: Crossings that no placement can avoid, as {sheet: {balloon labels}}.  On
+#: both these boards the micro-HDMI connectors sit underneath the Pmod HAT
+#: Adapter's host JC, so a leader from them crosses the host whichever way it
+#: leaves.  Listed per balloon rather than as a count, so a new crossing
+#: somewhere else on the same sheet is still caught.
+ACCEPTED = {
+    "raspberry-pi/rpi4b": {"6"},
+    "raspberry-pi/rpi5": {"6"},
+}
+
+
+def check(name: str, spec, overlay=None) -> tuple[set[str], set[str]]:
+    """Draw one sheet and report which balloons cross a hard obstacle.
+
+    Returns the crossings that were not expected and the expected ones that no
+    longer happen; both mean the sheet and ACCEPTED have drifted apart.
+    """
     bs.render_board(spec, drawing_no="-", date="0000-00-00", overlay=overlay)
     obstacles = _state["obstacles"]
-    bad = 0
+    accepted = ACCEPTED.get(name, set())
+    crossing = set()
     for label, tip, centre in _state["leaders"]:
         hit = _crossed(tip, centre, obstacles)
         if hit:
-            bad += 1
-            print(f"  balloon {label}: leader crosses " + "; ".join(hit))
-    print(f"{name}: {bad} leader(s) crossing a hard obstacle "
+            crossing.add(label)
+            mark = "accepted" if label in accepted else "UNEXPECTED"
+            print(f"  balloon {label} ({mark}): leader crosses "
+                  + "; ".join(hit))
+    print(f"{name}: {len(crossing)} leader(s) crossing a hard obstacle "
           f"of {len(_state['leaders'])}")
-    return bad
+    return crossing - accepted, accepted - crossing
 
 
 def main() -> int:
-    total = 0
-    for key, spec in TT.items():
-        total += check(f"tinytapeout/{key}", spec)
-    for key, spec in RPI.items():
-        total += check(f"raspberry-pi/{key}", spec, overlay=PMOD_HAT)
-    total += check("accessories/pmod-hat", PMOD_HAT)
-    for key, spec in ACCESSORIES.items():
-        if spec is PMOD_HAT:
-            continue
-        total += check(f"accessories/{key}", spec)
-    print(f"\n{total} leader(s) crossing a hard obstacle in total")
-    return 0
+    sheets = [(f"tinytapeout/{k}", v, None) for k, v in TT.items()]
+    sheets += [(f"raspberry-pi/{k}", v, PMOD_HAT) for k, v in RPI.items()]
+    sheets.append(("accessories/pmod-hat", PMOD_HAT, None))
+    sheets += [(f"accessories/{k}", v, None) for k, v in ACCESSORIES.items()
+               if v is not PMOD_HAT]
+
+    unexpected: dict[str, set[str]] = {}
+    stale: dict[str, set[str]] = {}
+    for name, spec, overlay in sheets:
+        new, gone = check(name, spec, overlay)
+        if new:
+            unexpected[name] = new
+        if gone:
+            stale[name] = gone
+
+    print()
+    for name, labels in stale.items():
+        print(f"{name}: balloon(s) {', '.join(sorted(labels))} no longer "
+              "cross anything; trim them from ACCEPTED")
+    if not unexpected:
+        print(f"pass: {sum(len(v) for v in ACCEPTED.values())} accepted "
+              f"crossing(s), none unexpected, across {len(sheets)} sheets")
+        return 0
+    for name, labels in unexpected.items():
+        print(f"FAIL {name}: balloon(s) {', '.join(sorted(labels))} cross a "
+              "hard obstacle and are not in ACCEPTED")
+    return 1
 
 
 if __name__ == "__main__":

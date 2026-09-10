@@ -28,7 +28,7 @@ Each sheet is written as SVG, PDF and PNG. A3, mostly 1:1.
 ```sh
 make fetch     # download the upstream sources into tmp/, once
 make data      # re-extract the mechanical database from them
-make check     # render every sheet, then run both checks
+make check     # render every sheet, then run the three checks
 ```
 
 Rebuilding is deterministic: re-running the whole pipeline leaves the SVGs,
