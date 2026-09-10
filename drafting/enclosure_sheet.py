@@ -47,10 +47,13 @@ def _pick_scale(length: float, depth: float, height: float,
     need_h = height + GAP + depth
     # Reserve room for the dimensions that sit outside the view block: an
     # overall dimension plus its text on the left and below, and the height
-    # dimension on the right.
+    # dimension on the right.  Measured, not guessed: the plan's stack reaches
+    # 36 mm below the view plus its text, and the caption sits 6 mm above the
+    # elevation.  At 64 the generic splitter missed 1:1 by three millimetres
+    # and was drawn at half the size of the Waveshare sheet beside it.
     for num, den in STANDARD_SCALES:
         s = num / den
-        if need_w * s <= area.w - 52 and need_h * s <= area.h - 64:
+        if need_w * s <= area.w - 52 and need_h * s <= area.h - 56:
             return s, scale_text(num, den)
     return 1.0, "1:1"
 
@@ -124,7 +127,11 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
     band_h, band_cols = Sheet.plan_notes_band(
         sheet_size, note_blocks(notes, src),
         max_height=style.SHEET_SIZES[sheet_size][1]
-        - 2 * style.FRAME_MARGIN - (height + GAP + depth) - 64.0)
+        # The 4 mm is the gap the sheet leaves between the notes band
+        # and the drawing area.  Left out, the band could take the
+        # last four millimetres the view needed and drop it a whole
+        # scale step.
+        - 2 * style.FRAME_MARGIN - (height + GAP + depth) - 56.0 - 4.0)
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle,
         drawing_no=drawing_no, rev="A", date=date, drawn_by="generated",
