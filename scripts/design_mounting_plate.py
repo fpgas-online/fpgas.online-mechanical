@@ -196,7 +196,48 @@ def build():
                                                 (ab[1]["x"], ab[1]["y"])))
             slots.append(dict(x0=a["x"], y0=a["y"], x1=b["x"], y1=b["y"],
                               width=SLOT_WIDTH, used=used, spread=span))
+
+    # Numbered in board-version order, not left to right.  A user of the plate
+    # arrives knowing which revision they have and wants that revision's four
+    # holes; numbering them spatially scattered each revision's set across the
+    # whole range, so H1, H3, H9 and H10 was one board's pattern.  A hole two
+    # revisions share is numbered with the earlier of them.
+    order = {pl["name"]: i for i, pl in enumerate(place)}
+
+    def by_version(entry, xkey="x", ykey="y"):
+        return (min(order[rev] for rev, _ in entry["used"]),
+                round(entry[xkey], 1), round(entry[ykey], 1))
+
+    holes.sort(key=by_version)
+    slots.sort(key=lambda e: by_version(e, "x0", "y0"))
     return place, holes, slots
+
+
+def usb_c_positions(place) -> dict:
+    """Where each revision's USB-C connector lands in plate coordinates.
+
+    A chassis has to open for it, and it moves further between revisions than
+    anything else on these boards: TT01-03 puts it on the front edge beside
+    the Pmod hosts, every later revision puts it at the back.
+    """
+    out = {}
+    for pl in place:
+        for f in pl["board"].features:
+            if f.kind != "usb_power":
+                continue
+            # ox/oy are design-frame offsets, whose origin is the leftmost
+            # Pmod pin-field centre; the datum shift puts them in plate
+            # coordinates, which is what every other number in this module is.
+            out[pl["name"]] = (round(pl["ox"] + f.x0 + DATUM_X, 3),
+                               round(pl["oy"] + f.y0 + DATUM_Y, 3),
+                               round(pl["ox"] + f.x1 + DATUM_X, 3),
+                               round(pl["oy"] + f.y1 + DATUM_Y, 3))
+    missing = [pl["name"] for pl in place if pl["name"] not in out]
+    if missing:
+        raise SystemExit(
+            f"no USB-C feature found for {', '.join(missing)}; the plate "
+            "marks that connector for every revision it serves")
+    return out
 
 
 def check_fasteners(place, holes, slots) -> None:
@@ -306,6 +347,11 @@ PMOD_PITCH = {pitch}
 #: rather than assuming it.  dy0 is negative because the body overhangs the
 #: edge its host faces, and that overhang is what fixes the plate's front edge.
 PMOD_BODY = {pmod_body}
+
+#: Where each revision's USB-C connector lands, in plate coordinates, as
+#: (x0, y0, x1, y1).  Marked on the plate because a chassis has to open for it
+#: and it moves further between revisions than anything else on the board.
+USB_C = {usb_c}
 
 #: Offset from the design frame (origin at the leftmost Pmod pin-field centre)
 #: to plate coordinates.
@@ -435,6 +481,9 @@ def main() -> None:
     text = TEMPLATE.format(
         pmod_x=repr(tuple(round(DATUM_X + i * PMOD_PITCH, 3) for i in range(3))),
         pmod_y=DATUM_Y, pitch=PMOD_PITCH, pmod_body=repr(PMOD_BODY),
+        usb_c="{\n" + "".join(
+            f"    {k!r}: {v!r},\n" for k, v in usb_c_positions(place).items()
+        ) + "}",
         datum_x=DATUM_X, datum_y=DATUM_Y,
         placements=place_src(), holes=hole_src(), slots=slot_src(),
         w=PLATE_WIDTH, h=PLATE_HEIGHT, r=PLATE_CORNER_R,

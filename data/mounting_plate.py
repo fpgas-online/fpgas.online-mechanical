@@ -29,6 +29,17 @@ PMOD_PITCH = 22.86
 #: edge its host faces, and that overhang is what fixes the plate's front edge.
 PMOD_BODY = (-8.15, 8.1, -11.78, 3.07)
 
+#: Where each revision's USB-C connector lands, in plate coordinates, as
+#: (x0, y0, x1, y1).  Marked on the plate because a chassis has to open for it
+#: and it moves further between revisions than anything else on the board.
+USB_C = {
+    'TT01-03': (28.17, 3.285, 38.31, 11.185),
+    'TT04-05': (32.935, 77.775, 45.675, 86.075),
+    'TT06-08': (72.425, 74.955, 83.065, 84.375),
+    'v3.2': (90.29, 78.0, 100.93, 87.42),
+    'v3.3': (90.29, 83.0, 100.93, 92.42),
+}
+
 #: Offset from the design frame (origin at the leftmost Pmod pin-field centre)
 #: to plate coordinates.
 DATUM_X = 38.75
@@ -57,15 +68,15 @@ PLATE = BoardSpec(
     outline=Outline(width=135.0, height=101.0, corner_radius=4.0, thickness=3.0),
     holes=(
         Hole(x=23.455, y=81.778, dia=3.40, label='TT01-03:MT3+v3.2:MT1', kind="board", tol=None),  # Serves 2 revision positions spread 0.111 mm; drilled at their midpoint.
-        Hole(x=23.400, y=86.770, dia=3.40, label='v3.3:MT1', kind="board", tol=None),
         Hole(x=23.510, y=8.285, dia=3.40, label='TT01-03:MT1', kind="board", tol=None),
-        Hole(x=96.400, y=14.270, dia=3.40, label='v3.2:MT2+v3.3:MT2', kind="board", tol=None),
-        Hole(x=106.745, y=13.225, dia=3.40, label='TT06-08:MT2', kind="board", tol=None),
-        Hole(x=106.745, y=79.725, dia=3.40, label='TT06-08:MT4', kind="board", tol=None),
-        Hole(x=111.805, y=8.475, dia=3.40, label='TT04-05:MT2', kind="board", tol=None),
-        Hole(x=111.805, y=81.975, dia=3.40, label='TT04-05:MT4', kind="board", tol=None),
         Hole(x=120.510, y=8.285, dia=3.40, label='TT01-03:MT2', kind="board", tol=None),
         Hole(x=120.510, y=81.785, dia=3.40, label='TT01-03:MT4', kind="board", tol=None),
+        Hole(x=111.805, y=8.475, dia=3.40, label='TT04-05:MT2', kind="board", tol=None),
+        Hole(x=111.805, y=81.975, dia=3.40, label='TT04-05:MT4', kind="board", tol=None),
+        Hole(x=106.745, y=13.225, dia=3.40, label='TT06-08:MT2', kind="board", tol=None),
+        Hole(x=106.745, y=79.725, dia=3.40, label='TT06-08:MT4', kind="board", tol=None),
+        Hole(x=96.400, y=14.270, dia=3.40, label='v3.2:MT2+v3.3:MT2', kind="board", tol=None),
+        Hole(x=23.400, y=86.770, dia=3.40, label='v3.3:MT1', kind="board", tol=None),
         Hole(x=5.373, y=22.000, dia=4.30, label="PLATE", kind="plate"),
         Hole(x=5.373, y=74.000, dia=4.30, label="PLATE", kind="plate"),
         Hole(x=129.630, y=22.000, dia=4.30, label="PLATE", kind="plate"),

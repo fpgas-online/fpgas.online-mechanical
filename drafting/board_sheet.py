@@ -260,6 +260,28 @@ class Obstacles:
                            clearance, worst=True)
         return n
 
+    def rect_hits(self, x0: float, y0: float, x1: float, y1: float) -> float:
+        """Weight of the obstacles a rectangle overlaps.
+
+        A label is a wide, short box, and testing it as a disc of half its
+        width either misses a neighbour above it or invents one beside it.
+        The mounting plate's USB-C marks were placed by the disc test and
+        still landed on a hole label and on the corner radius callout.
+        """
+        n = 0.0
+        for ax0, ay0, ax1, ay1, w in self.rects:
+            if x1 > ax0 and x0 < ax1 and y1 > ay0 and y0 < ay1:
+                n += w
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        rr = math.hypot(x1 - x0, y1 - y0) / 2
+        for ox, oy, orr, w in self.circles:
+            if math.hypot(cx - ox, cy - oy) < rr + orr:
+                n += w
+        for ax0, ay0, ax1, ay1, w in self.segments:
+            if _segment_hits_rect(ax0, ay0, ax1, ay1, x0, y0, x1, y1):
+                n += w
+        return n
+
     def hits(self, cx: float, cy: float, r: float,
              worst: bool = False) -> float:
         """Weight of the obstacles a disc of radius *r* at (cx,cy) touches.
@@ -279,6 +301,24 @@ class Obstacles:
             if _point_segment_distance(cx, cy, x1, y1, x2, y2) < r:
                 n = max(n, w) if worst else n + w
         return n
+
+
+def _segment_hits_rect(ax, ay, bx, by, x0, y0, x1, y1) -> bool:
+    """Whether a segment touches an axis-aligned rectangle."""
+    if max(ax, bx) < x0 or min(ax, bx) > x1:
+        return False
+    if max(ay, by) < y0 or min(ay, by) > y1:
+        return False
+    if x0 <= ax <= x1 and y0 <= ay <= y1:
+        return True
+    if x0 <= bx <= x1 and y0 <= by <= y1:
+        return True
+    # Both ends outside: the segment crosses if the corners fall on both sides.
+    def side(px, py):
+        return (bx - ax) * (py - ay) - (by - ay) * (px - ax)
+    signs = [side(x, y) > 0
+             for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))]
+    return any(signs) and not all(signs)
 
 
 def _point_segment_distance(px, py, x1, y1, x2, y2) -> float:
@@ -590,6 +630,7 @@ LEGEND_STYLES = {
     "phantom": ("line", style.W_PHANTOM, style.C_PHANTOM, style.D_PHANTOM),
     "centre": ("line", style.W_CENTRE, style.C_LINE, style.D_CENTRE),
     "dimension": ("arrow", style.W_THIN, style.C_DIM, None),
+    "usbc": ("line", style.W_PHANTOM, "#7a4a00", style.D_PHANTOM),
 }
 
 

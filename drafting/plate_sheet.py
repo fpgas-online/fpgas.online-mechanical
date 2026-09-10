@@ -16,7 +16,7 @@ from __future__ import annotations
 import math
 
 from data.mounting_plate import (PLACEMENTS, PMOD_BODY, PMOD_ROW_Y,
-                                 PMOD_SLOT_X, PLATE)
+                                 PMOD_SLOT_X, PLATE, USB_C)
 from data.schema import BoardSpec, Hole, Slot
 from data.tinytapeout_boards import BOARDS as TT_BOARDS
 
@@ -34,6 +34,9 @@ PLATE_MARGIN_BOTTOM = 40.0
 
 BOARD_HOLE = "#a00000"
 PLATE_HOLE = "#006060"
+#: The USB-C outlines.  Distinct from both hole colours because it is neither
+#: a hole nor a plate feature: it is an opening a chassis has to provide.
+USB_MARK = "#7a4a00"
 
 
 def draw_slot(c: Canvas, view: View, s: Slot, colour: str = BOARD_HOLE) -> None:
@@ -109,7 +112,9 @@ def place_label(c: Canvas, obstacles: Obstacles, anchor: tuple[float, float],
                 continue
             mine = math.dist((cx, cy), (px, py))
             stolen = any(math.dist((cx, cy), o) < mine for o in (others or ()))
-            score = (obstacles.hits(cx, cy, max(tw, th) / 2) * 100
+            half_h = (th + style.descender(style.T_LABEL)) / 2
+            score = (obstacles.rect_hits(cx - tw / 2, cy - half_h,
+                                         cx + tw / 2, cy + half_h) * 100
                      + stolen * 70 + radius)
             if best_score is None or score < best_score:
                 best, best_score = (cx, cy), score
@@ -140,7 +145,7 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
                      highlight: set[int] | None = None,
                      extra: Obstacles | None = None,
                      slot_labels: dict[int, str] | None = None,
-                     bounds: Rect | None = None) -> None:
+                     bounds: Rect | None = None) -> Obstacles:
     """Draw the holes, and place their labels so they do not collide.
 
     Several holes on this plate sit five millimetres apart, so a fixed label
@@ -204,6 +209,10 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
         box = place_label(c, obstacles, (mx, my), half, slot_labels[i],
                           BOARD_HOLE, others((mx, my)), bounds)
         obstacles.add_rect(*box, pad=1.5)
+    # Returned so a caller labelling anything else on the same view carries on
+    # from here: the USB-C marks were placed against a set that did not know
+    # where the hole labels had gone, and landed on three of them.
+    return obstacles
 
 
 def _group_key() -> str:
@@ -269,6 +278,7 @@ PLATE_LEGEND = [
     ("centre", "Slot axis"),
     ("component", "Pmod host pin field, where a board's hosts land"),
     ("phantom", "Pmod connector body, overhanging the front edge"),
+    ("usbc", "USB-C connector, one position per board version"),
     ("dimension", "Dimension, extension and leader"),
 ]
 
@@ -277,6 +287,42 @@ GUIDE_LEGEND = [
     (BOARD_HOLE, "Hole or slot this revision uses"),
     ("phantom", "Holes it does not use, and its board outline"),
 ]
+
+
+def holes_by_version(spec) -> list[tuple[str, list[str]]]:
+    """Which plate holes and slots each board version uses, in version order.
+
+    The hole table is indexed by hole and says which versions use it, which
+    answers "what is this hole for".  A user of the plate has the opposite
+    question -- "I have this board, which holes do I use" -- so it is also
+    given the other way round.
+    """
+    labels, _, _ = hole_ids(spec)
+    used: dict[str, list[str]] = {name: [] for name in PLACEMENTS}
+    for i, h in enumerate(spec.holes):
+        if h.kind == "plate":
+            continue
+        for part in h.label.split("+"):
+            group = part.split(":")[0]
+            if group in used:
+                used[group].append(labels[i])
+    for n, sl in enumerate(spec.slots, 1):
+        for part in sl.label.split("+"):
+            group = part.split(":")[0]
+            if group in used:
+                used[group].append(f"S{n}")
+    for name, ids in used.items():
+        want = len(TT_BOARDS[PLACEMENTS[name]["revision"]].holes)
+        if len(ids) != want:
+            raise SystemExit(
+                f"{name} uses {len(ids)} plate positions "
+                f"({', '.join(ids)}) but its board has {want} mounting "
+                "holes; the plate must serve every one of them")
+    return [(name, sorted(ids, key=_id_sort)) for name, ids in used.items()]
+
+
+def _id_sort(label: str) -> tuple[int, int]:
+    return (0 if label.startswith("H") else 1, int(label[1:]))
 
 
 def hole_ids(spec) -> tuple[dict[int, str], list[int], list[int]]:
@@ -397,11 +443,27 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
         edge.add_rect(sx - cap_w / 2, cap_y - style.descender(style.T_LABEL),
                       sx + cap_w / 2, cap_y + style.T_LABEL, pad=1.2)
 
+    # Where each revision's USB-C lands.  A chassis has to open for it, and it
+    # is in a different place on every revision: TT01-03 puts it on the front
+    # edge beside the Pmod hosts, every later revision at the back.
+    for name, (ux0, uy0, ux1, uy1) in USB_C.items():
+        r = (view.x(ux0), view.y(uy0), view.x(ux1), view.y(uy1))
+        edge.add_rect(min(r[0], r[2]), min(r[1], r[3]),
+                      max(r[0], r[2]), max(r[1], r[3]), pad=0.8)
+
     for sl in spec.slots:
         draw_slot(c, view, sl)
-    draw_plate_holes(c, view, spec, labels, extra=edge,
-                     slot_labels={i: f"S{i + 1}"
-                                  for i in range(len(spec.slots))})
+    usb_obstacles = draw_plate_holes(
+        c, view, spec, labels, extra=edge,
+        slot_labels={i: f"S{i + 1}" for i in range(len(spec.slots))})
+    for name, (ux0, uy0, ux1, uy1) in USB_C.items():
+        x0, y0 = view.pt(ux0, uy0)
+        x1, y1 = view.pt(ux1, uy1)
+        c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
+               weight=style.W_PHANTOM, colour=USB_MARK, dash=style.D_PHANTOM)
+        box = place_label(c, usb_obstacles, ((x0 + x1) / 2, (y0 + y1) / 2),
+                          max(abs(x1 - x0), abs(y1 - y0)) / 2, name, USB_MARK)
+        usb_obstacles.add_rect(*box, pad=1.5)
 
     for sx, sy, half, cap, cap_y, _, body in envelopes:
         # The connector body, phantom, overhanging the plate's front edge --
@@ -546,22 +608,37 @@ def render_fitting_guide(*, drawing_no: str, date: str,
                     cell_w, cell_h)
         _guide_view(c, cell, scale, name, pl)
 
+    by_version = dict(holes_by_version(spec))
     rows_t = []
     for name, pl in PLACEMENTS.items():
         used = ", ".join(pl["shuttles"]) or "not yet shipped"
+        # The plate positions this board's hosts land on, spelled out.  "3
+        # Pmods starting at position 1" said the same thing and made the
+        # reader do the arithmetic to see that TT01-03's two hosts share
+        # positions 2 and 3 with the later boards' second and third.
+        first = pl["first_pmod_position"]
+        slots = ", ".join(str(first + i) for i in range(pl["pmod_count"]))
         rows_t.append([name, ", ".join(pl["revisions"]), used,
-                       f"{pl['dx']:.2f}", f"{pl['dy']:.2f}",
-                       str(pl["pmod_count"]),
-                       str(pl["first_pmod_position"])])
+                       f"{pl['dx']:.2f}", f"{pl['dy']:.2f}", slots,
+                       ", ".join(by_version[name])])
     # In the annotation column, not in a half-width cell: at a true 2.5 mm cap
     # height this table does not fit in half the drawing area.
     block = sheet.column_block(sheet.table_height("BOARD PLACEMENT ON THE PLATE",
                                                   len(rows_t)))
     sheet.table(block, "BOARD PLACEMENT ON THE PLATE",
                 ["GROUP", "BOARD REVISIONS", "SHUTTLES", "dX mm", "dY mm",
-                 "PMODS", "FIRST PMOD POSITION"],
+                 "PLATE PMODS", "HOLES USED"],
                 rows_t,
-                ["start", "start", "start", "end", "end", "middle", "middle"])
+                ["start", "start", "start", "end", "end", "middle", "start"])
+
+    rows_u = [[name, f"{USB_C[name][0]:.2f} to {USB_C[name][2]:.2f}",
+               f"{USB_C[name][1]:.2f} to {USB_C[name][3]:.2f}"]
+              for name in PLACEMENTS]
+    block = sheet.column_block(
+        sheet.table_height("USB-C CONNECTOR POSITION ON THE PLATE", len(rows_u)))
+    sheet.table(block, "USB-C CONNECTOR POSITION ON THE PLATE",
+                ["BOARD", "X EXTENT mm", "Y EXTENT mm"], rows_u,
+                ["start", "end", "end"])
 
     notes = [
         "Each view shows one group of demo board revisions on the plate, with "

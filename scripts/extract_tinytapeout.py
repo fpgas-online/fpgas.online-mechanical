@@ -32,6 +32,16 @@ WORK = ROOT / "tmp" / "pcb"
 # commit it was produced from.  That file stops at TT08; no Tiny Tapeout source
 # states a board revision for any later shuttle, and per tinytapeout.com/chips
 # no shuttle after TT08 has shipped, so v3.x is listed without a shuttle.
+#: Where the shuttle-to-board-revision mapping comes from.  The historic
+#: README covers the revisions up to v2.1.2; the later ones are only in Tiny
+#: Tapeout's own board revision spreadsheet, which is also where the name
+#: "ETR" for v3.2 comes from.
+HISTORIC_README = ("https://github.com/TinyTapeout/tt-demo-pcb/blob/main/"
+                   "doc/historic/README.md")
+SHUTTLE_SHEET = ("https://docs.google.com/spreadsheets/d/"
+                 "1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/"
+                 "edit?gid=1250963370")
+
 REVISIONS = [
     dict(
         key="tt123-v2.2.6",
@@ -85,8 +95,22 @@ REVISIONS = [
         key="v3.2",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="d830790ca",
         title="Tiny Tapeout Demo Board v3",
-        subtitle="tinytapeout-demo rev 3.2",
-        used_by=(),
+        subtitle="tinytapeout-demo rev 3.2 (ETR)",
+        used_by=("TT09", "TTSKY25a", "TTSKY25b", "TTGF0p2"),
+        # The historic README does not carry this revision; Tiny Tapeout's own
+        # board revision spreadsheet does, and it is where "ETR" comes from.
+        shuttle_source=SHUTTLE_SHEET,
+        shuttle_note="row 10: \"ETR (RP2350) demoboard v3.2, Hirose DF12 "
+                     "breakout connectors, ADC header. Production files: "
+                     "pcb-files/ETRv3p2/demoboard (2025-11-12)\". Used by: "
+                     "{used}",
+        extra_notes=(
+            "ETR is Tiny Tapeout's own designation for this board in their "
+            "board revision spreadsheet, where it is listed as \"ETR "
+            "(RP2350) demoboard v3.2\". The KiCad title block does not carry "
+            "it; it is recorded here because the board is referred to by that "
+            "name. Nothing mechanical depends on it.",
+        ),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
     dict(
@@ -343,6 +367,12 @@ def extract(rev: dict) -> dict:
     return dict(
         key=rev["key"], title=rev["title"], subtitle=rev["subtitle"],
         used_by=list(rev["used_by"]),
+        # Carried through so the emitted sheet can cite where its shuttle
+        # mapping came from, which is not the same document for every
+        # revision.
+        shuttle_source=rev.get("shuttle_source", HISTORIC_README),
+        shuttle_note=rev.get("shuttle_note", "used by: {used}"),
+        extra_notes=rev.get("extra_notes", ()),
         commit=rev["commit"], repo=rev["repo"], path=rev["path"],
         source_url=rev["source_url"],
         kicad_title=board.title.strip(), kicad_rev=board.rev, kicad_date=board.date,
@@ -403,6 +433,10 @@ def render(rec: dict) -> str:
 
     used = ", ".join(rec["used_by"]) or "no shipped shuttle yet"
     twins = ", ".join(rec["identical_to"])
+    def extra_notes() -> str:
+        return "".join(f"        {n!r},\n"
+                       for n in rec.get("extra_notes", ()))
+
     identical_note = (
         f"Geometrically identical to revision {twins}: the outline, mounting "
         f"holes, Pmod hosts and every feature on this sheet are in the same "
@@ -437,8 +471,8 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
                note="title block: {rec["kicad_title"]} rev {rec["kicad_rev"]}, "
                     "dated {rec["kicad_date"]}"),
         Source(label="Shuttle mapping",
-               ref="https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md",
-               note="used by: {used}"),
+               ref={rec["shuttle_source"]!r},
+               note={rec["shuttle_note"].format(used=used)!r}),
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
@@ -448,7 +482,7 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
         {identical_note!r},
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
-    ),
+{extra_notes()}    ),
 )
 '''
 
