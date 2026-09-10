@@ -30,10 +30,11 @@ diagrams:
 	$(DRAW) python scripts/generate_diagrams.py
 	$(UV) --with ezdxf python scripts/export_plate_dxf.py
 
-## check: the two things that have caught real defects
+## check: the three things that have caught real defects
 check: diagrams
 	$(DRAW) python scripts/check_sheets.py
 	$(UV) python scripts/verify_mounting_plate.py
+	$(DRAW) python scripts/check_balloons.py
 
 clean:
 	rm -f diagrams/*/*.svg diagrams/*/*.pdf diagrams/*/*.png diagrams/*/*.dxf

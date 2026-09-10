@@ -35,7 +35,7 @@ Rebuilding is deterministic: re-running the whole pipeline leaves the SVGs,
 PNGs and data modules byte-identical. Only the PDFs and the DXF change, because
 both formats embed a creation timestamp.
 
-Two checks run over the output, and each has caught a real defect:
+Four checks run over the output, and each has caught a real defect:
 
 - `check_sheets.py` re-reads the generated SVGs, recomputes every text bounding
   box from the same font metrics the layout used, and reports text that
@@ -55,6 +55,16 @@ Two checks run over the output, and each has caught a real defect:
   the connector faces clear the front edge. It found that two revisions wanting
   a fastener 0.613 mm apart had been merged into one 3.40 mm hole, which no M3
   screw actually fits.
+- `check_balloons.py` looks one level below the finished SVG, at the obstacle
+  model the balloon placer works from, and reports every leader whose final
+  route crosses something a reader cannot afford to have a line ruled over: a
+  phantom Pmod host, another balloon, another leader, an ordinate witness line.
+  It found that a Pmod host's two-letter label was reserving the whole height
+  of its pin field, which walled off the diagonal every leader from the
+  lower-left corner of a Raspberry Pi wanted to take. Two crossings remain, and
+  the script says why: on the Pi 4B and Pi 5 the micro-HDMI connectors sit
+  directly beneath host JC, so a leader from them crosses the host whichever
+  way it leaves.
 
 ## How the numbers were obtained
 
