@@ -140,6 +140,11 @@ class Footprint:
     pads: list[Pad] = field(default_factory=list)
     courtyard: list[Segment] = field(default_factory=list)
     fab: list[Segment] = field(default_factory=list)
+    #: Edge.Cuts geometry carried by the footprint itself.  Connector
+    #: footprints often bring their own board cutout or edge recess, so this
+    #: has to be merged with the board-level edge cuts to get the true outline.
+    edge_segments: list[Segment] = field(default_factory=list)
+    edge_arcs: list[Arc] = field(default_factory=list)
 
     @property
     def dnp(self) -> bool:
@@ -239,6 +244,9 @@ class Board:
                         for i in range(len(xy)):
                             (ax, ay), (bx, by) = xy[i], xy[(i + 1) % len(xy)]
                             segs.append(Segment(ax, ay, bx, by))
+        for fp in getattr(self, "footprints", []):
+            segs.extend(fp.edge_segments)
+            arcs.extend(fp.edge_arcs)
         return segs, arcs, circles
 
     def outline_bbox(self) -> tuple[float, float, float, float]:
@@ -314,10 +322,10 @@ class Board:
                 layers=[l for l in (layers[1:] if layers else []) if isinstance(l, str)],
             ))
 
-        for kind, sink in (("fp_line", None), ("fp_rect", None)):
+        for kind in ("fp_line", "fp_rect"):
             for gnode in children(node, kind):
                 layer = value(gnode, "layer")
-                if layer not in ("F.CrtYd", "B.CrtYd", "F.Fab", "B.Fab"):
+                if layer not in ("F.CrtYd", "B.CrtYd", "F.Fab", "B.Fab", "Edge.Cuts"):
                     continue
                 start, end = child(gnode, "start"), child(gnode, "end")
                 if not (start and end):
@@ -332,7 +340,24 @@ class Board:
                     rax, ray = _rotate(ax, ay, frot)
                     rbx, rby = _rotate(bx, by, frot)
                     seg = Segment(fx + rax, fy + ray, fx + rbx, fy + rby)
-                    (fp.courtyard if "CrtYd" in layer else fp.fab).append(seg)
+                    if layer == "Edge.Cuts":
+                        fp.edge_segments.append(seg)
+                    elif "CrtYd" in layer:
+                        fp.courtyard.append(seg)
+                    else:
+                        fp.fab.append(seg)
+
+        for gnode in children(node, "fp_arc"):
+            if value(gnode, "layer") != "Edge.Cuts":
+                continue
+            start, mid, end = (child(gnode, k) for k in ("start", "mid", "end"))
+            if not (start and mid and end):
+                continue
+            pts = []
+            for nd in (start, mid, end):
+                rx, ry = _rotate(float(nd[1]), float(nd[2]), frot)
+                pts += [fx + rx, fy + ry]
+            fp.edge_arcs.append(Arc(*pts))
         return fp
 
     def by_library(self, pattern: str) -> list[Footprint]:
