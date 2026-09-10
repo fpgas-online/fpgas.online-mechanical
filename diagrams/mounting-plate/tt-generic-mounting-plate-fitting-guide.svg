@@ -41,10 +41,10 @@
 <text x="10" y="47.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
 <text x="410" y="47.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
 <path d="M 19.7500 86.0000 L 83.2500 86.0000 A 2.0000 2.0000 0 0 0 85.2500 84.0000 L 85.2500 37.5000 A 2.0000 2.0000 0 0 0 83.2500 35.5000 L 19.7500 35.5000 A 2.0000 2.0000 0 0 0 17.7500 37.5000 L 17.7500 84.0000 A 2.0000 2.0000 0 0 0 19.7500 86.0000 L 83.2500 86.0000 Z" fill="none" stroke="#000000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
-<line x1="29.13" y1="43.2325" x2="78.38" y2="43.2325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="78.38" y1="83.7325" x2="29.13" y2="83.7325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="79.88" y1="44.7325" x2="79.88" y2="82.2325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="27.63" y1="82.2325" x2="27.63" y2="44.7325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
+<line x1="29.13" y1="43.2325" x2="78.38" y2="43.2325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="78.38" y1="83.7325" x2="29.13" y2="83.7325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="79.88" y1="44.7325" x2="79.88" y2="82.2325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="27.63" y1="82.2325" x2="27.63" y2="44.7325" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <rect x="44.73" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="56.16" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <path d="M 25.2190 80.8613 L 25.4990 80.9863 A 0.8500 0.8500 0 0 1 24.8060 82.5387 L 24.5260 82.4137 A 0.8500 0.8500 0 0 1 25.2190 80.8613 Z" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
@@ -113,14 +113,14 @@
 <text x="51.5" y="98" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev tt123-v2.2.6</text>
 <text x="51.5" y="103" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">offset X 19.76  Y 4.54 mm</text>
 <path d="M 92.7500 86.0000 L 156.2500 86.0000 A 2.0000 2.0000 0 0 0 158.2500 84.0000 L 158.2500 37.5000 A 2.0000 2.0000 0 0 0 156.2500 35.5000 L 92.7500 35.5000 A 2.0000 2.0000 0 0 0 90.7500 37.5000 L 90.7500 84.0000 A 2.0000 2.0000 0 0 0 92.7500 86.0000 L 156.2500 86.0000 Z" fill="none" stroke="#000000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
-<line x1="112.9125" y1="43.1375" x2="147.0275" y2="43.1375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="147.0275" y1="83.6375" x2="97.7775" y2="83.6375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="148.5275" y1="44.6375" x2="148.5275" y2="82.1375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="107.8925" y1="43.1375" x2="97.7775" y2="43.1375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="96.2775" y1="82.1375" x2="96.2775" y2="44.6375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="108.0925" y1="46.4375" x2="108.0925" y2="43.3375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="112.3125" y1="46.4375" x2="108.4925" y2="46.4375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="112.7125" y1="43.3375" x2="112.7125" y2="46.4375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
+<line x1="112.9125" y1="43.1375" x2="147.0275" y2="43.1375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="147.0275" y1="83.6375" x2="97.7775" y2="83.6375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="148.5275" y1="44.6375" x2="148.5275" y2="82.1375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="107.8925" y1="43.1375" x2="97.7775" y2="43.1375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="96.2775" y1="82.1375" x2="96.2775" y2="44.6375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="108.0925" y1="46.4375" x2="108.0925" y2="43.3375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="112.3125" y1="46.4375" x2="108.4925" y2="46.4375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="112.7125" y1="43.3375" x2="112.7125" y2="46.4375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <rect x="106.3" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="117.73" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="129.16" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
@@ -190,10 +190,10 @@
 <text x="124.5" y="98" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v1.2.2, v1.2.3</text>
 <text x="124.5" y="103" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">offset X 11.05  Y 4.72 mm</text>
 <path d="M 165.7500 86.0000 L 229.2500 86.0000 A 2.0000 2.0000 0 0 0 231.2500 84.0000 L 231.2500 37.5000 A 2.0000 2.0000 0 0 0 229.2500 35.5000 L 165.7500 35.5000 A 2.0000 2.0000 0 0 0 163.7500 37.5000 L 163.7500 84.0000 A 2.0000 2.0000 0 0 0 165.7500 86.0000 L 229.2500 86.0000 Z" fill="none" stroke="#000000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
-<line x1="170.6225" y1="44.3875" x2="217.3725" y2="44.3875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="217.3725" y1="83.3875" x2="170.6225" y2="83.3875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="218.8725" y1="45.8875" x2="218.8725" y2="81.8875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="169.1225" y1="81.8875" x2="169.1225" y2="45.8875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
+<line x1="170.6225" y1="44.3875" x2="217.3725" y2="44.3875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="217.3725" y1="83.3875" x2="170.6225" y2="83.3875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="218.8725" y1="45.8875" x2="218.8725" y2="81.8875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="169.1225" y1="81.8875" x2="169.1225" y2="45.8875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <rect x="179.3" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="190.73" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="202.16" y="80.215" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
@@ -263,10 +263,10 @@
 <text x="197.5" y="98" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v2.0.1, v2.1.0, v2.1.2</text>
 <text x="197.5" y="103" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">offset X 10.74  Y 5.22 mm</text>
 <path d="M 19.7500 173.5000 L 83.2500 173.5000 A 2.0000 2.0000 0 0 0 85.2500 171.5000 L 85.2500 125.0000 A 2.0000 2.0000 0 0 0 83.2500 123.0000 L 19.7500 123.0000 A 2.0000 2.0000 0 0 0 17.7500 125.0000 L 17.7500 171.5000 A 2.0000 2.0000 0 0 0 19.7500 173.5000 L 83.2500 173.5000 Z" fill="none" stroke="#000000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
-<line x1="68.35" y1="170.615" x2="29.05" y2="170.615" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="27.45" y1="169.015" x2="27.45" y2="132.215" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="69.95" y1="132.215" x2="69.95" y2="169.015" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="29.05" y1="130.615" x2="68.35" y2="130.615" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
+<line x1="68.35" y1="170.615" x2="29.05" y2="170.615" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="27.45" y1="169.015" x2="27.45" y2="132.215" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="69.95" y1="132.215" x2="69.95" y2="169.015" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="29.05" y1="130.615" x2="68.35" y2="130.615" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <rect x="33.3" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="44.73" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="56.16" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
@@ -332,10 +332,10 @@
 <text x="51.5" y="185.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">board rev v3.2</text>
 <text x="51.5" y="190.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#444444" text-anchor="middle">offset X 19.40  Y 5.77 mm</text>
 <path d="M 92.7500 173.5000 L 156.2500 173.5000 A 2.0000 2.0000 0 0 0 158.2500 171.5000 L 158.2500 125.0000 A 2.0000 2.0000 0 0 0 156.2500 123.0000 L 92.7500 123.0000 A 2.0000 2.0000 0 0 0 90.7500 125.0000 L 90.7500 171.5000 A 2.0000 2.0000 0 0 0 92.7500 173.5000 L 156.2500 173.5000 Z" fill="none" stroke="#000000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
-<line x1="100.45" y1="169.015" x2="100.45" y2="129.715" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="102.05" y1="128.115" x2="141.35" y2="128.115" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="141.35" y1="170.615" x2="102.05" y2="170.615" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
-<line x1="142.95" y1="129.715" x2="142.95" y2="169.015" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="5,1.4,1,1.4"/>
+<line x1="100.45" y1="169.015" x2="100.45" y2="129.715" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="102.05" y1="128.115" x2="141.35" y2="128.115" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="141.35" y1="170.615" x2="102.05" y2="170.615" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="142.95" y1="129.715" x2="142.95" y2="169.015" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <rect x="106.3" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="117.73" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="129.16" y="167.715" width="7.65" height="2.57" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>

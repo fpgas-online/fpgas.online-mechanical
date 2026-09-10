@@ -315,8 +315,8 @@ PLATE = BoardSpec(
                     "every revision."),
     ),
     notes=(
-        "Fit the board on standoffs. Each hole and slot is labelled with the "
-        "board revisions that use it; a board uses only its own.",
+        "Fit the board on standoffs. A board uses only the holes and slots "
+        "its USED BY row names.",
         "Board holes and slots are {dia} mm, a close clearance fit on M3. "
         "Plate fixings are {pdia} mm, a clearance fit on M4. A slot spans two "
         "revisions whose holes are too close together to drill separately.",

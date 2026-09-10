@@ -28,7 +28,7 @@ from .view import View
 
 #: Room above and below the plate view.  Nothing but hole labels goes above.
 PLATE_MARGIN_TOP = 12.0
-PLATE_MARGIN_BOTTOM = 44.0
+PLATE_MARGIN_BOTTOM = 40.0
 
 BOARD_HOLE = "#a00000"
 PLATE_HOLE = "#006060"
@@ -56,7 +56,7 @@ def draw_slot(c: Canvas, view: View, s: Slot, colour: str = BOARD_HOLE) -> None:
     # merge into a smudge.  Mark the midpoint instead.
     if math.dist((x0, y0), (x1, y1)) > 2.2 * r:
         c.line(x0, y0, x1, y1, w=style.W_CENTRE, colour=colour,
-               dash="3,1.2,0.8,1.2")
+               dash=style.D_CENTRE)
         dims.centre_mark(c, x0, y0, r, colour=colour, over=1.0)
         dims.centre_mark(c, x1, y1, r, colour=colour, over=1.0)
     else:
@@ -156,23 +156,51 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
         place_label(c, obstacles, (mx, my), half, slot_labels[i], BOARD_HOLE)
 
 
+def _group_key() -> str:
+    """Spell out the mixed shuttle-range / board-revision group names.
+
+    The USED BY column mixes two naming schemes because the boards do: three
+    early revisions each covered a run of shuttles and are known by that run,
+    while v3.2 and v3.3 have shipped on none and can only be named by revision.
+    Rather than assert that mapping in prose it is read back out of the data,
+    so the key cannot drift from the labels it explains.
+    """
+    parts = []
+    bare = []
+    for name, pl in PLACEMENTS.items():
+        if pl["shuttles"]:
+            parts.append(f"{name} = " + ", ".join(pl["revisions"]))
+        else:
+            bare.append(name)
+    if bare:
+        parts.append(_and(bare) + " = themselves, no shuttle yet")
+    return "; ".join(parts)
+
+
+def _and(names: list[str]) -> str:
+    if len(names) == 1:
+        return names[0]
+    return ", ".join(names[:-1]) + " and " + names[-1]
+
+
 def _plate_text(spec) -> tuple[list[str], list[str]]:
     """The plate sheet's notes and sources, built before the sheet exists."""
     notes = [
         "All dimensions in millimetres. The datum symbol marks the origin: "
-        "the lower-left corner of the plate, X right, Y up, viewed from the "
-        "side the demo board mounts on.",
-        "Hole positions are tabulated, not dimensioned individually: there "
-        "are too many to put on the view and keep it readable. A slot row "
-        "gives the centres of its two ends, so its length is those centres "
-        "apart plus the slot width.",
+        "the plate's lower-left corner, X right, Y up, seen from the side "
+        "the board mounts on.",
+        "Hole positions are tabulated, not dimensioned on the view: there are "
+        "too many to dimension and keep it readable. A slot row gives its two "
+        "end centres; DIA/WIDTH is the slot width, LENGTH is overall.",
+        "USED BY reads <group>:<hole>; MT1 to MT4 are the board's own hole "
+        "IDs. Groups, by board revision: " + _group_key() + ".",
         "The three PMOD envelopes are not machined features. They mark where "
         "the Pmod host pin fields end up, the same place for every board "
         "revision. That is the point of the plate.",
     ] + list(spec.notes) + [
-        "Fit the plate to its chassis before the demo board: the fixings sit "
-        "in the border, which a board overhangs. Least material between any "
-        "two features is about 1.6 mm, between H2 and H3.",
+        "Fit the plate to its chassis before the board: the fixings sit in the "
+        "border, which a board overhangs. Least material between features "
+        "is about 1.6 mm, at H2/H3.",
         "Drawing TT-MP-02 shows which holes each revision uses.",
     ]
     src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
@@ -235,7 +263,7 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
         half = view.d(6.35)
         c.rect(sx - half, sy - view.d(2.9), half * 2, view.d(5.8),
                weight=style.W_PHANTOM, colour=style.C_HIGHLIGHT,
-               dash="3,1.5,0.8,1.5")
+               dash=style.D_PHANTOM)
         c.text(sx, sy + view.d(2.9) + 2.2, f"PMOD {i + 1}", size=style.T_LABEL,
                colour=style.C_HIGHLIGHT, anchor="middle")
 
@@ -269,17 +297,22 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     for i, h in enumerate(spec.holes):
         if h.kind == "plate":
             continue
+        # A round hole has no length to give, so the column is struck through
+        # rather than left blank: a blank cell reads as a missing value.
         rows.append([labels[i], f"{h.x:.2f}", f"{h.y:.2f}", f"{h.dia:.2f}",
-                     h.label.replace("+", ", ")])
+                     "-", h.label.replace("+", ", ")])
     for n, s in enumerate(spec.slots, 1):
         # Two values because a slot has two end centres; the note below says so.
+        # LENGTH is the overall length, end to end, which is what a cutter or a
+        # slot mill is set to.
         rows.append([f"S{n}", f"{s.x0:.2f} / {s.x1:.2f}",
                      f"{s.y0:.2f} / {s.y1:.2f}",
-                     f"{s.width:.2f} wide slot", s.label.replace("+", ", ")])
+                     f"{s.width:.2f}", f"{s.length:.2f}",
+                     s.label.replace("+", ", ")])
     block = sheet.column_block(sheet.table_height("BOARD MOUNTING HOLES", len(rows)))
     sheet.table(block, "BOARD MOUNTING HOLES",
-                ["ID", "X mm", "Y mm", "SIZE mm", "USED BY"], rows,
-                ["start", "end", "end", "end", "start"])
+                ["ID", "X mm", "Y mm", "DIA/WIDTH mm", "LENGTH mm", "USED BY"], rows,
+                ["start", "end", "end", "end", "end", "start"])
 
     rows = [[labels[i], f"{spec.holes[i].x:.2f}", f"{spec.holes[i].y:.2f}",
              f"{spec.holes[i].dia:.2f}"] for i in plate_ids]
@@ -383,11 +416,11 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
             _, x1, y1, x2, y2 = edge
             c.line(*view.pt(x1 + dx, y1 + dy), *view.pt(x2 + dx, y2 + dy),
                    w=style.W_PHANTOM, colour=style.C_PHANTOM,
-                   dash="5,1.4,1,1.4")
+                   dash=style.D_PHANTOM)
     if not bo.edges:
         c.rect(*view.pt(dx, dy), view.d(bo.width), view.d(bo.height),
                weight=style.W_PHANTOM, colour=style.C_PHANTOM,
-               dash="5,1.4,1,1.4")
+               dash=style.D_PHANTOM)
 
     for p in board.pmods:
         px, py = view.pt(p.cx + dx, p.cy + dy)

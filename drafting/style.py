@@ -92,6 +92,24 @@ W_TABLE_HEAVY = 0.40
 W_COMPONENT = 0.35      # component body outlines on the board
 W_PHANTOM = 0.25        # adjacent parts, drawn as phantom outlines
 
+# --- line types (ISO 128-2 / ISO 128-24), as SVG dash arrays in mm ----------
+#
+# Only three broken line types appear on these sheets, and each carries exactly
+# one meaning.  They are named here rather than written out at each call site,
+# because a chain-dot and a chain-double-dot look nearly alike at A3 and had
+# drifted apart into six slightly different hand-written patterns.
+#
+#   type G, long-dash dotted  -> centre lines and axes of symmetry
+#   type K, long-dash double-dotted -> outlines of adjacent parts, envelopes
+#                                      and keep-out zones: things that are not
+#                                      features of the part being drawn
+#   type F, dashed            -> hidden detail, and parts deliberately not
+#                                fitted
+
+D_CENTRE = "3.2,1.2,0.6,1.2"
+D_PHANTOM = "6.0,1.4,0.7,1.4,0.7,1.4"
+D_HIDDEN = "2.2,1.4"
+
 # --- text sizes (mm of CAP HEIGHT, per ISO 3098) ---------------------------
 #
 # 2.5 mm is the floor for a drawing meant to be read at A3.  Nothing here goes

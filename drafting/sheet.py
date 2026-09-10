@@ -246,7 +246,7 @@ class Sheet:
             c.text(x, y + 7.2 * s, "FIRST ANGLE PROJECTION", size=style.T_TINY,
                    anchor="middle", colour="#666666")
         c.line(x - 11 * s, y + 3 * s, x + 11 * s, y + 3 * s,
-               w=style.W_CENTRE, colour="#666666", dash="3,1.2,0.6,1.2")
+               w=style.W_CENTRE, colour="#666666", dash=style.D_CENTRE)
         c.polyline([(x - 9 * s, y + 5.4 * s), (x - 1 * s, y + 4.2 * s),
                     (x - 1 * s, y + 1.8 * s), (x - 9 * s, y + 0.6 * s)],
                    close=True, w=style.W_OUTLINE)

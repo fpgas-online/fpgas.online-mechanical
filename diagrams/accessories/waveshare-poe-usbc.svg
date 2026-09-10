@@ -229,7 +229,7 @@
 <text x="287.8" y="280.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">envelope +/-1.0 unless noted</text>
 <line x1="378.6" y1="282" x2="378.6" y2="271" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="380.2" y="274.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">PROJECTION</text>
-<line x1="384.98" y1="279.14" x2="398.62" y2="279.14" stroke="#666666" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="3,1.2,0.6,1.2"/>
+<line x1="384.98" y1="279.14" x2="398.62" y2="279.14" stroke="#666666" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="3.2,1.2,0.6,1.2"/>
 <polygon points="386.22,277.652 391.18,278.396 391.18,279.884 386.22,280.628" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round"/>
 <circle cx="395.148" cy="279.14" r="1.488" fill="none" stroke="#000000" stroke-width="0.5"/>
 <circle cx="395.148" cy="279.14" r="0.744" fill="none" stroke="#000000" stroke-width="0.5"/>

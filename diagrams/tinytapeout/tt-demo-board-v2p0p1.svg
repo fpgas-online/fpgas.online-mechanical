@@ -52,7 +52,7 @@
 <rect x="70.775" y="107.6725" width="14.85" height="16.25" fill="none" stroke="#7a7a7a" stroke-width="0.35" stroke-dasharray="2.2,1.4"/>
 <rect x="70.775" y="84.8125" width="14.85" height="16.25" fill="none" stroke="#7a7a7a" stroke-width="0.35" stroke-dasharray="2.2,1.4"/>
 <rect x="70.775" y="61.9525" width="14.85" height="16.25" fill="none" stroke="#7a7a7a" stroke-width="0.35" stroke-dasharray="2.2,1.4"/>
-<rect x="98.58" y="124.2275" width="16.25" height="14.85" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="3,1.5,0.8,1.5"/>
+<rect x="98.58" y="124.2275" width="16.25" height="14.85" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="100.38" cy="128.5675" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <circle cx="100.38" cy="126.0275" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <circle cx="102.92" cy="128.5675" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
@@ -66,7 +66,7 @@
 <circle cx="113.08" cy="128.5675" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <circle cx="113.08" cy="126.0275" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="99.08" y="124.7275" width="15.3" height="5.14" fill="none" stroke="#a00000" stroke-width="0.35"/>
-<rect x="121.44" y="124.2275" width="16.25" height="14.85" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="3,1.5,0.8,1.5"/>
+<rect x="121.44" y="124.2275" width="16.25" height="14.85" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="123.24" cy="128.5675" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <circle cx="123.24" cy="126.0275" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <circle cx="125.78" cy="128.5675" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
@@ -80,7 +80,7 @@
 <circle cx="135.94" cy="128.5675" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <circle cx="135.94" cy="126.0275" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="121.94" y="124.7275" width="15.3" height="5.14" fill="none" stroke="#a00000" stroke-width="0.35"/>
-<rect x="144.3" y="124.2275" width="16.25" height="14.85" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="3,1.5,0.8,1.5"/>
+<rect x="144.3" y="124.2275" width="16.25" height="14.85" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="146.1" cy="128.5675" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <circle cx="146.1" cy="126.0275" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <circle cx="148.64" cy="128.5675" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
@@ -102,19 +102,19 @@
 <path d="M 81.725 131.0725 A 3 3 0 0 1 78.725 128.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M 78.725 56.0725 A 3 3 0 0 1 81.725 53.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M 178.225 128.0725 A 3 3 0 0 1 175.225 131.0725" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="82.225" cy="127.5725" r="3.2" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="82.225" cy="127.5725" r="3.2" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="82.225" cy="127.5725" r="1.6" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
 <line x1="79.025" y1="127.5725" x2="85.425" y2="127.5725" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="82.225" y1="130.7725" x2="82.225" y2="124.3725" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="174.725" cy="123.0725" r="3.2" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="174.725" cy="123.0725" r="3.2" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="174.725" cy="123.0725" r="1.6" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
 <line x1="171.525" y1="123.0725" x2="177.925" y2="123.0725" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="174.725" y1="126.2725" x2="174.725" y2="119.8725" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="82.225" cy="56.5725" r="3.2" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="82.225" cy="56.5725" r="3.2" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="82.225" cy="56.5725" r="1.6" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
 <line x1="79.025" y1="56.5725" x2="85.425" y2="56.5725" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="82.225" y1="59.7725" x2="82.225" y2="53.3725" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="174.725" cy="56.5725" r="3.2" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="174.725" cy="56.5725" r="3.2" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="174.725" cy="56.5725" r="1.6" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
 <line x1="171.525" y1="56.5725" x2="177.925" y2="56.5725" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="174.725" y1="59.7725" x2="174.725" y2="53.3725" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>

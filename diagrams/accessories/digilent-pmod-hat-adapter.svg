@@ -82,19 +82,19 @@
 <circle cx="125.95" cy="99.08" r="0.5" fill="#ffffff" stroke="#a00000" stroke-width="0.35"/>
 <rect x="111.95" y="97.78" width="15.3" height="5.14" fill="none" stroke="#a00000" stroke-width="0.35"/>
 <path d="M 95.0000 109.7500 L 154.0000 109.7500 A 3.0000 3.0000 0 0 0 157.0000 106.7500 L 157.0000 56.2500 A 3.0000 3.0000 0 0 0 154.0000 53.2500 L 95.0000 53.2500 A 3.0000 3.0000 0 0 0 92.0000 56.2500 L 92.0000 106.7500 A 3.0000 3.0000 0 0 0 95.0000 109.7500 L 154.0000 109.7500 Z" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="95.5" cy="106.25" r="3.1" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="95.5" cy="106.25" r="3.1" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="95.5" cy="106.25" r="1.375" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
 <line x1="92.525" y1="106.25" x2="98.475" y2="106.25" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="95.5" y1="109.225" x2="95.5" y2="103.275" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="153.5" cy="106.25" r="3.1" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="153.5" cy="106.25" r="3.1" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="153.5" cy="106.25" r="1.375" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
 <line x1="150.525" y1="106.25" x2="156.475" y2="106.25" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="153.5" y1="109.225" x2="153.5" y2="103.275" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="95.5" cy="57.25" r="3.1" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="95.5" cy="57.25" r="3.1" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="95.5" cy="57.25" r="1.375" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
 <line x1="92.525" y1="57.25" x2="98.475" y2="57.25" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="95.5" y1="60.225" x2="95.5" y2="54.275" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="153.5" cy="57.25" r="3.1" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="2.4,1.2,0.6,1.2"/>
+<circle cx="153.5" cy="57.25" r="3.1" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="153.5" cy="57.25" r="1.375" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
 <line x1="150.525" y1="57.25" x2="156.475" y2="57.25" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="153.5" y1="60.225" x2="153.5" y2="54.275" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>

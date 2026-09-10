@@ -40,7 +40,7 @@
 <line x1="405" y1="81.75" x2="415" y2="81.75" stroke="#888888" stroke-width="0.25" stroke-linecap="round"/>
 <text x="10" y="47.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
 <text x="410" y="47.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="middle">A</text>
-<path d="M 84.0000 105.0000 L 143.0000 105.0000 A 3.0000 3.0000 0 0 0 146.0000 102.0000 L 146.0000 51.5000 A 3.0000 3.0000 0 0 0 143.0000 48.5000 L 84.0000 48.5000 A 3.0000 3.0000 0 0 0 81.0000 51.5000 L 81.0000 102.0000 A 3.0000 3.0000 0 0 0 84.0000 105.0000 L 143.0000 105.0000 Z" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6,1.6,1.2,1.6"/>
+<path d="M 84.0000 105.0000 L 143.0000 105.0000 A 3.0000 3.0000 0 0 0 146.0000 102.0000 L 146.0000 51.5000 A 3.0000 3.0000 0 0 0 143.0000 48.5000 L 84.0000 48.5000 A 3.0000 3.0000 0 0 0 81.0000 51.5000 L 81.0000 102.0000 A 3.0000 3.0000 0 0 0 84.0000 105.0000 L 143.0000 105.0000 Z" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="89.13" cy="72.06" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <circle cx="91.67" cy="72.06" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <circle cx="89.13" cy="69.52" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>

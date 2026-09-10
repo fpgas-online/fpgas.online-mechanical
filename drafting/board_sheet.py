@@ -101,7 +101,7 @@ def draw_holes(c: Canvas, view: View, holes: tuple[Hole, ...]) -> None:
         r = view.d(h.dia / 2)
         if h.keepout_dia:
             c.circle(px, py, view.d(h.keepout_dia / 2), w=style.W_PHANTOM,
-                     colour=style.C_PHANTOM, dash="2.4,1.2,0.6,1.2")
+                     colour=style.C_PHANTOM, dash=style.D_PHANTOM)
         c.circle(px, py, r, w=style.W_OUTLINE, fill=style.C_FILL_HOLE)
         dims.centre_mark(c, px, py, max(r, 0.8))
 
@@ -114,7 +114,7 @@ def draw_feature(c: Canvas, view: View, f: Feature) -> None:
     c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
            weight=style.W_COMPONENT, colour=colour,
            fill=style.C_FILL_LIGHT if fitted else "none",
-           dash=None if fitted else "2.2,1.4")
+           dash=None if fitted else style.D_HIDDEN)
     if f.kind == "led":
         c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
                weight=0.05, colour=colour, fill=colour)
@@ -127,7 +127,7 @@ def draw_pmod(c: Canvas, view: View, p, spec: BoardSpec) -> None:
         bx1, by1 = view.pt(p.body_x1, p.body_y1)
         c.rect(min(bx0, bx1), min(by0, by1), abs(bx1 - bx0), abs(by1 - by0),
                weight=style.W_PHANTOM, colour=style.C_PHANTOM,
-               dash="3,1.5,0.8,1.5")
+               dash=style.D_PHANTOM)
     horizontal = p.edge in ("bottom", "top")
     half_span = p.pin_span / 2
     half_rows = p.row_span / 2
@@ -368,7 +368,7 @@ def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
     part that is not the subject of the drawing but constrains it.
     """
     outline_path(c, view, spec, colour=style.C_PHANTOM, w=style.W_PHANTOM,
-                 dash="6,1.6,1.2,1.6")
+                 dash=style.D_PHANTOM)
     for p in spec.pmods:
         horizontal = p.edge in ("bottom", "top")
         half_span, half_rows = p.pin_span / 2, p.row_span / 2
