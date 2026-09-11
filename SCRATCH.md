@@ -546,5 +546,33 @@ Drawing review, round 4, all findings acted on:
 - **Feature numbers are fixed per family**, so a number means the same part on
   every sheet of that family.  On the demo boards that leaves gaps, because
   the revisions with a fourth LED have no DIP switch and the ones with a DIP
-  switch have no fourth LED; a note names the numbers each board skips.  The
+  switch have no fourth LED; every number keeps a row, and a part the board does not carry is marked as such rather than leaving a gap.  The
   Raspberry Pi family has no gaps, so the same mechanism is invisible there.
+
+- **Drill templates are gauges, not drawings.**  TT-MP-03 and TT-MP-04 are A4
+  portrait at 1:1: printed, taped to the work, punched and drilled through.
+  The thing that can ruin them is invisible on screen, so the sheets carry two
+  printed 100 mm scale bars and `check_drill_template.py` measures the PDFs
+  back and compares every hole against the plate data that drew it.
+- **The default print setting is the failure mode.**  The queue these were
+  written for reports `print-scaling/Print Scaling: auto *auto-fit fill fit
+  none` and a 4.32 mm hard border, so its default scales A4 by
+  min(201.36/210, 288.36/297) = 0.9588 and moves the far corner of the hole
+  pattern 5.6 mm.  Both sheets say so on their face, the README gives the
+  `lp -o print-scaling=none` invocation, and feeding the checker a page scaled
+  by that exact factor makes it report five problems and find no holes at all.
+- **Two scale bars, not one**, because a laser fuser shrinks paper along the
+  feed direction: the axes scale by different amounts, which a single bar
+  cannot see.
+- **Everything drilled is black and nothing else is.**  A colour laser
+  registers its planes to a few tenths of a millimetre, which is more than the
+  clearance being worked to, so a hole circle and its punch cross stay in the
+  one plane that cannot misregister against itself.  The board outlines are
+  pale washes, one hue per revision, and are not obstacles for label
+  placement: five of them cover most of the plate, so avoiding them would
+  leave nowhere to put an ID.
+- **The layout is measured, not guessed.**  The bottom band is sized from
+  `notes_height` and `table_height` and the drawing gets what is left; if that
+  is less than the plate needs the sheet refuses to render rather than quietly
+  shrinking the one thing on it that has to be true size.  It fired twice
+  while this was written, which is how the notes came to be one line each.

@@ -7,6 +7,9 @@ have been acted on. The work is pushed to github.com/mithro/tinytapeout-boards. 
 phantom Pmod host JC; that is a physical overlap, not a placement fault, and
 `scripts/check_balloons.py` reports it every run.
 
+Since then: two A4 drill templates, printed at 1:1 and drilled through, with a
+checker that measures the finished PDFs rather than trusting them.
+
 ## 1. Data collection  -- DONE
 - [x] Tiny Tapeout: identify every mechanically distinct demo board revision
 - [x] Tiny Tapeout: extract outline / holes / Pmods / USB-C / 7-seg / LEDs from KiCad
@@ -69,3 +72,10 @@ phantom Pmod host JC; that is a physical overlap, not a placement fault, and
 ## 6. Repository
 - [x] README explaining what is here and how the numbers were obtained
 - [x] Apache 2.0 licence
+
+## 7. Drill templates  -- DONE
+- [x] A4 portrait 1:1 template for the mounting plate itself (TT-MP-03)
+- [x] A4 portrait 1:1 template for the chassis the plate bolts to (TT-MP-04)
+- [x] Printed scale bar per axis, so a scaled print is caught before drilling
+- [x] `scripts/check_drill_template.py`: measures the PDFs back and proves
+      every hole lands where the plate data puts it

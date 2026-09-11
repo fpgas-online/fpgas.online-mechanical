@@ -61,6 +61,14 @@ def groups() -> list[tuple[str, str, list[tuple[str, str, str, str]]]]:
           ("TT-MP-02", "tt-generic-mounting-plate-fitting-guide",
            "TT Mounting Plate Fitting Guide",
            "Which holes each demo board revision uses")]),
+        ("Drill templates - A4, print at 100 %, do not fit to page",
+         "drill-templates",
+         [("TT-MP-03", "tt-drill-template-plate",
+           "Drill Template: Mounting Plate",
+           "The plate itself, at true size, with a printed scale bar"),
+          ("TT-MP-04", "tt-drill-template-chassis",
+           "Drill Template: Chassis",
+           "The six M4 fixings, at true size, for the box the plate bolts to")]),
     ]
 
 

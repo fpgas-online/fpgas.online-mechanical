@@ -13,17 +13,19 @@ each sheet lists its sources.
 
 | Directory | Contents |
 |-----------|----------|
-| `diagrams/tinytapeout/` | 8 sheets, one per Tiny Tapeout demo board revision |
-| `diagrams/raspberry-pi/` | 4 sheets: Pi 3B, 3B+, 4B, 5, each with a Digilent Pmod HAT Adapter overlaid |
+| `diagrams/tinytapeout/` | 6 sheets, one per distinct demo board geometry |
+| `diagrams/raspberry-pi/` | 3 sheets: Pi 3B/3B+, 4B, 5, each with a Digilent Pmod HAT Adapter overlaid |
 | `diagrams/accessories/` | Pmod HAT Adapter, and two PoE splitters as three-view envelope drawings |
 | `diagrams/mounting-plate/` | The generic mounting plate, plus a fitting guide |
+| `diagrams/drill-templates/` | A4 drill templates, printed at 1:1 and drilled through |
 | `diagrams/previews/` | Small renders of every sheet, for the grid below |
 | `data/` | The mechanical database. Two modules are generated; the rest is hand-curated with per-value provenance |
 | `scripts/` | Extractors, the plate designer, and the generator |
 | `drafting/` | A small 2D drafting library that renders a `BoardSpec` as an ISO-style sheet |
 
-Each sheet is written as SVG, PDF and PNG, plus a small preview. A3, mostly
-1:1: the board sheets are 1:1 so an A3 print can be laid on the board.
+Each sheet is written as SVG, PDF and PNG, plus a small preview. A3 and
+mostly 1:1, so a print can be laid on the board; the two drill templates are
+A4 portrait and always 1:1.
 
 ## The sheets
 
@@ -119,6 +121,22 @@ a full-resolution PNG.
 </tr>
 </table>
 
+### Drill templates - A4, print at 100 %, do not fit to page
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="diagrams/drill-templates/tt-drill-template-plate.pdf"><img src="diagrams/previews/tt-drill-template-plate.png" width="270" alt="TT-MP-03 Drill Template: Mounting Plate"></a><br>
+<b>TT-MP-03</b> Drill Template: Mounting Plate<br>The plate itself, at true size, with a printed scale bar
+</td>
+<td width="33%" valign="top" align="center">
+<a href="diagrams/drill-templates/tt-drill-template-chassis.pdf"><img src="diagrams/previews/tt-drill-template-chassis.png" width="270" alt="TT-MP-04 Drill Template: Chassis"></a><br>
+<b>TT-MP-04</b> Drill Template: Chassis<br>The six M4 fixings, at true size, for the box the plate bolts to
+</td>
+<td width="33%"></td>
+</tr>
+</table>
+
 <!-- sheets:end -->
 
 ## Regenerating
@@ -133,7 +151,7 @@ Rebuilding is deterministic: re-running the whole pipeline leaves the SVGs,
 PNGs and data modules byte-identical. Only the PDFs and the DXF change, because
 both formats embed a creation timestamp.
 
-Four checks run over the output, and each has caught a real defect:
+Five checks run over the output, and each has caught a real defect:
 
 - `check_sheets.py` re-reads the generated SVGs, recomputes every text bounding
   box from the same font metrics the layout used, and reports text that
@@ -166,6 +184,49 @@ Four checks run over the output, and each has caught a real defect:
   the script says why: on the Pi 4B and Pi 5 the micro-HDMI connectors sit
   directly beneath host JC, so a leader from them crosses the host whichever
   way it leaves.
+- `check_drill_template.py` measures the drill template PDFs instead of
+  trusting them. It reads each page back, finds every hole as a circle, and
+  compares where it landed against the plate data that drew it; it also checks
+  both scale bars really are 100 mm and that nothing strays into the border the
+  printer cannot reach. Rendering an SVG guarantees none of this: a different
+  exporter or a page sized in points would pass every other check here and put
+  the holes 4 % out. Fed a page scaled by the queue's own auto-fit factor it
+  reports five problems and finds no holes at all.
+
+## Printing the drill templates
+
+`TT-MP-03` and `TT-MP-04` are not drawings to read, they are gauges to use:
+print, tape to the work, punch every cross, drill through. That only works if
+the page leaves the printer at exactly 1:1, and no print dialog does that by
+default. A CUPS queue reports what it will do to the page:
+
+```console
+$ lpoptions -p WellandColor -l | grep print-scaling
+print-scaling/Print Scaling: auto *auto-fit fill fit none
+```
+
+`auto-fit` is the default, and it shrinks A4 to whatever the hardware can
+actually reach. The same queue reports a 4.32 mm border on all four edges, so
+auto-fit scales the page by `min(201.36/210, 288.36/297)` = 0.9588 and moves
+the far corner of the hole pattern by 5.6 mm. Print with scaling off:
+
+```sh
+lp -d WellandColor -o media=A4 -o print-scaling=none \
+   diagrams/drill-templates/tt-drill-template-plate.pdf
+```
+
+From a viewer, choose **Actual size** or **100 %**, never Fit to page or
+Shrink to fit. Then measure the two printed scale bars before drilling
+anything: each is 100.0 mm overall, and there are two of them because a laser
+fuser shrinks paper along the feed direction, which scales the two axes by
+different amounts that a single bar cannot see.
+
+Everything drilled is printed in black and nothing else is. A colour laser
+registers its planes to a few tenths of a millimetre, which is more than the
+clearance being worked to, so a hole circle and its punch cross are kept in
+the one plane that cannot misregister against itself. The pale washes are
+board outlines and the grey dashed boxes are Pmod connector bodies: clearance,
+not features.
 
 ## How the numbers were obtained
 
