@@ -28,6 +28,7 @@ from data.tinytapeout_boards import FEATURE_NUMBERS as TT_NUMBERS  # noqa: E402
 from drafting.board_sheet import render_board  # noqa: E402
 from drafting.enclosure_sheet import render_enclosure  # noqa: E402
 from drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
+from drafting.template_sheet import render_drill_template  # noqa: E402
 
 DATE = date.today().isoformat()
 OUT = ROOT / "diagrams"
@@ -181,6 +182,17 @@ def main() -> None:
     path = plate_dir / "tt-generic-mounting-plate-fitting-guide.svg"
     sheet.canvas.save(str(path))
     made.append(path)
+
+    # The drill templates are A4 portrait and 1:1, not A3 drawings: they are
+    # printed, laid on the work and drilled through.
+    tpl_dir = OUT / "drill-templates"
+    tpl_dir.mkdir(parents=True, exist_ok=True)
+    for n, kind in enumerate(("plate", "chassis"), 3):
+        sheet = render_drill_template(kind, drawing_no=f"TT-MP-{n:02d}",
+                                      date=DATE)
+        path = tpl_dir / f"tt-drill-template-{kind}.svg"
+        sheet.canvas.save(str(path))
+        made.append(path)
 
     for path in made:
         print(f"  {path.relative_to(ROOT)}")
