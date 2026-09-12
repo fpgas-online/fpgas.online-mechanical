@@ -22,10 +22,10 @@ ROOT = Path(__file__).resolve().parent.parent
 #: Each family of sheets, in reading order, and the directory it renders into.
 #: The key is the family's slug, used in drawing numbers and README anchors.
 FAMILY_DIRS = {
-    "tinytapeout": ROOT / "tinytapeout" / "diagrams",
-    "raspberry-pi": ROOT / "raspberry_pi" / "diagrams",
-    "accessories": ROOT / "accessories" / "diagrams",
-    "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "diagrams",
+    "tinytapeout": ROOT / "tinytapeout" / "output",
+    "raspberry-pi": ROOT / "raspberry_pi" / "output",
+    "accessories": ROOT / "accessories" / "output",
+    "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "output",
 }
 
 

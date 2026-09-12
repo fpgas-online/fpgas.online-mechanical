@@ -39,29 +39,29 @@ a full-resolution PNG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/diagrams/tt-demo-board-tt123-v2p2p6.pdf"><img src="tinytapeout/diagrams/previews/tt-demo-board-tt123-v2p2p6.png" width="270" alt="TT-DB-01 Tiny Tapeout TT01/02/03 Demo Board"></a><br>
+<a href="tinytapeout/output/tt-demo-board-tt123-v2p2p6.pdf"><img src="tinytapeout/output/previews/tt-demo-board-tt123-v2p2p6.png" width="270" alt="TT-DB-01 Tiny Tapeout TT01/02/03 Demo Board"></a><br>
 <b>TT-DB-01</b> Tiny Tapeout TT01/02/03 Demo Board<br>mpw-mb1 rev 2.2.6
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/diagrams/tt-demo-board-v1p2p2-v1p2p3.pdf"><img src="tinytapeout/diagrams/previews/tt-demo-board-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-02 Tiny Tapeout 4+ Demo Board"></a><br>
+<a href="tinytapeout/output/tt-demo-board-v1p2p2-v1p2p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-02 Tiny Tapeout 4+ Demo Board"></a><br>
 <b>TT-DB-02</b> Tiny Tapeout 4+ Demo Board<br>tinytapeout-demo rev 1.2.2 and 1.2.3
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/diagrams/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="tinytapeout/diagrams/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-03 Tiny Tapeout 06+ Demo Board"></a><br>
+<a href="tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-03 Tiny Tapeout 06+ Demo Board"></a><br>
 <b>TT-DB-03</b> Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.0.1 and 2.1.0
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/diagrams/tt-demo-board-v2p1p2.pdf"><img src="tinytapeout/diagrams/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-04 Tiny Tapeout 06+ Demo Board"></a><br>
+<a href="tinytapeout/output/tt-demo-board-v2p1p2.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-04 Tiny Tapeout 06+ Demo Board"></a><br>
 <b>TT-DB-04</b> Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.1.2
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/diagrams/tt-demo-board-v3p2.pdf"><img src="tinytapeout/diagrams/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-05 Tiny Tapeout Demo Board v3"></a><br>
+<a href="tinytapeout/output/tt-demo-board-v3p2.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-05 Tiny Tapeout Demo Board v3"></a><br>
 <b>TT-DB-05</b> Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.2 (ETR)
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/diagrams/tt-demo-board-v3p3.pdf"><img src="tinytapeout/diagrams/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-06 Tiny Tapeout Demo Board v3"></a><br>
+<a href="tinytapeout/output/tt-demo-board-v3p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-06 Tiny Tapeout Demo Board v3"></a><br>
 <b>TT-DB-06</b> Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.3
 </td>
 </tr>
@@ -72,15 +72,15 @@ a full-resolution PNG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="raspberry_pi/diagrams/rpi3b.pdf"><img src="raspberry_pi/diagrams/previews/rpi3b.png" width="270" alt="RPI-01 Raspberry Pi 3 Model B and B+"></a><br>
+<a href="raspberry_pi/output/rpi3b.pdf"><img src="raspberry_pi/output/previews/rpi3b.png" width="270" alt="RPI-01 Raspberry Pi 3 Model B and B+"></a><br>
 <b>RPI-01</b> Raspberry Pi 3 Model B and B+<br>85 x 56 mm, both models
 </td>
 <td width="33%" valign="top" align="center">
-<a href="raspberry_pi/diagrams/rpi4b.pdf"><img src="raspberry_pi/diagrams/previews/rpi4b.png" width="270" alt="RPI-02 Raspberry Pi 4 Model B"></a><br>
+<a href="raspberry_pi/output/rpi4b.pdf"><img src="raspberry_pi/output/previews/rpi4b.png" width="270" alt="RPI-02 Raspberry Pi 4 Model B"></a><br>
 <b>RPI-02</b> Raspberry Pi 4 Model B<br>85 x 56 mm
 </td>
 <td width="33%" valign="top" align="center">
-<a href="raspberry_pi/diagrams/rpi5.pdf"><img src="raspberry_pi/diagrams/previews/rpi5.png" width="270" alt="RPI-03 Raspberry Pi 5"></a><br>
+<a href="raspberry_pi/output/rpi5.pdf"><img src="raspberry_pi/output/previews/rpi5.png" width="270" alt="RPI-03 Raspberry Pi 5"></a><br>
 <b>RPI-03</b> Raspberry Pi 5<br>85 x 56 mm
 </td>
 </tr>
@@ -91,15 +91,15 @@ a full-resolution PNG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="accessories/diagrams/digilent-pmod-hat-adapter.pdf"><img src="accessories/diagrams/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-01 Digilent Pmod HAT Adapter"></a><br>
+<a href="accessories/output/digilent-pmod-hat-adapter.pdf"><img src="accessories/output/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-01 Digilent Pmod HAT Adapter"></a><br>
 <b>ACC-01</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
 </td>
 <td width="33%" valign="top" align="center">
-<a href="accessories/diagrams/waveshare-poe-usbc.pdf"><img src="accessories/diagrams/previews/waveshare-poe-usbc.png" width="270" alt="ACC-02 Waveshare PoE Splitter 25 W, Type-C"></a><br>
+<a href="accessories/output/waveshare-poe-usbc.pdf"><img src="accessories/output/previews/waveshare-poe-usbc.png" width="270" alt="ACC-02 Waveshare PoE Splitter 25 W, Type-C"></a><br>
 <b>ACC-02</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
 </td>
 <td width="33%" valign="top" align="center">
-<a href="accessories/diagrams/generic-poe-microusb.pdf"><img src="accessories/diagrams/previews/generic-poe-microusb.png" width="270" alt="ACC-03 Generic PoE splitter to micro-USB"></a><br>
+<a href="accessories/output/generic-poe-microusb.pdf"><img src="accessories/output/previews/generic-poe-microusb.png" width="270" alt="ACC-03 Generic PoE splitter to micro-USB"></a><br>
 <b>ACC-03</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
 </td>
 </tr>
@@ -110,21 +110,21 @@ a full-resolution PNG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/diagrams/tt-generic-mounting-plate.pdf"><img src="tinytapeout/mounting_plate/diagrams/previews/tt-generic-mounting-plate.png" width="270" alt="TT-MP-01 TT Generic Mounting Plate"></a><br>
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate.png" width="270" alt="TT-MP-01 TT Generic Mounting Plate"></a><br>
 <b>TT-MP-01</b> TT Generic Mounting Plate<br>Accepts every demo board revision, Pmod hosts fixed in place
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/diagrams/tt-generic-mounting-plate-fitting-guide.pdf"><img src="tinytapeout/mounting_plate/diagrams/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-02 TT Mounting Plate Fitting Guide"></a><br>
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-02 TT Mounting Plate Fitting Guide"></a><br>
 <b>TT-MP-02</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/diagrams/tt-generic-mounting-plate-drill-template.pdf"><img src="tinytapeout/mounting_plate/diagrams/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-03 Drill Template: Mounting Plate"></a><br>
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-03 Drill Template: Mounting Plate"></a><br>
 <b>TT-MP-03</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/diagrams/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/diagrams/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-04 Drill Template: Chassis"></a><br>
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-04 Drill Template: Chassis"></a><br>
 <b>TT-MP-04</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
 </td>
 <td width="33%"></td>
@@ -142,7 +142,7 @@ from a shell:
 
 ```sh
 lp -d <queue> -o media=A4 -o print-scaling=none \
-   tinytapeout/mounting_plate/diagrams/tt-generic-mounting-plate-drill-template.pdf
+   tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf
 ```
 
 `auto-fit` is the usual default and it shrinks A4 by around 4 %, which moves

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate every mechanical drawing from each family's own data module.
 
-Writes SVG, PDF and PNG for each sheet into its family's ``diagrams/``
+Writes SVG, PDF and PNG for each sheet into its family's ``output/``
 directory, as named by ``tools.layout``.
 
 Run: uv run --no-project --with pillow python tools/generate_diagrams.py

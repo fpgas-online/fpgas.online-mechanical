@@ -76,7 +76,7 @@ def main() -> None:
                            format="xyb", close=True,
                            dxfattribs={"layer": "BOARD_SLOTS"})
 
-    out = (ROOT / "tinytapeout" / "mounting_plate" / "diagrams"
+    out = (ROOT / "tinytapeout" / "mounting_plate" / "output"
        / "tt-generic-mounting-plate.dxf")
     doc.saveas(str(out))
     board = sum(1 for h in PLATE.holes if h.kind != "plate")

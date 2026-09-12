@@ -51,7 +51,7 @@ SIZE_RE = re.compile(r'width="([\d.]+)mm" height="([\d.]+)mm"')
 
 
 def tracked_sheets() -> list[str]:
-    """Every committed SVG, across every family's diagrams directory.
+    """Every committed SVG, across every family's output directory.
 
     The directories come from tools.layout rather than from a glob, so a
     family whose sheets are not committed at all is a missing directory here
@@ -122,7 +122,7 @@ def check(svg_path: str) -> list[str]:
 def main() -> int:
     svgs = tracked_sheets()
     if not svgs:
-        raise SystemExit("no sheets committed under diagrams/")
+        raise SystemExit("no sheets committed under any family's output/")
     shutil.rmtree(WORK, ignore_errors=True)
     WORK.mkdir(parents=True)
     total = 0

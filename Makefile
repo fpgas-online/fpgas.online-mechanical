@@ -44,11 +44,10 @@ check: diagrams
 	$(UV) --with pdfplumber --with pillow python tools/check_drill_template.py
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
 
+# Every output/ directory is build product: `make clean && make diagrams`
+# restores all 65 files, 48 of them byte-identical and the rest differing only
+# in the creation timestamp their format embeds.  So remove them outright
+# rather than picking off extensions one at a time.
 clean:
-	rm -f */diagrams/*.svg */diagrams/*.pdf */diagrams/*.png \
-	      */diagrams/previews/*.png \
-	      tinytapeout/mounting_plate/diagrams/*.svg \
-	      tinytapeout/mounting_plate/diagrams/*.pdf \
-	      tinytapeout/mounting_plate/diagrams/*.png \
-	      tinytapeout/mounting_plate/diagrams/*.dxf \
-	      tinytapeout/mounting_plate/diagrams/previews/*.png
+	rm -rf accessories/output raspberry_pi/output \
+	       tinytapeout/output tinytapeout/mounting_plate/output

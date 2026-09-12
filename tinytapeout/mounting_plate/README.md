@@ -9,7 +9,7 @@ while holding the Pmod host headers in a single fixed place.
 | `design.py` | Derives the hole pattern from every revision and writes `plate.py` |
 | `verify.py` | Proves the finished plate really does accept every revision |
 | `export_dxf.py` | Writes the four-layer DXF cut file |
-| `diagrams/` | `TT-MP-01` to `TT-MP-04`, plus the DXF |
+| `output/` | `TT-MP-01` to `TT-MP-04`, plus the DXF |
 
 | Sheet | |
 |-------|--|
@@ -59,7 +59,7 @@ the far corner of the hole pattern by 5.6 mm. Print with scaling off:
 
 ```sh
 lp -d <queue> -o media=A4 -o print-scaling=none \
-   tinytapeout/mounting_plate/diagrams/tt-generic-mounting-plate-drill-template.pdf
+   tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf
 ```
 
 From a viewer, choose **Actual size** or **100 %**, never Fit to page or

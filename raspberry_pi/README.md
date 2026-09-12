@@ -8,7 +8,7 @@ the Pmod host positions can be read off directly.
 |---|---|
 | `boards.py` | **Generated.** Pi 3B/3B+, 4B and 5 |
 | `extract.py` | Reads Raspberry Pi Ltd's own drawings and writes `boards.py` |
-| `diagrams/` | `RPI-01` to `RPI-03`, as SVG, PDF and PNG |
+| `output/` | `RPI-01` to `RPI-03`, as SVG, PDF and PNG |
 
 ```sh
 tools/fetch_raspberry_pi.sh                           # once, needs network

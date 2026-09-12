@@ -42,7 +42,7 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] Choose plate outline and hole pattern
 - [x] Mounting plate fabrication drawing
 - [x] Board fitting guide, one view per revision
-- [x] Cut file: `tinytapeout/mounting_plate/diagrams/tt-generic-mounting-plate.dxf`
+- [x] Cut file: `tinytapeout/mounting_plate/output/tt-generic-mounting-plate.dxf`
 
 ## 5. Review
 - [x] Sub-agent code review, round 1 -- acted on
