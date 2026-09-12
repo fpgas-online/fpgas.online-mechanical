@@ -19,6 +19,7 @@ Imported, not run.
 | `layout.py` | Where the sheets are. One answer, so the generator and the checks cannot disagree about the set |
 | `kicad_pcb.py` | Minimal reader for KiCad `.kicad_pcb` s-expression files |
 | `render_svg.py` | SVG to PDF and PNG via Inkscape, text exported as paths |
+| `reproducible.py` | Pins the clocks and GUIDs that cairo and ezdxf stamp into their output |
 
 ## Build
 
@@ -74,9 +75,9 @@ and lives with it.
   1:1, and that no font is embedded. It reads the git *index*: the working
   tree is whatever `make diagrams` wrote moments ago and agrees with itself
   regardless, and HEAD would mean a rename could not go green until after it
-  had been committed. It compares page content streams rather than bytes,
-  because a PDF embeds a creation timestamp and the drawing inside it does
-  not.
+  had been committed. The comparison is byte for byte, which it can be because
+  `reproducible.py` makes rendering reproducible; it used to compare only page
+  content streams, because cairo stamped a clock into every file it wrote.
 
 - **`crosscheck_gerber.py`** compares an extracted board outline against the
   upstream Edge_Cuts gerber, which KiCad's own plotter produced from the same

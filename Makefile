@@ -9,7 +9,8 @@
 # once to get them, then `make` to rebuild the data and every drawing.
 
 UV := uv run --no-project
-DRAW := $(UV) --with pillow
+# Writing a PDF now normalises it, which needs pypdf.
+DRAW := $(UV) --with pillow --with pypdf
 EXTRACT := $(UV) --with ezdxf --with pdfplumber
 
 .PHONY: all data diagrams check fetch clean

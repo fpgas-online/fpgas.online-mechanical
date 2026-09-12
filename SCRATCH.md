@@ -623,3 +623,41 @@ smeared everything about one board across four directories:
   meant this very rename could not go green until after it had been committed.
   The index is what is about to become the repository, so staging an SVG
   without its PDF fails before the commit rather than after it.
+
+## Reproducible output
+
+`output/` is entirely build product, and committing build product only pays
+off if rebuilding is a no-op. It was not: every `make diagrams` dirtied the
+sixteen PDFs and the DXF whether or not a drawing had changed, so `git status`
+after a rebuild had to be inspected by hand and discarded. Twice I did exactly
+that. `tools/reproducible.py` pins what varies.
+
+- **The PDF carries one varying field and it is not where you would look.**
+  Two renders of one SVG differ by *four bytes*, and grepping the file for
+  `/CreationDate`, `/Producer` or `/ID` finds nothing: cairo puts the Info
+  dictionary inside a compressed object stream, so those four bytes are
+  deflate output. There is no `/ID` in the trailer at all. Rewriting through
+  pypdf with a pinned `/CreationDate` fixes it, and the page content stream,
+  the page size and the resources come through untouched -- checked, not
+  assumed.
+- **ezdxf already had the switch.** `ezdxf.options.write_fixed_meta_data_for_testing`
+  pins the four timestamps, both GUIDs and the "written by ezdxf" marker. Its
+  name says testing; reproducible output is the same requirement. It even pins
+  to 2000-01-01, which is where the epoch in `reproducible.py` came from. It
+  has to be set *before* `ezdxf.new()`, because one of the marks is written
+  when the document is created rather than when it is saved -- set it later
+  and exactly one line of the file still moves.
+- **PYTHONHASHSEED was the real lesson.** After the timestamps and GUIDs were
+  pinned, two consecutive exports came out identical and I nearly called it
+  done. A `make clean` cycle then disagreed. Running the export twelve times
+  gave *two* distinct files, about half each: ezdxf keeps the classes a DXF
+  version requires in a `set` of strings and registers them by iterating it,
+  and set iteration order depends on the per-process hash seed. Registering
+  them explicitly and sorting afterwards settles it; the export registers them
+  again but `add_class` ignores a name it already holds.
+
+  The general lesson: **two runs is not a determinism test.** Anything
+  hash-seed dependent passes it half the time. The check is now three full
+  `make clean && make diagrams` cycles compared across all 65 files.
+- **`check_pdfs.py` compares bytes now**, not page content streams. The
+  content-stream comparison only existed because the bytes could never match.

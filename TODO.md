@@ -80,6 +80,8 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] `tools/layout.py`: one answer to "where are the sheets"
 - [x] A README per directory, each about that directory
 - [x] `check_sheets.py` also checks every relative link in every README
+- [x] `output/` reproduces byte for byte: clocks and GUIDs pinned in
+      `tools/reproducible.py`, so a rebuild leaves `git status` silent
 
 ## 7. Drill templates  -- DONE
 - [x] A4 portrait 1:1 template for the mounting plate itself (TT-MP-03)

@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 from tinytapeout.mounting_plate.plate import PLATE  # noqa: E402
+from tools import reproducible  # noqa: E402
 
 LAYERS = {
     "PLATE_OUTLINE": 5,
@@ -56,6 +57,7 @@ def slot_outline(x0, y0, x1, y1, width):
 
 
 def main() -> None:
+    reproducible.configure_dxf()
     doc = ezdxf.new("R2010", setup=True)
     doc.header["$INSUNITS"] = 4        # millimetres
     msp = doc.modelspace()
@@ -78,6 +80,7 @@ def main() -> None:
 
     out = (ROOT / "tinytapeout" / "mounting_plate" / "output"
        / "tt-generic-mounting-plate.dxf")
+    reproducible.normalise_dxf(doc)
     doc.saveas(str(out))
     board = sum(1 for h in PLATE.holes if h.kind != "plate")
     fixings = len(PLATE.holes) - board

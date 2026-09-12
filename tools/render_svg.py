@@ -19,6 +19,14 @@ from pathlib import Path
 
 from PIL import Image
 
+# This module is both imported and run directly; when it is run, the
+# repository root is not on the path and ``tools`` is not importable.
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from tools import reproducible  # noqa: E402
+
 PNG_DPI = 150
 CROP_PX_PER_MM = 8.0
 
@@ -30,11 +38,19 @@ PREVIEW_WIDTH = 640
 
 
 def to_pdf(svg: Path) -> Path:
+    """Render *svg* to a PDF beside it, with text converted to paths.
+
+    Paths rather than embedded fonts so that a print shop with no DejaVu
+    installed still gets the right lettering at the right width, which on a
+    1:1 drawing is the difference between a dimension and a lie.
+    """
     out = svg.with_suffix(".pdf")
     subprocess.run(["inkscape", "--export-type=pdf", "--export-text-to-path",
                     f"--export-filename={out}", str(svg)],
                    check=True, capture_output=True)
-    return out
+    # Cairo stamps the wall clock into every PDF it writes, so two renders of
+    # one drawing differ.  Pin it here, once, rather than at each caller.
+    return reproducible.normalise_pdf(out)
 
 
 def to_png(svg: Path, dpi: float = PNG_DPI, out: Path | None = None) -> Path:

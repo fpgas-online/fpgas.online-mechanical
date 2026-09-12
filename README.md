@@ -174,9 +174,11 @@ make data      # re-extract the mechanical database from them
 make check     # render every sheet, refresh the grid, then run the checks
 ```
 
-Rebuilding is deterministic: re-running the whole pipeline leaves the SVGs,
-PNGs and data modules byte-identical. Only the PDFs and the DXF change, because
-both formats embed a creation timestamp.
+Rebuilding is deterministic, and that is checked rather than hoped for: three
+full `make clean && make diagrams` cycles produce all 65 output files
+byte-identical, so `git status` is silent after a rebuild unless a drawing
+actually changed. Cairo and ezdxf both stamp a clock and, in ezdxf's case, two
+random GUIDs into what they write; `tools/reproducible.py` pins all of it.
 
 Six checks run over the output and each has caught a real defect, from text
 colliding on a sheet to a mounting hole no M3 screw actually fits.
