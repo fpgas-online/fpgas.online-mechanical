@@ -27,8 +27,10 @@ import pdfplumber
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "scripts"))
 
 from data.mounting_plate import PLATE                      # noqa: E402
+from generate_diagrams import DRILL_TEMPLATES              # noqa: E402
 from drafting.template_sheet import (A4_PORTRAIT, BAR_LEN,  # noqa: E402
                                      BAR_THICK,
                                      render_drill_template)
@@ -48,10 +50,10 @@ BAR_TOL = 0.02
 #: A4 tray, and a template is worthless if a hole falls in that strip.
 PRINTER_MARGIN = 4.32
 
-SHEETS = {
-    "plate": "diagrams/drill-templates/tt-drill-template-plate.pdf",
-    "chassis": "diagrams/drill-templates/tt-drill-template-chassis.pdf",
-}
+#: Taken from the generator rather than written out again, so a renamed sheet
+#: cannot leave this checking a file that no longer exists.
+SHEETS = {kind: f"diagrams/mounting-plate/{stem}.pdf"
+          for kind, stem in DRILL_TEMPLATES.items()}
 
 
 def circles(page, dia: float) -> list[tuple[float, float]]:

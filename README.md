@@ -16,8 +16,7 @@ each sheet lists its sources.
 | `diagrams/tinytapeout/` | 6 sheets, one per distinct demo board geometry |
 | `diagrams/raspberry-pi/` | 3 sheets: Pi 3B/3B+, 4B, 5, each with a Digilent Pmod HAT Adapter overlaid |
 | `diagrams/accessories/` | Pmod HAT Adapter, and two PoE splitters as three-view envelope drawings |
-| `diagrams/mounting-plate/` | The generic mounting plate, plus a fitting guide |
-| `diagrams/drill-templates/` | A4 drill templates, printed at 1:1 and drilled through |
+| `diagrams/mounting-plate/` | The generic mounting plate: fabrication drawing, fitting guide and two A4 drill templates |
 | `diagrams/previews/` | Small renders of every sheet, for the grid below |
 | `data/` | The mechanical database. Two modules are generated; the rest is hand-curated with per-value provenance |
 | `scripts/` | Extractors, the plate designer, and the generator |
@@ -117,22 +116,17 @@ a full-resolution PNG.
 <a href="diagrams/mounting-plate/tt-generic-mounting-plate-fitting-guide.pdf"><img src="diagrams/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-02 TT Mounting Plate Fitting Guide"></a><br>
 <b>TT-MP-02</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="diagrams/mounting-plate/tt-generic-mounting-plate-drill-template.pdf"><img src="diagrams/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-03 Drill Template: Mounting Plate"></a><br>
+<b>TT-MP-03</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
+</td>
 </tr>
-</table>
-
-### Drill templates - A4, print at 100 %, do not fit to page
-
-<table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="diagrams/drill-templates/tt-drill-template-plate.pdf"><img src="diagrams/previews/tt-drill-template-plate.png" width="270" alt="TT-MP-03 Drill Template: Mounting Plate"></a><br>
-<b>TT-MP-03</b> Drill Template: Mounting Plate<br>The plate itself, at true size, with a printed scale bar
+<a href="diagrams/mounting-plate/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="diagrams/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-04 Drill Template: Chassis"></a><br>
+<b>TT-MP-04</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
 </td>
-<td width="33%" valign="top" align="center">
-<a href="diagrams/drill-templates/tt-drill-template-chassis.pdf"><img src="diagrams/previews/tt-drill-template-chassis.png" width="270" alt="TT-MP-04 Drill Template: Chassis"></a><br>
-<b>TT-MP-04</b> Drill Template: Chassis<br>The six M4 fixings, at true size, for the box the plate bolts to
-</td>
+<td width="33%"></td>
 <td width="33%"></td>
 </tr>
 </table>
@@ -212,7 +206,7 @@ the far corner of the hole pattern by 5.6 mm. Print with scaling off:
 
 ```sh
 lp -d WellandColor -o media=A4 -o print-scaling=none \
-   diagrams/drill-templates/tt-drill-template-plate.pdf
+   diagrams/mounting-plate/tt-generic-mounting-plate-drill-template.pdf
 ```
 
 From a viewer, choose **Actual size** or **100 %**, never Fit to page or

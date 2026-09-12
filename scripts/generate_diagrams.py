@@ -39,6 +39,12 @@ TT_ORDER = ["tt123-v2.2.6", "v1.2.2", "v1.2.3", "v2.0.1", "v2.1.0", "v2.1.2",
             "v3.2", "v3.3"]
 RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
 
+#: The drill templates, in sheet order, and the file stem each is written to.
+DRILL_TEMPLATES = {
+    "plate": "tt-generic-mounting-plate-drill-template",
+    "chassis": "tt-generic-mounting-plate-chassis-drill-template",
+}
+
 TT_NOTES = (
     "The Pmod host headers along the lower edge are what a mounting plate "
     "registers against. Their 22.86 mm pitch is the same on every revision; "
@@ -183,14 +189,13 @@ def main() -> None:
     sheet.canvas.save(str(path))
     made.append(path)
 
-    # The drill templates are A4 portrait and 1:1, not A3 drawings: they are
-    # printed, laid on the work and drilled through.
-    tpl_dir = OUT / "drill-templates"
-    tpl_dir.mkdir(parents=True, exist_ok=True)
-    for n, kind in enumerate(("plate", "chassis"), 3):
+    # The drill templates are A4 portrait and 1:1 rather than A3 drawings,
+    # but they are still sheets of the mounting plate and live with it: a
+    # directory of their own split the plate's four sheets across two places.
+    for n, (kind, stem) in enumerate(DRILL_TEMPLATES.items(), 3):
         sheet = render_drill_template(kind, drawing_no=f"TT-MP-{n:02d}",
                                       date=DATE)
-        path = tpl_dir / f"tt-drill-template-{kind}.svg"
+        path = plate_dir / f"{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
 
