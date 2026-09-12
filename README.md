@@ -145,7 +145,7 @@ Rebuilding is deterministic: re-running the whole pipeline leaves the SVGs,
 PNGs and data modules byte-identical. Only the PDFs and the DXF change, because
 both formats embed a creation timestamp.
 
-Five checks run over the output, and each has caught a real defect:
+Six checks run over the output, and each has caught a real defect:
 
 - `check_sheets.py` re-reads the generated SVGs, recomputes every text bounding
   box from the same font metrics the layout used, and reports text that
@@ -186,6 +186,18 @@ Five checks run over the output, and each has caught a real defect:
   exporter or a page sized in points would pass every other check here and put
   the holes 4 % out. Fed a page scaled by the queue's own auto-fit factor it
   reports five problems and finds no holes at all.
+- `check_pdfs.py` checks what is actually committed, because the PDFs are the
+  artefact: someone who clones this gets them without installing Inkscape, a
+  font or `uv`. For every committed sheet it confirms a PDF is committed
+  beside it, that the PDF is a render of the committed SVG rather than of some
+  earlier one, that the page is the size the drawing claims so it prints 1:1,
+  and that no font is embedded, since Inkscape is asked for text as paths and
+  a substituted face would letter the sheet at the wrong width. It compares
+  git blobs rather than the working tree, which `make diagrams` has just
+  rewritten and which would therefore agree with itself whatever was
+  committed. The page content stream is what is compared: PDFs embed a
+  creation timestamp, so the files differ on every rebuild and the drawing
+  inside them does not.
 
 ## Printing the drill templates
 

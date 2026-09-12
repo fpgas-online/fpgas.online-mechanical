@@ -37,6 +37,7 @@ check: diagrams
 	$(UV) python scripts/verify_mounting_plate.py
 	$(DRAW) python scripts/check_balloons.py
 	$(UV) --with pdfplumber --with pillow python scripts/check_drill_template.py
+	$(UV) --with pypdf --with pillow python scripts/check_pdfs.py
 
 clean:
 	rm -f diagrams/*/*.svg diagrams/*/*.pdf diagrams/*/*.png diagrams/*/*.dxf
