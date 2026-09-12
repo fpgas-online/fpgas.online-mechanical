@@ -5,7 +5,7 @@ Status key: `[ ]` not started, `[~]` in progress, `[x]` done.
 Everything the request asked for is done, and all four rounds of both reviews
 have been acted on. The work is pushed to github.com/mithro/tinytapeout-boards. Two balloon leaders on the Pi 4B and Pi 5 still cross the
 phantom Pmod host JC; that is a physical overlap, not a placement fault, and
-`scripts/check_balloons.py` reports it every run.
+`tools/check_balloons.py` reports it every run.
 
 Since then: two A4 drill templates, printed at 1:1 and drilled through, with a
 checker that measures the finished PDFs rather than trusting them.
@@ -20,7 +20,7 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] Digilent Pmod HAT Adapter geometry (photogrammetry, +/-0.75 mm)
 - [x] Waveshare 25 W PoE -> USB-C splitter dimensions
 - [x] Generic AliExpress PoE -> micro-USB splitter dimensions
-- [x] Consolidate everything into `data/*.py` with per-value source attribution
+- [x] Consolidate everything into each family's own data module with per-value source attribution
 
 ## 2. Drawing engine  -- DONE
 - [x] Minimal 2D drafting library: sheet, border, title block, views
@@ -42,7 +42,7 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] Choose plate outline and hole pattern
 - [x] Mounting plate fabrication drawing
 - [x] Board fitting guide, one view per revision
-- [x] Cut file: `diagrams/mounting-plate/tt-generic-mounting-plate.dxf`
+- [x] Cut file: `tinytapeout/mounting_plate/diagrams/tt-generic-mounting-plate.dxf`
 
 ## 5. Review
 - [x] Sub-agent code review, round 1 -- acted on
@@ -60,22 +60,30 @@ checker that measures the finished PDFs rather than trusting them.
       (projection symbol, assembled envelope, setback dimension, plate
       ordinate, general tolerance provenance, balloon on a feature, notes
       reading order, connector body on the plate)
-- [x] Automated sheet checker (`scripts/check_sheets.py`): text collisions,
+- [x] Automated sheet checker (`tools/check_sheets.py`): text collisions,
       out-of-frame content, text under the 2.5 mm ISO 3098 floor
 - [x] Automated arc check in the extractor: a resolved arc must pass through
       the point KiCad puts on it
-- [x] `scripts/verify_mounting_plate.py`: proves the finished plate accepts
+- [x] `tinytapeout/mounting_plate/verify.py`: proves the finished plate accepts
       every revision, with a real M3 fastener clearance check
-- [x] `scripts/check_balloons.py`: reports every balloon leader that crosses a
+- [x] `tools/check_balloons.py`: reports every balloon leader that crosses a
       hard obstacle, and by how much
 
 ## 6. Repository
 - [x] README explaining what is here and how the numbers were obtained
 - [x] Apache 2.0 licence
 
+## 8. Repository layout  -- DONE
+- [x] Group by subject, not by kind: each family owns its data, its extractor
+      and its sheets
+- [x] Mounting plate under `tinytapeout/`, drafting library under `tools/`
+- [x] `tools/layout.py`: one answer to "where are the sheets"
+- [x] A README per directory, each about that directory
+- [x] `check_sheets.py` also checks every relative link in every README
+
 ## 7. Drill templates  -- DONE
 - [x] A4 portrait 1:1 template for the mounting plate itself (TT-MP-03)
 - [x] A4 portrait 1:1 template for the chassis the plate bolts to (TT-MP-04)
 - [x] Printed scale bar per axis, so a scaled print is caught before drilling
-- [x] `scripts/check_drill_template.py`: measures the PDFs back and proves
+- [x] `tools/check_drill_template.py`: measures the PDFs back and proves
       every hole lands where the plate data puts it

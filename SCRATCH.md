@@ -576,3 +576,50 @@ Drawing review, round 4, all findings acted on:
   is less than the plate needs the sheet refuses to render rather than quietly
   shrinking the one thing on it that has to be true size.  It fired twice
   while this was written, which is how the notes came to be one line each.
+
+## Repository layout: grouped by subject
+
+Everything above was written when the repository grouped by *kind* --
+`data/`, `drafting/`, `diagrams/`, `scripts/` -- so paths in earlier entries
+are the old ones. The layout now groups by *subject*, because grouping by kind
+smeared everything about one board across four directories:
+
+| Was | Is |
+|-----|----|
+| `data/tinytapeout_boards.py` | `tinytapeout/boards.py` |
+| `scripts/extract_tinytapeout.py` | `tinytapeout/extract.py` |
+| `diagrams/tinytapeout/` | `tinytapeout/diagrams/` |
+| `data/mounting_plate.py` | `tinytapeout/mounting_plate/plate.py` |
+| `scripts/design_mounting_plate.py` | `tinytapeout/mounting_plate/design.py` |
+| `scripts/verify_mounting_plate.py` | `tinytapeout/mounting_plate/verify.py` |
+| `diagrams/mounting-plate/` | `tinytapeout/mounting_plate/diagrams/` |
+| `data/raspberry_pi_boards.py` | `raspberry_pi/boards.py` |
+| `data/accessories.py` | `accessories/parts.py` |
+| `data/schema.py` | `tools/schema.py` |
+| `drafting/` | `tools/drafting/` |
+
+- **The mounting plate is a Tiny Tapeout thing**, so it sits under
+  `tinytapeout/` rather than beside it.
+- **`raspberry-pi` had to become `raspberry_pi`.** A Python package cannot
+  have a hyphen in it, and merging code and output into one directory makes
+  that directory a package.
+- **Not everything has a subject.** The drafting library, the schema, the
+  generator and four of the six checks work on every family or on none, so
+  they live in `tools/`. Grouping by subject alone does not cover them.
+- **`tools/layout.py` is the one answer to "where are the sheets".** The
+  generator, the README builder and the three checks that walk every sheet all
+  need it, and a family added in one and forgotten in another is exactly the
+  drift those checks exist to catch.
+- **Previews sit beside the sheets they preview** rather than in one pool, so
+  a family stays self-contained.
+- **One README per directory**, each about that directory: where its numbers
+  came from, what is checked rather than assumed, what to run. The front page
+  is a table of contents and the things that are true of all of them.
+- **`check_sheets.py` now also checks every relative link in every README**,
+  because a documentation split means links written relative to the file they
+  sit in, and moving a directory then breaks links in files nobody touched.
+  Proved by breaking one.
+- **`check_pdfs.py` reads the git index, not HEAD.** It started on HEAD, which
+  meant this very rename could not go green until after it had been committed.
+  The index is what is about to become the repository, so staging an SVG
+  without its PDF fails before the commit rather than after it.
