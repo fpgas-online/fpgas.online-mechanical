@@ -3,7 +3,7 @@
 <rect width="100%" height="100%" fill="#ffffff"/>
 
 <text x="10" y="12.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">DRILL TEMPLATE - MOUNTING PLATE</text>
-<text x="200" y="12.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">TT-MP-03    v0.0-80-g9ce110e    A4 PORTRAIT    SCALE 1:1</text>
+<text x="200" y="12.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">TT-MP-03    v0.0-82-gb11d0c0+    A4 PORTRAIT    SCALE 1:1</text>
 <text x="10" y="17.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Tiny Tapeout generic mounting plate: outline, board fastener holes, slots and plate fixings</text>
 <rect x="10" y="21.4" width="190" height="11" fill="none" stroke="#000000" stroke-width="0.7"/>
 <text x="105" y="29.4" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="middle" font-weight="bold">PRINT AT 100 %   -   DO NOT FIT TO PAGE</text>
@@ -193,85 +193,85 @@
 <text x="11.2" y="109.3078" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" transform="rotate(-90 11.2 109.3078)">measure: 100.0 mm</text>
 <text x="10" y="174.0971" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">BOARD OUTLINES, drawn for clearance and not drilled. The letter is its hole ID prefix:</text>
 <rect x="10" y="176.6971" width="6" height="2.5" fill="#f0cccc" stroke="#993333" stroke-width="0.25"/>
-<text x="17.6" y="179.1971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#993333" text-anchor="start">A  TT01-03</text>
-<rect x="41.3395" y="176.6971" width="6" height="2.5" fill="#ccdcf0" stroke="#33558c" stroke-width="0.25"/>
-<text x="48.9395" y="179.1971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#33558c" text-anchor="start">B  TT04-05</text>
-<rect x="72.6858" y="176.6971" width="6" height="2.5" fill="#cfeacf" stroke="#2f7a2f" stroke-width="0.25"/>
-<text x="80.2858" y="179.1971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#2f7a2f" text-anchor="start">C  TT06-08</text>
-<rect x="104.0706" y="176.6971" width="6" height="2.5" fill="#f0e2c4" stroke="#8a6a1f" stroke-width="0.25"/>
-<text x="111.6706" y="179.1971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#8a6a1f" text-anchor="start">D  v3.2</text>
-<rect x="129.7356" y="176.6971" width="6" height="2.5" fill="#e0cdf0" stroke="#6a3d99" stroke-width="0.25"/>
-<text x="137.3356" y="179.1971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#6a3d99" text-anchor="start">E  v3.3</text>
+<text x="17.6" y="179.1971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#993333" text-anchor="start">A  DB mpw</text>
+<rect x="41.6297" y="176.6971" width="6" height="2.5" fill="#ccdcf0" stroke="#33558c" stroke-width="0.25"/>
+<text x="49.2297" y="179.1971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#33558c" text-anchor="start">B  DB 4+</text>
+<rect x="70.3254" y="176.6971" width="6" height="2.5" fill="#cfeacf" stroke="#2f7a2f" stroke-width="0.25"/>
+<text x="77.9254" y="179.1971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#2f7a2f" text-anchor="start">C  DB 06+</text>
+<rect x="101.0222" y="176.6971" width="6" height="2.5" fill="#f0e2c4" stroke="#8a6a1f" stroke-width="0.25"/>
+<text x="108.6222" y="179.1971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#8a6a1f" text-anchor="start">D  DB ETR v3.2</text>
+<rect x="139.1152" y="176.6971" width="6" height="2.5" fill="#e0cdf0" stroke="#6a3d99" stroke-width="0.25"/>
+<text x="146.7152" y="179.1971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#6a3d99" text-anchor="start">E  DB ETR v3.3</text>
 <text x="10" y="186.6971" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SCHEDULE   -   what each revision needs   (* shared: drill once)</text>
 <line x1="10" y1="188.0971" x2="200" y2="188.0971" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<rect x="10" y="190.2971" width="31.3737" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
-<text x="11.8" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">TT01-03</text>
-<text x="39.5737" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>
-<rect x="10" y="195.8527" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<rect x="10" y="190.2971" width="31.4774" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
+<text x="11.8" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">DB mpw</text>
+<text x="39.6774" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>
+<rect x="10" y="195.8527" width="31.4774" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="11.8" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A1*</text>
-<text x="39.5737" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="10" y="201.4082" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="39.6774" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="10" y="201.4082" width="31.4774" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="11.8" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A2</text>
-<text x="39.5737" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="10" y="206.9638" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="39.6774" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="10" y="206.9638" width="31.4774" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="11.8" y="210.7416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A3</text>
-<text x="39.5737" y="210.7416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="10" y="212.5193" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="39.6774" y="210.7416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="10" y="212.5193" width="31.4774" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="11.8" y="216.2971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A4</text>
-<text x="39.5737" y="216.2971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<line x1="27.7565" y1="190.2971" x2="27.7565" y2="218.0749" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<rect x="49.2" y="190.2971" width="31.3737" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
-<text x="51" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">TT04-05</text>
-<text x="78.7737" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>
-<rect x="49.2" y="195.8527" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="39.6774" y="216.2971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<line x1="27.8602" y1="190.2971" x2="27.8602" y2="218.0749" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<rect x="49.2" y="190.2971" width="27.9358" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
+<text x="51" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">DB 4+</text>
+<text x="75.3358" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>
+<rect x="49.2" y="195.8527" width="27.9358" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="51" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">B1</text>
-<text x="78.7737" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="49.2" y="201.4082" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="75.3358" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="49.2" y="201.4082" width="27.9358" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="51" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">B2</text>
-<text x="78.7737" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="49.2" y="206.9638" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="75.3358" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="49.2" y="206.9638" width="27.9358" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="51" y="210.7416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S1*</text>
-<text x="78.7737" y="210.7416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="49.2" y="212.5193" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="75.3358" y="210.7416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="49.2" y="212.5193" width="27.9358" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="51" y="216.2971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S2*</text>
-<text x="78.7737" y="216.2971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<line x1="66.9565" y1="190.2971" x2="66.9565" y2="218.0749" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<rect x="88.4" y="190.2971" width="31.3737" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
-<text x="90.2" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">TT06-08</text>
-<text x="117.9737" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>
-<rect x="88.4" y="195.8527" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="75.3358" y="216.2971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<line x1="63.5186" y1="190.2971" x2="63.5186" y2="218.0749" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<rect x="88.4" y="190.2971" width="30.0826" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
+<text x="90.2" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">DB 06+</text>
+<text x="116.6826" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>
+<rect x="88.4" y="195.8527" width="30.0826" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="90.2" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">C1</text>
-<text x="117.9737" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="88.4" y="201.4082" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="116.6826" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="88.4" y="201.4082" width="30.0826" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="90.2" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">C2</text>
-<text x="117.9737" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="88.4" y="206.9638" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="116.6826" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="88.4" y="206.9638" width="30.0826" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="90.2" y="210.7416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S1*</text>
-<text x="117.9737" y="210.7416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="88.4" y="212.5193" width="31.3737" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="116.6826" y="210.7416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="88.4" y="212.5193" width="30.0826" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
 <text x="90.2" y="216.2971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S2*</text>
-<text x="117.9737" y="216.2971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<line x1="106.1565" y1="190.2971" x2="106.1565" y2="218.0749" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<rect x="127.6" y="190.2971" width="24.694" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
-<text x="129.4" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v3.2</text>
-<text x="150.494" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>
-<rect x="127.6" y="195.8527" width="24.694" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="129.4" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A1*</text>
-<text x="150.494" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="127.6" y="201.4082" width="24.694" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="129.4" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">D1*</text>
-<text x="150.494" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<line x1="138.6768" y1="190.2971" x2="138.6768" y2="206.9638" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<rect x="127.6" y="211.4638" width="24.694" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
-<text x="129.4" y="215.2416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v3.3</text>
-<text x="150.494" y="215.2416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>
-<rect x="127.6" y="217.0193" width="24.694" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="129.4" y="220.7971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">D1*</text>
-<text x="150.494" y="220.7971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<rect x="127.6" y="222.5749" width="24.694" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="129.4" y="226.3527" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">E1</text>
-<text x="150.494" y="226.3527" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<line x1="138.6768" y1="211.4638" x2="138.6768" y2="228.1305" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="116.6826" y="216.2971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<line x1="104.8654" y1="190.2971" x2="104.8654" y2="218.0749" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<rect x="127.6" y="190.2971" width="33.2" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
+<text x="128.2" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">DB ETR v3.2</text>
+<text x="160.2" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>
+<rect x="127.6" y="195.8527" width="33.2" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="128.2" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A1*</text>
+<text x="160.2" y="199.6305" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="127.6" y="201.4082" width="33.2" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="128.2" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">D1*</text>
+<text x="160.2" y="205.186" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<line x1="149.6974" y1="190.2971" x2="149.6974" y2="206.9638" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<rect x="127.6" y="211.4638" width="33.2" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
+<text x="128.2" y="215.2416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">DB ETR v3.3</text>
+<text x="160.2" y="215.2416" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>
+<rect x="127.6" y="217.0193" width="33.2" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="128.2" y="220.7971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">D1*</text>
+<text x="160.2" y="220.7971" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<rect x="127.6" y="222.5749" width="33.2" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="128.2" y="226.3527" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">E1</text>
+<text x="160.2" y="226.3527" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<line x1="149.6974" y1="211.4638" x2="149.6974" y2="228.1305" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <rect x="166.8" y="190.2971" width="32.1105" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
 <text x="168.6" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">CHASSIS</text>
 <text x="197.1105" y="194.0749" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DRILL</text>

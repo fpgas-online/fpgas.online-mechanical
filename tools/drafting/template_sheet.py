@@ -30,7 +30,7 @@ import math
 
 from tinytapeout.mounting_plate.plate import (PLACEMENTS, PMOD_BODY,
                                               PMOD_ROW_Y, PMOD_SLOT_X, PLATE)
-from tools.schema import Outline
+from tools.schema import LABEL_SEP, Outline
 from tinytapeout.boards import BOARDS as TT_BOARDS
 
 from . import style
@@ -61,21 +61,21 @@ BAR_THICK = 2.6
 #: a hole centre.  They stay well clear of the hole and cut-line black so a
 #: greyscale print loses the wash and keeps everything that gets drilled.
 REVISION_TINT = {
-    "TT01-03": "#f0cccc",
-    "TT04-05": "#ccdcf0",
-    "TT06-08": "#cfeacf",
-    "v3.2": "#f0e2c4",
-    "v3.3": "#e0cdf0",
+    "DB mpw": "#f0cccc",
+    "DB 4+": "#ccdcf0",
+    "DB 06+": "#cfeacf",
+    "DB ETR v3.2": "#f0e2c4",
+    "DB ETR v3.3": "#e0cdf0",
 }
 
 #: The same hues at full strength, for legend text and swatch edges: a 2.5 mm
 #: capital in the wash colour would fail the legibility floor.
 REVISION_INK = {
-    "TT01-03": "#993333",
-    "TT04-05": "#33558c",
-    "TT06-08": "#2f7a2f",
-    "v3.2": "#8a6a1f",
-    "v3.3": "#6a3d99",
+    "DB mpw": "#993333",
+    "DB 4+": "#33558c",
+    "DB 06+": "#2f7a2f",
+    "DB ETR v3.2": "#8a6a1f",
+    "DB ETR v3.3": "#6a3d99",
 }
 
 #: Cross arm sticking out past the hole circle, for centre punching.
@@ -192,7 +192,7 @@ def used_by(label: str) -> str:
     if label == "PLATE":
         return "chassis fixing"
     groups: list[str] = []
-    for part in label.split("+"):
+    for part in label.split(LABEL_SEP):
         group = part.split(":")[0]
         if group not in groups:
             groups.append(group)

@@ -136,20 +136,20 @@
 <line x1="72.6398" y1="43.6388" x2="70.5667" y2="41.8344" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="68.3155" y="41.125" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">S2</text>
 <rect x="89.17" y="115.815" width="10.14" height="7.9" fill="none" stroke="#7a4a00" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<line x1="89.1742" y1="123.1091" x2="83.6666" y2="126.7447" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round"/>
-<text x="77.0917" y="132.335" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a4a00" text-anchor="middle" font-weight="bold">TT01-03</text>
+<line x1="89.1696" y1="123.102" x2="83.6641" y2="126.7254" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round"/>
+<text x="77.0399" y="132.335" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a4a00" text-anchor="middle" font-weight="bold">DB mpw</text>
 <rect x="93.935" y="40.925" width="12.74" height="8.3" fill="none" stroke="#7a4a00" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<line x1="106.5476" y1="48.9925" x2="109.2802" y2="50.7073" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round"/>
-<text x="115.9533" y="56.145" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a4a00" text-anchor="middle" font-weight="bold">TT04-05</text>
+<line x1="106.3286" y1="49.3216" x2="109.2002" y2="51.346" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round"/>
+<text x="114.2343" y="56.145" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a4a00" text-anchor="middle" font-weight="bold">DB 4+</text>
 <rect x="133.425" y="42.625" width="10.64" height="9.42" fill="none" stroke="#7a4a00" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<line x1="133.3275" y1="44.0804" x2="130.9" y2="42.6221" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round"/>
-<text x="124.1467" y="39.815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a4a00" text-anchor="middle" font-weight="bold">TT06-08</text>
+<line x1="133.3942" y1="43.9718" x2="130.9158" y2="42.414" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round"/>
+<text x="124.7923" y="39.815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a4a00" text-anchor="middle" font-weight="bold">DB 06+</text>
 <rect x="151.29" y="39.58" width="10.64" height="9.42" fill="none" stroke="#7a4a00" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<line x1="161.4899" y1="48.3061" x2="167.1642" y2="52.976" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round"/>
-<text x="170.6684" y="57.11" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a4a00" text-anchor="middle" font-weight="bold">v3.2</text>
+<line x1="151.0818" y1="47.3529" x2="145.6664" y2="50.3532" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round"/>
+<text x="135.7272" y="57.11" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a4a00" text-anchor="middle" font-weight="bold">DB ETR v3.2</text>
 <rect x="151.29" y="34.58" width="10.64" height="9.42" fill="none" stroke="#7a4a00" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<line x1="161.5958" y1="35.4062" x2="164.2881" y2="33.309" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round"/>
-<text x="167.8684" y="31.77" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a4a00" text-anchor="middle" font-weight="bold">v3.3</text>
+<line x1="162.2965" y1="36.5321" x2="164.469" y2="35.4785" stroke="#7a4a00" stroke-width="0.25" stroke-linecap="round"/>
+<text x="174.6928" y="31.77" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#7a4a00" text-anchor="middle" font-weight="bold">DB ETR v3.3</text>
 <rect x="91.6" y="114.93" width="16.25" height="14.85" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="93.4" cy="119.27" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
 <circle cx="93.4" cy="116.73" r="0.5" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.25"/>
@@ -238,102 +238,102 @@
 <text x="180.88" y="20.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">R4.00 (4 places), plate edge</text>
 <text x="243" y="18.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">BOARD MOUNTING HOLES</text>
 <line x1="243" y1="19.9" x2="405" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<rect x="243" y="22.1" width="157.4976" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">ID</text>
-<text x="273.3965" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">X mm</text>
-<text x="297.6544" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">Y mm</text>
-<text x="327.7818" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DIA/WIDTH mm</text>
-<text x="352.7" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">LENGTH mm</text>
-<text x="356.3" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">USED BY</text>
-<rect x="243" y="27.6556" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A1</text>
-<text x="273.3965" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">23.45</text>
-<text x="297.6544" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">81.78</text>
-<text x="327.7818" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="356.3" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT01-03:MT3, v3.2:MT1</text>
-<rect x="243" y="33.2111" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A2</text>
-<text x="273.3965" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">23.51</text>
-<text x="297.6544" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">8.29</text>
-<text x="327.7818" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="356.3" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT01-03:MT1</text>
-<rect x="243" y="38.7667" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A3</text>
-<text x="273.3965" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">120.51</text>
-<text x="297.6544" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">8.29</text>
-<text x="327.7818" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="356.3" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT01-03:MT2</text>
-<rect x="243" y="44.3222" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A4</text>
-<text x="273.3965" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">120.51</text>
-<text x="297.6544" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">81.78</text>
-<text x="327.7818" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="356.3" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT01-03:MT4</text>
-<rect x="243" y="49.8778" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">B1</text>
-<text x="273.3965" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">111.81</text>
-<text x="297.6544" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">8.47</text>
-<text x="327.7818" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="356.3" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT04-05:MT2</text>
-<rect x="243" y="55.4333" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">B2</text>
-<text x="273.3965" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">111.81</text>
-<text x="297.6544" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">81.97</text>
-<text x="327.7818" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="356.3" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT04-05:MT4</text>
-<rect x="243" y="60.9889" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">C1</text>
-<text x="273.3965" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">106.75</text>
-<text x="297.6544" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">13.22</text>
-<text x="327.7818" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="356.3" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT06-08:MT2</text>
-<rect x="243" y="66.5444" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">C2</text>
-<text x="273.3965" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">106.75</text>
-<text x="297.6544" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">79.72</text>
-<text x="327.7818" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="356.3" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT06-08:MT4</text>
-<rect x="243" y="72.1" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">D1</text>
-<text x="273.3965" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">96.40</text>
-<text x="297.6544" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">14.27</text>
-<text x="327.7818" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="356.3" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">v3.2:MT2, v3.3:MT2</text>
-<rect x="243" y="77.6556" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">E1</text>
-<text x="273.3965" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">23.40</text>
-<text x="297.6544" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">86.77</text>
-<text x="327.7818" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="356.3" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">v3.3:MT1</text>
-<rect x="243" y="83.2111" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S1</text>
-<text x="273.3965" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">14.24 / 14.80</text>
-<text x="297.6544" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">8.72 / 8.47</text>
-<text x="327.7818" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">4.01</text>
-<text x="356.3" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT04-05:MT1, TT06-08:MT1</text>
-<rect x="243" y="88.7667" width="157.4976" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S2</text>
-<text x="273.3965" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">14.24 / 14.80</text>
-<text x="297.6544" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">79.72 / 81.97</text>
-<text x="327.7818" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
-<text x="352.7" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">5.72</text>
-<text x="356.3" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT04-05:MT3, TT06-08:MT3</text>
-<line x1="250.9387" y1="22.1" x2="250.9387" y2="94.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="275.1965" y1="22.1" x2="275.1965" y2="94.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="299.4544" y1="22.1" x2="299.4544" y2="94.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="329.5818" y1="22.1" x2="329.5818" y2="94.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="354.5" y1="22.1" x2="354.5" y2="94.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<rect x="243" y="22.1" width="156.0718" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">ID</text>
+<text x="269.7965" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">X mm</text>
+<text x="291.6544" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">Y mm</text>
+<text x="319.3818" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">DIA/WIDTH mm</text>
+<text x="341.9" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">LENGTH mm</text>
+<text x="343.1" y="25.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">USED BY</text>
+<rect x="243" y="27.6556" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A1</text>
+<text x="269.7965" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">23.45</text>
+<text x="291.6544" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">81.78</text>
+<text x="319.3818" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="343.1" y="31.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB mpw:MT3, DB ETR v3.2:MT1</text>
+<rect x="243" y="33.2111" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A2</text>
+<text x="269.7965" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">23.51</text>
+<text x="291.6544" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">8.29</text>
+<text x="319.3818" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="343.1" y="36.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB mpw:MT1</text>
+<rect x="243" y="38.7667" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A3</text>
+<text x="269.7965" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">120.51</text>
+<text x="291.6544" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">8.29</text>
+<text x="319.3818" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="343.1" y="42.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB mpw:MT2</text>
+<rect x="243" y="44.3222" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A4</text>
+<text x="269.7965" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">120.51</text>
+<text x="291.6544" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">81.78</text>
+<text x="319.3818" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="343.1" y="48.1" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB mpw:MT4</text>
+<rect x="243" y="49.8778" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">B1</text>
+<text x="269.7965" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">111.81</text>
+<text x="291.6544" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">8.47</text>
+<text x="319.3818" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="343.1" y="53.6556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB 4+:MT2</text>
+<rect x="243" y="55.4333" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">B2</text>
+<text x="269.7965" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">111.81</text>
+<text x="291.6544" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">81.97</text>
+<text x="319.3818" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="343.1" y="59.2111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB 4+:MT4</text>
+<rect x="243" y="60.9889" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">C1</text>
+<text x="269.7965" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">106.75</text>
+<text x="291.6544" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">13.22</text>
+<text x="319.3818" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="343.1" y="64.7667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB 06+:MT2</text>
+<rect x="243" y="66.5444" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">C2</text>
+<text x="269.7965" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">106.75</text>
+<text x="291.6544" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">79.72</text>
+<text x="319.3818" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="343.1" y="70.3222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB 06+:MT4</text>
+<rect x="243" y="72.1" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">D1</text>
+<text x="269.7965" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">96.40</text>
+<text x="291.6544" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">14.27</text>
+<text x="319.3818" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="343.1" y="75.8778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB ETR v3.2:MT2, DB ETR v3.3:MT2</text>
+<rect x="243" y="77.6556" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">E1</text>
+<text x="269.7965" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">23.40</text>
+<text x="291.6544" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">86.77</text>
+<text x="319.3818" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="343.1" y="81.4333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB ETR v3.3:MT1</text>
+<rect x="243" y="83.2111" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S1</text>
+<text x="269.7965" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">14.24 / 14.80</text>
+<text x="291.6544" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">8.72 / 8.47</text>
+<text x="319.3818" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">4.01</text>
+<text x="343.1" y="86.9889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB 4+:MT1, DB 06+:MT1</text>
+<rect x="243" y="88.7667" width="156.0718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S2</text>
+<text x="269.7965" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">14.24 / 14.80</text>
+<text x="291.6544" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">79.72 / 81.97</text>
+<text x="319.3818" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">3.40</text>
+<text x="341.9" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">5.72</text>
+<text x="343.1" y="92.5444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DB 4+:MT3, DB 06+:MT3</text>
+<line x1="248.5387" y1="22.1" x2="248.5387" y2="94.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="270.3965" y1="22.1" x2="270.3965" y2="94.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="292.2544" y1="22.1" x2="292.2544" y2="94.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="319.9818" y1="22.1" x2="319.9818" y2="94.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="342.5" y1="22.1" x2="342.5" y2="94.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="103.8222" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">PLATE FIXING HOLES</text>
 <line x1="243" y1="105.2222" x2="405" y2="105.2222" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="107.4222" width="52.3525" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
@@ -410,21 +410,22 @@
 <text x="30.5045" y="210.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">LENGTH is overall.</text>
 <text x="24" y="216.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
 <text x="30.5045" y="216.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USED BY reads &lt;group&gt;:&lt;hole&gt;; MT1 to MT4 are the</text>
-<text x="30.5045" y="220.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board&#x27;s own hole IDs. Groups, by board revision: TT01-03 =</text>
-<text x="30.5045" y="225.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">tt123-v2.2.6; TT04-05 = v1.2.2, v1.2.3; TT06-08 = v2.0.1,</text>
-<text x="30.5045" y="229.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">v2.1.0, v2.1.2; v3.2 and v3.3 = themselves, no shuttle yet.</text>
-<text x="24" y="235.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="30.5045" y="235.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A board hole&#x27;s ID letter is the revision it is there for -- A</text>
-<text x="30.5045" y="239.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT01-03, B TT04-05, C TT06-08, D v3.2, E v3.3 -- numbered</text>
-<text x="30.5045" y="244.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">within it. S is a slot and P a plate fixing. Four features serve</text>
-<text x="30.5045" y="248.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">two revisions; each keeps one ID.</text>
-<text x="24" y="254.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
-<text x="30.5045" y="254.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The three PMOD envelopes are not machined features. They</text>
-<text x="30.5045" y="259.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mark where the Pmod host pin fields end up, the same place</text>
-<text x="30.5045" y="263.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">for every board revision. That is the point of the plate.</text>
-<text x="24" y="269.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
-<text x="30.5045" y="269.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Fit the board on standoffs. A board uses only the holes and</text>
-<text x="30.5045" y="273.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">slots its USED BY row names.</text>
+<text x="30.5045" y="220.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board&#x27;s own hole IDs. Groups, by board revision: DB mpw =</text>
+<text x="30.5045" y="225.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">tt123-v2.2.6; DB 4+ = v1.2.2, v1.2.3; DB 06+ = v2.0.1,</text>
+<text x="30.5045" y="229.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">v2.1.0, v2.1.2; DB ETR v3.2 = v3.2; DB ETR v3.3 =</text>
+<text x="30.5045" y="234.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">themselves, no shuttle yet.</text>
+<text x="24" y="239.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="30.5045" y="239.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A board hole&#x27;s ID letter is the revision it is there for -- A DB</text>
+<text x="30.5045" y="244.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mpw, B DB 4+, C DB 06+, D DB ETR v3.2, E DB ETR v3.3 --</text>
+<text x="30.5045" y="248.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">numbered within it. S is a slot and P a plate fixing. Four</text>
+<text x="30.5045" y="253.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">features serve two revisions; each keeps one ID.</text>
+<text x="24" y="259.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
+<text x="30.5045" y="259.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The three PMOD envelopes are not machined features. They</text>
+<text x="30.5045" y="263.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mark where the Pmod host pin fields end up, the same place</text>
+<text x="30.5045" y="268.0815" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">for every board revision. That is the point of the plate.</text>
+<text x="24" y="273.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
+<text x="30.5045" y="273.6082" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Fit the board on standoffs. A board uses only the holes and</text>
+<text x="30.5045" y="278.135" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">slots its USED BY row names.</text>
 <text x="133.5" y="176.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
 <line x1="133.5" y1="177.9" x2="235" y2="177.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="133.5" y="182.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
@@ -467,7 +468,7 @@
 <text x="244.6" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">generated</text>
 <line x1="284.25" y1="263" x2="284.25" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="285.85" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">VERSION</text>
-<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-80-g9ce110e</text>
+<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-82-gb11d0c0+</text>
 <line x1="325.5" y1="263" x2="325.5" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="327.1" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">UNITS</text>
 <text x="327.1" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">mm</text>

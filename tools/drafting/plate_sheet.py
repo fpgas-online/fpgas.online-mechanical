@@ -18,7 +18,7 @@ import math
 from tinytapeout.mounting_plate.plate import (PLACEMENTS, PMOD_BODY,
                                               PMOD_ROW_Y, PMOD_SLOT_X,
                                               PLATE, USB_C)
-from tools.schema import BoardSpec, Hole, Slot
+from tools.schema import LABEL_SEP, BoardSpec, Hole, Slot
 from tinytapeout.boards import BOARDS as TT_BOARDS
 
 from . import dims, style
@@ -321,12 +321,12 @@ def holes_by_version(spec) -> list[tuple[str, list[str]]]:
     for i, h in enumerate(spec.holes):
         if h.kind == "plate":
             continue
-        for part in h.label.split("+"):
+        for part in h.label.split(LABEL_SEP):
             group = part.split(":")[0]
             if group in used:
                 used[group].append(labels[i])
     for n, sl in enumerate(spec.slots, 1):
-        for part in sl.label.split("+"):
+        for part in sl.label.split(LABEL_SEP):
             group = part.split(":")[0]
             if group in used:
                 used[group].append(f"S{n}")
@@ -359,7 +359,7 @@ def _id_sort(label: str) -> tuple[int, int]:
 
 def group_of(label: str) -> str:
     """The first board revision a feature's provenance label names."""
-    return label.split("+")[0].split(":")[0]
+    return label.split(LABEL_SEP)[0].split(":")[0]
 
 
 def hole_ids(spec) -> tuple[dict[int, str], list[int], list[int]]:
@@ -369,10 +369,10 @@ def hole_ids(spec) -> tuple[dict[int, str], list[int], list[int]]:
     about which hole is which.
 
     A board hole takes the letter of the revision that needs it: A1 to A4 are
-    TT01-03's four fasteners, E1 is v3.3's.  The ID used to be a flat H1..H10
-    in data order, which told a reader nothing -- standing at a drill press
-    with a v3.3 board in hand, "H9" and "H10" are just numbers, while "D1" and
-    "E1" at least say which board they belong to.
+    DB mpw's four fasteners, E1 is DB ETR v3.3's.  The ID used to be a flat
+    H1..H10 in data order, which told a reader nothing -- standing at a drill
+    press with a v3.3 board in hand, "H9" and "H10" are just numbers, while
+    "D1" and "E1" at least say which board they belong to.
 
     Four features serve two revisions each, so the letter cannot mean sole
     ownership: it names the *first* revision that uses the feature, and every
@@ -591,7 +591,7 @@ def render_plate(*, drawing_no: str, version: str,
         # A round hole has no length to give, so the column is struck through
         # rather than left blank: a blank cell reads as a missing value.
         rows.append([labels[i], f"{h.x:.2f}", f"{h.y:.2f}", f"{h.dia:.2f}",
-                     "-", h.label.replace("+", ", ")])
+                     "-", h.label.replace(LABEL_SEP, ", ")])
     for n, s in enumerate(spec.slots, 1):
         # Two values because a slot has two end centres; the note below says so.
         # LENGTH is the overall length, end to end, which is what a cutter or a
@@ -599,7 +599,7 @@ def render_plate(*, drawing_no: str, version: str,
         rows.append([f"S{n}", f"{s.x0:.2f} / {s.x1:.2f}",
                      f"{s.y0:.2f} / {s.y1:.2f}",
                      f"{s.width:.2f}", f"{s.length:.2f}",
-                     s.label.replace("+", ", ")])
+                     s.label.replace(LABEL_SEP, ", ")])
     block = sheet.column_block(sheet.table_height("BOARD MOUNTING HOLES", len(rows)))
     sheet.table(block, "BOARD MOUNTING HOLES",
                 ["ID", "X mm", "Y mm", "DIA/WIDTH mm", "LENGTH mm", "USED BY"], rows,
@@ -671,18 +671,23 @@ def render_fitting_guide(*, drawing_no: str, version: str,
         # positions 2 and 3 with the later boards' second and third.
         first = pl["first_pmod_position"]
         slots = ", ".join(str(first + i) for i in range(pl["pmod_count"]))
-        rows_t.append([name, ", ".join(pl["revisions"]), used,
+        rows_t.append([name, used,
                        f"{pl['dx']:.2f}", f"{pl['dy']:.2f}", slots,
                        ", ".join(by_version[name])])
     # In the annotation column, not in a half-width cell: at a true 2.5 mm cap
     # height this table does not fit in half the drawing area.
     block = sheet.column_block(sheet.table_height("BOARD PLACEMENT ON THE PLATE",
                                                   len(rows_t)))
+    # Six columns, not seven.  The board revisions each group covers are on
+    # that group's own view a few centimetres away; carrying them here as well
+    # cost 36 mm of a 162 mm column, and the table then overflowed and drew its
+    # own headings through each other.  Headings are abbreviated for the same
+    # reason: "PLATE PMODS" and "dX mm" were each wider than anything beneath
+    # them, so the heading, not the data, was setting the column width.
     sheet.table(block, "BOARD PLACEMENT ON THE PLATE",
-                ["GROUP", "BOARD REVISIONS", "SHUTTLES", "dX mm", "dY mm",
-                 "PLATE PMODS", "HOLES USED"],
+                ["BOARD", "SHUTTLES", "dX", "dY", "PMODS", "HOLES USED"],
                 rows_t,
-                ["start", "start", "start", "end", "end", "middle", "start"])
+                ["start", "start", "end", "end", "middle", "start"])
 
     rows_u = [[name, f"{USB_C[name][0]:.2f} to {USB_C[name][2]:.2f}",
                f"{USB_C[name][1]:.2f} to {USB_C[name][3]:.2f}"]
@@ -703,7 +708,7 @@ def render_fitting_guide(*, drawing_no: str, version: str,
         "relative to v2.0.1 and v2.1.0, for instance.",
         "dX and dY place the board: add them to a coordinate in that board's "
         "own frame to get a plate coordinate.",
-        "The TT01/02/03 board has only two Pmod hosts. They go on plate Pmod "
+        "The DB mpw board has only two Pmod hosts. They go on plate Pmod "
         "positions 2 and 3, which makes the plate 5.15 mm narrower than "
         "putting them on 1 and 2 would.",
         "Every revision puts its Pmod host pin fields on the same three "
@@ -785,10 +790,14 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
     # The three caption lines sit right under the view, close enough that a
     # hole label on the plate's lower edge lands on the first of them.
     shuttles = ", ".join(pl["shuttles"]) or "no shipped shuttle yet"
+    # Three lines, and the shuttles now get one of their own: "DB ETR v3.2
+    # (TT09, TTSKY25a, TTSKY25b, TTGF0p2)" on one line is wider than the cell.
+    # The offsets that used to be the third line are in the table, where they
+    # are easier to compare between groups anyway.
     captions = [
-        (f"{name}  ({shuttles})", 7.0, True, style.C_NOTE),
-        ("board rev " + ", ".join(pl["revisions"]), 12.0, False, "#444444"),
-        (f"offset X {dx:.2f}  Y {dy:.2f} mm", 17.0, False, "#444444"),
+        (name, 7.0, True, style.C_NOTE),
+        (shuttles, 12.0, False, "#444444"),
+        ("board rev " + ", ".join(pl["revisions"]), 17.0, False, "#444444"),
     ]
     for text, drop, bold, _ in captions:
         w = style.text_width(text, style.T_LABEL, bold=bold)

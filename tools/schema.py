@@ -32,6 +32,15 @@ class Source:
     note: str = ""
 
 
+#: Separates the revisions in a feature's provenance label, as in
+#: "DB mpw:MT3|DB ETR v3.2:MT1".  It was "+", until the board IDs became the
+#: revision names and two of them -- "DB 4+" and "DB 06+" -- ended in the
+#: separator, so a label split into pieces that named no revision at all.
+#: A colon separates the revision from that board's own hole name, so neither
+#: character may appear in a revision name.
+LABEL_SEP = "|"
+
+
 @dataclass(frozen=True)
 class Hole:
     """A circular hole.

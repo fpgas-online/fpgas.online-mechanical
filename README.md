@@ -39,30 +39,30 @@ a full-resolution PNG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-tt123-v2p2p6.pdf"><img src="tinytapeout/output/previews/tt-demo-board-tt123-v2p2p6.png" width="270" alt="TT-DB-01 Tiny Tapeout TT01/02/03 Demo Board"></a><br>
-<b>TT-DB-01</b> Tiny Tapeout TT01/02/03 Demo Board<br>mpw-mb1 rev 2.2.6
+<a href="tinytapeout/output/tt-demo-board-tt123-v2p2p6.pdf"><img src="tinytapeout/output/previews/tt-demo-board-tt123-v2p2p6.png" width="270" alt="TT-DB-01 DB mpw v2.2.6"></a><br>
+<b>TT-DB-01</b> DB mpw v2.2.6<br>mpw-mb1 rev 2.2.6
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v1p2p2-v1p2p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-02 Tiny Tapeout 4+ Demo Board"></a><br>
-<b>TT-DB-02</b> Tiny Tapeout 4+ Demo Board<br>tinytapeout-demo rev 1.2.2 and 1.2.3
+<a href="tinytapeout/output/tt-demo-board-v1p2p2-v1p2p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-02 DB 4+ v1.2.2"></a><br>
+<b>TT-DB-02</b> DB 4+ v1.2.2<br>tinytapeout-demo rev 1.2.2 and 1.2.3
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-03 Tiny Tapeout 06+ Demo Board"></a><br>
-<b>TT-DB-03</b> Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.0.1 and 2.1.0
+<a href="tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-03 DB 06+ v2.0.1"></a><br>
+<b>TT-DB-03</b> DB 06+ v2.0.1<br>tinytapeout-demo rev 2.0.1 and 2.1.0
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v2p1p2.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-04 Tiny Tapeout 06+ Demo Board"></a><br>
-<b>TT-DB-04</b> Tiny Tapeout 06+ Demo Board<br>tinytapeout-demo rev 2.1.2
+<a href="tinytapeout/output/tt-demo-board-v2p1p2.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-04 DB 06+ v2.1.2"></a><br>
+<b>TT-DB-04</b> DB 06+ v2.1.2<br>tinytapeout-demo rev 2.1.2
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v3p2.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-05 Tiny Tapeout Demo Board v3"></a><br>
-<b>TT-DB-05</b> Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.2 (ETR)
+<a href="tinytapeout/output/tt-demo-board-v3p2.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-05 DB ETR v3.2"></a><br>
+<b>TT-DB-05</b> DB ETR v3.2<br>tinytapeout-demo rev 3.2
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v3p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-06 Tiny Tapeout Demo Board v3"></a><br>
-<b>TT-DB-06</b> Tiny Tapeout Demo Board v3<br>tinytapeout-demo rev 3.3
+<a href="tinytapeout/output/tt-demo-board-v3p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-06 DB ETR v3.3"></a><br>
+<b>TT-DB-06</b> DB ETR v3.3<br>tinytapeout-demo rev 3.3
 </td>
 </tr>
 </table>
@@ -153,10 +153,11 @@ before drilling. See
 
 ## The mounting plate
 
-Every Tiny Tapeout demo board revision, TT01 through v3.3, spaces its Pmod host
-headers 22.86 mm apart, because the Digilent Pmod Interface Specification
-mandates that pitch for host ports on a board edge. Nothing else about the
-boards stayed still: the outline went 104.5 x 81 to 99.5 x 78 to 85 x 85, the
+Every Tiny Tapeout demo board revision, `DB mpw v2.2.6` through `DB ETR v3.3`,
+spaces its Pmod host headers 22.86 mm apart, because the Digilent Pmod
+Interface Specification mandates that pitch for host ports on a board edge.
+Nothing else about the boards stayed still: the outline went 104.5 x 81 to
+99.5 x 78 to 85 x 85, the
 mounting hole pattern changed three times and dropped from four holes to two,
 and the distance from the front edge to the Pmod pin field moved from 4.465 mm
 to 3.23 mm.

@@ -31,7 +31,7 @@ Two things are checked rather than trusted:
 - a resolved arc must pass through the point KiCad puts on it;
 - `tools/crosscheck_gerber.py` compares an extracted outline against the
   upstream Edge_Cuts gerber, which KiCad's own plotter produced from the same
-  board file. Both give 104.500 x 81.000 mm for the TT01/02/03 board, so the
+  board file. Both give 104.500 x 81.000 mm for the DB mpw board, so the
   parsing is confirmed against something that did not come from here.
 
 Shuttle-to-revision mapping comes from the upstream historic README, which

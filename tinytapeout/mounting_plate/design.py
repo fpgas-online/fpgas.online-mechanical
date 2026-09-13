@@ -3,9 +3,10 @@
 
 The plate carries one hole pattern that accepts *any* Tiny Tapeout demo board
 revision on standoffs, while holding the Pmod host headers in a single fixed
-place.  That is possible because of one invariant: every revision from TT01
-through v3.3 spaces its Pmod hosts 22.86 mm apart, the pitch the Digilent Pmod
-Interface Specification mandates for host ports on a board edge.
+place.  That is possible because of one invariant: every demo board revision,
+DB mpw v2.2.6 through DB ETR v3.3, spaces its Pmod hosts 22.86 mm apart, the
+pitch the Digilent Pmod Interface Specification mandates for host ports on a
+board edge.
 
 The design frame has its origin at the pin-field centre of the leftmost Pmod
 host position, X along the board's front edge and Y into the board.  Each board
@@ -33,6 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 from tinytapeout.boards import BOARDS  # noqa: E402
+from tools.schema import LABEL_SEP  # noqa: E402
 
 PMOD_PITCH = 22.86
 M3_DIA = 3.00              # nominal M3 shank
@@ -50,20 +52,30 @@ MERGE_BELOW = HOLE_DIA - M3_DIA
 PLATE_HOLE_DIA = 4.30      # M4 clearance, for fixing the plate down
 PLATE_HOLE_CLEAR = 6.0     # keep plate fixings this far from any board hole
 
-#: Each entry is one mechanically distinct board revision, in shuttle order,
-#: with the shuttles it covers.  Revisions with identical geometry share a row.
-#: Group name, the revision whose geometry is used, every revision the group
-#: covers, and the shuttles those revisions shipped on.  A group's revisions
-#: share their mounting holes and Pmod host positions exactly, which is all the
-#: plate cares about; they may still differ elsewhere.  v2.1.2, for instance,
-#: moved its USB-C connector 0.9 mm relative to v2.0.1 and v2.1.0.
+#: Each entry is one mechanically distinct group of board revisions, in board
+#: order: the group's name, the revision whose geometry the plate is registered
+#: against, and every revision the group covers.  A group's revisions share
+#: their mounting holes and Pmod host positions exactly, which is all the plate
+#: cares about; they may still differ elsewhere.  v2.1.2, for instance, moved
+#: its USB-C connector 0.9 mm relative to v2.0.1 and v2.1.0.
+#:
+#: Named by the board's ID in Tiny Tapeout's board revision spreadsheet, not by
+#: the shuttles it served.  The groups used to be called TT01-03, TT04-05 and
+#: TT06-08, which read as shuttle ranges and was wrong for the first of them:
+#: that board served TT03 alone, TT02 having shipped on DB mpw v2.2.5 and TT01
+#: on no PCB at all.  A name that states a fact has to be maintained; the ID
+#: names the board itself.
+#:
+#: The shuttles are NOT listed here.  They were, in a fourth field typed by
+#: hand, which is one transcription of a fact that tinytapeout/boards.py
+#: already holds: edit one and the fitting guide would claim a shuttle the
+#: board sheet denies.  They are read out of the revisions instead.
 REVISIONS = [
-    ("TT01-03", "tt123-v2.2.6", ("tt123-v2.2.6",), ("TT01", "TT02", "TT03")),
-    ("TT04-05", "v1.2.2", ("v1.2.2", "v1.2.3"), ("TT04", "TT05")),
-    ("TT06-08", "v2.0.1", ("v2.0.1", "v2.1.0", "v2.1.2"),
-     ("TT06", "TT07", "TT08")),
-    ("v3.2", "v3.2", ("v3.2",), ()),
-    ("v3.3", "v3.3", ("v3.3",), ()),
+    ("DB mpw", "tt123-v2.2.6", ("tt123-v2.2.6",)),
+    ("DB 4+", "v1.2.2", ("v1.2.2", "v1.2.3")),
+    ("DB 06+", "v2.0.1", ("v2.0.1", "v2.1.0", "v2.1.2")),
+    ("DB ETR v3.2", "v3.2", ("v3.2",)),
+    ("DB ETR v3.3", "v3.3", ("v3.3",)),
 ]
 
 #: The TT01/02/03 board has only two Pmod hosts.  Putting its first host on the
@@ -118,8 +130,12 @@ DATUM_Y = PMOD_BODY_OVERHANG - FRONT_CLEARANCE      # 9.0
 
 def placements() -> list[dict]:
     out = []
-    for name, key, revisions, shuttles in REVISIONS:
+    for name, key, revisions in REVISIONS:
         board = BOARDS[key]
+        # Read from the board data rather than restated: one source for which
+        # shuttles used a board, so the plate sheets and the board sheets
+        # cannot disagree about it.
+        shuttles = tuple(s for r in revisions for s in BOARDS[r].used_by)
         pmods = sorted(board.pmods, key=lambda p: p.cx)
         slot = TWO_PMOD_START_SLOT if len(pmods) == 2 else 0
         ox = slot * PMOD_PITCH - pmods[0].cx
@@ -162,6 +178,9 @@ def cluster(points: list[dict], threshold: float) -> list[list[dict]]:
 
 def build():
     place = placements()
+    #: Where each group sits in board order.  Needed while the labels are
+    #: built, not just when they are sorted.
+    order_of = {pl["name"]: i for i, pl in enumerate(place)}
     points = []
     for pl in place:
         for h in pl["board"].holes:
@@ -182,7 +201,12 @@ def build():
                 f"{min_sep:.2f} mm here: "
                 + ", ".join(f"{p['rev']} {p['label']}" for p in g)
                 + ". Decide by hand how to serve them.")
-        used = sorted({(p["rev"], p["label"]) for p in g})
+        # In placement order, not alphabetical.  The first revision in a
+        # label is taken to be the one the feature is lettered for, and
+        # while the groups were called TT01-03..v3.3 sorting by name gave
+        # board order by luck.  "DB ETR v3.2" sorts before "DB mpw".
+        used = sorted({(p["rev"], p["label"]) for p in g},
+                      key=lambda rl: (order_of[rl[0]], rl[1]))
         span = max((math.dist((a["x"], a["y"]), (b["x"], b["y"]))
                     for a in g for b in g), default=0.0)
         if span < MERGE_BELOW:
@@ -202,7 +226,7 @@ def build():
     # holes; numbering them spatially scattered each revision's set across the
     # whole range, so H1, H3, H9 and H10 was one board's pattern.  A hole two
     # revisions share is numbered with the earlier of them.
-    order = {pl["name"]: i for i, pl in enumerate(place)}
+    order = order_of
 
     def by_version(entry, xkey="x", ykey="y"):
         return (min(order[rev] for rev, _ in entry["used"]),
@@ -217,7 +241,7 @@ def usb_c_positions(place) -> dict:
     """Where each revision's USB-C connector lands in plate coordinates.
 
     A chassis has to open for it, and it moves further between revisions than
-    anything else on these boards: TT01-03 puts it on the front edge beside
+    anything else on these boards: DB mpw puts it on the front edge beside
     the Pmod hosts, every later revision puts it at the back.
     """
     out = {}
@@ -440,7 +464,7 @@ def main() -> None:
     def hole_src():
         out = []
         for h in holes:
-            used = "+".join(f"{r}:{l}" for r, l in h["used"])
+            used = LABEL_SEP.join(f"{r}:{l}" for r, l in h["used"])
             note = (f"Serves {len(h['used'])} revision positions spread "
                     f"{h['spread']:.3f} mm; drilled at their midpoint."
                     if h["spread"] else "")
@@ -456,7 +480,7 @@ def main() -> None:
     def slot_src():
         out = []
         for s in slots:
-            used = "+".join(f"{r}:{l}" for r, l in s["used"])
+            used = LABEL_SEP.join(f"{r}:{l}" for r, l in s["used"])
             out.append(f'        Slot(x0={s["x0"] + DATUM_X:.3f}, '
                        f'y0={s["y0"] + DATUM_Y:.3f}, '
                        f'x1={s["x1"] + DATUM_X:.3f}, y1={s["y1"] + DATUM_Y:.3f}, '

@@ -81,7 +81,7 @@ and lives with it.
 
 - **`crosscheck_gerber.py`** compares an extracted board outline against the
   upstream Edge_Cuts gerber, which KiCad's own plotter produced from the same
-  board file. Both give 104.500 x 81.000 mm for the TT01/02/03 board, so the
+  board file. Both give 104.500 x 81.000 mm for the DB mpw board, so the
   parsing and coordinate path is confirmed against something that did not come
   from this repository. Needs network, so it is not part of `make`.
 

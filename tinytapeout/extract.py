@@ -27,15 +27,18 @@ sys.path.insert(0, str(ROOT))
 from tools import kicad_pcb  # noqa: E402
 WORK = ROOT / "tmp" / "pcb"
 
-# Shuttle -> production revision comes from the upstream historic documentation,
-# tt-demo-pcb/doc/historic/README.md, which names both the revision and the
-# commit it was produced from.  That file stops at TT08; no Tiny Tapeout source
-# states a board revision for any later shuttle, and per tinytapeout.com/chips
-# no shuttle after TT08 has shipped, so v3.x is listed without a shuttle.
-#: Where the shuttle-to-board-revision mapping comes from.  The historic
-#: README covers the revisions up to v2.1.2; the later ones are only in Tiny
-#: Tapeout's own board revision spreadsheet, which is also where the name
-#: "ETR" for v3.2 comes from.
+# Which shuttles used a board comes from the "Used by" column of Tiny Tapeout's
+# own board revision spreadsheet, which is authoritative for this and is the
+# only source that covers every revision.  The upstream historic README,
+# tt-demo-pcb/doc/historic/README.md, is still cited for the revision-to-commit
+# mapping it gives, but it stops at v2.1.2 and it is not a shuttle record.
+#
+# The spreadsheet's ID column is the canonical name of a board, and is what
+# each sheet is titled with: "DB 06+ v2.1.2", not a description of it.  Two of
+# its IDs have no drawing here at all -- DB mpw v2.2.5 (TT02) and DB 4+ v1.2.1
+# (TT03p5) -- because neither board is in the upstream KiCad repositories this
+# extracts from.  That is why TT02 appears on no sheet.
+#: Where the shuttle-to-board-revision mapping comes from.
 HISTORIC_README = ("https://github.com/TinyTapeout/tt-demo-pcb/blob/main/"
                    "doc/historic/README.md")
 SHUTTLE_SHEET = ("https://docs.google.com/spreadsheets/d/"
@@ -72,79 +75,109 @@ REVISIONS = [
     dict(
         key="tt123-v2.2.6",
         repo="tt123-demo-pcb", path="mpw-mb1.kicad_pcb", commit="3d721a6",
-        title="Tiny Tapeout TT01/02/03 Demo Board",
+        title="DB mpw v2.2.6",
         subtitle="mpw-mb1 rev 2.2.6",
-        used_by=("TT01", "TT02", "TT03"),
+        used_by=("TT03",),
+        shuttle_source=SHUTTLE_SHEET,
+        shuttle_note='row "DB mpw v2.2.6", Used by: {used}.',
+        extra_notes=(
+            "The board's own title block reads \"TinyTapeout 1,2,3 Demo "
+            "Board\", but it did not serve all three shuttles. TT01 was a "
+            "bare-die trial run for which no PCB was made, and TT02 shipped "
+            "on DB mpw v2.2.5, a revision not in the upstream board "
+            "repository and so not drawn here.",
+        ),
         source_url="https://github.com/TinyTapeout/tt123-demo-pcb",
     ),
     dict(
         key="v1.2.2",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="cfdd80d7b",
-        title="Tiny Tapeout 4+ Demo Board",
+        title="DB 4+ v1.2.2",
         subtitle="tinytapeout-demo rev 1.2.2",
         used_by=("TT04",),
+        shuttle_source=SHUTTLE_SHEET,
+        shuttle_note='row "DB 4+ v1.2.2", Used by: {used}.',
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
     dict(
         key="v1.2.3",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="a88cbc08b",
-        title="Tiny Tapeout 4+ Demo Board",
+        title="DB 4+ v1.2.2c",
         subtitle="tinytapeout-demo rev 1.2.3",
         used_by=("TT05",),
+        shuttle_source=SHUTTLE_SHEET,
+        shuttle_note='row "DB 4+ v1.2.2c", Used by: {used}.',
+        extra_notes=(
+            "Tiny Tapeout's board spreadsheet calls this board v1.2.2c and "
+            "describes it as a variant of v1.2.2 with X1 unpopulated and a "
+            "0R 0603 at R51. That is an assembly difference; the KiCad title "
+            "block this geometry was extracted from reads rev 1.2.3.",
+        ),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
     dict(
         key="v2.0.1",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="292760e1f",
-        title="Tiny Tapeout 06+ Demo Board",
+        title="DB 06+ v2.0.1",
         subtitle="tinytapeout-demo rev 2.0.1",
         used_by=("TT06",),
+        shuttle_source=SHUTTLE_SHEET,
+        shuttle_note='row "DB 06+ v2.0.1", Used by: {used}.',
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
     dict(
         key="v2.1.0",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="a799acb38",
-        title="Tiny Tapeout 06+ Demo Board",
+        title="DB 06+ v2.1.0",
         subtitle="tinytapeout-demo rev 2.1.0",
         used_by=("TT07",),
+        shuttle_source=SHUTTLE_SHEET,
+        shuttle_note='row "DB 06+ v2.1.0", Used by: {used}.',
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
     dict(
         key="v2.1.2",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="028a51b1e",
-        title="Tiny Tapeout 06+ Demo Board",
+        title="DB 06+ v2.1.2",
         subtitle="tinytapeout-demo rev 2.1.2",
         used_by=("TT08",),
+        shuttle_source=SHUTTLE_SHEET,
+        shuttle_note='row "DB 06+ v2.1.2", Used by: {used}.',
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
     dict(
         key="v3.2",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="d830790ca",
-        title="Tiny Tapeout Demo Board v3",
-        subtitle="tinytapeout-demo rev 3.2 (ETR)",
+        title="DB ETR v3.2",
+        subtitle="tinytapeout-demo rev 3.2",
         used_by=("TT09", "TTSKY25a", "TTSKY25b", "TTGF0p2"),
         # The historic README does not carry this revision; Tiny Tapeout's own
         # board revision spreadsheet does, and it is where "ETR" comes from.
         shuttle_source=SHUTTLE_SHEET,
-        shuttle_note="row 10: \"ETR (RP2350) demoboard v3.2, Hirose DF12 "
-                     "breakout connectors, ADC header. Production files: "
-                     "pcb-files/ETRv3p2/demoboard (2025-11-12)\". Used by: "
-                     "{used}",
+        shuttle_note='row "DB ETR v3.2", Used by: {used}.',
         extra_notes=(
-            "ETR is Tiny Tapeout's own designation for this board in their "
-            "board revision spreadsheet, where it is listed as \"ETR "
-            "(RP2350) demoboard v3.2\". The KiCad title block does not carry "
-            "it; it is recorded here because the board is referred to by that "
-            "name. Nothing mechanical depends on it.",
+            "ETR is Tiny Tapeout's own designation for this board. The KiCad "
+            "title block reads \"Tiny Tapeout Demoboard v3\" and does not "
+            "carry it; the name here is the board's ID in Tiny Tapeout's "
+            "board revision spreadsheet. Nothing mechanical depends on it.",
         ),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
     dict(
         key="v3.3",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="ecb636ace",
-        title="Tiny Tapeout Demo Board v3",
+        title="DB ETR v3.3",
         subtitle="tinytapeout-demo rev 3.3",
         used_by=(),
+        shuttle_source=SHUTTLE_SHEET,
+        shuttle_note="no row: this revision is not in the board revision "
+                     "spreadsheet, so no shuttle is recorded for it.",
+        extra_notes=(
+            "This revision has no row in Tiny Tapeout's board revision "
+            "spreadsheet, which lists DB ETR v3.2 as the current demoboard. "
+            "The name used here follows that ID; no shuttle is known to have "
+            "shipped on it.",
+        ),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
 ]

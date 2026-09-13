@@ -725,3 +725,52 @@ The cell is now `VERSION`, holding `git describe --tags --always`.
   a guard firing on the normal case rather than on a mistake.
 - **No git, no problem**: a tarball or a history-less clone stamps `no-git`
   rather than failing.
+
+## Names and shuttles from Tiny Tapeout's board spreadsheet
+
+Tiny Tapeout keep a board revision spreadsheet, and it is now the authority for
+two things the drawings had been getting from elsewhere: what a board is called
+and which shuttles used it.
+
+- **The ID column is the canonical name.** Sheets are titled `DB mpw v2.2.6`,
+  `DB 4+ v1.2.2`, `DB 06+ v2.1.2`, `DB ETR v3.2` -- the board's identifier,
+  not a description of it. The old titles ("Tiny Tapeout 06+ Demo Board") were
+  the only place in the world spelling it that way: the KiCad title blocks and
+  the spreadsheet both say "Demoboard".
+- **TT01 and TT02 both leave the mpw sheet.** Its "Used by" column gives
+  `DB mpw v2.2.6` to TT03 alone. TT01 was a bare-die trial run with no PCB at
+  all, and TT02 shipped on `DB mpw v2.2.5`, a revision the upstream KiCad
+  repository does not carry -- so TT02 now appears on no sheet, which is the
+  honest answer rather than a convenient one.
+- **The plate groups were renamed with it.** They were `TT01-03`, `TT04-05`,
+  `TT06-08`, `v3.2`, `v3.3` -- shuttle ranges, and the first one was a false
+  claim as soon as TT01 and TT02 left. They are the board IDs now, which name
+  the board rather than asserting who used it.
+- **The shuttle list was typed out twice**, in `extract.py` per revision and in
+  `design.py` per plate group, agreeing only because someone kept them in step.
+  Dropping TT01 is exactly the edit that desynchronises them: the fitting guide
+  would have gone on claiming TT01 while the board sheet denied it.
+  `design.py` reads `used_by` out of the board data now and its fourth field
+  is gone.
+
+Two things broke in ways worth recording, both because a name changed shape:
+
+- **`DB 4+` ends in the character that separated the names.** A hole's
+  provenance label was `TT04-05:MT1+TT06-08:MT1`, joined with `+`. With the IDs
+  as names that became `DB 4+:MT1+DB 06+:MT1`, which splits into pieces naming
+  no revision at all, and the plate refused to build: "DB 4+ uses 0 plate
+  positions but its board has 4 mounting holes". The separator is `LABEL_SEP`
+  in `tools/schema.py` now, and it is `|`.
+- **The label's order was load-bearing and nobody knew.** The first revision in
+  a label is the one the feature is lettered for, and the labels were built
+  with `sorted()`. `TT01-03` < `TT04-05` < `v3.2` happened to be board order,
+  so the sort was right by luck for as long as the names lasted. `DB ETR v3.2`
+  sorts before `DB mpw`, so hole A1 silently became D1. It sorts by placement
+  order now.
+
+The fitting guide's placement table also turned out to have been overflowing
+its column all along -- 205 mm of content in 162 mm -- and `table()` had been
+quietly scaling it. The longer names pushed it far enough that text began to
+collide and `check_sheets` finally caught it. It is six columns now: the board
+revisions each group covers are on that group's own view a few centimetres
+away, and carrying them in the table too cost 36 mm.

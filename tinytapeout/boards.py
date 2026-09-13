@@ -37,10 +37,10 @@ FEATURE_NUMBERS = {
 
 BOARDS['tt123-v2.2.6'] = BoardSpec(
     key='tt123-v2.2.6',
-    title='Tiny Tapeout TT01/02/03 Demo Board',
+    title='DB mpw v2.2.6',
     subtitle='mpw-mb1 rev 2.2.6',
     family="tinytapeout",
-    used_by=('TT01', 'TT02', 'TT03'),
+    used_by=('TT03',),
     outline=Outline(width=104.5, height=81.0,
                     corner_radius=3.0, thickness=1.6,
                     profile_note='',
@@ -92,8 +92,8 @@ BOARDS['tt123-v2.2.6'] = BoardSpec(
                note="title block: TinyTapeout 1,2,3 Demo Board rev 2.2.6, "
                     "dated 2024-02-14"),
         Source(label="Shuttle mapping",
-               ref='https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md',
-               note='used by: TT01, TT02, TT03'),
+               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               note='row "DB mpw v2.2.6", Used by: TT03.'),
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
@@ -102,12 +102,13 @@ BOARDS['tt123-v2.2.6'] = BoardSpec(
         'No other demo board revision shares this geometry.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
+        'The board\'s own title block reads "TinyTapeout 1,2,3 Demo Board", but it did not serve all three shuttles. TT01 was a bare-die trial run for which no PCB was made, and TT02 shipped on DB mpw v2.2.5, a revision not in the upstream board repository and so not drawn here.',
     ),
 )
 
 BOARDS['v1.2.2'] = BoardSpec(
     key='v1.2.2',
-    title='Tiny Tapeout 4+ Demo Board',
+    title='DB 4+ v1.2.2',
     subtitle='tinytapeout-demo rev 1.2.2',
     family="tinytapeout",
     used_by=('TT04',),
@@ -185,8 +186,8 @@ BOARDS['v1.2.2'] = BoardSpec(
                note="title block: TinyTapeout 4+ Demoboard rev 1.2.2, "
                     "dated 2024-04-26"),
         Source(label="Shuttle mapping",
-               ref='https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md',
-               note='used by: TT04'),
+               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               note='row "DB 4+ v1.2.2", Used by: TT04.'),
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
@@ -200,7 +201,7 @@ BOARDS['v1.2.2'] = BoardSpec(
 
 BOARDS['v1.2.3'] = BoardSpec(
     key='v1.2.3',
-    title='Tiny Tapeout 4+ Demo Board',
+    title='DB 4+ v1.2.2c',
     subtitle='tinytapeout-demo rev 1.2.3',
     family="tinytapeout",
     used_by=('TT05',),
@@ -278,8 +279,8 @@ BOARDS['v1.2.3'] = BoardSpec(
                note="title block: TinyTapeout 4+ Demoboard rev 1.2.3, "
                     "dated 2024-06-11"),
         Source(label="Shuttle mapping",
-               ref='https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md',
-               note='used by: TT05'),
+               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               note='row "DB 4+ v1.2.2c", Used by: TT05.'),
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
@@ -288,12 +289,13 @@ BOARDS['v1.2.3'] = BoardSpec(
         'Geometrically identical to revision v1.2.2: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
+        "Tiny Tapeout's board spreadsheet calls this board v1.2.2c and describes it as a variant of v1.2.2 with X1 unpopulated and a 0R 0603 at R51. That is an assembly difference; the KiCad title block this geometry was extracted from reads rev 1.2.3.",
     ),
 )
 
 BOARDS['v2.0.1'] = BoardSpec(
     key='v2.0.1',
-    title='Tiny Tapeout 06+ Demo Board',
+    title='DB 06+ v2.0.1',
     subtitle='tinytapeout-demo rev 2.0.1',
     family="tinytapeout",
     used_by=('TT06',),
@@ -359,8 +361,8 @@ BOARDS['v2.0.1'] = BoardSpec(
                note="title block: TinyTapeout 06+ Demoboard rev 2.0.1, "
                     "dated 2024-09-05"),
         Source(label="Shuttle mapping",
-               ref='https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md',
-               note='used by: TT06'),
+               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               note='row "DB 06+ v2.0.1", Used by: TT06.'),
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
@@ -374,7 +376,7 @@ BOARDS['v2.0.1'] = BoardSpec(
 
 BOARDS['v2.1.0'] = BoardSpec(
     key='v2.1.0',
-    title='Tiny Tapeout 06+ Demo Board',
+    title='DB 06+ v2.1.0',
     subtitle='tinytapeout-demo rev 2.1.0',
     family="tinytapeout",
     used_by=('TT07',),
@@ -440,8 +442,8 @@ BOARDS['v2.1.0'] = BoardSpec(
                note="title block: TinyTapeout 06+ Demoboard rev 2.1.0, "
                     "dated 2024-12-10"),
         Source(label="Shuttle mapping",
-               ref='https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md',
-               note='used by: TT07'),
+               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               note='row "DB 06+ v2.1.0", Used by: TT07.'),
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
@@ -455,7 +457,7 @@ BOARDS['v2.1.0'] = BoardSpec(
 
 BOARDS['v2.1.2'] = BoardSpec(
     key='v2.1.2',
-    title='Tiny Tapeout 06+ Demo Board',
+    title='DB 06+ v2.1.2',
     subtitle='tinytapeout-demo rev 2.1.2',
     family="tinytapeout",
     used_by=('TT08',),
@@ -521,8 +523,8 @@ BOARDS['v2.1.2'] = BoardSpec(
                note="title block: TinyTapeout 06+ Demoboard rev 2.1.2, "
                     "dated 2025-02-11"),
         Source(label="Shuttle mapping",
-               ref='https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md',
-               note='used by: TT08'),
+               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               note='row "DB 06+ v2.1.2", Used by: TT08.'),
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
@@ -536,8 +538,8 @@ BOARDS['v2.1.2'] = BoardSpec(
 
 BOARDS['v3.2'] = BoardSpec(
     key='v3.2',
-    title='Tiny Tapeout Demo Board v3',
-    subtitle='tinytapeout-demo rev 3.2 (ETR)',
+    title='DB ETR v3.2',
+    subtitle='tinytapeout-demo rev 3.2',
     family="tinytapeout",
     used_by=('TT09', 'TTSKY25a', 'TTSKY25b', 'TTGF0p2'),
     outline=Outline(width=85.0, height=80.0,
@@ -592,7 +594,7 @@ BOARDS['v3.2'] = BoardSpec(
                     "dated 2025-11-12"),
         Source(label="Shuttle mapping",
                ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
-               note='row 10: "ETR (RP2350) demoboard v3.2, Hirose DF12 breakout connectors, ADC header. Production files: pcb-files/ETRv3p2/demoboard (2025-11-12)". Used by: TT09, TTSKY25a, TTSKY25b, TTGF0p2'),
+               note='row "DB ETR v3.2", Used by: TT09, TTSKY25a, TTSKY25b, TTGF0p2.'),
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
@@ -601,13 +603,13 @@ BOARDS['v3.2'] = BoardSpec(
         'No other demo board revision shares this geometry.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
-        'ETR is Tiny Tapeout\'s own designation for this board in their board revision spreadsheet, where it is listed as "ETR (RP2350) demoboard v3.2". The KiCad title block does not carry it; it is recorded here because the board is referred to by that name. Nothing mechanical depends on it.',
+        'ETR is Tiny Tapeout\'s own designation for this board. The KiCad title block reads "Tiny Tapeout Demoboard v3" and does not carry it; the name here is the board\'s ID in Tiny Tapeout\'s board revision spreadsheet. Nothing mechanical depends on it.',
     ),
 )
 
 BOARDS['v3.3'] = BoardSpec(
     key='v3.3',
-    title='Tiny Tapeout Demo Board v3',
+    title='DB ETR v3.3',
     subtitle='tinytapeout-demo rev 3.3',
     family="tinytapeout",
     used_by=(),
@@ -662,8 +664,8 @@ BOARDS['v3.3'] = BoardSpec(
                note="title block: Tiny Tapeout Demoboard v3 rev 3.3, "
                     "dated 2026-06-23"),
         Source(label="Shuttle mapping",
-               ref='https://github.com/TinyTapeout/tt-demo-pcb/blob/main/doc/historic/README.md',
-               note='used by: no shipped shuttle yet'),
+               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               note='no row: this revision is not in the board revision spreadsheet, so no shuttle is recorded for it.'),
     ),
     notes=(
         "Geometry is design nominal, read from the KiCad board file.",
@@ -672,5 +674,6 @@ BOARDS['v3.3'] = BoardSpec(
         'No other demo board revision shares this geometry.',
         "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
         "Pmod Interface Specification 1.2.0.",
+        "This revision has no row in Tiny Tapeout's board revision spreadsheet, which lists DB ETR v3.2 as the current demoboard. The name used here follows that ID; no shuttle is known to have shipped on it.",
     ),
 )

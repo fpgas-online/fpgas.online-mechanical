@@ -20,9 +20,9 @@ while holding the Pmod host headers in a single fixed place.
 
 ## Why one plate works
 
-Every revision, TT01 through v3.3, spaces its Pmod host headers 22.86 mm
-apart, because the Digilent Pmod Interface Specification mandates that pitch
-for host ports on a board edge.
+Every revision, `DB mpw v2.2.6` through `DB ETR v3.3`, spaces its Pmod host
+headers 22.86 mm apart, because the Digilent Pmod Interface Specification
+mandates that pitch for host ports on a board edge.
 
 Nothing else about the boards stayed still. The outline went 104.5 x 81 to
 99.5 x 78 to 85 x 85, the mounting hole pattern changed three times and
