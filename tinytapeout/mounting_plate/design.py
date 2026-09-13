@@ -71,7 +71,7 @@ PLATE_HOLE_CLEAR = 6.0     # keep plate fixings this far from any board hole
 #: already holds: edit one and the fitting guide would claim a shuttle the
 #: board sheet denies.  They are read out of the revisions instead.
 REVISIONS = [
-    ("DB mpw", "tt123-v2.2.6", ("tt123-v2.2.6",)),
+    ("DB mpw", "tt123-v2.2.6", ("tt123-v2.2.5", "tt123-v2.2.6")),
     ("DB 4+", "v1.2.2", ("v1.2.2", "v1.2.3")),
     ("DB 06+", "v2.0.1", ("v2.0.1", "v2.1.0", "v2.1.2")),
     ("DB ETR v3.2", "v3.2", ("v3.2",)),

@@ -34,10 +34,10 @@ WORK = ROOT / "tmp" / "pcb"
 # mapping it gives, but it stops at v2.1.2 and it is not a shuttle record.
 #
 # The spreadsheet's ID column is the canonical name of a board, and is what
-# each sheet is titled with: "DB 06+ v2.1.2", not a description of it.  Two of
-# its IDs have no drawing here at all -- DB mpw v2.2.5 (TT02) and DB 4+ v1.2.1
-# (TT03p5) -- because neither board is in the upstream KiCad repositories this
-# extracts from.  That is why TT02 appears on no sheet.
+# each sheet is titled with: "DB 06+ v2.1.2", not a description of it.  One of
+# its IDs has no drawing here -- DB 4+ v1.2.1 (TT03p5) -- because the upstream
+# repository has no tagged commit for it.  Every other board the spreadsheet
+# lists is drawn.
 #: Where the shuttle-to-board-revision mapping comes from.
 HISTORIC_README = ("https://github.com/TinyTapeout/tt-demo-pcb/blob/main/"
                    "doc/historic/README.md")
@@ -73,6 +73,16 @@ FEATURE_NAMES = {
 
 REVISIONS = [
     dict(
+        key="tt123-v2.2.5",
+        repo="tt123-demo-pcb", path="mpw-mb1.kicad_pcb", commit="303509a",
+        title="DB mpw v2.2.5",
+        subtitle="mpw-mb1 rev 2.2.5",
+        used_by=("TT02",),
+        shuttle_source=SHUTTLE_SHEET,
+        shuttle_note='row "DB mpw v2.2.5", Used by: {used}.',
+        source_url="https://github.com/TinyTapeout/tt123-demo-pcb",
+    ),
+    dict(
         key="tt123-v2.2.6",
         repo="tt123-demo-pcb", path="mpw-mb1.kicad_pcb", commit="3d721a6",
         title="DB mpw v2.2.6",
@@ -81,11 +91,8 @@ REVISIONS = [
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB mpw v2.2.6", Used by: {used}.',
         extra_notes=(
-            "The board's own title block reads \"TinyTapeout 1,2,3 Demo "
-            "Board\", but it did not serve all three shuttles. TT01 was a "
-            "bare-die trial run for which no PCB was made, and TT02 shipped "
-            "on DB mpw v2.2.5, a revision not in the upstream board "
-            "repository and so not drawn here.",
+            "The title block reads \"TinyTapeout 1,2,3 Demo Board\", but no "
+            "PCB served TT01: that was a bare-die trial run.",
         ),
         source_url="https://github.com/TinyTapeout/tt123-demo-pcb",
     ),
@@ -108,10 +115,8 @@ REVISIONS = [
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB 4+ v1.2.2c", Used by: {used}.',
         extra_notes=(
-            "Tiny Tapeout's board spreadsheet calls this board v1.2.2c and "
-            "describes it as a variant of v1.2.2 with X1 unpopulated and a "
-            "0R 0603 at R51. That is an assembly difference; the KiCad title "
-            "block this geometry was extracted from reads rev 1.2.3.",
+            "v1.2.2c is an assembly variant, not a layout change: no X1, a "
+            "0R at R51. Its KiCad title block reads rev 1.2.3.",
         ),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
@@ -212,6 +217,7 @@ ROLES = {
         holes=["MT1", "MT2"],
     ),
 }
+ROLES["tt123-v2.2.5"] = ROLES["tt123-v2.2.6"]
 ROLES["v1.2.3"] = ROLES["v1.2.2"]
 ROLES["v2.1.0"] = ROLES["v2.0.1"]
 ROLES["v2.1.2"] = ROLES["v2.0.1"]
@@ -555,8 +561,6 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
         "Hole IDs are the board's own reference designators from the KiCad "
         "file, not assigned by this drawing, and are in no positional order.",
         {identical_note!r},
-        "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
-        "Pmod Interface Specification 1.2.0.",
 {extra_notes()}    ),
 )
 '''

@@ -774,3 +774,35 @@ quietly scaling it. The longer names pushed it far enough that text began to
 collide and `check_sheets` finally caught it. It is six columns now: the board
 revisions each group covers are on that group's own view a few centimetres
 away, and carrying them in the table too cost 36 mm.
+
+## DB mpw v2.2.5 was there all along
+
+Having just written that TT02's board "is not in the upstream board repository
+and so not drawn here", the obvious question came back: where is it?  It is in
+`tt123-demo-pcb` at commit `303509a`, "v2.2.5: 7-seg fp, new osc, nRST pull-up",
+dated 2023-11-13.  The repository has no tag for it, only the two tags v2.1 and
+v2.2.3, which is why looking for one found nothing.
+
+Extracted and compared against v2.2.6: outline, mounting holes, Pmod hosts and
+every one of the six features are identical.  So it is the same sheet, merged
+the way v1.2.2/v1.2.3 and v2.0.1/v2.1.0 already were, and TT02 is back on it.
+
+Three things this turned up:
+
+- **A board can be in the data and on no sheet, silently.** `TT_ORDER` in
+  `generate_diagrams.py` is a hand-written list, and adding v2.2.5 to the
+  extractor put it in `boards.py` and nowhere else: the build wrote its
+  sixteen sheets and said nothing.  It now refuses to run if a board in the
+  data is missing from `TT_ORDER`.
+- **A merged sheet kept only its first revision's notes.**  The note about
+  TT01 never having a PCB belongs to v2.2.6; v2.2.5 joined the sheet in front
+  of it and the note left the drawing.  Notes are unioned across the covered
+  revisions now.
+- **The merge hardcoded the board file's name.**  `subtitle=f"tinytapeout-demo
+  rev {covered}"` was true of every merged sheet until this one, whose file is
+  `mpw-mb1`.  It comes from the first revision's own subtitle now.
+
+Unioning the notes then pushed the 4+ sheet past its notes budget by exactly
+one line, which turned out to be a duplicate that had been on every Tiny
+Tapeout sheet: the family note and the per-board note both stated the 22.86 mm
+Pmod pitch.  They are one note now, carrying the Digilent citation.

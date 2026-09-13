@@ -44,8 +44,8 @@ TT_BUNDLE = "tt-demo-boards.pdf"
 
 # Sheet numbering: family prefix, then the order the sheets are meant to be
 # read in.  Numbers are stable so a reference to a drawing keeps working.
-TT_ORDER = ["tt123-v2.2.6", "v1.2.2", "v1.2.3", "v2.0.1", "v2.1.0", "v2.1.2",
-            "v3.2", "v3.3"]
+TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.2", "v1.2.3",
+            "v2.0.1", "v2.1.0", "v2.1.2", "v3.2", "v3.3"]
 RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
 
 #: The drill templates, in sheet order, and the file stem each is written to.
@@ -54,10 +54,17 @@ DRILL_TEMPLATES = {
     "chassis": "tt-generic-mounting-plate-chassis-drill-template",
 }
 
+#: One note, carrying the pitch and its citation.  There were two, this one and
+#: a per-board "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the
+#: Digilent Pmod Interface Specification 1.2.0", and both appeared on every
+#: Tiny Tapeout sheet saying the same number.  The duplicate was what pushed
+#: the merged 4+ sheet past its notes budget, but it had been a wasted line on
+#: all of them.
 TT_NOTES = (
     "The Pmod host headers along the lower edge are what a mounting plate "
-    "registers against. Their 22.86 mm pitch is the same on every revision; "
-    "their distance from the lower edge and their position along it are not.",
+    "registers against. Their 22.86 mm (0.9 in) pitch, per the Digilent Pmod "
+    "Interface Specification 1.2.0, is the same on every revision; their "
+    "distance from the lower edge and their position along it are not.",
 )
 
 RPI_NOTES = (
@@ -86,6 +93,17 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
     plate is designed against individual revisions.  Only the drawing set is
     merged.
     """
+    # A board in the data and not in TT_ORDER is a board nobody draws, and
+    # nothing said so: v2.2.5 was extracted, written to boards.py and silently
+    # left off the sheet set, because this list is maintained by hand and the
+    # build had no opinion about what it left out.
+    missing = [k for k in TT_BOARDS if k not in TT_ORDER]
+    if missing:
+        raise SystemExit(
+            f"tinytapeout/boards.py holds {', '.join(sorted(missing))}, which "
+            "TT_ORDER does not list, so no sheet would be drawn for it. Add "
+            "it to TT_ORDER, in the order the sheets should be read.")
+
     groups: list[list[str]] = []
     seen: dict = {}
     for key in TT_ORDER:
@@ -118,17 +136,37 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
                 src = replace(src, note="used by: " + ", ".join(shuttles))
             sources.append(src)
         covered = " and ".join(r.subtitle.split(" rev ")[-1] for r in revs)
-        notes = tuple(n for n in first.notes
-                      if not n.startswith("Geometrically identical"))
+        # The board file's own name, taken from the first revision rather than
+        # written in.  It was hardcoded "tinytapeout-demo", which was true of
+        # every merged sheet until the mpw board -- whose file is mpw-mb1 --
+        # gained a second revision and would have been captioned with the name
+        # of a file it is not in.
+        board_file = first.subtitle.split(" rev ")[0]
+        # Every ID the sheet covers, not just the first.  The spreadsheet's ID
+        # is the board's name, and a merged sheet is genuinely two of them.
+        ids = " / ".join(r.title for r in revs)
+        # Notes from every revision the sheet covers, in order, deduplicated
+        # -- not just the first's.  The note explaining that TT01 never had a
+        # PCB belongs to v2.2.6, and when v2.2.5 joined the sheet in front of
+        # it that note silently left the drawing.
+        notes = ()
+        for r in revs:
+            for n in r.notes:
+                if n.startswith("Geometrically identical") or n in notes:
+                    continue
+                notes += (n,)
+        # The per-revision "Geometrically identical to ..." notes are dropped
+        # above and replaced by this one, which says the same thing once for
+        # the whole sheet rather than once per revision on it.
         notes += (
-            f"This sheet covers revisions {covered}. They are the same board "
-            "mechanically: the generator compares outline, holes, Pmod hosts "
-            "and every feature before merging them. Only the electrical "
-            "design and the shuttle differ.",)
+            f"This sheet covers revisions {covered}: the same board "
+            "mechanically, compared feature by feature before merging. Only "
+            "the electrical design and the shuttle differ.",)
         spec = replace(
             first,
             key="+".join(keys),
-            subtitle=f"tinytapeout-demo rev {covered}",
+            title=ids,
+            subtitle=f"{board_file} rev {covered}",
             used_by=shuttles,
             sources=tuple(sources),
             notes=notes,

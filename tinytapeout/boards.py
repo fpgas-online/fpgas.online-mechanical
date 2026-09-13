@@ -35,6 +35,74 @@ FEATURE_NUMBERS = {
 }
 
 
+BOARDS['tt123-v2.2.5'] = BoardSpec(
+    key='tt123-v2.2.5',
+    title='DB mpw v2.2.5',
+    subtitle='mpw-mb1 rev 2.2.5',
+    family="tinytapeout",
+    used_by=('TT02',),
+    outline=Outline(width=104.5, height=81.0,
+                    corner_radius=3.0, thickness=1.6,
+                    profile_note='',
+                    edges=(
+                        ('line', 3.0, 81.0, 101.5, 81.0),
+                        ('line', 101.5, 0.0, 3.0, 0.0),
+                        ('line', 104.5, 78.0, 104.5, 3.0),
+                        ('line', 0.0, 3.0, 0.0, 78.0),
+                        ('arc', 101.5, 81.0, 104.5, 78.0, 3.0, 0, 0),
+                        ('arc', 3.0, 0.0, 0.0, 3.0, 3.0, 0, 0),
+                        ('arc', 0.0, 78.0, 3.0, 81.0, 3.0, 0, 0),
+                        ('arc', 104.5, 3.0, 101.5, 0.0, 3.0, 0, 0),
+                    )),
+    holes=(
+        Hole(x=3.75, y=3.75, dia=3.2, label='MT1', kind='mount', keepout_dia=6.4),
+        Hole(x=100.75, y=3.75, dia=3.2, label='MT2', kind='mount', keepout_dia=6.4),
+        Hole(x=3.75, y=77.25, dia=3.2, label='MT3', kind='mount', keepout_dia=6.4),
+        Hole(x=100.75, y=77.25, dia=3.2, label='MT4', kind='mount', keepout_dia=6.4),
+    ),
+    pmods=(
+        PmodHeader(key='pmod1', label='PMOD A', designator='J3', cx=41.85, cy=4.465, pin1_x=48.2, pin1_y=5.735,
+                   body_x0=33.7, body_y0=-7.315, body_x1=49.95, body_y1=7.535),
+        PmodHeader(key='pmod2', label='PMOD B', designator='J9', cx=64.71, cy=4.465, pin1_x=71.06, pin1_y=5.735,
+                   body_x0=56.56, body_y0=-7.315, body_x1=72.81, body_y1=7.535),
+    ),
+    features=(
+        Feature(key='usb_power', label='USB-C power / control', kind='usb_power',
+                designator='J6', x0=8.41, y0=-1.25, x1=18.55, y1=6.65,
+                note='Body outline including the shell overhang past the board edge.', number=1),
+        Feature(key='display7', label='7-segment display', kind='display7',
+                designator='U5', x0=77.905, y0=24.159, x1=85.905, y1=36.159,
+                note='', number=2),
+        Feature(key='led1', label='LED D1', kind='led',
+                designator='D1', x0=85.255, y0=76.92, x1=86.715, y1=79.88,
+                note='', number=3),
+        Feature(key='led2', label='LED D2', kind='led',
+                designator='D2', x0=80.27, y0=77.02, x1=81.73, y1=79.98,
+                note='', number=4),
+        Feature(key='led3', label='LED D3', kind='led',
+                designator='D3', x0=75.755, y0=76.92, x1=77.215, y1=79.88,
+                note='', number=5),
+        Feature(key='led4', label='LED D4', kind='led',
+                designator='D4', x0=72.52, y0=70.27, x1=75.48, y1=71.73,
+                note='', number=6),
+    ),
+    sources=(
+        Source(label="KiCad board file",
+               ref="https://github.com/TinyTapeout/tt123-demo-pcb  mpw-mb1.kicad_pcb @ 303509a",
+               note="title block: TinyTapeout 1,2,3 Demo Board rev 2.2.5, "
+                    "dated 2023-11-13"),
+        Source(label="Shuttle mapping",
+               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               note='row "DB mpw v2.2.5", Used by: TT02.'),
+    ),
+    notes=(
+        "Geometry is design nominal, read from the KiCad board file.",
+        "Hole IDs are the board's own reference designators from the KiCad "
+        "file, not assigned by this drawing, and are in no positional order.",
+        'Geometrically identical to revision tt123-v2.2.6: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
+    ),
+)
+
 BOARDS['tt123-v2.2.6'] = BoardSpec(
     key='tt123-v2.2.6',
     title='DB mpw v2.2.6',
@@ -99,10 +167,8 @@ BOARDS['tt123-v2.2.6'] = BoardSpec(
         "Geometry is design nominal, read from the KiCad board file.",
         "Hole IDs are the board's own reference designators from the KiCad "
         "file, not assigned by this drawing, and are in no positional order.",
-        'No other demo board revision shares this geometry.',
-        "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
-        "Pmod Interface Specification 1.2.0.",
-        'The board\'s own title block reads "TinyTapeout 1,2,3 Demo Board", but it did not serve all three shuttles. TT01 was a bare-die trial run for which no PCB was made, and TT02 shipped on DB mpw v2.2.5, a revision not in the upstream board repository and so not drawn here.',
+        'Geometrically identical to revision tt123-v2.2.5: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
+        'The title block reads "TinyTapeout 1,2,3 Demo Board", but no PCB served TT01: that was a bare-die trial run.',
     ),
 )
 
@@ -194,8 +260,6 @@ BOARDS['v1.2.2'] = BoardSpec(
         "Hole IDs are the board's own reference designators from the KiCad "
         "file, not assigned by this drawing, and are in no positional order.",
         'Geometrically identical to revision v1.2.3: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
-        "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
-        "Pmod Interface Specification 1.2.0.",
     ),
 )
 
@@ -287,9 +351,7 @@ BOARDS['v1.2.3'] = BoardSpec(
         "Hole IDs are the board's own reference designators from the KiCad "
         "file, not assigned by this drawing, and are in no positional order.",
         'Geometrically identical to revision v1.2.2: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
-        "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
-        "Pmod Interface Specification 1.2.0.",
-        "Tiny Tapeout's board spreadsheet calls this board v1.2.2c and describes it as a variant of v1.2.2 with X1 unpopulated and a 0R 0603 at R51. That is an assembly difference; the KiCad title block this geometry was extracted from reads rev 1.2.3.",
+        'v1.2.2c is an assembly variant, not a layout change: no X1, a 0R at R51. Its KiCad title block reads rev 1.2.3.',
     ),
 )
 
@@ -369,8 +431,6 @@ BOARDS['v2.0.1'] = BoardSpec(
         "Hole IDs are the board's own reference designators from the KiCad "
         "file, not assigned by this drawing, and are in no positional order.",
         'Geometrically identical to revision v2.1.0: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
-        "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
-        "Pmod Interface Specification 1.2.0.",
     ),
 )
 
@@ -450,8 +510,6 @@ BOARDS['v2.1.0'] = BoardSpec(
         "Hole IDs are the board's own reference designators from the KiCad "
         "file, not assigned by this drawing, and are in no positional order.",
         'Geometrically identical to revision v2.0.1: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
-        "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
-        "Pmod Interface Specification 1.2.0.",
     ),
 )
 
@@ -531,8 +589,6 @@ BOARDS['v2.1.2'] = BoardSpec(
         "Hole IDs are the board's own reference designators from the KiCad "
         "file, not assigned by this drawing, and are in no positional order.",
         'No other demo board revision shares this geometry.',
-        "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
-        "Pmod Interface Specification 1.2.0.",
     ),
 )
 
@@ -601,8 +657,6 @@ BOARDS['v3.2'] = BoardSpec(
         "Hole IDs are the board's own reference designators from the KiCad "
         "file, not assigned by this drawing, and are in no positional order.",
         'No other demo board revision shares this geometry.',
-        "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
-        "Pmod Interface Specification 1.2.0.",
         'ETR is Tiny Tapeout\'s own designation for this board. The KiCad title block reads "Tiny Tapeout Demoboard v3" and does not carry it; the name here is the board\'s ID in Tiny Tapeout\'s board revision spreadsheet. Nothing mechanical depends on it.',
     ),
 )
@@ -672,8 +726,6 @@ BOARDS['v3.3'] = BoardSpec(
         "Hole IDs are the board's own reference designators from the KiCad "
         "file, not assigned by this drawing, and are in no positional order.",
         'No other demo board revision shares this geometry.',
-        "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the Digilent "
-        "Pmod Interface Specification 1.2.0.",
         "This revision has no row in Tiny Tapeout's board revision spreadsheet, which lists DB ETR v3.2 as the current demoboard. The name used here follows that ID; no shuttle is known to have shipped on it.",
     ),
 )
