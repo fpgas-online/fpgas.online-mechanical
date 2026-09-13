@@ -28,6 +28,7 @@ module exists to remove.
 from __future__ import annotations
 
 import datetime
+import subprocess
 from collections import OrderedDict
 from pathlib import Path
 
@@ -102,3 +103,57 @@ def normalise_dxf(doc) -> None:
     """
     doc.classes.add_required_classes(doc.dxfversion)
     doc.classes.classes = OrderedDict(sorted(doc.classes.classes.items()))
+
+
+# -- what version of the source a sheet was drawn from ----------------------
+
+#: Everything that is not build product.  A commit that touches only a
+#: family's output/ does not change what the drawings say, so it must not
+#: change the version they carry.
+SOURCE_ONLY = (".", ":(exclude)*/output/*")
+
+#: When there is no git to ask: a tarball, an export, a clone with no history.
+UNVERSIONED = "no-git"
+
+#: Appended when source files are modified but not committed.  A single
+#: character because the title block cell has 38.05 mm of room and
+#: "-dirty" does not fit -- the sheet would refuse to render, which would
+#: block the ordinary edit-and-rebuild loop rather than catch a mistake.
+DIRTY_MARK = "+"
+
+
+def _git(root, *args: str) -> str | None:
+    """Run git in *root*, or None if git or the repository is not there."""
+    try:
+        out = subprocess.run(("git",) + args, cwd=root,
+                             capture_output=True, text=True, check=True)
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return out.stdout.strip()
+
+
+def source_version(root=None) -> str:
+    """``git describe`` of the last commit that changed anything but output.
+
+    The sheets carry this where they used to carry the date they were
+    rendered.  A date meant every sheet in the repository changed whenever
+    anyone rebuilt on a different day, which made `git status` noise rather
+    than signal -- and it did not even answer the question a reader has, which
+    is which version of the data a drawing was made from.
+
+    It describes the last commit to touch a *source* path rather than HEAD,
+    and that distinction is what makes it converge.  The output is committed,
+    so stamping HEAD would mean: render at X, commit the sheets as Y, rebuild
+    and every sheet now says Y, commit that as Z, and so on for as long as
+    anyone keeps rebuilding.  Committing output does not change the last
+    source commit, so a rebuild after it reproduces the same bytes.
+    """
+    root = root or Path(__file__).resolve().parent.parent
+    commit = _git(root, "log", "-1", "--format=%H", "--", *SOURCE_ONLY)
+    if not commit:
+        return UNVERSIONED
+    described = _git(root, "describe", "--tags", "--always", commit)
+    if not described:
+        return UNVERSIONED
+    dirty = _git(root, "status", "--porcelain", "--", *SOURCE_ONLY)
+    return described + (DIRTY_MARK if dirty else "")

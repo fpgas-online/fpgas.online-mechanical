@@ -93,7 +93,7 @@ def bar_runs(page, long_axis: str) -> list[float]:
 
 def check(kind: str, path: Path) -> list[str]:
     bad: list[str] = []
-    page_obj = render_drill_template(kind, drawing_no="X", date="0000-00-00")
+    page_obj = render_drill_template(kind, drawing_no="X", version="-")
     view = page_obj.view
 
     with pdfplumber.open(path) as pdf:

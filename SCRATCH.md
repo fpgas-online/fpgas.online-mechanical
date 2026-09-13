@@ -698,3 +698,30 @@ had to read ten rows to answer it.
   the drawing frame as far as `check_sheets` was concerned and 0.4 mm into the
   printer's unreachable margin as far as `check_drill_template` was concerned.
   Only the second one caught it.
+
+## The sheets carry a version, not a date
+
+Every title block had a DATE, filled with `date.today()`.  It was worse than
+useless: rebuilding on a new morning rewrote all sixteen sheets and their PDFs
+and PNGs, so `git status` after a rebuild said "everything changed" whether or
+not any drawing had, and the reader who wanted to know which data a drawing
+came from was told the weather instead.
+
+The cell is now `VERSION`, holding `git describe --tags --always`.
+
+- **It describes the last commit to touch a source path, not HEAD.** That is
+  what makes it converge, and it is not obvious.  The output is committed, so
+  stamping HEAD would mean: render at X, commit sheets as Y, rebuild and every
+  sheet now says Y, commit as Z, rebuild again...  There is no fixed point.
+  Excluding `*/output/*` gives one: committing output does not change the last
+  source commit, so the rebuild after it is a no-op.
+- **The workflow it implies is the one already in use**: commit source, then
+  regenerate, then commit output.  A single commit holding both would embed the
+  describe of its own parent and never reproduce.
+- **Dirty is marked `+`, not `-dirty`.** The cell has 38.05 mm of room;
+  `v0.0-78-gb9dedc6` needs 31.38 and `v0.0-78-gb9dedc6-dirty` needs 40.94.
+  `_title_cell` raises rather than overprint a neighbouring field, so the long
+  form would have made the ordinary edit-and-rebuild loop fail to render --
+  a guard firing on the normal case rather than on a mistake.
+- **No git, no problem**: a tarball or a history-less clone stamps `no-git`
+  rather than failing.

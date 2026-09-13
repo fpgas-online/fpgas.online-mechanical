@@ -962,7 +962,7 @@ def _clear_lane(view: View, host, edge: str, board: Rect,
         view.y(centre + half + 4.0))
 
 
-def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
+def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                  sheet_size: str = "A3", extra_notes: tuple[str, ...] = (),
                  force_scale: float | None = None,
                  overlay: BoardSpec | None = None,
@@ -985,7 +985,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, date: str,
         subtitle=spec.subtitle,
         drawing_no=drawing_no,
         rev="A",
-        date=date,
+        version=version,
         drawn_by="generated",
         units="mm",
         # Board thickness matters: standoff and screw length depend on it.

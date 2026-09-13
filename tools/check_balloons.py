@@ -133,7 +133,7 @@ def check(name: str, spec, overlay=None) -> tuple[set[str], set[str]]:
     Returns the crossings that were not expected and the expected ones that no
     longer happen; both mean the sheet and ACCEPTED have drifted apart.
     """
-    bs.render_board(spec, drawing_no="-", date="0000-00-00", overlay=overlay)
+    bs.render_board(spec, drawing_no="-", version="-", overlay=overlay)
     obstacles = _state["obstacles"]
     accepted = ACCEPTED.get(name, set())
     crossing = set()

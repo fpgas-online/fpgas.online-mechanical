@@ -16,7 +16,7 @@ class TitleBlock:
     rev: str = ""
     scale: str = "1:1"
     sheet: str = "1 OF 1"
-    date: str = ""
+    version: str = ""
     drawn_by: str = ""
     material: str = ""
     units: str = "mm"
@@ -209,7 +209,7 @@ class Sheet:
         # Two rows of narrow fields, then one full-width row for the fields
         # whose values are long enough to run out of a quarter-width cell.
         grid = [
-            ("DRAWN", t.drawn_by), ("DATE", t.date), ("UNITS", t.units),
+            ("DRAWN", t.drawn_by), ("VERSION", t.version), ("UNITS", t.units),
             ("SCALE", t.scale), ("SIZE", self.size_name), ("SHEET", t.sheet),
             ("DRAWING NO", t.drawing_no), ("REV", t.rev),
         ]

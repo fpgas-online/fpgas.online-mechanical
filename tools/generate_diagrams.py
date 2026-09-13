@@ -13,7 +13,6 @@ from __future__ import annotations
 import argparse
 import sys
 from dataclasses import replace
-from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -30,8 +29,12 @@ from tools.drafting.enclosure_sheet import render_enclosure  # noqa: E402
 from tools.drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
 from tools.layout import FAMILY_DIRS, preview_for, rel  # noqa: E402
+from tools import reproducible  # noqa: E402
 
-DATE = date.today().isoformat()
+#: Stamped into every sheet's title block where a render date used to go.
+#: See tools/reproducible.py: a date changed every sheet whenever anyone
+#: rebuilt on a new day, and never said which data a drawing came from.
+VERSION = reproducible.source_version()
 
 # Sheet numbering: family prefix, then the order the sheets are meant to be
 # read in.  Numbers are stable so a reference to a drawing keeps working.
@@ -147,7 +150,7 @@ def main() -> None:
     tt_dir = FAMILY_DIRS["tinytapeout"]
     tt_dir.mkdir(parents=True, exist_ok=True)
     for n, (stem, spec) in enumerate(tt_sheets(), 1):
-        sheet = render_board(spec, drawing_no=f"TT-DB-{n:02d}", date=DATE,
+        sheet = render_board(spec, drawing_no=f"TT-DB-{n:02d}", version=VERSION,
                              extra_notes=TT_NOTES, family_numbers=TT_NUMBERS)
         path = tt_dir / f"tt-demo-board-{stem}.svg"
         sheet.canvas.save(str(path))
@@ -157,7 +160,7 @@ def main() -> None:
     rpi_dir.mkdir(parents=True, exist_ok=True)
     for n, key in enumerate(RPI_ORDER, 1):
         spec = RPI_BOARDS[key]
-        sheet = render_board(spec, drawing_no=f"RPI-{n:02d}", date=DATE,
+        sheet = render_board(spec, drawing_no=f"RPI-{n:02d}", version=VERSION,
                              overlay=PMOD_HAT, extra_notes=RPI_NOTES,
                              family_numbers=RPI_NUMBERS)
         path = rpi_dir / f"{slug(key)}.svg"
@@ -166,25 +169,25 @@ def main() -> None:
 
     acc_dir = FAMILY_DIRS["accessories"]
     acc_dir.mkdir(parents=True, exist_ok=True)
-    sheet = render_board(PMOD_HAT, drawing_no="ACC-01", date=DATE)
+    sheet = render_board(PMOD_HAT, drawing_no="ACC-01", version=VERSION)
     path = acc_dir / "digilent-pmod-hat-adapter.svg"
     sheet.canvas.save(str(path))
     made.append(path)
 
     for n, spec in enumerate([WAVESHARE_POE, GENERIC_POE], 2):
-        sheet = render_enclosure(spec, drawing_no=f"ACC-{n:02d}", date=DATE)
+        sheet = render_enclosure(spec, drawing_no=f"ACC-{n:02d}", version=VERSION)
         path = acc_dir / f"{spec.key}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
 
     plate_dir = FAMILY_DIRS["mounting-plate"]
     plate_dir.mkdir(parents=True, exist_ok=True)
-    sheet = render_plate(drawing_no="TT-MP-01", date=DATE)
+    sheet = render_plate(drawing_no="TT-MP-01", version=VERSION)
     path = plate_dir / "tt-generic-mounting-plate.svg"
     sheet.canvas.save(str(path))
     made.append(path)
 
-    sheet = render_fitting_guide(drawing_no="TT-MP-02", date=DATE)
+    sheet = render_fitting_guide(drawing_no="TT-MP-02", version=VERSION)
     path = plate_dir / "tt-generic-mounting-plate-fitting-guide.svg"
     sheet.canvas.save(str(path))
     made.append(path)
@@ -194,7 +197,7 @@ def main() -> None:
     # directory of their own split the plate's four sheets across two places.
     for n, (kind, stem) in enumerate(DRILL_TEMPLATES.items(), 3):
         sheet = render_drill_template(kind, drawing_no=f"TT-MP-{n:02d}",
-                                      date=DATE)
+                                      version=VERSION)
         path = plate_dir / f"{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)

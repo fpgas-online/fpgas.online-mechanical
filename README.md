@@ -180,6 +180,14 @@ byte-identical, so `git status` is silent after a rebuild unless a drawing
 actually changed. Cairo and ezdxf both stamp a clock and, in ezdxf's case, two
 random GUIDs into what they write; `tools/reproducible.py` pins all of it.
 
+That holds across days as well as within one. Each title block carries a
+`VERSION` -- `git describe` of the last commit that changed anything outside an
+`output/` directory -- where a render date used to be. A date meant every sheet
+in the repository changed whenever anyone rebuilt on a new morning, and it
+never answered the question a reader actually has, which is which version of
+the data the drawing was made from. A `+` on the end means it was rendered
+with uncommitted changes.
+
 Six checks run over the output and each has caught a real defect, from text
 colliding on a sheet to a mounting hole no M3 screw actually fits.
 [`tools/README.md`](tools/README.md) says what each one does and what it

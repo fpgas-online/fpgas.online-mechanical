@@ -118,7 +118,7 @@ def _enclosure_text(spec) -> tuple[list[str], list[str]]:
     return notes, src
 
 
-def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
+def render_enclosure(spec: BoardSpec, *, drawing_no: str, version: str,
                      sheet_size: str = "A3") -> Sheet:
     o = spec.outline
     length, depth = o.width, o.height
@@ -135,7 +135,8 @@ def render_enclosure(spec: BoardSpec, *, drawing_no: str, date: str,
         - 2 * style.FRAME_MARGIN - (height + GAP + depth) - 56.0 - 4.0)
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle,
-        drawing_no=drawing_no, rev="A", date=date, drawn_by="generated",
+        drawing_no=drawing_no, rev="A", version=version,
+        drawn_by="generated",
         material=_material(spec),
         tolerance=_tolerance(spec),
         projection="first angle"), notes_band_height=band_h)

@@ -402,7 +402,7 @@ WARNING = "PRINT AT 100 %   -   DO NOT FIT TO PAGE"
 
 
 def render_drill_template(kind: str, *, drawing_no: str,
-                          date: str) -> TemplatePage:
+                          version: str) -> TemplatePage:
     if kind not in TITLES:
         raise SystemExit(f"unknown drill template {kind!r}")
     page = TemplatePage()
@@ -414,7 +414,7 @@ def render_drill_template(kind: str, *, drawing_no: str,
     # -- header ------------------------------------------------------------
     title, subtitle = TITLES[kind]
     y = area.y1
-    stamp = f"{drawing_no}    {date}    A4 PORTRAIT    SCALE 1:1"
+    stamp = f"{drawing_no}    {version}    A4 PORTRAIT    SCALE 1:1"
     # The stamp is fixed-width and the title is not, so the title is the one
     # that gives way; setting both at their natural sizes ran one through the
     # other.

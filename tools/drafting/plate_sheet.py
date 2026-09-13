@@ -420,7 +420,8 @@ def tightest_web(spec) -> tuple[str, str, float]:
     return best
 
 
-def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet:
+def render_plate(*, drawing_no: str, version: str,
+                 sheet_size: str = "A3") -> Sheet:
     spec = PLATE
     o = spec.outline
     notes, src = _plate_text(spec)
@@ -431,7 +432,7 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
         - PLATE_MARGIN_TOP - PLATE_MARGIN_BOTTOM - 6.0)
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle, drawing_no=drawing_no,
-        rev="A", date=date, drawn_by="generated",
+        rev="A", version=version, drawn_by="generated",
         # The plate is a two-sheet set: this one and the fitting guide, which
         # each cross-reference the other.  Both said "1 OF 1".
         sheet="1 OF 2",
@@ -625,14 +626,15 @@ def render_plate(*, drawing_no: str, date: str, sheet_size: str = "A3") -> Sheet
     return sheet
 
 
-def render_fitting_guide(*, drawing_no: str, date: str,
+def render_fitting_guide(*, drawing_no: str, version: str,
                          sheet_size: str = "A3") -> Sheet:
     spec = PLATE
     o = spec.outline
     sheet = Sheet(sheet_size, TitleBlock(
         title="TT MOUNTING PLATE FITTING GUIDE",
         subtitle="Which holes each demo board revision uses",
-        drawing_no=drawing_no, rev="A", date=date, drawn_by="generated",
+        drawing_no=drawing_no, rev="A", version=version,
+        drawn_by="generated",
         sheet="2 OF 2",
         material="-  not a made part",
         # Nothing on this sheet is a manufactured feature, so it must not
