@@ -661,3 +661,40 @@ that. `tools/reproducible.py` pins what varies.
   `make clean && make diagrams` cycles compared across all 65 files.
 - **`check_pdfs.py` compares bytes now**, not page content streams. The
   content-stream comparison only existed because the bytes could never match.
+
+## Grouping the drill template by board revision
+
+The drill template's schedule was indexed by hole: a row per feature, with a
+`USED BY` column naming the revisions it serves, under the heading "SCHEDULE -
+USED BY names the board revisions a feature serves".  That is the fabricator's
+index, and TT-MP-01 already carries it.  Someone standing at a drill press has
+the opposite question -- *I have a v3.3 board, which holes do I drill* -- and
+had to read ten rows to answer it.
+
+- **Grouping cannot partition the features.** H1, H9, S1 and S2 each serve two
+  revisions, so a revision-major table repeats four of the twelve.  They repeat
+  marked with `*` rather than being cross-referenced, so each block is a
+  complete drill list: a reader fits one board from one block and never has to
+  assemble their hole set from two places.
+- **The block header row doubles as the block heading.** Heading each table
+  with the revision name in the ID column's slot, rather than drawing a
+  separate heading above it, buys back the six heading rows that grouping would
+  otherwise have cost -- the difference between fitting and not.
+- **Five columns, not four.** Six blocks at four columns needs 51.0 mm of band;
+  the sheet has 50.6 mm, measured by binary search against the layout guard
+  rather than estimated.  At five columns the tallest column is 40.9 mm.
+- **The IDs became revision letters.** `H1..H10` in data order told a reader
+  nothing: the numbering was already grouped by revision, but nothing on the
+  sheet said so.  They are now `A1..A4` for TT01-03 through `E1` for v3.3, so a
+  label on the 1:1 view names the board it is there for.  A shared feature
+  takes the letter of the *first* revision that uses it and keeps that one name
+  everywhere; two names for one hole is how a hole gets drilled twice.
+- **The fitting guide had a second, private numbering.** `_guide_view` counted
+  its own `H1..` as it walked the holes.  That agreed with `hole_ids` only
+  while both used the same rule, and the moment the IDs became letters the
+  guide's views said `H4` beside a table that said `A4`.  It labels from
+  `hole_ids` now, which is what that function's docstring claimed all along.
+- **Two checkers, two different frames.** The over-long legend title was inside
+  the drawing frame as far as `check_sheets` was concerned and 0.4 mm into the
+  printer's unreachable margin as far as `check_drill_template` was concerned.
+  Only the second one caught it.

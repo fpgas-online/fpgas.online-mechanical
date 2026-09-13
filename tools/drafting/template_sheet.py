@@ -26,6 +26,8 @@ than no drill template at all.
 
 from __future__ import annotations
 
+import math
+
 from tinytapeout.mounting_plate.plate import (PLACEMENTS, PMOD_BODY,
                                               PMOD_ROW_Y, PMOD_SLOT_X, PLATE)
 from tools.schema import Outline
@@ -34,7 +36,8 @@ from tinytapeout.boards import BOARDS as TT_BOARDS
 from . import style
 from .board_sheet import Obstacles
 from .canvas import Canvas
-from .plate_sheet import BOARD_HOLE, PLATE_HOLE, hole_ids, place_label
+from .plate_sheet import (BOARD_HOLE, PLATE_HOLE, REVISION_LETTER,
+                          hole_ids, holes_by_version, place_label)
 from .sheet import Rect, Sheet, TitleBlock
 from .view import View
 
@@ -219,6 +222,90 @@ def schedule_rows(kind: str) -> list[list[str]]:
     return rows
 
 
+#: Blocks are laid out across the page, one revision each.  Five columns
+#: because six blocks at four columns needs 51.0 mm of band and the sheet has
+#: 50.6 mm; the sixth block shares a column with the fifth instead.
+BLOCK_COLUMNS = 5
+BLOCK_GUTTER = 6.0
+BLOCK_GAP = 2.5
+
+#: Marks a feature that more than one revision uses.
+SHARED_MARK = "*"
+
+
+def _feature_index() -> tuple[dict[str, str], set[str]]:
+    """Every feature's drill size by ID, and which IDs two revisions share.
+
+    Shared is read off the provenance labels rather than declared: a hole
+    whose label names two revisions is one hole serving both, and the only
+    way to get that wrong is to drill it twice.
+    """
+    labels, _, _ = hole_ids(PLATE)
+    dia: dict[str, str] = {}
+    shared: set[str] = set()
+    for i, h in enumerate(PLATE.holes):
+        dia[labels[i]] = f"{h.dia:.2f}"
+        if h.kind != "plate" and "," in used_by(h.label):
+            shared.add(labels[i])
+    for n, sl in enumerate(PLATE.slots, 1):
+        dia[f"S{n}"] = f"{sl.width:.2f}"
+        if "," in used_by(sl.label):
+            shared.add(f"S{n}")
+    return dia, shared
+
+
+def schedule_blocks() -> list[tuple[str, list[list[str]]]]:
+    """The plate's features, grouped by the board revision that needs them.
+
+    Indexed the way someone at a drill press asks the question.  The flat
+    table this replaced was indexed by hole and answered "what is this hole
+    for", which is the fabricator's question and is already on TT-MP-01; a
+    person holding a v3.3 board wants to be told H9 and H10 and nothing else.
+
+    Grouping cannot partition the features, because H1, H9, S1 and S2 each
+    serve two revisions.  Those repeat, marked, so every block is a complete
+    drill list on its own and no one has to read two blocks to fit one board.
+    """
+    dia, shared = _feature_index()
+
+    def rows(ids: list[str]) -> list[list[str]]:
+        return [[i + (SHARED_MARK if i in shared else ""), dia[i]]
+                for i in ids]
+
+    blocks = [(name, rows(ids)) for name, ids in holes_by_version(PLATE)]
+    labels, _, plate_ids = hole_ids(PLATE)
+    blocks.append(("CHASSIS", rows([labels[i] for i in plate_ids])))
+    return blocks
+
+
+def pack_blocks(blocks: list[tuple[str, list[list[str]]]],
+                ncol: int) -> list[list[tuple[str, list[list[str]]]]]:
+    """Blocks into columns, filled left to right and balanced by line count.
+
+    A block is never split across columns: half a revision's drill list at the
+    foot of one column is exactly the way to drill four holes and miss two.
+    """
+    lines = [len(body) + 1 for _, body in blocks]   # + its header row
+    target = math.ceil(sum(lines) / ncol)
+    cols: list[list[tuple[str, list[list[str]]]]] = []
+    cur: list[tuple[str, list[list[str]]]] = []
+    used = 0
+    for block, n in zip(blocks, lines):
+        if cur and used + n > target and len(cols) < ncol - 1:
+            cols.append(cur)
+            cur, used = [], 0
+        cur.append(block)
+        used += n
+    cols.append(cur)
+    return cols
+
+
+def blocks_height(page: Sheet, cols) -> float:
+    """How tall the tallest column of blocks is."""
+    return max(sum(page.table_height("", len(body)) for _, body in col)
+               + BLOCK_GAP * (len(col) - 1) for col in cols)
+
+
 HEADERS = ["ID", "DRILL", "X", "Y", "USED BY"]
 ALIGNS = ["start", "end", "end", "end", "start"]
 
@@ -244,14 +331,28 @@ TAIL_NOTES = [
     "a mill, a DRO, or any doubt.",
 ]
 
+def _fixing_span() -> str:
+    """"P1 to P6", counted rather than asserted."""
+    _, _, plate_ids = hole_ids(PLATE)
+    return f"P1 to P{len(plate_ids)}"
+
+
+def _letter_span() -> str:
+    """"A to E": the range of revision letters in use."""
+    letters = [REVISION_LETTER[name] for name in PLACEMENTS]
+    return f"{letters[0]} to {letters[-1]}"
+
+
 PLATE_NOTES = COMMON_NOTES + [
-    "Drill 3.40 mm at H1 to H10 and at both ends of every slot, 4.30 mm at "
-    "P1 to P6. Cut out each slot web.",
+    f"A hole's letter is its board revision, {_letter_span()}. Drill only "
+    f"your revision's block; {SHARED_MARK} marks one shared, drill it once.",
+    "Drill 3.40 mm at every lettered hole and at both ends of every slot, "
+    f"4.30 mm at {_fixing_span()}. Cut out each slot web.",
 ] + TAIL_NOTES
 
 CHASSIS_NOTES = COMMON_NOTES + [
-    "Drill 4.30 mm at P1 to P6. Nothing else here is a hole: the plate edge "
-    "and boards only place the pattern.",
+    f"Drill 4.30 mm at {_fixing_span()}. Nothing else here is a hole: the "
+    "plate edge and boards only place the pattern.",
 ] + TAIL_NOTES
 
 
@@ -259,7 +360,8 @@ def legend_strip(c: Canvas, rect: Rect) -> float:
     """One row of revision swatches; returns the y below it."""
     y = rect.y1
     c.text(rect.x, y - style.T_TINY,
-           "BOARD OUTLINES, drawn for clearance and not drilled:",
+           "BOARD OUTLINES, drawn for clearance and not drilled. "
+           "The letter is its hole ID prefix:",
            size=style.T_TINY, face="sans", bold=True)
     y -= style.T_TINY + 2.6
     sw, gap = 6.0, 2.0
@@ -268,9 +370,10 @@ def legend_strip(c: Canvas, rect: Rect) -> float:
         c.rect(x, y - style.T_TINY, sw, style.T_TINY,
                weight=style.W_THIN, colour=REVISION_INK[name],
                fill=REVISION_TINT[name])
-        c.text(x + sw + 1.6, y - style.T_TINY, name, size=style.T_TINY,
+        text = f"{REVISION_LETTER[name]}  {name}"
+        c.text(x + sw + 1.6, y - style.T_TINY, text, size=style.T_TINY,
                colour=REVISION_INK[name])
-        x += sw + 1.6 + style.text_width(name, style.T_TINY) + gap + 5.0
+        x += sw + 1.6 + style.text_width(text, style.T_TINY) + gap + 5.0
     return y - style.T_TINY - 1.0
 
 
@@ -343,9 +446,11 @@ def render_drill_template(kind: str, *, drawing_no: str,
     # Measured, never guessed: the drawing gets whatever is left, and if that
     # is not enough the sheet refuses to render rather than shrink the one
     # thing on it that has to be true size.
-    per_table = (len(rows) + 2) // 3 if kind == "plate" else len(rows)
+    cols = pack_blocks(schedule_blocks(), BLOCK_COLUMNS) if kind == "plate" \
+        else []
     notes_h = page.notes_height(area.w, "BEFORE YOU DRILL", notes)
-    table_h = page.table_height("", per_table)
+    table_h = (blocks_height(page, cols) if kind == "plate"
+               else page.table_height("", len(rows)))
     band_h = (LEGEND_HEIGHT + 3.0 + page.HEADING_HEIGHT + table_h + 4.5
               + notes_h)
     band_top = area.y + band_h
@@ -384,12 +489,15 @@ def render_drill_template(kind: str, *, drawing_no: str,
     cursor = band_top
     cursor = legend_strip(c, Rect(area.x, cursor - LEGEND_HEIGHT, area.w,
                                   LEGEND_HEIGHT)) - 3.0
-    head = "SCHEDULE" if kind == "chassis" else \
-        "SCHEDULE   -   USED BY names the board revisions a feature serves"
+    # Kept short deliberately: page.heading does not fit-size its text, and
+    # the frame is 190 mm.  The full sense of the mark is in the notes.
+    head = "SCHEDULE" if kind == "chassis" else (
+        f"SCHEDULE   -   what each revision needs   "
+        f"({SHARED_MARK} shared: drill once)")
     cursor = page.heading(Rect(area.x, cursor - page.HEADING_HEIGHT, area.w,
                                page.HEADING_HEIGHT), head)
     _draw_schedule(page, Rect(area.x, cursor - table_h, area.w, table_h),
-                   kind, rows, per_table)
+                   kind, rows, cols)
     cursor -= table_h + 4.5
     page.notes(Rect(area.x, cursor - notes_h, area.w, notes_h),
                "BEFORE YOU DRILL", notes)
@@ -397,13 +505,20 @@ def render_drill_template(kind: str, *, drawing_no: str,
 
 
 def _draw_schedule(page: Sheet, rect: Rect, kind: str, rows: list[list[str]],
-                   per_table: int) -> None:
-    """The schedule, in as many columns as it takes to stay one band tall.
+                   cols) -> None:
+    """The schedule: one block per revision on the plate sheet, one table on
+    the chassis sheet.
 
-    The two sheets carry different columns because the same column does not
-    carry information on both.  On the plate sheet every row has a different
-    USED BY and the coordinates are on TT-MP-01; on the chassis sheet USED BY
-    reads "chassis fixing" six times and the coordinates are worth the space.
+    The two sheets are shaped differently because the same column does not
+    carry information on both.  The chassis sheet has six features, all of
+    them chassis fixings, so grouping them by revision would be five empty
+    headings and the coordinates are worth the space instead.  The plate sheet
+    has twelve features across five revisions, and the question a reader
+    actually arrives with is which of them their board needs.
+
+    Each block's header row doubles as its heading: the ID column is headed
+    with the revision name rather than the word ID, which buys back the six
+    heading rows that grouping would otherwise cost.
     """
     if kind == "chassis":
         headers = ["ID", "DRILL", "X", "Y"]
@@ -411,17 +526,15 @@ def _draw_schedule(page: Sheet, rect: Rect, kind: str, rows: list[list[str]],
         body = [[r[0], r[1], r[2], r[3]] for r in rows]
         page.table(rect, "", headers, body, aligns)
         return
-    headers = ["ID", "DRILL", "USED BY"]
-    aligns = ["start", "end", "start"]
-    body = [[r[0], r[1], r[4]] for r in rows]
-    gutter = 8.0
-    colw = (rect.w - 2 * gutter) / 3
-    for n in range(3):
-        chunk = body[n * per_table:(n + 1) * per_table]
-        if not chunk:
-            continue
-        page.table(Rect(rect.x + n * (colw + gutter), rect.y, colw, rect.h),
-                   "", headers, chunk, aligns)
+    colw = (rect.w - (BLOCK_COLUMNS - 1) * BLOCK_GUTTER) / BLOCK_COLUMNS
+    for n, column in enumerate(cols):
+        x = rect.x + n * (colw + BLOCK_GUTTER)
+        y = rect.y1
+        for name, body in column:
+            h = page.table_height("", len(body))
+            page.table(Rect(x, y - h, colw, h), "", [name, "DRILL"], body,
+                       ["start", "end"])
+            y -= h + BLOCK_GAP
 
 
 def below_plate() -> float:
