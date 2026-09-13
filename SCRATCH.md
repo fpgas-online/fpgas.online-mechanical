@@ -806,3 +806,55 @@ Unioning the notes then pushed the 4+ sheet past its notes budget by exactly
 one line, which turned out to be a duplicate that had been on every Tiny
 Tapeout sheet: the family note and the per-board note both stated the 22.86 mm
 Pmod pitch.  They are one note now, carrying the Digilent citation.
+
+## Registering the demo board sheets on the Pmod hosts
+
+Flipping through the bound PDF, the boards jumped around the page: each sheet
+was fitted to its own board, so the Pmod hosts -- the one thing that does not
+move between revisions, and the reason a single mounting plate works -- landed
+somewhere different on every page.
+
+The sheets now share a horizontal frame, 121.75 mm wide, built from the same
+Pmod-referenced offsets the plate uses: first host at the origin, or at the
+second grid position for the two-host mpw board.  The hosts land on the same
+three columns of every sheet, and what moves between pages is what actually
+changed: the outline, the mounting holes, the USB-C.
+
+**Vertically it does not, and that was measured rather than conceded.**
+Sharing the vertical extent means every sheet reserves the tallest board's
+height (v3.3 at 85 mm) on top of the 11.78 mm Pmod body overhang: 95.2 mm of
+drawing.  An A3 sheet holds that at 1:1 only with a notes band of 120 mm or
+less, and the 4+ sheet -- two merged revisions, so two board-file sources and
+two extra notes -- needs 128 mm.  Measured, at band 120 it fits two of its four
+notes.  The alternatives were all worse:
+
+- band 128 for the family: every sheet drops to 1:2, losing true size, which is
+  the property that lets a print be laid on the board;
+- three note columns instead of two: 1 of 6 sheets rendered, not 5;
+- condensing the merged sheet's two KiCad sources into one entry: still fails;
+- a uniform band with the view anchored to the bottom rather than centred:
+  algebraically identical to sharing the frame, because the area's top edge
+  does not move with the band.  `hi` came out 181.58 for every band height
+  tried, which is what makes it identical rather than merely similar.
+
+So the vertical drift stays, at up to 8 mm, and the notes stay.  A note is a
+fact about the board; a few millimetres of alignment is not worth one.
+
+## The mpw board's DIP switch was missing
+
+Asked why `DB mpw v2.2.5` and `v2.2.6` showed no 8-way DIP switch, the answer
+was that the board has one and the extractor was never told.  `ROLES` carries a
+`switch` designator per revision and the mpw entry simply had no `switch` key,
+so the feature schedule printed "not on this board" for a part that is on it:
+SW2, footprint `TinyTapeout:219-9GULLWING`, 11.04 x 21.45 mm.
+
+It is a **9**-position switch, not 8.  Its footprint has 18 pads against the
+16 of the `GENERIC_PIANO_8DIP` every later revision uses, and it is 2.1 mm
+longer.  The label was the string "8-way input DIP switch" written into the
+call, so it would have printed "8-way" for a 9-way part.  The count is divided
+out of the pad count now, and the family-wide name in `FEATURE_NAMES` -- the
+one used for the "not on this board" rows -- dropped the number it could not
+know.
+
+v1.2.2 and v1.2.3 really do have no DIP switch: their four SW designators are
+all pushbuttons.  That one was right.

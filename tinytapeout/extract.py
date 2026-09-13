@@ -65,7 +65,7 @@ FEATURE_NAMES = {
     "led2": "Second indicator LED",
     "led3": "Third indicator LED",
     "led4": "Fourth indicator LED",
-    "dipsw": "8-way input DIP switch",
+    "dipsw": "Input DIP switch",
     "side_pmod1": "Side Pmod, first position",
     "side_pmod2": "Side Pmod, second position",
     "side_pmod3": "Side Pmod, third position",
@@ -193,7 +193,7 @@ ROLES = {
     "tt123-v2.2.6": dict(
         pmods=["J3", "J9"], pmod_labels=["PMOD A", "PMOD B"],
         usb_power="J6", display7="U5",
-        leds=["D1", "D2", "D3", "D4"],
+        leds=["D1", "D2", "D3", "D4"], switch="SW2",
         holes=["MT1", "MT2", "MT3", "MT4"],
     ),
     "v1.2.2": dict(
@@ -424,7 +424,11 @@ def extract(rev: dict) -> dict:
     for n, ref in enumerate(roles["leds"], 1):
         add(ref, f"led{n}", f"LED {ref}", "led")
     if roles.get("switch"):
-        add(roles["switch"], "dipsw", "8-way input DIP switch", "switch")
+        # Counted off the footprint, not written in: this board carries a
+        # 9-position gull-wing switch and every later one an 8-way piano type,
+        # and the label said "8-way" for whatever it was given.
+        ways = len(one(fps, roles["switch"]).pads) // 2
+        add(roles["switch"], "dipsw", f"{ways}-way input DIP switch", "switch")
     for n, ref in enumerate(roles.get("side_pmods", []), 1):
         add(ref, f"side_pmod{n}", f"Side Pmod {ref} (not fitted)", "header",
             note="Footprint present but marked do-not-populate.")

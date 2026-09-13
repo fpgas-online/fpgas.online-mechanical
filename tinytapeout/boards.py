@@ -28,7 +28,7 @@ FEATURE_NUMBERS = {
     4: 'Second indicator LED',
     5: 'Third indicator LED',
     6: 'Fourth indicator LED',
-    7: '8-way input DIP switch',
+    7: 'Input DIP switch',
     8: 'Side Pmod, first position',
     9: 'Side Pmod, second position',
     10: 'Side Pmod, third position',
@@ -85,6 +85,9 @@ BOARDS['tt123-v2.2.5'] = BoardSpec(
         Feature(key='led4', label='LED D4', kind='led',
                 designator='D4', x0=72.52, y0=70.27, x1=75.48, y1=71.73,
                 note='', number=6),
+        Feature(key='dipsw', label='9-way input DIP switch', kind='switch',
+                designator='SW2', x0=10.9, y0=17.0, x1=22.9, y1=43.0,
+                note='', number=7),
     ),
     sources=(
         Source(label="KiCad board file",
@@ -153,6 +156,9 @@ BOARDS['tt123-v2.2.6'] = BoardSpec(
         Feature(key='led4', label='LED D4', kind='led',
                 designator='D4', x0=72.52, y0=70.27, x1=75.48, y1=71.73,
                 note='', number=6),
+        Feature(key='dipsw', label='9-way input DIP switch', kind='switch',
+                designator='SW2', x0=10.9, y0=17.0, x1=22.9, y1=43.0,
+                note='', number=7),
     ),
     sources=(
         Source(label="KiCad board file",
