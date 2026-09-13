@@ -175,6 +175,73 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
     return out
 
 
+#: The Pmod host pitch, from the Digilent specification.  Imported rather than
+#: restated: the plate is built on the same number.
+def _pmod_frame(spec) -> tuple[float, float]:
+    """Offset from this board's own coordinates to the Pmod-referenced frame.
+
+    The frame the mounting plate uses: the first Pmod host pin field sits at
+    the origin, or at the second grid position for a board with only two hosts,
+    whose pair lines up with the later boards' second and third.
+    """
+    from tinytapeout.mounting_plate.plate import PMOD_PITCH
+    pmods = sorted(spec.pmods, key=lambda p: p.cx)
+    slot = 1 if len(pmods) == 2 else 0
+    return slot * PMOD_PITCH - pmods[0].cx, -pmods[0].cy
+
+
+def _drawn_bbox(spec) -> tuple[float, float, float, float]:
+    """Everything the view has to cover: the board and whatever hangs off it.
+
+    The same rule render_board applies, so that the frame built from these
+    cannot be smaller than the one it checks against.
+    """
+    xs = [0.0, spec.outline.width]
+    ys = [0.0, spec.outline.height]
+    for f in spec.features:
+        xs += [f.x0, f.x1]
+        ys += [f.y0, f.y1]
+    for p in spec.pmods:
+        if p.body_x1 > p.body_x0:
+            xs += [p.body_x0, p.body_x1]
+            ys += [p.body_y0, p.body_y1]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def tt_view_frames(sheets) -> dict[str, tuple[float, float, float, float]]:
+    """One view frame per sheet, so the Pmod hosts land in the same place.
+
+    Every demo board revision puts its Pmod hosts on the same 22.86 mm pitch
+    -- that invariant is what makes one mounting plate serve all of them -- but
+    each sheet used to be fitted to its own board, so the hosts moved from page
+    to page and flipping through the set showed six boards jumping around.
+    Registered on the hosts instead, the connectors hold still and what moves
+    is what actually changed between revisions: the outline, the mounting holes
+    and the USB-C.
+
+    Horizontally only.  Sharing the vertical extent as well would align the
+    hosts exactly, but it makes every sheet reserve the height of the tallest
+    board (v3.3, 85 mm) on top of the Pmod body overhang, which is 95.2 mm of
+    drawing.  An A3 sheet holds that at 1:1 only if the notes band is 120 mm or
+    less, and the 4+ sheet -- two merged revisions, so two board-file sources
+    and two extra notes -- needs 128 mm.  The choice was between dropping half
+    that sheet's notes and dropping the whole set to 1:2, and neither is worth
+    a few millimetres of vertical alignment: the drawings are 1:1 so a print
+    can be laid on the board, and a note is a fact about the board.
+
+    Horizontally there is no such cost.  Every sheet is fitted to the same
+    121.75 mm span, expressed back in its own coordinates, and the hosts land
+    on the same three columns of the page on all six.  What is left is up to
+    8 mm of vertical drift, from each view being centred in its own sheet.
+    """
+    offsets = {key: _pmod_frame(spec) for key, spec in sheets}
+    x0 = min(_drawn_bbox(s)[0] + offsets[k][0] for k, s in sheets)
+    x1 = max(_drawn_bbox(s)[2] + offsets[k][0] for k, s in sheets)
+    return {k: (x0 - offsets[k][0], _drawn_bbox(s)[1],
+                x1 - offsets[k][0], _drawn_bbox(s)[3])
+            for k, s in sheets}
+
+
 def _geometry(b) -> tuple:
     """What makes two revisions the same board, mechanically."""
     o = b.outline
@@ -195,9 +262,12 @@ def main() -> None:
 
     tt_dir = FAMILY_DIRS["tinytapeout"]
     tt_dir.mkdir(parents=True, exist_ok=True)
-    for n, (stem, spec) in enumerate(tt_sheets(), 1):
+    sheets = tt_sheets()
+    frames = tt_view_frames(sheets)
+    for n, (stem, spec) in enumerate(sheets, 1):
         sheet = render_board(spec, drawing_no=f"TT-DB-{n:02d}", version=VERSION,
-                             extra_notes=TT_NOTES, family_numbers=TT_NUMBERS)
+                             extra_notes=TT_NOTES, family_numbers=TT_NUMBERS,
+                             view_bbox=frames[stem])
         path = tt_dir / f"tt-demo-board-{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)

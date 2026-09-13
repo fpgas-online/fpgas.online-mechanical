@@ -561,8 +561,11 @@ def _radius_callout(o, board: Rect, sheet: Sheet, view: View
     return label, elbow, end - 1.2 - tw, end - 1.2
 
 
-def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None) -> float:
+def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None,
+                        view_bbox=None) -> float:
     """Vertical room the view and its dimensions want, in sheet millimetres."""
+    if view_bbox is not None:
+        return view_bbox[3] - view_bbox[1] + VIEW_MARGIN_TOP + VIEW_MARGIN_BOTTOM
     ys = [0.0, spec.outline.height]
     for f in spec.features:
         ys += [f.y0, f.y1]
@@ -572,6 +575,25 @@ def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None) -> float:
     if overlay is not None:
         ys += [0.0, overlay.outline.height]
     return (max(ys) - min(ys)) + VIEW_MARGIN_TOP + VIEW_MARGIN_BOTTOM
+
+
+def planned_band_height(spec: BoardSpec, *, sheet_size: str = "A3",
+                        extra_notes: tuple[str, ...] = (),
+                        overlay: BoardSpec | None = None,
+                        view_bbox=None) -> float:
+    """The notes band height render_board would choose for *spec*.
+
+    Exposed so a caller drawing a family can give every sheet the same band.
+    The band's height decides how much of the sheet is left for the view, so
+    sheets with different bands centre their views at different heights --
+    which defeats a shared view frame, whose whole purpose is that a feature
+    lands in the same place on every page.
+    """
+    notes, src_lines = _sheet_text(spec, overlay, extra_notes)
+    return Sheet.plan_notes_band(
+        sheet_size, note_blocks(notes, src_lines),
+        max_height=style.SHEET_SIZES[sheet_size][1] - 2 * style.FRAME_MARGIN
+        - _view_height_needed(spec, overlay, view_bbox) - 6.0)[0]
 
 
 #: Finished PCB thicknesses a fabricator actually offers.  A KiCad board file
@@ -966,19 +988,32 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                  sheet_size: str = "A3", extra_notes: tuple[str, ...] = (),
                  force_scale: float | None = None,
                  overlay: BoardSpec | None = None,
+                 view_bbox: tuple[float, float, float, float] | None = None,
+                 band_height: float | None = None,
                  family_numbers: dict[int, str] | None = None) -> Sheet:
-    """Build a complete drawing sheet for *spec* and return it."""
+    """Build a complete drawing sheet for *spec* and return it.
+
+    *view_bbox* overrides the area the view is fitted to, in this board's own
+    coordinates.  A caller drawing a family of boards passes each one the same
+    region of a shared frame, so a chosen feature lands in the same place on
+    every sheet and the set can be flipped through without it moving.
+    """
     o = spec.outline
 
     # The notes are known before anything is drawn, and their height decides
     # how much of the sheet is left for the view, so they are built first and
     # the band is sized to them.
     notes, src_lines = _sheet_text(spec, overlay, extra_notes)
-    view_needs = _view_height_needed(spec, overlay)
+    view_needs = _view_height_needed(spec, overlay, view_bbox)
     band_h, band_cols = Sheet.plan_notes_band(
         sheet_size, note_blocks(notes, src_lines),
         max_height=style.SHEET_SIZES[sheet_size][1] - 2 * style.FRAME_MARGIN
         - view_needs - 6.0)
+    if band_height is not None:
+        # A caller giving the whole family one band so their views line up.
+        # Only ever taller than this sheet needs: a shorter one would reflow
+        # the notes into a space that has already been proven too small.
+        band_h = max(band_h, band_height)
 
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(),
@@ -1020,6 +1055,19 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
             xs += [p.cx - p.pin_span / 2 - 2, p.cx + p.pin_span / 2 + 2]
             ys += [p.cy - p.pin_span / 2 - 2, p.cy + p.pin_span / 2 + 2]
     bbox = (min(xs), min(ys), max(xs), max(ys))
+    if view_bbox is not None:
+        # The caller's frame has to cover this board as well, or the board
+        # would be drawn outside its own view: a caller that gets the union
+        # wrong should be told, not quietly cropped.
+        if (view_bbox[0] > bbox[0] or view_bbox[1] > bbox[1]
+                or view_bbox[2] < bbox[2] or view_bbox[3] < bbox[3]):
+            raise SystemExit(
+                f"{spec.key}: the common view frame "
+                f"({view_bbox[0]:.2f}, {view_bbox[1]:.2f}) to "
+                f"({view_bbox[2]:.2f}, {view_bbox[3]:.2f}) does not cover the "
+                f"board's own ({bbox[0]:.2f}, {bbox[1]:.2f}) to "
+                f"({bbox[2]:.2f}, {bbox[3]:.2f})")
+        bbox = view_bbox
 
     # Dimensions stack below and left; only balloons need room above.
     view = View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
