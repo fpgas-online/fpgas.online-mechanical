@@ -219,6 +219,17 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
     return obstacles
 
 
+def _letter_key() -> str:
+    """Spell out letter to revision, read back out of the same mapping.
+
+    Written from REVISION_LETTER rather than by hand for the same reason as
+    _group_key: a key that repeats what it explains drifts the first time a
+    revision is added.
+    """
+    return ", ".join(f"{letter} {name}"
+                     for name, letter in REVISION_LETTER.items())
+
+
 def _group_key() -> str:
     """Spell out the mixed shuttle-range / board-revision group names.
 
@@ -258,6 +269,9 @@ def _plate_text(spec) -> tuple[list[str], list[str]]:
         "end centres; DIA/WIDTH is the slot width, LENGTH is overall.",
         "USED BY reads <group>:<hole>; MT1 to MT4 are the board's own hole "
         "IDs. Groups, by board revision: " + _group_key() + ".",
+        "A board hole's ID letter is the revision it is there for -- "
+        + _letter_key() + " -- numbered within it. S is a slot and P a plate "
+        "fixing. Four features serve two revisions; each keeps one ID.",
         "The three PMOD envelopes are not machined features. They mark where "
         "the Pmod host pin fields end up, the same place for every board "
         "revision. That is the point of the plate.",
@@ -326,26 +340,58 @@ def holes_by_version(spec) -> list[tuple[str, list[str]]]:
     return [(name, sorted(ids, key=_id_sort)) for name, ids in used.items()]
 
 
+#: One letter per board revision, in board order.  The letter is the whole
+#: point of the scheme: a label on a drill template says which revision its
+#: hole is there for without anyone having to find it in a table first.
+REVISION_LETTER = {name: chr(ord("A") + n)
+                   for n, name in enumerate(PLACEMENTS)}
+
+#: Where each ID series sorts.  Board letters come first in revision order,
+#: then slots, then plate fixings, so a list of IDs reads in the order someone
+#: works through them.
+_SERIES_ORDER = {"S": 90, "P": 99}
+
+
 def _id_sort(label: str) -> tuple[int, int]:
-    return (0 if label.startswith("H") else 1, int(label[1:]))
+    head = label[0]
+    return (_SERIES_ORDER.get(head, ord(head) - ord("A")), int(label[1:]))
+
+
+def group_of(label: str) -> str:
+    """The first board revision a feature's provenance label names."""
+    return label.split("+")[0].split(":")[0]
 
 
 def hole_ids(spec) -> tuple[dict[int, str], list[int], list[int]]:
-    """Assign H1.. to the board holes and P1.. to the plate fixings.
+    """Letter the board holes by revision, and number the plate fixings P1..
 
     One definition, so the view, the tables and the notes cannot disagree
     about which hole is which.
+
+    A board hole takes the letter of the revision that needs it: A1 to A4 are
+    TT01-03's four fasteners, E1 is v3.3's.  The ID used to be a flat H1..H10
+    in data order, which told a reader nothing -- standing at a drill press
+    with a v3.3 board in hand, "H9" and "H10" are just numbers, while "D1" and
+    "E1" at least say which board they belong to.
+
+    Four features serve two revisions each, so the letter cannot mean sole
+    ownership: it names the *first* revision that uses the feature, and every
+    sheet that groups by revision marks the reappearance.  One hole keeps one
+    name -- two names for one hole is how a hole gets drilled twice.
     """
     labels: dict[int, str] = {}
     board_ids: list[int] = []
     plate_ids: list[int] = []
+    counts: dict[str, int] = {}
     for i, h in enumerate(spec.holes):
         if h.kind == "plate":
             plate_ids.append(i)
             labels[i] = f"P{len(plate_ids)}"
-        else:
-            board_ids.append(i)
-            labels[i] = f"H{len(board_ids)}"
+            continue
+        board_ids.append(i)
+        letter = REVISION_LETTER.get(group_of(h.label), "H")
+        counts[letter] = counts.get(letter, 0) + 1
+        labels[i] = f"{letter}{counts[letter]}"
     return labels, board_ids, plate_ids
 
 
@@ -719,14 +765,12 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
     for i, sl in enumerate(spec.slots):
         draw_slot(c, view, sl,
                   colour=BOARD_HOLE if i in used_slots else style.C_PHANTOM)
-    board_n = 0
-    labels = {}
-    for i, h in enumerate(spec.holes):
-        if h.kind == "plate":
-            continue
-        board_n += 1
-        if i in used:
-            labels[i] = f"H{board_n}"
+    # Labelled from hole_ids, not renumbered here.  This view used to count
+    # its own H1.. as it walked the holes, which was the same answer only for
+    # as long as the two rules agreed: when the IDs became revision letters
+    # the views still said H4 while the table beside them said A4.
+    all_labels, _, _ = hole_ids(spec)
+    labels = {i: all_labels[i] for i in used}
     # The plate edge and the phantom board outline are both obstacles for the
     # hole labels here, as they are on the fabrication drawing.
     edge = Obstacles()
