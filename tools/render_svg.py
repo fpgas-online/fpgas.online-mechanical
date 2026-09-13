@@ -53,6 +53,35 @@ def to_pdf(svg: Path) -> Path:
     return reproducible.normalise_pdf(out)
 
 
+def combine_pdfs(pages: list[tuple[Path, str]], out: Path,
+                 title: str) -> Path:
+    """Bind already-rendered sheets into one document, bookmarked per sheet.
+
+    The individual sheets stay the deliverable: a drawing is printed and laid
+    on a board, and that is one sheet at a time.  The bound copy is for the
+    other way people use a drawing set -- reading it, mailing it, handing a
+    whole family to a machine shop -- where six attachments is six chances to
+    send five.
+
+    Each sheet becomes an outline entry, because a six-page PDF with no
+    bookmarks is a scroll bar, and the drawing numbers are the only thing that
+    distinguishes the pages at thumbnail size.
+    """
+    from pypdf import PdfWriter
+
+    writer = PdfWriter()
+    for pdf, label in pages:
+        first = len(writer.pages)
+        writer.append(str(pdf))
+        writer.add_outline_item(label, first)
+    writer.add_metadata({"/Title": title})
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with open(out, "wb") as handle:
+        writer.write(handle)
+    # pypdf stamps its own clock, exactly as cairo does one layer down.
+    return reproducible.normalise_pdf(out)
+
+
 def to_png(svg: Path, dpi: float = PNG_DPI, out: Path | None = None) -> Path:
     out = out or svg.with_suffix(".png")
     subprocess.run(["inkscape", "--export-type=png", f"--export-dpi={dpi}",

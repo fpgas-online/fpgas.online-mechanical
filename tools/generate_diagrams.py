@@ -29,12 +29,18 @@ from tools.drafting.enclosure_sheet import render_enclosure  # noqa: E402
 from tools.drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
 from tools.layout import FAMILY_DIRS, preview_for, rel  # noqa: E402
+from tools.render_svg import combine_pdfs  # noqa: E402
 from tools import reproducible  # noqa: E402
 
 #: Stamped into every sheet's title block where a render date used to go.
 #: See tools/reproducible.py: a date changed every sheet whenever anyone
 #: rebuilt on a new day, and never said which data a drawing came from.
 VERSION = reproducible.source_version()
+
+#: Every demo board sheet bound into one document, beside the sheets it is
+#: made of.  Not an SVG and not rendered from one, so it is the only file in
+#: an output directory with no drawing of its own.
+TT_BUNDLE = "tt-demo-boards.pdf"
 
 # Sheet numbering: family prefix, then the order the sheets are meant to be
 # read in.  Numbers are stable so a reference to a drawing keeps working.
@@ -146,6 +152,8 @@ def main() -> None:
     args = ap.parse_args()
 
     made: list[Path] = []
+    #: The demo board sheets, in drawing-number order, for the bound copy.
+    tt_set: list[tuple[Path, str]] = []
 
     tt_dir = FAMILY_DIRS["tinytapeout"]
     tt_dir.mkdir(parents=True, exist_ok=True)
@@ -155,6 +163,8 @@ def main() -> None:
         path = tt_dir / f"tt-demo-board-{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
+        tt_set.append((path.with_suffix(".pdf"),
+                       f"TT-DB-{n:02d}  {spec.title}  -  {spec.subtitle}"))
 
     rpi_dir = FAMILY_DIRS["raspberry-pi"]
     rpi_dir.mkdir(parents=True, exist_ok=True)
@@ -216,6 +226,13 @@ def main() -> None:
             to_preview(path, preview_for(path))
         print(f"{len(made)} sheets converted to PDF and PNG, "
               "with a preview beside each")
+
+        # Bound after the individual PDFs exist, from those same files: a
+        # second render would be a second chance for the set and the bound
+        # copy to disagree about what a sheet says.
+        bundle = combine_pdfs(tt_set, tt_dir / TT_BUNDLE,
+                              "Tiny Tapeout demo boards - mechanical drawings")
+        print(f"  {rel(bundle)}: {len(tt_set)} sheets bound into one PDF")
 
 
 if __name__ == "__main__":
