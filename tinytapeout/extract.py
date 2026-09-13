@@ -52,7 +52,7 @@ SHUTTLE_SHEET = ("https://docs.google.com/spreadsheets/d/"
 #: a DIP switch have no fourth LED, so numbering them off each sheet's own
 #: list made 6 mean one thing on half the set and another on the rest.
 FEATURE_ORDER = ["usb_power", "display7", "led1", "led2", "led3", "led4",
-                 "dipsw", "side_pmod1", "side_pmod2", "side_pmod3"]
+                 "dipsw", "dipsw2", "side_pmod1", "side_pmod2", "side_pmod3"]
 
 #: What each number means, in words a reader can match against, for the rows a
 #: board has to carry for parts it does not have.  Generic, because the same
@@ -66,6 +66,7 @@ FEATURE_NAMES = {
     "led3": "Third indicator LED",
     "led4": "Fourth indicator LED",
     "dipsw": "Input DIP switch",
+    "dipsw2": "Second DIP switch",
     "side_pmod1": "Side Pmod, first position",
     "side_pmod2": "Side Pmod, second position",
     "side_pmod3": "Side Pmod, third position",
@@ -193,13 +194,13 @@ ROLES = {
     "tt123-v2.2.6": dict(
         pmods=["J3", "J9"], pmod_labels=["PMOD A", "PMOD B"],
         usb_power="J6", display7="U5",
-        leds=["D1", "D2", "D3", "D4"], switch="SW2",
+        leds=["D1", "D2", "D3", "D4"], switch="SW4", switch2="SW2",
         holes=["MT1", "MT2", "MT3", "MT4"],
     ),
     "v1.2.2": dict(
         pmods=["J3", "J5", "J6"], pmod_labels=["INPUT", "BIDIR", "OUTPUT"],
         usb_power="J15", display7="U1",
-        leds=["D1", "D2", "D3", "D4"],
+        leds=["D1", "D2", "D3", "D4"], switch="SW4",
         holes=["MT1", "MT2", "MT3", "MT4"],
         side_pmods=["J12", "J13", "J14"],
     ),
@@ -370,13 +371,12 @@ def extract(rev: dict) -> dict:
     corner_radius = radii[-1]
     profile_note = ""
     if len(radii) > 1:
+        # The recess is a real feature of the outline and belongs on the
+        # drawing.  Its fillet radii do not: four numbers to three decimals,
+        # contributed by a connector footprint, that nobody cuts to.
         profile_note = (
             "Upper edge carries a shallow recess for the USB-C shell, "
-            "contributed by the connector footprint's own edge cuts "
-            # Three decimals throughout: printed at their natural precision
-            # the list read "0.136 mm, 0.303 mm, 0.364 mm, 0.4 mm", where the
-            # last looks like a coarser measurement than the others.
-            f"(fillet radii {', '.join(f'{r:.3f} mm' for r in radii[:-1])}).")
+            "contributed by the connector footprint's own edge cuts.")
 
     holes = []
     for ref in roles["holes"]:
@@ -423,12 +423,17 @@ def extract(rev: dict) -> dict:
     add(roles["display7"], "display7", "7-segment display", "display7")
     for n, ref in enumerate(roles["leds"], 1):
         add(ref, f"led{n}", f"LED {ref}", "led")
+    # Every revision carries an 8-way input DIP switch, and the mpw board a
+    # second, 9-way one beside it.  The way count is halved out of the pad
+    # count rather than written in: a label that asserts "8-way" is a label
+    # that will one day sit under a 9-way part, which is exactly what happened.
     if roles.get("switch"):
-        # Counted off the footprint, not written in: this board carries a
-        # 9-position gull-wing switch and every later one an 8-way piano type,
-        # and the label said "8-way" for whatever it was given.
         ways = len(one(fps, roles["switch"]).pads) // 2
         add(roles["switch"], "dipsw", f"{ways}-way input DIP switch", "switch")
+    if roles.get("switch2"):
+        ways = len(one(fps, roles["switch2"]).pads) // 2
+        add(roles["switch2"], "dipsw2",
+            f"{ways}-way DIP switch {roles['switch2']}", "switch")
     for n, ref in enumerate(roles.get("side_pmods", []), 1):
         add(ref, f"side_pmod{n}", f"Side Pmod {ref} (not fitted)", "header",
             note="Footprint present but marked do-not-populate.")

@@ -24,7 +24,8 @@ from raspberry_pi.boards import BOARDS as RPI_BOARDS  # noqa: E402
 from raspberry_pi.boards import FEATURE_NUMBERS as RPI_NUMBERS  # noqa: E402
 from tinytapeout.boards import BOARDS as TT_BOARDS  # noqa: E402
 from tinytapeout.boards import FEATURE_NUMBERS as TT_NUMBERS  # noqa: E402
-from tools.drafting.board_sheet import render_board  # noqa: E402
+from tools.drafting.board_sheet import (planned_band_height,  # noqa: E402
+                                        render_board)
 from tools.drafting.enclosure_sheet import render_enclosure  # noqa: E402
 from tools.drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
@@ -219,27 +220,25 @@ def tt_view_frames(sheets) -> dict[str, tuple[float, float, float, float]]:
     is what actually changed between revisions: the outline, the mounting holes
     and the USB-C.
 
-    Horizontally only.  Sharing the vertical extent as well would align the
-    hosts exactly, but it makes every sheet reserve the height of the tallest
-    board (v3.3, 85 mm) on top of the Pmod body overhang, which is 95.2 mm of
-    drawing.  An A3 sheet holds that at 1:1 only if the notes band is 120 mm or
-    less, and the 4+ sheet -- two merged revisions, so two board-file sources
-    and two extra notes -- needs 128 mm.  The choice was between dropping half
-    that sheet's notes and dropping the whole set to 1:2, and neither is worth
-    a few millimetres of vertical alignment: the drawings are 1:1 so a print
-    can be laid on the board, and a note is a fact about the board.
+    Both axes.  The frame is the union of every board in that shared frame --
+    121.75 x 95.20 mm -- expressed back in each board's own coordinates, so all
+    six views cover the same region and the hosts land on the same point of
+    every page.
 
-    Horizontally there is no such cost.  Every sheet is fitted to the same
-    121.75 mm span, expressed back in its own coordinates, and the hosts land
-    on the same three columns of the page on all six.  What is left is up to
-    8 mm of vertical drift, from each view being centred in its own sheet.
+    This only fits because the notes were cut back first.  The frame makes
+    every sheet reserve the tallest board's height (v3.3 at 85 mm) on top of
+    the 11.78 mm Pmod body overhang, and an A3 sheet holds that at 1:1 only
+    with a notes band of 120 mm or less.  The 4+ sheet wanted 128 mm while it
+    was still carrying four notes that explained the drawing rather than the
+    board.  Without those it fits, at 1:1, with its remaining notes intact.
     """
     offsets = {key: _pmod_frame(spec) for key, spec in sheets}
     x0 = min(_drawn_bbox(s)[0] + offsets[k][0] for k, s in sheets)
+    y0 = min(_drawn_bbox(s)[1] + offsets[k][1] for k, s in sheets)
     x1 = max(_drawn_bbox(s)[2] + offsets[k][0] for k, s in sheets)
-    return {k: (x0 - offsets[k][0], _drawn_bbox(s)[1],
-                x1 - offsets[k][0], _drawn_bbox(s)[3])
-            for k, s in sheets}
+    y1 = max(_drawn_bbox(s)[3] + offsets[k][1] for k, s in sheets)
+    return {k: (x0 - dx, y0 - dy, x1 - dx, y1 - dy)
+            for k, (dx, dy) in offsets.items()}
 
 
 def _geometry(b) -> tuple:
@@ -264,10 +263,18 @@ def main() -> None:
     tt_dir.mkdir(parents=True, exist_ok=True)
     sheets = tt_sheets()
     frames = tt_view_frames(sheets)
+    # One band for the whole family, so every view gets the same rectangle and
+    # therefore the same scale and the same centring.  The shared frame alone
+    # is not enough: a sheet with a taller notes band has a shorter view area
+    # and drops to the next standard scale, which moves the hosts it was meant
+    # to hold still.
+    band = max(planned_band_height(spec, extra_notes=TT_NOTES,
+                                   view_bbox=frames[stem])
+               for stem, spec in sheets)
     for n, (stem, spec) in enumerate(sheets, 1):
         sheet = render_board(spec, drawing_no=f"TT-DB-{n:02d}", version=VERSION,
                              extra_notes=TT_NOTES, family_numbers=TT_NUMBERS,
-                             view_bbox=frames[stem])
+                             view_bbox=frames[stem], band_height=band)
         path = tt_dir / f"tt-demo-board-{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)

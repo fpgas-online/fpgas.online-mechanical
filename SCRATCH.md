@@ -820,25 +820,45 @@ second grid position for the two-host mpw board.  The hosts land on the same
 three columns of every sheet, and what moves between pages is what actually
 changed: the outline, the mounting holes, the USB-C.
 
-**Vertically it does not, and that was measured rather than conceded.**
-Sharing the vertical extent means every sheet reserves the tallest board's
-height (v3.3 at 85 mm) on top of the 11.78 mm Pmod body overhang: 95.2 mm of
-drawing.  An A3 sheet holds that at 1:1 only with a notes band of 120 mm or
-less, and the 4+ sheet -- two merged revisions, so two board-file sources and
-two extra notes -- needs 128 mm.  Measured, at band 120 it fits two of its four
-notes.  The alternatives were all worse:
+**Vertically it did not, at first, and the reason was worth keeping.**  Sharing
+the vertical extent means every sheet reserves the tallest board's height (v3.3
+at 85 mm) on top of the 11.78 mm Pmod body overhang: 95.2 mm of drawing.  An A3
+sheet holds that at 1:1 only with a notes band of 120 mm or less, and the 4+
+sheet -- two merged revisions, so two board-file sources and two extra notes --
+wanted 128 mm.  Measured, at band 120 it fitted two of its four notes.  Every
+way round it was worse:
 
 - band 128 for the family: every sheet drops to 1:2, losing true size, which is
   the property that lets a print be laid on the board;
 - three note columns instead of two: 1 of 6 sheets rendered, not 5;
 - condensing the merged sheet's two KiCad sources into one entry: still fails;
 - a uniform band with the view anchored to the bottom rather than centred:
-  algebraically identical to sharing the frame, because the area's top edge
-  does not move with the band.  `hi` came out 181.58 for every band height
-  tried, which is what makes it identical rather than merely similar.
+  algebraically identical to sharing the frame, because the area's top edge does
+  not move with the band.  The feasible anchor's upper bound came out 181.58 at
+  every band height tried, which is what makes it identical rather than merely
+  similar.
 
-So the vertical drift stays, at up to 8 mm, and the notes stay.  A note is a
-fact about the board; a few millimetres of alignment is not worth one.
+So the first version registered horizontally only, and I wrote here that a few
+millimetres of vertical alignment was not worth a note.
+
+**Then the notes turned out not to be worth much either.**  Told they "looked
+pretty useless", I read the fifteen printed on a sheet and four of them were
+about how to read a drawing rather than about the board: the chain-double-dot
+rectangle being a connector body, which the legend says with a sample of the
+line; the sheet's own rounding to three decimals, justifying itself to a reader
+who had not noticed; the feature numbers being fixed across the family, which
+the schedule's own "- not on this board" rows demonstrate; and four USB-C fillet
+radii to three decimals, contributed by a connector footprint, that nobody cuts
+to.  The recess those radii described is real and stayed; the radii went.
+
+With those gone the 4+ sheet fits the shared frame with its remaining notes
+intact, so the registration is now on both axes: every Pmod host on every sheet
+lands at exactly (103.87, 179.68), (126.73, 179.68) or (149.59, 179.68), all at
+1:1.  The mpw board's two hosts take the second and third, the same way they sit
+on the plate.
+
+The general lesson is that the trade-off was never alignment against notes.  It
+was alignment against *four particular notes*, and nobody had looked at them.
 
 ## The mpw board's DIP switch was missing
 

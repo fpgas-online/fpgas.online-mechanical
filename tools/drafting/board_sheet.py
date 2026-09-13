@@ -740,16 +740,7 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
             "no mechanical drawing for the adapter. Good to about +/-0.75 mm. "
             "JA and JB face out of the left edge, JC out of the lower edge. "
             "The Pmod HAT Adapter sheet has the derivation.")
-    if spec.pmods:
-        notes.append(
-            "The chain-double-dot rectangle at each Pmod host is the "
-            "connector body where it overhangs the edge: what a peripheral "
-            "and a bracket must clear.")
     if spec.pmods or (overlay is not None and overlay.pmods):
-        notes.append(
-            "Pmod host coordinates are given to three decimals, unlike the "
-            "rest of this sheet. Rounded to two, adjacent hosts print 22.85 "
-            "apart and contradict the 22.86 pitch dimensioned here.")
         notes.append(
             "Port names differ by family: JA, JB, JC on the adapter and "
             "Raspberry Pi sheets, by signal direction on the demo boards, "
@@ -789,11 +780,6 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
                 "FEATURE SCHEDULE gives the extents.")
     if o.profile_note:
         notes.append(o.profile_note)
-    if any(f.number for f in spec.features):
-        notes.append(
-            "Feature numbers are fixed across this family, so a number "
-            "means the same part on every sheet. A part this board does not "
-            "carry still has a row, marked as such.")
     if not spec.tolerance:
         # Say where the general tolerance comes from.  It is a board house's
         # usual figures, not something any source here states, and on sheets
