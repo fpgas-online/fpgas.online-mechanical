@@ -114,7 +114,10 @@ def rectangles(segments):
 
     rects = set()
     rects |= _pairs(horiz, vert, flip=False)
-    rects |= {(a, b, c, d) for (b, a, d, c) in _pairs(vert, horiz, flip=True)}
+    # _pairs already returns the vertical-pass boxes as (x0, y0, x1, y1);
+    # re-mapping them here transposed every one of them, so the second pass
+    # only ever contributed boxes with their axes swapped.
+    rects |= _pairs(vert, horiz, flip=True)
     return sorted(rects)
 
 

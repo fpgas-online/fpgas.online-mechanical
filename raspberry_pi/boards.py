@@ -149,7 +149,7 @@ BOARDS['rpi5'] = BoardSpec(
                 x0=7.1, y0=50.0, x1=57.9, y1=55.0,
                 number=1),
         Feature(key='usb_power', label='USB-C power input', kind='usb_power',
-                x0=7.8, y0=-1.316, x1=14.52, y1=5.987,
+                x0=7.839, y0=-1.32, x1=14.52, y1=6.0,
                 number=2),
         Feature(key='ethernet', label='Ethernet RJ45', kind='ethernet',
                 x0=66.72, y0=2.212, x1=87.96, y1=18.193,
