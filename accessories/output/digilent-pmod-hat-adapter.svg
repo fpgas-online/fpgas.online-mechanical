@@ -109,9 +109,9 @@
 <text x="126.1706" y="78.6933" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">1</text>
 <circle cx="147.25" cy="114.5" r="1.05" fill="#ffffff" stroke="#ffffff" stroke-width="0.05"/>
 <circle cx="147.25" cy="114.5" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="147.25" y1="114.5" x2="147.25" y2="105.2" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="147.25" cy="102" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="147.25" y="103.25" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">2</text>
+<line x1="147.25" y1="114.5" x2="149.7864" y2="105.0339" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="150.6146" cy="101.943" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="150.6146" y="103.193" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">2</text>
 <line x1="104.2" y1="105.32" x2="88" y2="105.32" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="104.2" y1="82.46" x2="88" y2="82.46" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="90" y1="105.32" x2="90" y2="82.46" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
@@ -154,18 +154,18 @@
 <text x="74.5" y="83.71" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">39.29</text>
 <line x1="76.5" y1="69.25" x2="96.325" y2="69.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
 <text x="74.5" y="70.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="end">52.50</text>
-<line x1="96" y1="64.05" x2="96" y2="54.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="161" y1="64.05" x2="161" y2="54.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="96" y1="56.25" x2="161" y2="56.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="96,56.25 99,57.15 99,55.35" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="161,56.25 158,55.35 158,57.15" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="128.5" y="54.5407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">65.00</text>
-<line x1="162.2" y1="121.75" x2="172" y2="121.75" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="162.2" y1="65.25" x2="172" y2="65.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="170" y1="121.75" x2="170" y2="65.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="170,121.75 170.9,118.75 169.1,118.75" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<polygon points="170,65.25 169.1,68.25 170.9,68.25" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="167.4453" y="93.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 167.4453 93.5)">56.50</text>
+<line x1="96" y1="64.05" x2="96" y2="51.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="161" y1="64.05" x2="161" y2="51.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="96" y1="53.25" x2="161" y2="53.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="96,53.25 99,54.15 99,52.35" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="161,53.25 158,52.35 158,54.15" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="128.5" y="51.5407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">65.00</text>
+<line x1="162.2" y1="121.75" x2="175" y2="121.75" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="162.2" y1="65.25" x2="175" y2="65.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="173" y1="121.75" x2="173" y2="65.25" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="173,121.75 173.9,118.75 172.1,118.75" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<polygon points="173,65.25 172.1,68.25 173.9,68.25" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="170.4453" y="93.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle" transform="rotate(-90 170.4453 93.5)">56.50</text>
 <circle cx="96" cy="121.75" r="2" fill="none" stroke="#004c99" stroke-width="0.25"/>
 <path d="M 96.0 121.75 L 98.0 121.75 A 2.0 2.0 0 0 1 96.0 119.75 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M 96.0 121.75 L 94.0 121.75 A 2.0 2.0 0 0 1 96.0 123.75 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
@@ -292,34 +292,30 @@
 <text x="28.542" y="237.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">JA to JB is snapped to the 22.86 mm the Pmod Interface</text>
 <text x="28.542" y="242.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Specification mandates; it measured 23.18 mm, within the</text>
 <text x="28.542" y="246.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">uncertainty.</text>
-<text x="24" y="253.3942" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="24" y1="254.7942" x2="125.5" y2="254.7942" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="24" y="259.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="28.542" y="259.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi HAT mechanical specification:</text>
-<text x="28.542" y="264.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://github.com/raspberrypi/hats hat-board-mechanical.pdf</text>
-<text x="28.542" y="268.5477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">- 65 x 56.0 or 65 x 56.5 mm (56.5 for an SMT 40-way header),</text>
-<text x="28.542" y="273.0745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3 mm corner radii, four 2.75 mm holes 3.5 mm in from the</text>
-<text x="28.542" y="277.6012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">edges on a 58 x 49 mm rectangle.</text>
-<text x="133.5" y="192.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES (continued)</text>
+<text x="133.5" y="192.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
 <line x1="133.5" y1="193.9" x2="235" y2="193.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="133.5" y="198.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="138.042" y="198.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod Interface Specification 1.2.0:</text>
-<text x="138.042" y="203.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/_media/reference/pmod/</text>
-<text x="138.042" y="207.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pmod-interface-specification-1_2_0.pdf - Digilent, revised 5</text>
-<text x="138.042" y="212.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">October 2017. Host ports on a common board edge are</text>
-<text x="138.042" y="216.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">spaced .90 in (22.86 mm) centre to centre; pins are on a .10</text>
-<text x="138.042" y="221.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">in (2.54 mm) grid in both axes.</text>
-<text x="133.5" y="226.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="138.042" y="226.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline:</text>
-<text x="138.042" y="231.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/add-ons/pmod-hat/start -</text>
-<text x="138.042" y="235.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent state width 65 mm, length 56.5 mm.</text>
-<text x="133.5" y="241.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="138.042" y="241.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host positions:</text>
-<text x="138.042" y="245.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/_media/reference/add-ons/</text>
-<text x="138.042" y="250.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pmod-hat/pmod-hat-adapter-top-1000.png - Measured from</text>
-<text x="138.042" y="254.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent&#x27;s official top view by</text>
-<text x="138.042" y="259.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">accessories/measure_pmod_hat.py. Digilent publish no</text>
-<text x="138.042" y="263.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">dimensioned drawing for this board.</text>
+<text x="133.5" y="198.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="138.042" y="198.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi HAT mechanical specification:</text>
+<text x="138.042" y="203.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://github.com/raspberrypi/hats hat-board-mechanical.pdf</text>
+<text x="138.042" y="207.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">- 65 x 56.0 or 65 x 56.5 mm (56.5 for an SMT 40-way header),</text>
+<text x="138.042" y="212.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3 mm corner radii, four 2.75 mm holes 3.5 mm in from the</text>
+<text x="138.042" y="216.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">edges on a 58 x 49 mm rectangle.</text>
+<text x="133.5" y="222.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="138.042" y="222.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod Interface Specification 1.2.0: https://mith.ro/pmod-spec/</text>
+<text x="138.042" y="226.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">- Digilent, revised 5 October 2017. Host ports on a common</text>
+<text x="138.042" y="231.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board edge are spaced .90 in (22.86 mm) centre to centre;</text>
+<text x="138.042" y="235.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pins are on a .10 in (2.54 mm) grid in both axes.</text>
+<text x="133.5" y="241.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="138.042" y="241.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline:</text>
+<text x="138.042" y="245.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/add-ons/pmod-hat/start -</text>
+<text x="138.042" y="250.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent state width 65 mm, length 56.5 mm.</text>
+<text x="133.5" y="255.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="138.042" y="255.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod host positions:</text>
+<text x="138.042" y="260.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/_media/reference/add-ons/</text>
+<text x="138.042" y="264.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">pmod-hat/pmod-hat-adapter-top-1000.png - Measured from</text>
+<text x="138.042" y="269.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent&#x27;s official top view by</text>
+<text x="138.042" y="274.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">accessories/measure_pmod_hat.py. Digilent publish no</text>
+<text x="138.042" y="278.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">dimensioned drawing for this board.</text>
 <rect x="243" y="237" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="243" y1="252" x2="408" y2="252" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="245.5" y="245.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">DIGILENT PMOD HAT ADAPTER</text>
@@ -328,7 +324,7 @@
 <text x="244.6" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">generated</text>
 <line x1="284.25" y1="263" x2="284.25" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="285.85" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">VERSION</text>
-<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-109-ge19f714</text>
+<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-112-g84173b5</text>
 <line x1="325.5" y1="263" x2="325.5" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="327.1" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">UNITS</text>
 <text x="327.1" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">mm</text>
