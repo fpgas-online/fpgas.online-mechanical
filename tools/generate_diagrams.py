@@ -39,14 +39,16 @@ from tools import reproducible  # noqa: E402
 #: rebuilt on a new day, and never said which data a drawing came from.
 VERSION = reproducible.source_version()
 
-#: Every demo board sheet bound into one document, beside the sheets it is
-#: made of.  Not an SVG and not rendered from one, so it is the only file in
-#: an output directory with no drawing of its own.
-#: Every A3 Tiny Tapeout sheet bound into one document: the six demo boards
-#: and the two mounting plate drawings.  Not the drill templates -- those are
-#: A4 portrait, and a document that mixes page sizes is one where "print all"
-#: silently scales the pages that have to be 1:1.  They stay separate files,
-#: which is also how anyone uses them: you print the template, not the set.
+#: Every A3 Tiny Tapeout sheet bound into one document, beside the sheets it
+#: is made of: the two mounting plate drawings first, then the six demo
+#: boards.  The plate is what a reader of the set is designing against, and
+#: the fitting guide is the index to the board sheets that follow it.  Not
+#: the drill templates -- those are A4 portrait, and a document that mixes
+#: page sizes is one where "print all" silently scales the pages that have
+#: to be 1:1.  They stay separate files, which is also how anyone uses them:
+#: you print the template, not the set.  Not an SVG and not rendered from
+#: one, so it is the only file in an output directory with no drawing of its
+#: own.
 TT_BUNDLE = "tinytapeout-sheets.pdf"
 
 # Sheet numbering: family prefix, then the order the sheets are meant to be
@@ -273,8 +275,10 @@ def main() -> None:
     args = ap.parse_args()
 
     made: list[Path] = []
-    #: The A3 Tiny Tapeout sheets, in drawing-number order, for the bound copy.
-    tt_set: list[tuple[Path, str]] = []
+    #: The A3 Tiny Tapeout sheets for the bound copy, in two runs: the plate
+    #: sheets are rendered after the demo boards but bound in front of them.
+    board_set: list[tuple[Path, str]] = []
+    plate_set: list[tuple[Path, str]] = []
 
     tt_dir = FAMILY_DIRS["tinytapeout"]
     tt_dir.mkdir(parents=True, exist_ok=True)
@@ -295,8 +299,8 @@ def main() -> None:
         path = tt_dir / f"tt-demo-board-{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
-        tt_set.append((path.with_suffix(".pdf"),
-                       f"TT-DB-{n:02d}  {spec.title}  -  {spec.subtitle}"))
+        board_set.append((path.with_suffix(".pdf"),
+                          f"TT-DB-{n:02d}  {spec.title}  -  {spec.subtitle}"))
 
     rpi_dir = FAMILY_DIRS["raspberry-pi"]
     rpi_dir.mkdir(parents=True, exist_ok=True)
@@ -328,16 +332,16 @@ def main() -> None:
     path = plate_dir / "tt-generic-mounting-plate.svg"
     sheet.canvas.save(str(path))
     made.append(path)
-    tt_set.append((path.with_suffix(".pdf"),
-                   f"TT-MP-01  {PLATE.title}  -  {PLATE.subtitle}"))
+    plate_set.append((path.with_suffix(".pdf"),
+                      f"TT-MP-01  {PLATE.title}  -  {PLATE.subtitle}"))
 
     sheet = render_fitting_guide(drawing_no="TT-MP-02", version=VERSION)
     path = plate_dir / "tt-generic-mounting-plate-fitting-guide.svg"
     sheet.canvas.save(str(path))
     made.append(path)
-    tt_set.append((path.with_suffix(".pdf"),
-                   "TT-MP-02  TT Mounting Plate Fitting Guide  -  "
-                   "Which holes each demo board revision uses"))
+    plate_set.append((path.with_suffix(".pdf"),
+                      "TT-MP-02  TT Mounting Plate Fitting Guide  -  "
+                      "Which holes each demo board revision uses"))
 
     # The drill templates are A4 portrait and 1:1 rather than A3 drawings,
     # but they are still sheets of the mounting plate and live with it: a
@@ -372,6 +376,7 @@ def main() -> None:
         # Bound after the individual PDFs exist, from those same files: a
         # second render would be a second chance for the set and the bound
         # copy to disagree about what a sheet says.
+        tt_set = plate_set + board_set
         bundle = combine_pdfs(tt_set, tt_dir / TT_BUNDLE,
                               "Tiny Tapeout - mechanical drawings")
         print(f"  {rel(bundle)}: {len(tt_set)} sheets bound into one PDF")
