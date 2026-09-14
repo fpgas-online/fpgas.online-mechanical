@@ -982,3 +982,50 @@ indent.
 The identical-geometry note is now emitted only for a revision that has a
 twin; "no other revision shares this geometry" on a single-revision sheet was a
 sheet saying it was for one board.
+
+## Why balloon 5 on TT-DB-01 was 34 mm from its LED
+
+Asked why one balloon on the mpw sheet sat a long way from the LED it
+labelled, with every other balloon on the sheet close to its feature.  Every
+ballooned sheet was rendered and read: the same thing happened to one LED
+balloon on TT-DB-02, 03 and 04, always the last of a cluster.  The placer was
+instrumented to print, for the flung balloon, what every near candidate
+touched.  Three things, each of them a clearance that was right for one kind
+of obstacle and wrong for another:
+
+- **Balloon to balloon.**  A candidate is tested as a disc 2 mm larger than
+  the balloon, and placed balloons were held at that same radius, so two
+  balloons could not come within 10.4 mm centre to centre: a 4 mm gap between
+  3.2 mm circles.  Four LEDs at 4.5 mm pitch in a corner cannot get four
+  balloons round them at that spacing.  Now `BALLOON_GAP` = 1.2 mm of paper
+  between rims, and the mpw sheet's four sit in a fan under their LEDs.
+- **Balloon to line.**  The board outline, the ordinate witness lines and the
+  overall dimensions were in the same set as component bodies, at the same
+  2 mm clearance, so a balloon kept 5.2 mm off the board edge on every side.
+  A line needs a millimetre.  Now `LINE_GAP` = 1.0, scored separately.
+- **The lane above the board.**  On the 4+ sheet the fourth LED sits under the
+  row, the edge is 3.7 mm to the right, and the neighbours' balloons took the
+  rest, so the only spot a drafter would use is the lane between the outline
+  and the width dimension.  That lane was 9 mm wide, which no balloon fits,
+  and the candidate rings stepped 12.5 to 16.5 mm, straight over it anyway.
+  `OVERALL_GAP` is now 12 mm and the rings go 9, 11, 13, 15, 17.5.
+
+Nothing about the scoring weights changed.  The scoring was right: a leader
+should not run through a neighbouring LED, and a 34 mm clean leader was the
+cheapest thing the clearances left.  The clearances were wrong.
+
+Every sheet was re-read afterwards.  Side effects, all of them improvements:
+the Pi 4B's power-connector balloon dropped from a 20 mm diagonal to a short
+horizontal leader; several USB and GPIO balloons on the Pi sheets moved into
+the new lane above the board; the v3.2 sheet's USB-C balloon moved from a
+diagonal to directly under its connector.  The Pi 3B and Pi 5 power
+connectors still carry a 20 mm leader up into the board: the connector is in
+the datum corner, the strip below it belongs to the ordinate chain, and the
+witness line for the 3.50 hole runs left of it.  The leader is straight and
+crosses nothing, so it stays.
+
+**Short link for the Pmod specification** as well: `mith.ro/pmod-spec/`
+resolves to Digilent's `pmod-interface-specification-1_2_0.pdf`, and both
+sheets that cite it now print the short form.  Digilent's server answers
+curl with 403 even given a browser user agent, so the target could not be
+fetched from here; the URL is the one the sheets have always carried.

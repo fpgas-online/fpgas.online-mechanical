@@ -54,10 +54,32 @@ VIEW_MARGIN_TOP = 20.0
 VIEW_MARGIN_BOTTOM = 30.0
 
 #: How far the overall width and height dimensions sit off the board edge.
-#: They are the only things on the top and right edges, so they can be close.
-OVERALL_GAP = 9.0
+#: They are the only things on the top and right edges, so they can be
+#: close -- but not so close that nothing fits between them and the board.
+#: At 9 mm the lane between the outline and the dimension line could not
+#: take a balloon at all, and a feature crowded against the edge with its
+#: neighbours' balloons round it had nowhere to go but 34 mm up through the
+#: dimension.  At 12 mm a balloon sits in the lane with a millimetre and a
+#: half clear on each side, which is where a drafter would have put it.
+OVERALL_GAP = 12.0
 
 BALLOON_R = 3.2
+#: Clear paper between two balloons.  A candidate is tested as a disc two
+#: millimetres larger than the balloon, which is the right clearance from a
+#: component outline but not from another balloon: with placed balloons held
+#: at that same radius, two of them could not come within 10.4 mm centre to
+#: centre, a 4 mm gap between 3.2 mm circles.  Four LEDs at 4.5 mm pitch in
+#: a corner cannot get four balloons round them at that spacing, so the last
+#: one was flung 34 mm down the board to the first place its leader ran
+#: clean.  At 1.2 mm the same four sit in a row below the LEDs.
+BALLOON_GAP = 1.2
+#: Clear paper between a balloon and a drawn line it may not sit across: the
+#: board outline, an ordinate witness line, the overall dimension.  These
+#: were tested with the same 2 mm clearance as a component body, which kept a
+#: balloon 5.2 mm off the board edge on every side.  On the DB 4+ sheet that
+#: ruled out every spot beside an LED cluster four millimetres from the edge,
+#: and the last LED's balloon went 34 mm up through the width dimension.
+LINE_GAP = 1.0
 BALLOON_STEP = 8.4
 BALLOON_OFFSET = 13.0
 
@@ -342,7 +364,11 @@ _ANGLES = [i * 15 for i in range(24)]
 # off the view into the clear margin, which is where a drawing would put it
 # anyway.  The search stops at the first radius that yields a clean spot, so
 # the extra reach costs nothing on an uncrowded sheet.
-_RADII = [9.0, 12.5, 16.5, 21.0, 27.0, 34.0, 42.0, 52.0, 64.0]
+# Two-millimetre steps out to 15: a lane between a board edge and its overall
+# dimension is a band a few millimetres wide at a fixed distance from the
+# feature, and with rings at 12.5 and 16.5 the search stepped straight over
+# it.
+_RADII = [9.0, 11.0, 13.0, 15.0, 17.5, 21.0, 27.0, 34.0, 42.0, 52.0, 64.0]
 
 #: A leader that clears everything scores only its own length, so anything
 #: above the longest clean leader means it is running over something.
@@ -444,14 +470,14 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
                 o.rects.append(r[:4] + (HARD,))
         o.circles = list(obstacles.circles)
         o.segments = list(obstacles.segments)
-        if not route and position_only is not None:
-            o.rects += position_only.rects
-            o.circles += position_only.circles
-            o.segments += position_only.segments
         for k, pos in enumerate(placed):
             if pos is None or k == skip:
                 continue
-            o.add_circle(pos[0], pos[1], BALLOON_R + 2.0, weight=HARD)
+            # The candidate disc already carries 2.0 mm of clearance, so the
+            # placed balloon's circle is shrunk by that much to leave exactly
+            # BALLOON_GAP of paper between the two rims.
+            o.add_circle(pos[0], pos[1], BALLOON_R + BALLOON_GAP - 2.0,
+                         weight=HARD)
             o.add_segment(anchor[k][0], anchor[k][1], pos[0], pos[1],
                           weight=HARD)
         return o
@@ -484,7 +510,12 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
                 # length is a real cost too, or a balloon travels halfway
                 # across the view to dodge a crossing it could have avoided by
                 # moving a few millimetres.
+                # Lines a balloon may not sit across are scored at their
+                # own, tighter clearance; they are not in *world*.
+                lines = (position_only.hits(cx, cy, BALLOON_R + LINE_GAP)
+                         if position_only is not None else 0.0)
                 score = (world.hits(cx, cy, BALLOON_R + 2.0) * 200
+                         + lines * 200
                          + route.crossings(tx, ty, cx, cy) * 60
                          + route.leader_hits(tx, ty, cx, cy) * 30
                          + radius * 2.0)
