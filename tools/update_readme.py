@@ -32,31 +32,35 @@ BEGIN = "<!-- sheets:begin -->"
 END = "<!-- sheets:end -->"
 
 #: Cells per row.  GitHub renders a three-column table at roughly 290 px a
-#: cell, which is what the preview width is chosen against.
+#: cell, which is what the preview width is chosen against.  A family can
+#: ask for fewer: the mounting plate's four sheets are two A3 landscape and
+#: two A4 portrait, and at three across the two portrait templates split
+#: over a row break with a lone cell under them.  Two across puts the pair
+#: of A3 on one row and the pair of A4 side by side on the next.
 COLUMNS = 3
 
 #: Displayed width of a preview, in pixels.
 CELL_WIDTH = 270
 
 
-def groups() -> list[tuple[str, str, list[tuple[str, str, str, str]]]]:
-    """Each family: its heading, its layout key, and its sheets in order."""
+def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
+    """Each family: its heading, layout key, cells per row, and its sheets."""
     return [
-        ("Tiny Tapeout demo boards", "tinytapeout",
+        ("Tiny Tapeout demo boards", "tinytapeout", COLUMNS,
          [(f"TT-DB-{n:02d}", f"tt-demo-board-{stem}", spec.title, spec.subtitle)
           for n, (stem, spec) in enumerate(tt_sheets(), 1)]),
         ("Raspberry Pi, with a Digilent Pmod HAT Adapter overlaid",
-         "raspberry-pi",
+         "raspberry-pi", COLUMNS,
          [(f"RPI-{n:02d}", slug(k), RPI[k].title, RPI[k].subtitle)
           for n, k in enumerate(RPI_ORDER, 1)]),
-        ("Accessories", "accessories",
+        ("Accessories", "accessories", COLUMNS,
          [("ACC-01", "digilent-pmod-hat-adapter",
            PMOD_HAT.title, PMOD_HAT.subtitle),
           ("ACC-02", WAVESHARE_POE.key,
            WAVESHARE_POE.title, WAVESHARE_POE.subtitle),
           ("ACC-03", GENERIC_POE.key,
            GENERIC_POE.title, GENERIC_POE.subtitle)]),
-        ("Mounting plate", "mounting-plate",
+        ("Mounting plate", "mounting-plate", 2,
          [("TT-MP-01", "tt-generic-mounting-plate",
            PLATE.title, PLATE.subtitle),
           ("TT-MP-02", "tt-generic-mounting-plate-fitting-guide",
@@ -71,7 +75,7 @@ def groups() -> list[tuple[str, str, list[tuple[str, str, str, str]]]]:
     ]
 
 
-def table(rows, base: Path) -> list[str]:
+def table(rows, base: Path, columns: int = COLUMNS) -> list[str]:
     """One HTML table of previews, with every path relative to *base*.
 
     Not a Markdown table.  Markdown gives no way to set a column width, and
@@ -83,10 +87,10 @@ def table(rows, base: Path) -> list[str]:
     three separate tables with gaps between them rather than one grid.
     """
     out = ["<table>"]
-    width = f"{100 // COLUMNS}%"
-    for i in range(0, len(rows), COLUMNS):
+    width = f"{100 // columns}%"
+    for i in range(0, len(rows), columns):
         out.append("<tr>")
-        for j in range(COLUMNS):
+        for j in range(columns):
             if i + j >= len(rows):
                 out.append(f'<td width="{width}"></td>')
                 continue
@@ -108,21 +112,22 @@ def full_grid(base: Path) -> str:
     """Every family, under its own heading: the root README's grid."""
     out = ["Each thumbnail links to the PDF. The same sheet is also there as "
            "SVG.", ""]
-    for heading, folder, rows in groups():
+    for heading, folder, columns, rows in groups():
         out += [f"### {heading}", ""]
         out += table([(no, folder, stem, title, sub)
-                      for no, stem, title, sub in rows], base)
+                      for no, stem, title, sub in rows], base, columns)
     return "\n".join(out).rstrip() + "\n"
 
 
 def family_grid(folder: str, base: Path) -> str:
     """One family's sheets, for that family's own README."""
     rows = [(no, folder, stem, title, sub)
-            for heading, key, group in groups() if key == folder
+            for heading, key, columns, group in groups() if key == folder
             for no, stem, title, sub in group]
+    columns = next(c for heading, key, c, group in groups() if key == folder)
     out = ["Each thumbnail links to the PDF. The same sheet is also there as "
            "SVG.", ""]
-    out += table(rows, base)
+    out += table(rows, base, columns)
     return "\n".join(out).rstrip() + "\n"
 
 
