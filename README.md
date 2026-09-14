@@ -1,23 +1,24 @@
-# Board mechanical diagrams
+# Mechanical diagrams
 
-2D orthographic (blueprint style) mechanical drawings of the Tiny Tapeout demo
-boards, the Raspberry Pi boards they are usually paired with, a couple of PoE
-splitters, and a generic mounting plate that any Tiny Tapeout demo board
-revision bolts onto.
+2D orthographic (blueprint style) mechanical drawings of the hardware
+[fpgas.online](https://fpgas.online) is built from: the boards, the adapters
+and the accessories that end up in the same rack, plus the plates and
+templates made to mount them.
 
-The drawings are meant for designing things the boards mount into: plates,
-brackets, enclosures. Every dimension is traceable to an official source, and
-each sheet lists its sources.
+The drawings are for designing the things the boards mount into -- plates,
+brackets, enclosures, rack shelves. Every dimension is traceable to an
+official source, and each sheet lists its sources.
+
+Adding hardware is the normal case. Each family lives in its own directory
+with its data, the extractor that produces it and the sheets rendered from
+it, so a new board is a new directory and does not disturb the others.
 
 ## What is here
 
-Grouped by subject. Each family owns its data, the extractor that produces it,
-and the sheets rendered from it, so everything about one board is in one place.
-
 | Directory | Sheets | |
 |-----------|--------|--|
-| [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-01`..`06` | The demo boards, one sheet per distinct geometry |
-| [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-01`..`04` | The plate every revision bolts onto, and its drill templates |
+| [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-01`..`06` | Tiny Tapeout demo boards, one sheet per distinct geometry |
+| [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-01`..`04` | The plate every demo board revision bolts onto, and its drill templates |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-01`..`03` | Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
 | [`accessories/`](accessories/README.md) | `ACC-01`..`03` | Pmod HAT Adapter, and two PoE splitters as envelope drawings |
 | [`tools/`](tools/README.md) | -- | The [drafting library](tools/drafting/README.md), the generator and the checks |
@@ -25,7 +26,7 @@ and the sheets rendered from it, so everything about one board is in one place.
 Each sheet is written as SVG, PDF and PNG, plus a small preview beside it.
 **The PDFs are committed**, so cloning this is enough to print from: no
 Inkscape, no font, no `uv`. A3 and mostly 1:1, so a print can be laid on the
-board; the two drill templates are A4 portrait and always 1:1.
+board; the drill templates are A4 portrait and always 1:1.
 
 ## The sheets
 
@@ -136,9 +137,9 @@ a full-resolution PNG.
 
 ## Printing at true size
 
-Most sheets are 1:1 and the two drill templates have to be. Print with page
-scaling **off** -- choose *Actual size* or *100 %*, never *Fit to page*, or
-from a shell:
+Most sheets are 1:1, and any drill template has to be. Print with page scaling
+**off** -- choose *Actual size* or *100 %*, never *Fit to page*, or from a
+shell:
 
 ```sh
 lp -d <queue> -o media=A4 -o print-scaling=none \
@@ -146,33 +147,17 @@ lp -d <queue> -o media=A4 -o print-scaling=none \
 ```
 
 `auto-fit` is the usual default and it shrinks A4 by around 4 %, which moves
-the far corner of a hole pattern by millimetres. Both drill templates carry a
+the far corner of a hole pattern by millimetres. Every drill template carries a
 printed 100 mm scale bar on each axis for exactly this reason: measure them
 before drilling. See
 [the mounting plate README](tinytapeout/mounting_plate/README.md).
-
-## The mounting plate
-
-Every Tiny Tapeout demo board revision, `DB mpw v2.2.6` through `DB ETR v3.3`,
-spaces its Pmod host headers 22.86 mm apart, because the Digilent Pmod
-Interface Specification mandates that pitch for host ports on a board edge.
-Nothing else about the boards stayed still: the outline went 104.5 x 81 to
-99.5 x 78 to 85 x 85, the
-mounting hole pattern changed three times and dropped from four holes to two,
-and the distance from the front edge to the Pmod pin field moved from 4.465 mm
-to 3.23 mm.
-
-That one invariant is enough. Place each revision so its Pmod hosts land on a
-common 22.86 mm grid, and its mounting holes fall where they fall. Ten holes,
-two slots and six fixings cover all five distinct geometries on a 135 x 101 mm
-plate. [More, and how to drill one.](tinytapeout/mounting_plate/README.md)
 
 ## Regenerating
 
 ```sh
 make fetch     # download the upstream sources into tmp/, once
 make data      # re-extract the mechanical database from them
-make check     # render every sheet, refresh the grid, then run the checks
+make check     # render every sheet, refresh the grids, then run the checks
 ```
 
 Rebuilding is deterministic, and that is checked rather than hoped for: three
@@ -196,6 +181,6 @@ found.
 
 ## Licence
 
-Apache 2.0. The upstream sources it draws from keep their own licences: the
-Tiny Tapeout board files are Apache 2.0, and the Raspberry Pi drawings are
-Raspberry Pi Ltd's.
+Apache 2.0; see [`LICENSE`](LICENSE). The upstream sources these drawings are
+derived from keep their own licences: the Tiny Tapeout board files are Apache
+2.0, and the Raspberry Pi mechanical drawings are Raspberry Pi Ltd's.

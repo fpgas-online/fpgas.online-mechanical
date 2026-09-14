@@ -14,6 +14,32 @@ machine-readable: a product photo and a dimensioned marketing image. Every
 value cites where it came from and, where the figure is a measurement rather
 than a published dimension, its error bar.
 
+## The sheets
+
+<!-- sheets:begin -->
+
+Each thumbnail links to the PDF. The same sheet is also there as SVG and as
+a full-resolution PNG.
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="output/digilent-pmod-hat-adapter.pdf"><img src="output/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-01 Digilent Pmod HAT Adapter"></a><br>
+<b>ACC-01</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
+</td>
+<td width="33%" valign="top" align="center">
+<a href="output/waveshare-poe-usbc.pdf"><img src="output/previews/waveshare-poe-usbc.png" width="270" alt="ACC-02 Waveshare PoE Splitter 25 W, Type-C"></a><br>
+<b>ACC-02</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
+</td>
+<td width="33%" valign="top" align="center">
+<a href="output/generic-poe-microusb.pdf"><img src="output/previews/generic-poe-microusb.png" width="270" alt="ACC-03 Generic PoE splitter to micro-USB"></a><br>
+<b>ACC-03</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
+</td>
+</tr>
+</table>
+
+<!-- sheets:end -->
+
 ## Digilent Pmod HAT Adapter (ACC-01)
 
 Digilent publish no mechanical drawing, DXF, STEP or board file for this part.

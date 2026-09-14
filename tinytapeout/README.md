@@ -15,6 +15,46 @@ accepts any revision.
 uv run --no-project python tinytapeout/extract.py     # needs tmp/src, see make fetch
 ```
 
+## The sheets
+
+<!-- sheets:begin -->
+
+Each thumbnail links to the PDF. The same sheet is also there as SVG and as
+a full-resolution PNG.
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="output/tt-demo-board-tt123-v2p2p5-tt123-v2p2p6.pdf"><img src="output/previews/tt-demo-board-tt123-v2p2p5-tt123-v2p2p6.png" width="270" alt="TT-DB-01 DB mpw v2.2.5 / DB mpw v2.2.6"></a><br>
+<b>TT-DB-01</b> DB mpw v2.2.5 / DB mpw v2.2.6<br>mpw-mb1 rev 2.2.5 and 2.2.6
+</td>
+<td width="33%" valign="top" align="center">
+<a href="output/tt-demo-board-v1p2p2-v1p2p3.pdf"><img src="output/previews/tt-demo-board-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-02 DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
+<b>TT-DB-02</b> DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.2 and 1.2.3
+</td>
+<td width="33%" valign="top" align="center">
+<a href="output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-03 DB 06+ v2.0.1 / DB 06+ v2.1.0"></a><br>
+<b>TT-DB-03</b> DB 06+ v2.0.1 / DB 06+ v2.1.0<br>tinytapeout-demo rev 2.0.1 and 2.1.0
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="output/tt-demo-board-v2p1p2.pdf"><img src="output/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-04 DB 06+ v2.1.2"></a><br>
+<b>TT-DB-04</b> DB 06+ v2.1.2<br>tinytapeout-demo rev 2.1.2
+</td>
+<td width="33%" valign="top" align="center">
+<a href="output/tt-demo-board-v3p2.pdf"><img src="output/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-05 DB ETR v3.2"></a><br>
+<b>TT-DB-05</b> DB ETR v3.2<br>tinytapeout-demo rev 3.2
+</td>
+<td width="33%" valign="top" align="center">
+<a href="output/tt-demo-board-v3p3.pdf"><img src="output/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-06 DB ETR v3.3"></a><br>
+<b>TT-DB-06</b> DB ETR v3.3<br>tinytapeout-demo rev 3.3
+</td>
+</tr>
+</table>
+
+<!-- sheets:end -->
+
 ## Where the numbers come from
 
 Read straight out of the upstream KiCad board files, at the commit each
@@ -34,22 +74,30 @@ Two things are checked rather than trusted:
   board file. Both give 104.500 x 81.000 mm for the DB mpw board, so the
   parsing is confirmed against something that did not come from here.
 
-Shuttle-to-revision mapping comes from the upstream historic README, which
-stops at TT08; later revisions are named from Tiny Tapeout's own board
-revision spreadsheet, which is also where the name "ETR" for v3.2 comes from.
+Which shuttles used a board comes from the "Used by" column of Tiny Tapeout's
+own board revision spreadsheet, which is authoritative for it and the only
+source covering every revision. Board names are that spreadsheet's ID column,
+which is where `DB mpw`, `DB 4+`, `DB 06+` and `DB ETR` come from. The upstream
+historic README is still cited for the revision-to-commit mapping it gives,
+but it stops at v2.1.2 and is not a shuttle record.
 
 ## One sheet per geometry, not per revision
 
-Several revisions differ only electrically. v1.2.2 and v1.2.3 are the same
-board mechanically, as are v2.0.1 and v2.1.0, so eight revisions make six
-sheets, and each sheet names every revision and shuttle it covers.
+Several revisions differ only electrically. v2.2.5 and v2.2.6 are the same
+board mechanically, as are v1.2.2 and v1.2.3, and v2.0.1 and v2.1.0, so nine
+revisions make six sheets, and each sheet names every revision and shuttle it
+covers.
 
-`boards.py` still carries all eight: it is a database of what was built, and
+`boards.py` still carries all nine: it is a database of what was built, and
 the mounting plate is designed against individual revisions. Only the drawing
 set is merged, and the generator compares outline, holes, Pmod hosts and every
 feature before merging two revisions rather than taking a note's word for it.
 
 Feature numbers are fixed across the family, so a number means the same part
-on every sheet. That leaves gaps -- the revisions with a fourth LED have no
-DIP switch and the ones with a DIP switch have no fourth LED -- so a part a
-board does not carry still gets a row, marked as such.
+on every sheet. That leaves gaps -- only the earliest boards carry a fourth
+LED, and only they carry a second DIP switch -- so a part a board does not
+carry still gets a row, marked as such.
+
+Every revision carries an 8-way input DIP switch. The two `DB mpw` boards
+carry a second, 9-way one beside it; the way count on each sheet is halved out
+of the footprint's pad count rather than written into a label.

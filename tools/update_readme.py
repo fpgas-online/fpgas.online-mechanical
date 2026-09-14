@@ -14,6 +14,7 @@ with::
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -70,8 +71,8 @@ def groups() -> list[tuple[str, str, list[tuple[str, str, str, str]]]]:
     ]
 
 
-def grid() -> str:
-    """One HTML table per family, three equal columns.
+def table(rows, base: Path) -> list[str]:
+    """One HTML table of previews, with every path relative to *base*.
 
     Not a Markdown table.  Markdown gives no way to set a column width, and
     the renderer sizes columns to their content, so the cell with the longest
@@ -81,45 +82,86 @@ def grid() -> str:
     Markdown table also needs a header row, so a group of eight sheets became
     three separate tables with gaps between them rather than one grid.
     """
+    out = ["<table>"]
+    width = f"{100 // COLUMNS}%"
+    for i in range(0, len(rows), COLUMNS):
+        out.append("<tr>")
+        for j in range(COLUMNS):
+            if i + j >= len(rows):
+                out.append(f'<td width="{width}"></td>')
+                continue
+            no, folder, stem, title, sub = rows[i + j]
+            d = FAMILY_DIRS[folder]
+            img = os.path.relpath(d / "previews" / f"{stem}.png", base)
+            pdf = os.path.relpath(d / f"{stem}.pdf", base)
+            out.append(f'<td width="{width}" valign="top" align="center">')
+            out.append(f'<a href="{pdf}"><img src="{img}" '
+                       f'width="{CELL_WIDTH}" alt="{no} {title}"></a><br>')
+            out.append(f'<b>{no}</b> {title}<br>{sub}')
+            out.append("</td>")
+        out.append("</tr>")
+    out += ["</table>", ""]
+    return out
+
+
+def full_grid(base: Path) -> str:
+    """Every family, under its own heading: the root README's grid."""
     out = ["Each thumbnail links to the PDF. The same sheet is also there as "
            "SVG and as", "a full-resolution PNG.", ""]
-    width = f"{100 // COLUMNS}%"
     for heading, folder, rows in groups():
-        out += [f"### {heading}", "", "<table>"]
-        for i in range(0, len(rows), COLUMNS):
-            out.append("<tr>")
-            for j in range(COLUMNS):
-                if i + j >= len(rows):
-                    out.append(f'<td width="{width}"></td>')
-                    continue
-                no, stem, title, sub = rows[i + j]
-                img = rel(FAMILY_DIRS[folder] / "previews" / f"{stem}.png")
-                pdf = rel(FAMILY_DIRS[folder] / f"{stem}.pdf")
-                out.append(f'<td width="{width}" valign="top" align="center">')
-                out.append(f'<a href="{pdf}"><img src="{img}" '
-                           f'width="{CELL_WIDTH}" alt="{no} {title}"></a><br>')
-                out.append(f'<b>{no}</b> {title}<br>{sub}')
-                out.append("</td>")
-            out.append("</tr>")
-        out += ["</table>", ""]
+        out += [f"### {heading}", ""]
+        out += table([(no, folder, stem, title, sub)
+                      for no, stem, title, sub in rows], base)
     return "\n".join(out).rstrip() + "\n"
 
 
-def main() -> int:
-    readme = ROOT / "README.md"
-    text = readme.read_text()
+def family_grid(folder: str, base: Path) -> str:
+    """One family's sheets, for that family's own README."""
+    rows = [(no, folder, stem, title, sub)
+            for heading, key, group in groups() if key == folder
+            for no, stem, title, sub in group]
+    out = ["Each thumbnail links to the PDF. The same sheet is also there as "
+           "SVG and as", "a full-resolution PNG.", ""]
+    out += table(rows, base)
+    return "\n".join(out).rstrip() + "\n"
+
+
+#: Which README carries which family's grid.  The root carries them all.
+FAMILY_READMES = {
+    "tinytapeout": ROOT / "tinytapeout" / "README.md",
+    "raspberry-pi": ROOT / "raspberry_pi" / "README.md",
+    "accessories": ROOT / "accessories" / "README.md",
+    "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "README.md",
+}
+
+
+def write_between(path: Path, body: str) -> bool:
+    """Replace the marked region of *path* with *body*; True if it changed."""
+    text = path.read_text()
     if BEGIN not in text or END not in text:
         raise SystemExit(
-            f"README.md has no {BEGIN} / {END} markers to write between")
+            f"{rel(path)} has no {BEGIN} / {END} markers to write between")
     head, rest = text.split(BEGIN, 1)
     _, tail = rest.split(END, 1)
-    new = f"{head}{BEGIN}\n\n{grid()}\n{END}{tail}"
+    new = f"{head}{BEGIN}\n\n{body}\n{END}{tail}"
     if new == text:
-        print("README preview grid already up to date")
+        return False
+    path.write_text(new)
+    return True
+
+
+def main() -> int:
+    changed = []
+    readme = ROOT / "README.md"
+    if write_between(readme, full_grid(readme.parent)):
+        changed.append(rel(readme))
+    for folder, path in FAMILY_READMES.items():
+        if write_between(path, family_grid(folder, path.parent)):
+            changed.append(rel(path))
+    if not changed:
+        print("preview grids already up to date")
         return 0
-    readme.write_text(new)
-    print(f"rewrote the README preview grid: "
-          f"{sum(len(g[2]) for g in groups())} sheets")
+    print(f"rewrote the preview grids in: {', '.join(changed)}")
     return 0
 
 

@@ -15,6 +15,32 @@ tools/fetch_raspberry_pi.sh                           # once, needs network
 uv run --no-project --with ezdxf --with pdfplumber python raspberry_pi/extract.py
 ```
 
+## The sheets
+
+<!-- sheets:begin -->
+
+Each thumbnail links to the PDF. The same sheet is also there as SVG and as
+a full-resolution PNG.
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="output/rpi3b.pdf"><img src="output/previews/rpi3b.png" width="270" alt="RPI-01 Raspberry Pi 3 Model B and B+"></a><br>
+<b>RPI-01</b> Raspberry Pi 3 Model B and B+<br>85 x 56 mm, both models
+</td>
+<td width="33%" valign="top" align="center">
+<a href="output/rpi4b.pdf"><img src="output/previews/rpi4b.png" width="270" alt="RPI-02 Raspberry Pi 4 Model B"></a><br>
+<b>RPI-02</b> Raspberry Pi 4 Model B<br>85 x 56 mm
+</td>
+<td width="33%" valign="top" align="center">
+<a href="output/rpi5.pdf"><img src="output/previews/rpi5.png" width="270" alt="RPI-03 Raspberry Pi 5"></a><br>
+<b>RPI-03</b> Raspberry Pi 5<br>85 x 56 mm
+</td>
+</tr>
+</table>
+
+<!-- sheets:end -->
+
 ## Where the numbers come from
 
 From Raspberry Pi Ltd's published mechanical drawings. The Pi 3B, 3B+ and 4B
