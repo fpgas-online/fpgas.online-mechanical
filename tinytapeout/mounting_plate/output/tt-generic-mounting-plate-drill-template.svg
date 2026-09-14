@@ -3,7 +3,7 @@
 <rect width="100%" height="100%" fill="#ffffff"/>
 
 <text x="10" y="12.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">DRILL TEMPLATE - MOUNTING PLATE</text>
-<text x="200" y="12.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">TT-MP-03    v0.0-103-g47e2c44    A4 PORTRAIT    SCALE 1:1</text>
+<text x="200" y="12.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">TT-MP-03    v0.0-105-gb234968    A4 PORTRAIT    SCALE 1:1</text>
 <text x="10" y="17.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Tiny Tapeout generic mounting plate: outline, board fastener holes, slots and plate fixings</text>
 <rect x="10" y="21.4" width="190" height="11" fill="none" stroke="#000000" stroke-width="0.7"/>
 <text x="105" y="29.4" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="middle" font-weight="bold">PRINT AT 100 %   -   DO NOT FIT TO PAGE</text>
@@ -299,17 +299,17 @@
 <text x="10" y="245.286" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
 <text x="14.542" y="245.286" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Print at 100 % on A4 with scaling off. Never Fit to page: lp -d &lt;queue&gt; -o media=A4 -o print-scaling=none &lt;file&gt;.pdf</text>
 <text x="10" y="250.8128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="14.542" y="250.8128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Measure both scale bars first. Each is exactly 100.0 mm overall; if either is short, reprint.</text>
+<text x="14.542" y="250.8128" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Measure both scale bars; if either is not 100.0 mm, reprint.</text>
 <text x="10" y="256.3395" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
 <text x="14.542" y="256.3395" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Black is drilled: a circle is the hole at true size, its cross the punch centre, a heavy line an edge.</text>
 <text x="10" y="261.8663" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="14.542" y="261.8663" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A pale wash is a board outline and a grey dashed box a Pmod body. Both are clearance only; drill neither.</text>
+<text x="14.542" y="261.8663" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Grey dashed boxes are Pmod connector bodies: clearance only, not drilled.</text>
 <text x="10" y="267.393" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
-<text x="14.542" y="267.393" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A hole&#x27;s letter is its board revision, A to E. Drill only your revision&#x27;s block; * marks one shared, drill it once.</text>
+<text x="14.542" y="267.393" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Drill every block for a plate that takes any board, or only the blocks for the boards you need.</text>
 <text x="10" y="272.9198" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
-<text x="14.542" y="272.9198" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Drill 3.40 mm at every lettered hole and at both ends of every slot, 4.30 mm at P1 to P6. Cut out each slot web.</text>
+<text x="14.542" y="272.9198" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Drill both ends of each slot, then cut out the web between them.</text>
 <text x="10" y="278.4465" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
-<text x="14.542" y="278.4465" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Tape it down printed side up, FRONT EDGE to the edge the Pmod bodies overhang, then punch every cross.</text>
+<text x="14.542" y="278.4465" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Tape it down printed side up, FRONT EDGE along the edge the Pmod bodies will overhang, and punch every cross.</text>
 <text x="10" y="283.9733" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">8.</text>
-<text x="14.542" y="283.9733" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT-MP-01 tabulates every coordinate. Work from that instead if you have a mill, a DRO, or any doubt.</text>
+<text x="14.542" y="283.9733" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">With a mill or a DRO, work from the coordinates on TT-MP-01 instead.</text>
 </svg>
