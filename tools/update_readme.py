@@ -107,7 +107,7 @@ def table(rows, base: Path) -> list[str]:
 def full_grid(base: Path) -> str:
     """Every family, under its own heading: the root README's grid."""
     out = ["Each thumbnail links to the PDF. The same sheet is also there as "
-           "SVG and as", "a full-resolution PNG.", ""]
+           "SVG.", ""]
     for heading, folder, rows in groups():
         out += [f"### {heading}", ""]
         out += table([(no, folder, stem, title, sub)
@@ -121,7 +121,7 @@ def family_grid(folder: str, base: Path) -> str:
             for heading, key, group in groups() if key == folder
             for no, stem, title, sub in group]
     out = ["Each thumbnail links to the PDF. The same sheet is also there as "
-           "SVG and as", "a full-resolution PNG.", ""]
+           "SVG.", ""]
     out += table(rows, base)
     return "\n".join(out).rstrip() + "\n"
 

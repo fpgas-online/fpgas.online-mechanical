@@ -7,7 +7,7 @@ up in the same assemblies.
 |---|---|
 | `parts.py` | Hand-curated, with per-value provenance |
 | `measure_pmod_hat.py` | Photogrammetry for the Pmod HAT Adapter |
-| `output/` | `ACC-01` to `ACC-03`, as SVG, PDF and PNG |
+| `output/` | `ACC-01` to `ACC-03`, as SVG and PDF |
 
 `parts.py` is the one hand-curated data module, because its sources are not
 machine-readable: a product photo and a dimensioned marketing image. Every
@@ -18,8 +18,7 @@ than a published dimension, its error bar.
 
 <!-- sheets:begin -->
 
-Each thumbnail links to the PDF. The same sheet is also there as SVG and as
-a full-resolution PNG.
+Each thumbnail links to the PDF. The same sheet is also there as SVG.
 
 <table>
 <tr>

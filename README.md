@@ -23,7 +23,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`accessories/`](accessories/README.md) | `ACC-01`..`03` | Pmod HAT Adapter, and two PoE splitters as envelope drawings |
 | [`tools/`](tools/README.md) | -- | The [drafting library](tools/drafting/README.md), the generator and the checks |
 
-Each sheet is written as SVG, PDF and PNG, plus a small preview beside it.
+Each sheet is written as SVG and PDF, plus a small preview beside it.
 **The PDFs are committed**, so cloning this is enough to print from: no
 Inkscape, no font, no `uv`. A3 and mostly 1:1, so a print can be laid on the
 board; the drill templates are A4 portrait and always 1:1.
@@ -32,8 +32,7 @@ board; the drill templates are A4 portrait and always 1:1.
 
 <!-- sheets:begin -->
 
-Each thumbnail links to the PDF. The same sheet is also there as SVG and as
-a full-resolution PNG.
+Each thumbnail links to the PDF. The same sheet is also there as SVG.
 
 ### Tiny Tapeout demo boards
 

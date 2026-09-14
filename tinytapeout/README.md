@@ -8,7 +8,7 @@ accepts any revision.
 |---|---|
 | `boards.py` | **Generated.** Every mechanically distinct demo board revision |
 | `extract.py` | Reads the upstream KiCad board files and writes `boards.py` |
-| `output/` | `TT-DB-01` to `TT-DB-06`, as SVG, PDF and PNG |
+| `output/` | `TT-DB-01` to `TT-DB-06`, as SVG and PDF |
 | `mounting_plate/` | The plate every revision bolts onto, and its drill templates |
 
 ```sh
@@ -19,8 +19,7 @@ uv run --no-project python tinytapeout/extract.py     # needs tmp/src, see make 
 
 <!-- sheets:begin -->
 
-Each thumbnail links to the PDF. The same sheet is also there as SVG and as
-a full-resolution PNG.
+Each thumbnail links to the PDF. The same sheet is also there as SVG.
 
 <table>
 <tr>

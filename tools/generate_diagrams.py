@@ -332,15 +332,20 @@ def main() -> None:
     print(f"{len(made)} sheets written")
 
     if not args.no_raster:
-        from tools.render_svg import to_pdf, to_png, to_preview
+        from tools.render_svg import to_pdf, to_preview
         for path in made:
             to_pdf(path)
-            to_png(path)
+            # No full-resolution PNG.  Each sheet used to get one at 150 dpi,
+            # about 700 kB, 11.7 MB across the set, and nothing ever read them:
+            # the READMEs link the preview and the PDF, and no check opens one.
+            # They were a committed build product with no consumer, and they
+            # were most of what made this repository large to clone.
+            #
             # Previews sit beside the sheet they preview rather than in one
             # pool, so a family stays self-contained.
             to_preview(path, preview_for(path))
-        print(f"{len(made)} sheets converted to PDF and PNG, "
-              "with a preview beside each")
+        print(f"{len(made)} sheets converted to PDF, with a preview beside "
+              "each")
 
         # Bound after the individual PDFs exist, from those same files: a
         # second render would be a second chance for the set and the bound
