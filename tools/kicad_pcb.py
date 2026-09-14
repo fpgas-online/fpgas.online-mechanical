@@ -202,7 +202,11 @@ class Board:
         self.company = value(tb, "company", default="") if tb else ""
         self.thickness = fvalue(child(self.tree, "general") or ["general"],
                                 "thickness", default=None)
-        self.footprints = [self._footprint(fp) for fp in children(self.tree, "footprint")]
+        # KiCad 6 and later write ``(footprint ...)``; KiCad 5 wrote the same
+        # record as ``(module ...)``, and the ULX3S release tags are KiCad 5.
+        self.footprints = [self._footprint(fp)
+                           for kind in ("footprint", "module")
+                           for fp in children(self.tree, kind)]
 
     # -- board outline ------------------------------------------------------
 

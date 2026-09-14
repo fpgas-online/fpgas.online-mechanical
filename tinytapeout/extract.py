@@ -16,7 +16,6 @@ Run: uv run --no-project python tinytapeout/extract.py
 
 from __future__ import annotations
 
-import math
 import subprocess
 import sys
 from pathlib import Path
@@ -24,7 +23,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tools import kicad_pcb  # noqa: E402
+from tools import kicad_extract, kicad_pcb  # noqa: E402
+from tools.kicad_extract import one  # noqa: E402
 WORK = ROOT / "tmp" / "pcb"
 
 # Which shuttles used a board comes from the "Used by" column of Tiny Tapeout's
@@ -272,128 +272,13 @@ def fetch(rev: dict) -> Path:
     return out
 
 
-def frame(board):
-    """Return a mapper from KiCad coordinates to the drawing frame."""
-    x0, y0, x1, y1 = board.outline_bbox()
-
-    def to_xy(x, y):
-        return x - x0, y1 - y
-
-    def to_box(bb):
-        return (bb[0] - x0, y1 - bb[3], bb[2] - x0, y1 - bb[1])
-
-    return to_xy, to_box, (x1 - x0, y1 - y0)
-
-
-def _check_arc_passes_through(key: str, edge, point, tol: float = 0.02) -> None:
-    best = min(math.dist(point, p) for p in _sample_arc(*edge[1:], steps=180))
-    if best > tol:
-        raise SystemExit(
-            f"{key}: a resolved outline arc misses the point KiCad puts on it "
-            f"by {best:.3f} mm. It is curving the wrong way.")
-
-
-def _check_outline_extent(key: str, edges, width: float, height: float) -> None:
-    """The resolved outline must fill its own bounding box, and no more.
-
-    An arc resolved with the wrong direction or the wrong large-arc flag bulges
-    the opposite way, which shows up here immediately.  It is exactly the
-    mistake that turns rounded corners into scallops bitten out of the board,
-    and it looks plausible enough at screen size to survive a visual check.
-
-    Each arc is sampled rather than reasoned about: recovering a circle centre
-    from SVG-style parameters has its own sign trap, and sampling has none.
-    """
-    xs: list[float] = []
-    ys: list[float] = []
-    for e in edges:
-        if e[0] == "line":
-            xs += [e[1], e[3]]
-            ys += [e[2], e[4]]
-        else:
-            for px, py in _sample_arc(*e[1:]):
-                xs.append(px)
-                ys.append(py)
-    got_w, got_h = max(xs) - min(xs), max(ys) - min(ys)
-    if abs(got_w - width) > 0.02 or abs(got_h - height) > 0.02:
-        raise SystemExit(
-            f"{key}: the resolved outline spans {got_w:.3f} x {got_h:.3f} mm "
-            f"but the board is {width:.3f} x {height:.3f}. An arc is bulging "
-            f"the wrong way.")
-
-
-def _sample_arc(x1, y1, x2, y2, r, large, ccw, steps: int = 33):
-    """Points along an SVG-style arc, including both ends."""
-    dx, dy = x2 - x1, y2 - y1
-    half = math.hypot(dx, dy) / 2
-    off = math.sqrt(max(r * r - half * half, 0.0))
-    # Of the two candidate centres, the one that gives the requested sweep.
-    nx, ny = -dy / (2 * half), dx / (2 * half)
-    for sign in (1, -1):
-        cx = (x1 + x2) / 2 + sign * off * nx
-        cy = (y1 + y2) / 2 + sign * off * ny
-        a0 = math.atan2(y1 - cy, x1 - cx)
-        a2 = math.atan2(y2 - cy, x2 - cx)
-        span = (a2 - a0) % (2 * math.pi) if ccw else (a0 - a2) % (2 * math.pi)
-        if (span > math.pi) == bool(large):
-            break
-    out = []
-    for i in range(steps + 1):
-        a = a0 + (span if ccw else -span) * i / steps
-        out.append((cx + r * math.cos(a), cy + r * math.sin(a)))
-    return out
-
-
-def one(fps, ref):
-    hits = [f for f in fps if f.reference == ref]
-    if len(hits) != 1:
-        raise SystemExit(f"expected exactly one {ref}, found {len(hits)}")
-    return hits[0]
-
-
 def extract(rev: dict) -> dict:
     board = kicad_pcb.load(str(fetch(rev)))
     roles = ROLES[rev["key"]]
-    to_xy, to_box, (w, h) = frame(board)
+    to_xy, to_box, (w, h) = kicad_extract.frame(board)
     fps = board.footprints
 
-    segs, arcs, circles = board.edge_cuts()
-    edges = []
-    for g in segs:
-        a, b = to_xy(g.x1, g.y1), to_xy(g.x2, g.y2)
-        edges.append(("line", round(a[0], 3), round(a[1], 3),
-                      round(b[0], 3), round(b[1], 3)))
-    # Arcs are resolved here, where the source geometry is, rather than in the
-    # renderer.  Storing centre, radius, whether the arc is the major one and
-    # which way it turns means the drawing side never has to re-derive a circle
-    # from three points, and cannot get the large-arc flag wrong.
-    for g in arcs:
-        cx, cy, r = g.centre_radius()
-        a, m, b = to_xy(g.x1, g.y1), to_xy(g.xm, g.ym), to_xy(g.x2, g.y2)
-        centre = to_xy(cx, cy)
-        a0 = math.atan2(a[1] - centre[1], a[0] - centre[0])
-        a1 = math.atan2(m[1] - centre[1], m[0] - centre[0])
-        a2 = math.atan2(b[1] - centre[1], b[0] - centre[0])
-        ccw = ((a1 - a0) % (2 * math.pi)) < ((a2 - a0) % (2 * math.pi))
-        swept = ((a2 - a0) % (2 * math.pi)) if ccw \
-            else ((a0 - a2) % (2 * math.pi))
-        edge = ("arc", round(a[0], 3), round(a[1], 3),
-                round(b[0], 3), round(b[1], 3), round(r, 4),
-                1 if swept > math.pi else 0, 1 if ccw else 0)
-        # KiCad gives an explicit point on the arc.  Requiring the resolved arc
-        # to pass through it is the only check that catches a corner fillet
-        # resolved the wrong way round: such an arc curves into the corner
-        # rather than out of it, so it stays inside the board's bounding box
-        # and a bounding box check sees nothing wrong.
-        _check_arc_passes_through(rev["key"], edge, m)
-        edges.append(edge)
-    # An arc resolved with the wrong direction or the wrong large-arc flag
-    # bulges the opposite way, which shows up as the outline no longer filling
-    # its own bounding box.  Cheap to check, and it is exactly the mistake that
-    # turns rounded corners into scallops bitten out of the board.
-    _check_outline_extent(rev["key"], edges, w, h)
-
-    radii = sorted({round(g.centre_radius()[2], 3) for g in arcs})
+    edges, radii = kicad_extract.outline(rev["key"], board, to_xy, w, h)
     corner_radius = radii[-1]
     profile_note = ""
     if len(radii) > 1:
@@ -406,45 +291,19 @@ def extract(rev: dict) -> dict:
         profile_note = "The notch in the upper edge is a recess for the " \
             "USB-C shell."
 
-    holes = []
-    for ref in roles["holes"]:
-        fp = one(fps, ref)
-        x, y = to_xy(fp.x, fp.y)
-        pads = fp.pads
-        drills = [p.drill for p in pads if p.drill]
-        if not drills:
-            raise SystemExit(
-                f"{rev['key']}: mounting hole {ref} has no drill size. Do not "
-                f"guess one; fix the role table or the source.")
-        dia = min(drills)
-        pad_dia = max(max(p.size) for p in pads)
-        holes.append(dict(x=round(x, 3), y=round(y, 3), dia=round(dia, 3),
-                          label=ref, kind="mount", keepout_dia=round(pad_dia, 3)))
+    holes = [kicad_extract.hole(rev["key"], one(fps, ref), to_xy)
+             for ref in roles["holes"]]
 
-    pmods = []
-    for i, ref in enumerate(roles["pmods"]):
-        fp = one(fps, ref)
-        pads = {p.number: p for p in fp.pads}
-        xs = [to_xy(p.x, p.y)[0] for p in fp.pads]
-        ys = [to_xy(p.x, p.y)[1] for p in fp.pads]
-        p1x, p1y = to_xy(pads["1"].x, pads["1"].y)
-        body = to_box(fp.bbox("courtyard"))
-        pmods.append(dict(
-            key=f"pmod{i + 1}", label=roles["pmod_labels"][i], designator=ref,
-            cx=round((min(xs) + max(xs)) / 2, 3), cy=round((min(ys) + max(ys)) / 2, 3),
-            pin1_x=round(p1x, 3), pin1_y=round(p1y, 3),
-            body_x0=round(body[0], 3), body_y0=round(body[1], 3),
-            body_x1=round(body[2], 3), body_y1=round(body[3], 3)))
+    pmods = [kicad_extract.pmod(one(fps, ref), to_xy, to_box,
+                                key=f"pmod{i + 1}", label=roles["pmod_labels"][i])
+             for i, ref in enumerate(roles["pmods"])]
 
     features = []
 
     def add(ref, key, label, kind, note="", box="courtyard"):
-        fp = one(fps, ref)
-        bb = fp.bbox(box) or fp.pad_bbox()
-        b = to_box(bb)
+        b = kicad_extract.box(one(fps, ref), to_box, box)
         features.append(dict(key=key, label=label, kind=kind, designator=ref,
-                             x0=round(b[0], 3), y0=round(b[1], 3),
-                             x1=round(b[2], 3), y1=round(b[3], 3), note=note))
+                             x0=b[0], y0=b[1], x1=b[2], y1=b[3], note=note))
 
     add(roles["usb_power"], "usb_power", "USB-C power / control", "usb_power",
         note="Body outline including the shell overhang past the board edge.")
