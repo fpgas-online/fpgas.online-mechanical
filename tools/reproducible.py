@@ -44,6 +44,12 @@ PDF_CREATION_DATE = "D:20000101000000Z"
 #:
 #:     uuid.uuid5(uuid.NAMESPACE_URL,
 #:                "https://github.com/mithro/tinytapeout-boards#fingerprint")
+#:
+#: That URL is the repository's *former* address, and it stays.  The GUIDs are
+#: the output of hashing it, so rehashing the current address gives different
+#: ones -- {17E96062-...} and {96633929-...} -- and every committed DXF byte
+#: moves with them for no gain.  The URL is here to show where the constants
+#: came from, not to say where the repository lives.
 FINGERPRINT_GUID = "{A9871A73-4C01-5F14-BDF3-7E43D2EADAC5}"
 VERSION_GUID = "{F1721B0A-7EC0-50D8-B66E-F165CD9F94FA}"
 

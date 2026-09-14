@@ -3,7 +3,7 @@
 Status key: `[ ]` not started, `[~]` in progress, `[x]` done.
 
 Everything the request asked for is done, and all four rounds of both reviews
-have been acted on. The work is pushed to github.com/mithro/tinytapeout-boards. Two balloon leaders on the Pi 4B and Pi 5 still cross the
+have been acted on. The work is pushed to github.com/fpgas-online/fpgas.online-mechanical. Two balloon leaders on the Pi 4B and Pi 5 still cross the
 phantom Pmod host JC; that is a physical overlap, not a placement fault, and
 `tools/check_balloons.py` reports it every run.
 
