@@ -18,6 +18,8 @@ Imported, not run.
 | `schema.py` | `BoardSpec`, `Outline`, `Hole`, `Slot`, `Pmod`, `Feature`, `Source` |
 | `layout.py` | Where the sheets are. One answer, so the generator and the checks cannot disagree about the set |
 | `kicad_pcb.py` | Minimal reader for KiCad `.kicad_pcb` s-expression files |
+| `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
+| `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
 | `render_svg.py` | SVG to PDF and PNG via Inkscape, text exported as paths |
 | `reproducible.py` | Pins the clocks and GUIDs that cairo and ezdxf stamp into their output |
 
@@ -26,12 +28,14 @@ Imported, not run.
 | | |
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's mechanical drawings into `tmp/` |
+| `fetch_fpga.sh` | Clones the ULX3S and ButterStick repositories and downloads the Arty A7 drawing and the PYNQ-Z2 model into `tmp/` |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF, PNG and preview |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
 
 The extractors are not here. Each lives with its subject:
 [`tinytapeout/extract.py`](../tinytapeout/README.md),
-[`raspberry_pi/extract.py`](../raspberry_pi/README.md), and
+[`raspberry_pi/extract.py`](../raspberry_pi/README.md),
+[`fpga/extract.py`](../fpga/README.md), and
 [`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md).
 
 ## Checks
@@ -94,5 +98,5 @@ were arrived at and how a disputed one would be checked again. Not run by
 | | |
 |---|---|
 | `dump_rpi_dxf.py` | Dumps the mechanical features of a Raspberry Pi DXF, layer by layer |
-| `dump_rpi_pdf.py` | Dumps features from the Pi 5's vector PDF, recovering the plot scale |
+| `dump_rpi_pdf.py` | Dumps features from the Pi 5's vector PDF, recovering the plot scale; its rectangle recovery also serves the Arty A7 plot |
 | `plot_pcb_check.py` | Sanity plot of an extracted `.kicad_pcb` |

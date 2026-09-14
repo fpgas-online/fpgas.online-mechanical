@@ -20,6 +20,8 @@ sys.path.insert(0, str(ROOT))
 
 from accessories.parts import (ACCESSORIES, GENERIC_POE,  # noqa: E402
                                PMOD_HAT, PMOD_HAT_TOL, WAVESHARE_POE)
+from fpga.boards import BOARDS as FPGA_BOARDS  # noqa: E402
+from fpga.boards import FEATURE_NUMBERS as FPGA_NUMBERS  # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI_BOARDS  # noqa: E402
 from raspberry_pi.boards import FEATURE_NUMBERS as RPI_NUMBERS  # noqa: E402
 from tinytapeout.boards import BOARDS as TT_BOARDS  # noqa: E402
@@ -54,11 +56,19 @@ TT_BUNDLE = "tinytapeout-sheets.pdf"
 #: The three Raspberry Pi sheets bound the same way, for the same reasons.
 RPI_BUNDLE = "raspberry-pi-sheets.pdf"
 
+#: And the FPGA development boards.
+FPGA_BUNDLE = "fpga-sheets.pdf"
+
 # Sheet numbering: family prefix, then the order the sheets are meant to be
 # read in.  Numbers are stable so a reference to a drawing keeps working.
 TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.1", "v1.2.2", "v1.2.3",
             "v2.0.1", "v2.1.0", "v2.1.2", "v3.2", "v3.3"]
 RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
+#: In the order they were asked for.  No shared frame: unlike the demo
+#: boards, which register on their Pmod hosts, and the Pis, which share an
+#: outline, these four have nothing in common to hold still, so each sheet
+#: is fitted to its own board.
+FPGA_ORDER = ["arty-a7", "ulx3s", "pynq-z2", "butterstick"]
 
 #: The drill templates, in sheet order, and the file stem each is written to.
 DRILL_TEMPLATES = {
@@ -350,6 +360,19 @@ def main() -> None:
         rpi_set.append((path.with_suffix(".pdf"),
                         f"RPI-{n:02d}  {spec.title}  -  {spec.subtitle}"))
 
+    fpga_dir = FAMILY_DIRS["fpga"]
+    fpga_dir.mkdir(parents=True, exist_ok=True)
+    fpga_set: list[tuple[Path, str]] = []
+    for n, key in enumerate(FPGA_ORDER, 1):
+        spec = FPGA_BOARDS[key]
+        sheet = render_board(spec, drawing_no=f"FPGA-{n:02d}", version=VERSION,
+                             family_numbers=FPGA_NUMBERS)
+        path = fpga_dir / f"{slug(key)}.svg"
+        sheet.canvas.save(str(path))
+        made.append(path)
+        fpga_set.append((path.with_suffix(".pdf"),
+                         f"FPGA-{n:02d}  {spec.title}  -  {spec.subtitle}"))
+
     acc_dir = FAMILY_DIRS["accessories"]
     acc_dir.mkdir(parents=True, exist_ok=True)
     sheet = render_board(PMOD_HAT, drawing_no="ACC-01", version=VERSION)
@@ -420,6 +443,9 @@ def main() -> None:
         bundle = combine_pdfs(rpi_set, rpi_dir / RPI_BUNDLE,
                               "Raspberry Pi - mechanical drawings")
         print(f"  {rel(bundle)}: {len(rpi_set)} sheets bound into one PDF")
+        bundle = combine_pdfs(fpga_set, fpga_dir / FPGA_BUNDLE,
+                              "FPGA development boards - mechanical drawings")
+        print(f"  {rel(bundle)}: {len(fpga_set)} sheets bound into one PDF")
 
 
 if __name__ == "__main__":

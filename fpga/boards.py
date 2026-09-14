@@ -1,0 +1,292 @@
+"""FPGA development board mechanical data.
+
+GENERATED FILE -- do not edit by hand.
+Regenerate with::
+
+    uv run --no-project --with ezdxf --with pdfplumber --with cadquery \\
+        python fpga/extract.py
+
+Coordinates follow :mod:`tools.schema`: origin at the lower-left corner of the
+board, X right, Y up, top view, millimetres.  Each board is drawn the way its
+maker draws it: the Arty A7 and ULX3S with their Pmod or GPIO edge and USB
+along the top, the PYNQ-Z2 with its Pmod hosts on the right, and ButterStick
+with its USB-C and Ethernet on the right.
+"""
+
+from __future__ import annotations
+
+from tools.schema import BoardSpec, Feature, Hole, Outline, PmodHeader, Source
+
+BOARDS: dict[str, BoardSpec] = {}
+
+#: Feature numbers are fixed across the family: a number means the same part on
+#: every sheet.  A board that does not carry the part still gets a row, so a
+#: gap in a schedule reads as "not on this board" rather than as an omission.
+FEATURE_NUMBERS = {
+    1: 'USB programming / console port',
+    2: 'Second USB port',
+    3: 'Ethernet RJ45',
+    4: 'User LEDs, single colour',
+    5: 'User LEDs, tri-colour',
+    6: 'Expansion connector, first',
+    7: 'Expansion connector, second',
+    8: 'Expansion connector, third',
+}
+
+
+BOARDS['arty-a7'] = BoardSpec(
+    key='arty-a7',
+    title='Digilent Arty A7',
+    subtitle='A7-35T and A7-100T',
+    family="fpga",
+    front_edge='top',
+    outline=Outline(width=109.0, height=87.0,
+                    corner_radius=0.0, thickness=None,
+                    edges=(
+                        ('line', 0.0, 0.0, 109.0, 0.0),
+                        ('line', 109.0, 0.0, 109.0, 87.0),
+                        ('line', 109.0, 87.0, 0.0, 87.0),
+                        ('line', 0.0, 87.0, 0.0, 0.0),
+                    )),
+    holes=(
+
+    ),
+    pmods=(
+        PmodHeader(key='pmod_ja', label='JA', designator='JA', edge='top',
+                   cx=20.2, cy=75.25, pin1_x=13.85, pin1_y=74.0,
+                   body_x0=12.6, body_y0=73.32, body_x1=27.84, body_y1=86.88),
+        PmodHeader(key='pmod_jb', label='JB', designator='JB', edge='top',
+                   cx=43.0, cy=75.25, pin1_x=36.65, pin1_y=74.0,
+                   body_x0=35.4, body_y0=73.32, body_x1=50.64, body_y1=86.88),
+        PmodHeader(key='pmod_jc', label='JC', designator='JC', edge='top',
+                   cx=65.8, cy=75.25, pin1_x=59.45, pin1_y=74.0,
+                   body_x0=58.2, body_y0=73.32, body_x1=73.44, body_y1=86.88),
+        PmodHeader(key='pmod_jd', label='JD', designator='JD', edge='top',
+                   cx=88.6, cy=75.25, pin1_x=82.25, pin1_y=74.0,
+                   body_x0=81.0, body_y0=73.32, body_x1=96.24, body_y1=86.88),
+    ),
+    features=(
+        Feature(key='usb_prog', label='micro-USB J10, programming and console', kind='usb_power',
+                designator='J10', x0=-0.65, y0=61.32, x1=4.56, y1=68.76,
+                note="Shell outline from the PDF plot; centre line from the DXF's shell slots.", number=1),
+        Feature(key='ethernet', label='Ethernet RJ45 J9', kind='ethernet',
+                designator='J9', x0=-0.24, y0=34.56, x1=26.057, y1=53.4,
+                note="Body outline from the PDF plot; centre line from the DXF's locating pegs.", number=3),
+        Feature(key='leds', label='LEDs LD4-LD7, 4 on 7.00 mm pitch', kind='led',
+                designator='LD4-LD7', x0=8.16, y0=9.545, x1=30.84, y1=10.46,
+                note='Bodies from the PDF plot; which row is which follows the package size, see notes.', number=4),
+        Feature(key='rgb_leds', label='Tri-colour LEDs LD0-LD3, 4 on 7.00 mm pitch', kind='led',
+                designator='LD0-LD3', x0=8.16, y0=3.195, x1=30.84, y1=4.803,
+                note='Bodies from the PDF plot; which row is which follows the package size, see notes.', number=5),
+    ),
+    sources=(
+        Source(label='Mechanical drawing',
+               ref='https://digilent.com/reference/_media/reference/programmable-logic/arty-a7/arty_a7.zip',
+               note='Digilent, Arty_A7_DXF.DXF and Mechanical_Arty_A7.pdf, dated 2020-09-02. Outline, pin fields, slots and pegs from the DXF; component bodies from the PDF, whose plot scale is recovered from the outline (axes agree to 0.20 %).'),
+        Source(label='3D model',
+               ref='https://digilent.com/reference/_media/reference/programmable-logic/arty/arty_revc_cad.zip',
+               note="Digilent, Arty Rev C: used only to identify which of the PDF's outlines are the eight user LEDs."),
+        Source(label='Reference manual',
+               ref='https://digilent.com/reference/programmable-logic/arty-a7/reference-manual',
+               note='Pmod JA, JB, JC, JD; four tri-colour and four single LEDs.'),
+        Source(label='Mounting',
+               ref='https://forum.digilent.com/topic/4523-410-319-mounting/',
+               note='Digilent staff, 2017-07-19: "There are no thru holes or mounting provisions"; the board stands on rubber feet.'),
+    ),
+    notes=(
+        'No mounting holes. The drawing shows four 10.0 mm rubber feet centred 5.0 mm from each corner; a plate has to carry the board on those or clamp its edges.',
+        "The Pmod pin rows are 2.50 mm apart on the drawing, not 2.54, and the hosts are on a 22.80 mm pitch where the PDF's dimension reads 0.90 in; both within the general tolerance.",
+        "JA is nearest the USB and Ethernet corner, per the reference manual's callout figure.",
+        'The 1.6 x 1.6 mm LED row nearest the edge is taken as the tri-colour LD0-LD3 and the 0603 row behind it as LD4-LD7; no source names them.',
+        'Bodies read from the PDF plot are good to about +/-0.3 mm; the DXF figures carry the general tolerance.',
+    ),
+)
+
+BOARDS['ulx3s'] = BoardSpec(
+    key='ulx3s',
+    title='ULX3S',
+    subtitle='v3.0.3, v3.0.7, v3.0.8 and v3.1.7',
+    family="fpga",
+    front_edge='top',
+    outline=Outline(width=93.98, height=50.8,
+                    corner_radius=0.0, thickness=1.6,
+                    edges=(
+                        ('line', 0.0, 50.8, 0.0, 0.0),
+                        ('line', 93.98, 50.8, 0.0, 50.8),
+                        ('line', 93.98, 0.0, 93.98, 50.8),
+                        ('line', 0.0, 0.0, 93.98, 0.0),
+                    )),
+    holes=(
+        Hole(x=8.89, y=3.81, dia=3.2, label='H1', kind='mount', keepout_dia=5.5),
+        Hole(x=85.09, y=3.81, dia=3.2, label='H2', kind='mount', keepout_dia=5.5),
+        Hole(x=85.09, y=46.99, dia=3.2, label='H3', kind='mount', keepout_dia=5.5),
+        Hole(x=8.89, y=46.99, dia=3.2, label='H4', kind='mount', keepout_dia=5.5),
+    ),
+    pmods=(
+
+    ),
+    features=(
+        Feature(key='usb_prog', label='micro-USB US1, FTDI programming and console', kind='usb_power',
+                designator='US1', x0=12.78, y0=45.295, x1=22.78, y1=51.895,
+                note='', number=1),
+        Feature(key='usb_second', label='micro-USB US2, USB host / OTG', kind='connector',
+                designator='US2', x0=71.2, y0=45.295, x1=81.2, y1=51.895,
+                note='', number=2),
+        Feature(key='leds', label='LEDs D0-D7, 8 on 2.54 mm pitch', kind='led',
+                designator='D0-D7', x0=7.94, y0=30.941, x1=27.62, y1=34.301,
+                note='D0 at the right-hand end.', number=4),
+        Feature(key='exp1', label='GPIO header J1, 2x20', kind='header',
+                designator='J1', x0=-9.34, y0=-0.52, x1=5.16, y1=51.28,
+                note='Right-angle 2x20 socket; pin 1 at (3.81, 49.53). Body overhangs the board edge.', number=6),
+        Feature(key='exp2', label='GPIO header J2, 2x20', kind='header',
+                designator='J2', x0=88.82, y0=-0.48, x1=103.32, y1=51.32,
+                note='Right-angle 2x20 socket; pin 1 at (90.17, 1.27). Body overhangs the board edge.', number=7),
+    ),
+    sources=(
+        Source(label='KiCad board file',
+               ref='https://github.com/emard/ulx3s  ulx3s.kicad_pcb @ 300a361b (tag v3.0.3)',
+               note='Radiona / emard'),
+        Source(label='KiCad board file',
+               ref='https://github.com/emard/ulx3s  ulx3s.kicad_pcb @ d518b2ce (tag v3.0.7)',
+               note='Radiona / emard'),
+        Source(label='KiCad board file',
+               ref='https://github.com/emard/ulx3s  ulx3s.kicad_pcb @ 9908a1f8 (tag v3.0.8)',
+               note='Radiona / emard'),
+        Source(label='KiCad board file',
+               ref='https://github.com/emard/ulx3s  ulx3s.kicad_pcb @ cc1817d2 (tag v3.1.7)',
+               note='Radiona / emard'),
+        Source(label='Board versions',
+               ref='https://github.com/emard/ulx3s/blob/master/doc/MANUAL.md',
+               note='section "Board Versions": v3.0.3, v3.0.7, v3.0.8 and v3.1.7 are the rows marked "for sale"; the four board files are read and agree on everything drawn here.'),
+        Source(label='Board size',
+               ref='https://github.com/emard/ulx3s/blob/master/README.md',
+               note='quoted: "This is a small (94x51 mm) standalone FPGA board"; the board file gives 93.98 x 50.80, which is 37 x 20 tenths of an inch.'),
+    ),
+    notes=(
+        'Hole IDs are the KiCad reference designators.',
+        'No Pmod host. J1 and J2 are right-angle 2x20 sockets on 2.54 mm whose pinout is Pmod compatible, per the maker; pin 1 of each is given in the schedule note.',
+        'No Ethernet jack.',
+    ),
+)
+
+BOARDS['pynq-z2'] = BoardSpec(
+    key='pynq-z2',
+    title='TUL PYNQ-Z2',
+    subtitle='137 x 87 mm',
+    family="fpga",
+    front_edge='right',
+    outline=Outline(width=137.0, height=87.0,
+                    corner_radius=0.0, thickness=1.6,
+                    edges=(
+                        ('line', 0.0, 87.0, 0.0, 0.0),
+                        ('line', 137.0, 87.0, 0.0, 87.0),
+                        ('line', 137.0, 0.0, 137.0, 87.0),
+                        ('line', 0.0, 0.0, 137.0, 0.0),
+                    )),
+    holes=(
+        Hole(x=4.0, y=4.0, dia=3.4, label='MT1', kind='mount', keepout_dia=None),
+        Hole(x=133.0, y=4.0, dia=3.4, label='MT2', kind='mount', keepout_dia=None),
+        Hole(x=4.0, y=83.0, dia=3.4, label='MT3', kind='mount', keepout_dia=None),
+        Hole(x=133.0, y=83.0, dia=3.4, label='MT4', kind='mount', keepout_dia=None),
+    ),
+    pmods=(
+        PmodHeader(key='pmod_a', label='Pmod A', designator='JA', edge='right',
+                   cx=126.713, cy=41.101, pin1_x=125.443, pin1_y=47.451,
+                   body_x0=129.743, body_y0=33.281, body_x1=138.243, body_y1=49.021),
+        PmodHeader(key='pmod_b', label='Pmod B', designator='JB', edge='right',
+                   cx=126.713, cy=16.717, pin1_x=125.443, pin1_y=23.067,
+                   body_x0=129.743, body_y0=8.897, body_x1=138.243, body_y1=24.637),
+    ),
+    features=(
+        Feature(key='usb_prog', label='micro-USB, programming and console', kind='usb_power',
+                designator='', x0=-0.511, y0=29.147, x1=4.489, y1=37.147,
+                note='Model part "Micro USB", every solid of it.', number=1),
+        Feature(key='usb_second', label='USB type A host port', kind='usb_a',
+                designator='', x0=33.017, y0=73.7, x1=50.417, y1=87.4,
+                note='Model part "USB-A-20", every solid of it.', number=2),
+        Feature(key='ethernet', label='Ethernet RJ45', kind='ethernet',
+                designator='', x0=-0.6, y0=40.203, x1=21.055, y1=59.977,
+                note='Model part "RT7-174A-XXXX-10PIN", every solid of it.', number=3),
+    ),
+    sources=(
+        Source(label='3D model',
+               ref='https://discuss.pynq.io/t/pynq-z2-pcb-3d-step-files/2645',
+               note="PYNQ_Z2_20220218.STEP, TUL's SolidWorks export of 2022-02-18 posted by Xilinx; the earlier model on the same thread has the Pmod spacing wrong and is not used."),
+        Source(label='User manual',
+               ref='https://dpoauwgwqsy2x.cloudfront.net/Download/PYNQ_Z2_User_Manual_v1.1.pdf',
+               note='v1.1: Pmod A is the upper host (section 16); 4 LEDs and 2 tri-colour LEDs (section 14).'),
+    ),
+    notes=(
+        'Every dimension is read from the STEP model; TUL publish no drawing. Hole IDs are assigned by this drawing.',
+        'The user LEDs LD0-LD3 and the two tri-colour LEDs are not in the model, so schedule rows 4 and 5 are empty; the board has them, above the four push buttons near the lower edge.',
+        "TUL's product sheet gives the board as 87 x 140 mm; the model's laminate is 137.0 wide and the Pmod hosts reach 1.2 beyond it.",
+    ),
+)
+
+BOARDS['butterstick'] = BoardSpec(
+    key='butterstick',
+    title='ButterStick',
+    subtitle='r1.0',
+    family="fpga",
+    front_edge='right',
+    outline=Outline(width=80.0, height=49.0,
+                    corner_radius=3.0, thickness=1.6,
+                    edges=(
+                        ('line', 77.0, 0.0, 3.0, 0.0),
+                        ('line', 3.0, 49.0, 77.0, 49.0),
+                        ('line', 0.0, 3.0, 0.0, 46.0),
+                        ('line', 80.0, 46.0, 80.0, 3.0),
+                        ('arc', 0.0, 46.0, 3.0, 49.0, 3.0, 0, 0),
+                        ('arc', 80.0, 3.0, 77.0, 0.0, 3.0, 0, 0),
+                        ('arc', 3.0, 0.0, 0.0, 3.0, 3.0, 0, 0),
+                        ('arc', 77.0, 49.0, 80.0, 46.0, 3.0, 0, 0),
+                    )),
+    holes=(
+        Hole(x=76.0, y=45.0, dia=3.2, label='H1', kind='mount', keepout_dia=6.4),
+        Hole(x=76.0, y=4.0, dia=3.2, label='H2', kind='mount', keepout_dia=6.4),
+        Hole(x=5.0, y=7.5, dia=3.2, label='SA1', kind='aux', keepout_dia=5.2),
+        Hole(x=5.0, y=41.5, dia=3.2, label='SA2', kind='aux', keepout_dia=5.2),
+        Hole(x=18.5, y=44.0, dia=3.2, label='SB1', kind='aux', keepout_dia=5.2),
+        Hole(x=52.5, y=44.0, dia=3.2, label='SB2', kind='aux', keepout_dia=5.2),
+        Hole(x=18.09, y=5.0, dia=3.2, label='SC1', kind='aux', keepout_dia=5.2),
+        Hole(x=55.91, y=5.0, dia=3.2, label='SC2', kind='aux', keepout_dia=5.2),
+    ),
+    pmods=(
+
+    ),
+    features=(
+        Feature(key='usb_prog', label='USB-C J1, programming and console', kind='usb_power',
+                designator='J1', x0=72.58, y0=29.68, x1=82.0, y1=40.32,
+                note='Courtyard, including the shell overhang past the board edge.', number=1),
+        Feature(key='ethernet', label='Ethernet RJ45 CON1', kind='ethernet',
+                designator='CON1', x0=62.81, y0=8.065, x1=77.92, y1=26.315,
+                note='Pad extent; the footprint carries no body outline.', number=3),
+        Feature(key='rgb_leds', label='RGB LEDs D1-D7, 7 on 2.00 mm pitch', kind='led',
+                designator='D1-D7', x0=58.4, y0=44.4, x1=71.6, y1=45.6,
+                note='D1 at the left-hand end; silkscreen numbers them 0 to 6.', number=5),
+        Feature(key='exp1', label='SYZYGY port A, J3', kind='connector',
+                designator='J3', x0=0.0, y0=2.0, x1=12.0, y1=47.0,
+                note='Fab-layer body outline.', number=6),
+        Feature(key='exp2', label='SYZYGY port B, J4', kind='connector',
+                designator='J4', x0=13.0, y0=37.0, x1=58.0, y1=49.0,
+                note='Fab-layer body outline.', number=7),
+        Feature(key='exp3', label='SYZYGY port C, J5', kind='connector',
+                designator='J5', x0=12.0, y0=0.0, x1=62.0, y1=12.0,
+                note='Fab-layer body outline.', number=8),
+    ),
+    sources=(
+        Source(label='KiCad board file',
+               ref='https://github.com/butterstick-fpga/butterstick-hardware  hardware/ButterStick_r1.0/ButterStick.kicad_pcb @ fac6a834',
+               note='title block: ButterStick rev r1.0a, dated 2021-01-10; Greg Davill / GsD'),
+        Source(label='Board size',
+               ref='https://github.com/butterstick-fpga/butterstick-hardware/blob/main/README.md',
+               note='quoted: "Board dimensions: 80mm x 49mm"'),
+        Source(label='Thickness',
+               ref='https://github.com/butterstick-fpga/butterstick-hardware/blob/main/hardware/ButterStick_r1.0/Production/ButterStick-r1.0a-fab-notes.txt',
+               note='quoted: "Finished board thickness is 1.6 mm."'),
+    ),
+    notes=(
+        "Hole IDs H1 and H2 are the KiCad reference designators; SA1 to SC2 are the SYZYGY standoff holes of ports A, B and C, plated, and the maker's acrylic plate bolts through all eight.",
+        'No Pmod host: expansion is three SYZYGY ports.',
+    ),
+)

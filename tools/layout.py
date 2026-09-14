@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FAMILY_DIRS = {
     "tinytapeout": ROOT / "tinytapeout" / "output",
     "raspberry-pi": ROOT / "raspberry_pi" / "output",
+    "fpga": ROOT / "fpga" / "output",
     "accessories": ROOT / "accessories" / "output",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "output",
 }

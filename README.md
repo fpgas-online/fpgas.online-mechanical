@@ -20,6 +20,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-01`..`06` | Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-01`..`04` | The plate every demo board revision bolts onto, and its drill templates |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-01`..`03` | Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
+| [`fpga/`](fpga/README.md) | `FPGA-01`..`04` | Digilent Arty A7, ULX3S, TUL PYNQ-Z2 and ButterStick, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-01`..`03` | Pmod HAT Adapter, and two PoE splitters as envelope drawings |
 | [`tools/`](tools/README.md) | -- | The [drafting library](tools/drafting/README.md), the generator and the checks |
 
@@ -83,6 +84,33 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="raspberry_pi/output/rpi5.pdf"><img src="raspberry_pi/output/previews/rpi5.png" width="270" alt="RPI-03 Raspberry Pi 5"></a><br>
 <b>RPI-03</b> Raspberry Pi 5<br>85 x 56 mm
 </td>
+</tr>
+</table>
+
+### FPGA development boards
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="fpga/output/arty-a7.pdf"><img src="fpga/output/previews/arty-a7.png" width="270" alt="FPGA-01 Digilent Arty A7"></a><br>
+<b>FPGA-01</b> Digilent Arty A7<br>A7-35T and A7-100T
+</td>
+<td width="33%" valign="top" align="center">
+<a href="fpga/output/ulx3s.pdf"><img src="fpga/output/previews/ulx3s.png" width="270" alt="FPGA-02 ULX3S"></a><br>
+<b>FPGA-02</b> ULX3S<br>v3.0.3, v3.0.7, v3.0.8 and v3.1.7
+</td>
+<td width="33%" valign="top" align="center">
+<a href="fpga/output/pynq-z2.pdf"><img src="fpga/output/previews/pynq-z2.png" width="270" alt="FPGA-03 TUL PYNQ-Z2"></a><br>
+<b>FPGA-03</b> TUL PYNQ-Z2<br>137 x 87 mm
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="fpga/output/butterstick.pdf"><img src="fpga/output/previews/butterstick.png" width="270" alt="FPGA-04 ButterStick"></a><br>
+<b>FPGA-04</b> ButterStick<br>r1.0
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
 </tr>
 </table>
 
@@ -180,4 +208,6 @@ found.
 
 Apache 2.0; see [`LICENSE`](LICENSE). The upstream sources these drawings are
 derived from keep their own licences: the Tiny Tapeout board files are Apache
-2.0, and the Raspberry Pi mechanical drawings are Raspberry Pi Ltd's.
+2.0, the Raspberry Pi mechanical drawings are Raspberry Pi Ltd's, the Arty A7
+drawing is Digilent's, the PYNQ-Z2 model is TUL's, and the ULX3S and
+ButterStick board files carry their makers' open hardware licences.

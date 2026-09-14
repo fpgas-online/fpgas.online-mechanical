@@ -23,9 +23,10 @@ sys.path.insert(0, str(ROOT))
 
 from accessories.parts import GENERIC_POE, PMOD_HAT, WAVESHARE_POE  # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE                              # noqa: E402
+from fpga.boards import BOARDS as FPGA                        # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
-from tools.generate_diagrams import RPI_ORDER, slug, tt_sheets          # noqa: E402
+from tools.generate_diagrams import FPGA_ORDER, RPI_ORDER, slug, tt_sheets  # noqa: E402
 from tools.layout import FAMILY_DIRS, rel                               # noqa: E402
 
 BEGIN = "<!-- sheets:begin -->"
@@ -53,6 +54,9 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
          "raspberry-pi", COLUMNS,
          [(f"RPI-{n:02d}", slug(k), RPI[k].title, RPI[k].subtitle)
           for n, k in enumerate(RPI_ORDER, 1)]),
+        ("FPGA development boards", "fpga", COLUMNS,
+         [(f"FPGA-{n:02d}", slug(k), FPGA[k].title, FPGA[k].subtitle)
+          for n, k in enumerate(FPGA_ORDER, 1)]),
         ("Accessories", "accessories", COLUMNS,
          [("ACC-01", "digilent-pmod-hat-adapter",
            PMOD_HAT.title, PMOD_HAT.subtitle),
@@ -135,6 +139,7 @@ def family_grid(folder: str, base: Path) -> str:
 FAMILY_READMES = {
     "tinytapeout": ROOT / "tinytapeout" / "README.md",
     "raspberry-pi": ROOT / "raspberry_pi" / "README.md",
+    "fpga": ROOT / "fpga" / "README.md",
     "accessories": ROOT / "accessories" / "README.md",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "README.md",
 }

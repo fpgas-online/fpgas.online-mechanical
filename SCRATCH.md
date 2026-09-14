@@ -1029,3 +1029,74 @@ resolves to Digilent's `pmod-interface-specification-1_2_0.pdf`, and both
 sheets that cite it now print the short form.  Digilent's server answers
 curl with 403 even given a browser user agent, so the target could not be
 fetched from here; the URL is the one the sheets have always carried.
+
+## Four FPGA boards, three kinds of source
+
+Asked for sheets of the Arty A7, ULX3S, PYNQ-Z2 and ButterStick with Pmod,
+USB, Ethernet and LEDs marked.  They are a new family, `fpga/`, drawn by the
+same renderer as the demo boards, and the work was mostly in finding and
+reading what each maker actually publishes:
+
+- **Arty A7**: Digilent publish a DXF and a PDF plot.  The DXF carries the
+  outline, every through-hole pad and the connector slots, nothing else; the
+  PDF has the component bodies but no pad data.  So the outline, the four
+  Pmod pin fields, the RJ45 pegs and the USB shell slots come from the DXF,
+  and the RJ45, USB, Pmod bodies and eight LEDs from the PDF, whose scale is
+  recovered from the outline per axis (they disagree by 0.2 %) and checked
+  against the DXF wherever both have the same feature.  The DXF is a metric
+  drawing of an imperial board: hosts on 22.80 not 22.86, pin rows 2.50 not
+  2.54, outline 109.0 x 87.0 where the PDF's dimensions say 4.3 x 3.4 in.
+  The sheet reports the drawing and says so.  **The Arty has no mounting
+  holes**; the Ø10 rings at the corners are rubber feet, confirmed by
+  Digilent on their forum.  Which LED row is which comes from the package
+  sizes in Digilent's older Rev C 3D model: the 1.6 x 1.6 row is the
+  tri-colour LD0-LD3, the 0603 row is LD4-LD7.
+- **ULX3S**: KiCad, read at every tag the maker's manual marks "for sale"
+  (v3.0.3, v3.0.7, v3.0.8, v3.1.7), and the four are required to agree on
+  everything drawn before one sheet covers them.  They do.  The release tags
+  are KiCad 5 files, so `tools/kicad_pcb.py` now reads `(module ...)` as
+  well as `(footprint ...)`.  No Pmod and no Ethernet; the two right-angle
+  2x20 GPIO sockets are drawn in their place.
+- **PYNQ-Z2**: TUL publish a STEP assembly and nothing else machine-readable,
+  so `tools/step_model.py` reads the board slab, its through-holes and each
+  named part's placed box out of OpenCascade.  The Pmod pin holes are found
+  as two 2x6 grids of 1.524 mm holes; the four 3.4 mm holes are the mounting
+  holes.  The LEDs are not in the model and are not drawn; the sheet says
+  where they are in words.  The PYNQ-Z1 was looked at and dropped: its 3D
+  model has no holes and its outline disagrees with Digilent's own stated
+  size.
+- **ButterStick**: KiCad at the r1.0a release.  No Pmod: three SYZYGY ports,
+  whose six plated standoff holes join the two M3 holes in the schedule,
+  because the maker's own acrylic plate bolts through all eight.
+
+Rows of LEDs are one feature each with the count and pitch in the label,
+measured from the boxes rather than written in.  Feature numbers are fixed
+across the family so the Ethernet jack is 3 on every sheet, present or not.
+
+Pin 1 of a host follows the Pmod convention, top right looking into the
+socket, which the PYNQ-Z2 manual draws and the Tiny Tapeout board files
+number the same way.  **Found on the way: the Pmod HAT Adapter data in
+`accessories/parts.py` puts pin 1 at the diagonally opposite corner of every
+host, bottom-left looking in.**  That is hand-curated photogrammetry and was
+not touched; it needs checking against the adapter's silkscreen.
+
+Three drafting changes fell out, each from a sheet that needed it:
+
+- A horizontal ordinate chain staggered its labels by their height rather
+  than their width, so ButterStick's 18.09 and 18.50 overprinted.  Both
+  kinds of chain now step a lane by the widest label.  This moves the
+  second-lane labels on the demo board sheets a few millimetres further
+  from the board, which is the clearance they should have had.
+- The PYNQ-Z2 is 138.8 mm across with its hosts and fell to 1:2 for want of
+  fourteen millimetres.  A view that misses 1:1 now retries with the right
+  margin narrowed to 24 mm, which holds only the overall height dimension,
+  before it accepts a smaller scale.  No sheet that already fitted moves.
+- The Pmod spacing dimension is drawn after the balloons and was never
+  reserved against them.  For hosts on a vertical edge it runs up the left
+  of the view, and the PYNQ-Z2's micro-USB balloon sat on its value.
+
+The KiCad geometry helpers moved out of `tinytapeout/extract.py` into
+`tools/kicad_extract.py` so the new family reads a board file the same way;
+the demo board data regenerates byte for byte.  `tools/dump_rpi_pdf.py` had
+its second rectangle pass emitting every box transposed; fixed, and the Pi 5
+USB-C box moved by 0.04 mm as a result.

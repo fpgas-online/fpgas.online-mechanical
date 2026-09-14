@@ -89,3 +89,14 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] Printed scale bar per axis, so a scaled print is caught before drilling
 - [x] `tools/check_drill_template.py`: measures the PDFs back and proves
       every hole lands where the plate data puts it
+
+## 9. FPGA development boards  -- DONE
+- [x] Arty A7 from Digilent's DXF and PDF plot; no mounting holes, rubber feet
+- [x] ULX3S from KiCad at the four tags sold, required to agree
+- [x] PYNQ-Z2 from TUL's STEP assembly; LEDs not in the model, said in words
+- [x] ButterStick from KiCad r1.0a, SYZYGY standoff holes in the schedule
+- [x] `fpga-sheets.pdf`, the four bound into one document
+- [ ] PYNQ-Z2 LED positions, by photogrammetry from TUL's product photo if
+      no vector source turns up
+- [ ] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
+      silkscreen; `accessories/parts.py` has it opposite the Pmod convention

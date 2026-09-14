@@ -1,6 +1,6 @@
 # Regenerate everything from the sources.
 #
-# The repository groups by subject: tinytapeout/, raspberry_pi/ and
+# The repository groups by subject: tinytapeout/, raspberry_pi/, fpga/ and
 # accessories/ each own their data, their extractor and their sheets, the
 # mounting plate sits under tinytapeout/, and tools/ holds the machinery that
 # belongs to no subject.
@@ -24,11 +24,13 @@ fetch:
 		https://github.com/TinyTapeout/tt-demo-pcb tmp/src/tt-demo-pcb
 	@test -d tmp/src/tt123-demo-pcb || git clone --quiet \
 		https://github.com/TinyTapeout/tt123-demo-pcb tmp/src/tt123-demo-pcb
+	tools/fetch_fpga.sh
 
 ## data: re-extract the mechanical database from those sources
 data:
 	$(UV) python tinytapeout/extract.py
 	$(EXTRACT) python raspberry_pi/extract.py
+	$(EXTRACT) --with cadquery python fpga/extract.py
 	$(UV) python tinytapeout/mounting_plate/design.py
 
 ## diagrams: render every sheet as SVG, PDF and PNG, plus the plate cut file
@@ -50,5 +52,5 @@ check: diagrams
 # in the creation timestamp their format embeds.  So remove them outright
 # rather than picking off extensions one at a time.
 clean:
-	rm -rf accessories/output raspberry_pi/output \
+	rm -rf accessories/output raspberry_pi/output fpga/output \
 	       tinytapeout/output tinytapeout/mounting_plate/output
