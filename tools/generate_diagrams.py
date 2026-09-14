@@ -28,6 +28,7 @@ from tools.drafting.board_sheet import (planned_band_height,  # noqa: E402
                                         render_board)
 from tools.drafting.enclosure_sheet import render_enclosure  # noqa: E402
 from tools.drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
+from tinytapeout.mounting_plate.plate import PLATE  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
 from tools.layout import FAMILY_DIRS, preview_for, rel  # noqa: E402
 from tools.render_svg import combine_pdfs  # noqa: E402
@@ -41,7 +42,12 @@ VERSION = reproducible.source_version()
 #: Every demo board sheet bound into one document, beside the sheets it is
 #: made of.  Not an SVG and not rendered from one, so it is the only file in
 #: an output directory with no drawing of its own.
-TT_BUNDLE = "tt-demo-boards.pdf"
+#: Every A3 Tiny Tapeout sheet bound into one document: the six demo boards
+#: and the two mounting plate drawings.  Not the drill templates -- those are
+#: A4 portrait, and a document that mixes page sizes is one where "print all"
+#: silently scales the pages that have to be 1:1.  They stay separate files,
+#: which is also how anyone uses them: you print the template, not the set.
+TT_BUNDLE = "tinytapeout-sheets.pdf"
 
 # Sheet numbering: family prefix, then the order the sheets are meant to be
 # read in.  Numbers are stable so a reference to a drawing keeps working.
@@ -256,7 +262,7 @@ def main() -> None:
     args = ap.parse_args()
 
     made: list[Path] = []
-    #: The demo board sheets, in drawing-number order, for the bound copy.
+    #: The A3 Tiny Tapeout sheets, in drawing-number order, for the bound copy.
     tt_set: list[tuple[Path, str]] = []
 
     tt_dir = FAMILY_DIRS["tinytapeout"]
@@ -311,11 +317,16 @@ def main() -> None:
     path = plate_dir / "tt-generic-mounting-plate.svg"
     sheet.canvas.save(str(path))
     made.append(path)
+    tt_set.append((path.with_suffix(".pdf"),
+                   f"TT-MP-01  {PLATE.title}  -  {PLATE.subtitle}"))
 
     sheet = render_fitting_guide(drawing_no="TT-MP-02", version=VERSION)
     path = plate_dir / "tt-generic-mounting-plate-fitting-guide.svg"
     sheet.canvas.save(str(path))
     made.append(path)
+    tt_set.append((path.with_suffix(".pdf"),
+                   "TT-MP-02  TT Mounting Plate Fitting Guide  -  "
+                   "Which holes each demo board revision uses"))
 
     # The drill templates are A4 portrait and 1:1 rather than A3 drawings,
     # but they are still sheets of the mounting plate and live with it: a
@@ -351,7 +362,7 @@ def main() -> None:
         # second render would be a second chance for the set and the bound
         # copy to disagree about what a sheet says.
         bundle = combine_pdfs(tt_set, tt_dir / TT_BUNDLE,
-                              "Tiny Tapeout demo boards - mechanical drawings")
+                              "Tiny Tapeout - mechanical drawings")
         print(f"  {rel(bundle)}: {len(tt_set)} sheets bound into one PDF")
 
 
