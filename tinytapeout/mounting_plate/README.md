@@ -22,8 +22,7 @@ while holding the Pmod host headers in a single fixed place.
 
 <!-- sheets:begin -->
 
-Each thumbnail links to the PDF. The same sheet is also there as SVG and as
-a full-resolution PNG.
+Each thumbnail links to the PDF. The same sheet is also there as SVG.
 
 <table>
 <tr>
