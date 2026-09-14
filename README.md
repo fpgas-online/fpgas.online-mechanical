@@ -43,8 +43,8 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>TT-DB-01</b> DB mpw v2.2.5 / DB mpw v2.2.6<br>mpw-mb1 rev 2.2.5 and 2.2.6
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v1p2p2-v1p2p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-02 DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
-<b>TT-DB-02</b> DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.2 and 1.2.3
+<a href="tinytapeout/output/tt-demo-board-v1p2p1-v1p2p2-v1p2p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v1p2p1-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-02 DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
+<b>TT-DB-02</b> DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.1, 1.2.2 and 1.2.3
 </td>
 <td width="33%" valign="top" align="center">
 <a href="tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-03 DB 06+ v2.0.1 / DB 06+ v2.1.0"></a><br>

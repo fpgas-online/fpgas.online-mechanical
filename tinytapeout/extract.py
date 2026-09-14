@@ -79,6 +79,7 @@ REVISIONS = [
         title="DB mpw v2.2.5",
         subtitle="mpw-mb1 rev 2.2.5",
         used_by=("TT02",),
+        kits=("TT02 Dev Kit",),
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB mpw v2.2.5", Used by: {used}.',
         source_url="https://github.com/TinyTapeout/tt123-demo-pcb",
@@ -89,6 +90,7 @@ REVISIONS = [
         title="DB mpw v2.2.6",
         subtitle="mpw-mb1 rev 2.2.6",
         used_by=("TT03",),
+        kits=("TT03 Dev Kit",),
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB mpw v2.2.6", Used by: {used}.',
         extra_notes=(
@@ -98,11 +100,27 @@ REVISIONS = [
         source_url="https://github.com/TinyTapeout/tt123-demo-pcb",
     ),
     dict(
+        key="v1.2.1",
+        repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="8aad3f8",
+        title="DB 4+ v1.2.1",
+        subtitle="tinytapeout-demo rev 1.2.1",
+        used_by=("TT03p5",),
+        kits=("TT03p5 ASIC IC kit",),
+        shuttle_source=SHUTTLE_SHEET,
+        shuttle_note='row "DB 4+ v1.2.1", Used by: {used}.',
+        extra_notes=(
+            "The spreadsheet records 1.2.1 for TT03p5 and flags it "
+            "unconfirmed: the TT03p5 render is labelled v1.1.2.",
+        ),
+        source_url="https://github.com/TinyTapeout/tt-demo-pcb",
+    ),
+    dict(
         key="v1.2.2",
         repo="tt-demo-pcb", path="tinytapeout-demo.kicad_pcb", commit="cfdd80d7b",
         title="DB 4+ v1.2.2",
         subtitle="tinytapeout-demo rev 1.2.2",
         used_by=("TT04",),
+        kits=("TT04 Dev Kit",),
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB 4+ v1.2.2", Used by: {used}.',
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
@@ -113,11 +131,12 @@ REVISIONS = [
         title="DB 4+ v1.2.2c",
         subtitle="tinytapeout-demo rev 1.2.3",
         used_by=("TT05",),
+        kits=("TT05 Dev Kit",),
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB 4+ v1.2.2c", Used by: {used}.',
         extra_notes=(
-            "v1.2.2c is an assembly variant, not a layout change: no X1, a "
-            "0R at R51. Its KiCad title block reads rev 1.2.3.",
+            "v1.2.2c is the spreadsheet's name for 1.2.3: an assembly "
+            "variant, no X1 and a 0R at R51.",
         ),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
@@ -127,6 +146,7 @@ REVISIONS = [
         title="DB 06+ v2.0.1",
         subtitle="tinytapeout-demo rev 2.0.1",
         used_by=("TT06",),
+        kits=("TT06 Dev Kit",),
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB 06+ v2.0.1", Used by: {used}.',
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
@@ -137,6 +157,7 @@ REVISIONS = [
         title="DB 06+ v2.1.0",
         subtitle="tinytapeout-demo rev 2.1.0",
         used_by=("TT07",),
+        kits=("TT07 Dev Kit",),
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB 06+ v2.1.0", Used by: {used}.',
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
@@ -147,6 +168,7 @@ REVISIONS = [
         title="DB 06+ v2.1.2",
         subtitle="tinytapeout-demo rev 2.1.2",
         used_by=("TT08",),
+        kits=("TT08 Dev Kit", "TT08 Dev Kit - CoB edition"),
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB 06+ v2.1.2", Used by: {used}.',
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
@@ -157,6 +179,8 @@ REVISIONS = [
         title="DB ETR v3.2",
         subtitle="tinytapeout-demo rev 3.2",
         used_by=("TT09", "TTSKY25a", "TTSKY25b", "TTGF0p2"),
+        kits=("TT09 Dev Kit", "TTSKY25a Dev Kit", "TTSKY25b Dev Kit",
+               "TTGF0p2 Dev Kit - P2 edition", "FPGA Dev Kit"),
         # The historic README does not carry this revision; Tiny Tapeout's own
         # board revision spreadsheet does, and it is where "ETR" comes from.
         shuttle_source=SHUTTLE_SHEET,
@@ -175,6 +199,7 @@ REVISIONS = [
         title="DB ETR v3.3",
         subtitle="tinytapeout-demo rev 3.3",
         used_by=(),
+        kits=(),
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note="no row: this revision is not in the board revision "
                      "spreadsheet, so no shuttle is recorded for it.",
@@ -219,6 +244,7 @@ ROLES = {
     ),
 }
 ROLES["tt123-v2.2.5"] = ROLES["tt123-v2.2.6"]
+ROLES["v1.2.1"] = ROLES["v1.2.2"]
 ROLES["v1.2.3"] = ROLES["v1.2.2"]
 ROLES["v2.1.0"] = ROLES["v2.0.1"]
 ROLES["v2.1.2"] = ROLES["v2.0.1"]
@@ -453,6 +479,7 @@ def extract(rev: dict) -> dict:
     return dict(
         key=rev["key"], title=rev["title"], subtitle=rev["subtitle"],
         used_by=list(rev["used_by"]),
+        kits=list(rev.get("kits", ())),
         # Carried through so the emitted sheet can cite where its shuttle
         # mapping came from, which is not the same document for every
         # revision.
@@ -541,6 +568,7 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
     subtitle={rec["subtitle"]!r},
     family="tinytapeout",
     used_by={tuple(rec["used_by"])!r},
+    kits={tuple(rec["kits"])!r},
     outline=Outline(width={rec["width"]}, height={rec["height"]},
                     corner_radius={rec["corner_radius"]}, thickness={rec["thickness"]},
                     profile_note={rec["profile_note"]!r},

@@ -878,3 +878,43 @@ know.
 
 v1.2.2 and v1.2.3 really do have no DIP switch: their four SW designators are
 all pushbuttons.  That one was right.
+
+## Which kit a board ships in, and the TT03p5 board
+
+The demo board sheets said which *shuttles* a board served and never which
+*product* it arrives in, which is the question a reader actually has: nobody
+identifies the board on their desk by reading a revision off the silkscreen.
+
+Tiny Tapeout's spreadsheet has a Kit table, and it is not a restatement of the
+shuttle column:
+
+- `DB 06+ v2.1.2` ships in **two** kits for one shuttle -- the TT08 Dev Kit and
+  its CoB edition, same demoboard, different breakout;
+- `DB ETR v3.2` ships in **five**, and one of them is the FPGA Dev Kit, whose
+  FabricFox iCE40UP5K sits where the ASIC carrier would go.  That is not a
+  shuttle at all, so the shuttle column could never have named it.
+
+So `kits` is its own field on `BoardSpec`, unioned across merged sheets the way
+the shuttles already were -- taking them from the first revision put "TT02 Dev
+Kit" on a sheet that is also the TT03 board.
+
+**TT03p5 was missing too.**  Asked where it was, the answer was the same shape
+as the v2.2.5 answer: its board, `DB 4+ v1.2.1`, is in `tt-demo-pcb` at commit
+`8aad3f8`, and extracting it shows outline, holes, Pmods, every feature and
+every edge identical to v1.2.2.  So it merges onto TT-DB-02, which now covers
+three revisions and three kits.
+
+The spreadsheet flags that revision "version to confirm" -- the TT03p5 render is
+labelled v1.1.2 while the ID says v1.2.1 -- and the sheet says so rather than
+quietly picking one.  Worth noting the commit dates are no help here: every 4+
+revision from 1.1.2 to 1.2.3 is dated within sixteen days of April 2024, so the
+history was squashed and the dates do not order the boards.
+
+Fitting the kit note meant cutting two more notes, both of which had been
+flagged as borderline and neither of which was about the board: one said port
+names differ between families (a cross-reference to a drawing the sheet already
+cites) and one said the board is 1.6 mm nominal rather than the KiCad stackup
+sum (which MATERIAL in the title block says in three words).  The thickness note
+survives in the one case that still needs it, where the stackup sum matches no
+standard thickness and the title block would otherwise print an unexplained
+number.

@@ -50,8 +50,8 @@ DATUM_Y = 9.0
 PLACEMENTS = {
     'DB mpw': dict(revision='tt123-v2.2.6', revisions=('tt123-v2.2.5', 'tt123-v2.2.6'),
         shuttles=('TT02', 'TT03'), dx=19.760, dy=4.535, first_pmod_position=2, pmod_count=2),
-    'DB 4+': dict(revision='v1.2.2', revisions=('v1.2.2', 'v1.2.3'),
-        shuttles=('TT04', 'TT05'), dx=11.055, dy=4.725, first_pmod_position=1, pmod_count=3),
+    'DB 4+': dict(revision='v1.2.2', revisions=('v1.2.1', 'v1.2.2', 'v1.2.3'),
+        shuttles=('TT03p5', 'TT04', 'TT05'), dx=11.055, dy=4.725, first_pmod_position=1, pmod_count=3),
     'DB 06+': dict(revision='v2.0.1', revisions=('v2.0.1', 'v2.1.0', 'v2.1.2'),
         shuttles=('TT06', 'TT07', 'TT08'), dx=10.745, dy=5.225, first_pmod_position=1, pmod_count=3),
     'DB ETR v3.2': dict(revision='v3.2', revisions=('v3.2',),

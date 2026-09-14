@@ -51,7 +51,7 @@ TT_BUNDLE = "tinytapeout-sheets.pdf"
 
 # Sheet numbering: family prefix, then the order the sheets are meant to be
 # read in.  Numbers are stable so a reference to a drawing keeps working.
-TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.2", "v1.2.3",
+TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.1", "v1.2.2", "v1.2.3",
             "v2.0.1", "v2.1.0", "v2.1.2", "v3.2", "v3.3"]
 RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
 
@@ -133,6 +133,11 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
         sources = [s for r in revs for s in r.sources
                    if s.label == "KiCad board file"]
         shuttles = tuple(sh for r in revs for sh in r.used_by)
+        # Kits merge the same way the shuttles do, and for the same reason: a
+        # merged sheet carries both revisions, so it ships in both revisions'
+        # kits.  Taking them from the first revision alone put "TT02 Dev Kit"
+        # on a sheet that is also the TT03 board.
+        kits = tuple(dict.fromkeys(k for r in revs for k in r.kits))
         # The shuttle mapping note names the shuttles this SHEET covers, not
         # the ones its first revision covers: merged, it carried "used by:
         # TT04" on a sheet that is also the TT05 board.
@@ -142,7 +147,9 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
             if src.label == "Shuttle mapping":
                 src = replace(src, note="used by: " + ", ".join(shuttles))
             sources.append(src)
-        covered = " and ".join(r.subtitle.split(" rev ")[-1] for r in revs)
+        revnos = [r.subtitle.split(" rev ")[-1] for r in revs]
+        covered = (revnos[0] if len(revnos) == 1
+                   else ", ".join(revnos[:-1]) + " and " + revnos[-1])
         # The board file's own name, taken from the first revision rather than
         # written in.  It was hardcoded "tinytapeout-demo", which was true of
         # every merged sheet until the mpw board -- whose file is mpw-mb1 --
@@ -166,15 +173,16 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
         # above and replaced by this one, which says the same thing once for
         # the whole sheet rather than once per revision on it.
         notes += (
-            f"This sheet covers revisions {covered}: the same board "
-            "mechanically, compared feature by feature before merging. Only "
-            "the electrical design and the shuttle differ.",)
+            f"Covers revisions {covered}, the same board mechanically, "
+            "compared feature by feature before merging; only the electrical "
+            "design and the shuttle differ.",)
         spec = replace(
             first,
             key="+".join(keys),
             title=ids,
             subtitle=f"{board_file} rev {covered}",
             used_by=shuttles,
+            kits=kits,
             sources=tuple(sources),
             notes=notes,
         )

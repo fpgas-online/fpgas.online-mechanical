@@ -229,6 +229,12 @@ class BoardSpec:
     sources: tuple[Source, ...] = ()
     notes: tuple[str, ...] = ()
     used_by: tuple[str, ...] = ()
+    #: The products this board ships inside, from the Kit table of Tiny
+    #: Tapeout's board revision spreadsheet.  Not the same as ``used_by``,
+    #: which names shuttles: one board can carry two kits for one shuttle
+    #: (TT08's QFN and CoB editions), and one kit need not be a shuttle at all
+    #: (the FPGA Dev Kit puts a FabricFox FPGA where the ASIC would go).
+    kits: tuple[str, ...] = ()
     front_edge: str = "bottom"
     #: "pcb" for a bare board drawn in plan only, "enclosure" for a packaged
     #: item that also gets a side elevation.

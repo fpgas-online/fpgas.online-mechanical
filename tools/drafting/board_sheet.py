@@ -719,6 +719,14 @@ def _legend_entries(spec: BoardSpec, overlay: BoardSpec | None
     return entries
 
 
+def _join(items) -> str:
+    """"a, b and c" -- an Oxford-comma-free list for running prose."""
+    items = list(items)
+    if len(items) == 1:
+        return items[0]
+    return ", ".join(items[:-1]) + " and " + items[-1]
+
+
 def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
                 extra_notes: tuple[str, ...]) -> tuple[list[str], list[str]]:
     """The notes and sources this sheet will carry."""
@@ -733,6 +741,19 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
             f"Phantom outline is the {overlay.title} on the 40-pin GPIO "
             "header, drawn in this board's frame: its mounting holes coincide "
             "with this board's.")
+    if spec.kits:
+        # Which product a board arrives in is how most people identify the one
+        # on their desk: nobody reads a revision number off the silkscreen
+        # first.  It is not the same question as which shuttle the board
+        # served, which is why both are on the sheet -- one board can carry two
+        # kits for a single shuttle, and a kit need not involve a shuttle at
+        # all.
+        notes.append(
+            ("Ships in " + _join(spec.kits) + ". A kit pairs this board with "
+             "a breakout carrying the chip; the board itself is the same in "
+             "each.") if len(spec.kits) > 1 else
+            f"Ships in the {spec.kits[0]}, which pairs this board with a "
+            "breakout carrying the chip.")
     notes += list(spec.notes) + list(extra_notes)
     if overlay is not None:
         notes.append(
@@ -740,27 +761,22 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
             "no mechanical drawing for the adapter. Good to about +/-0.75 mm. "
             "JA and JB face out of the left edge, JC out of the lower edge. "
             "The Pmod HAT Adapter sheet has the derivation.")
-    if spec.pmods or (overlay is not None and overlay.pmods):
+    # Two notes used to sit here and no longer do.  One explained that port
+    # names differ between families, which is a cross-reference to TT-MP-02
+    # that the sheet already carries in its sources.  The other explained that
+    # the board is 1.6 mm nominal rather than the KiCad stackup sum, which the
+    # title block's MATERIAL field says in three words.  Both were about
+    # reading the drawing; the space went to which kit the board ships in,
+    # which is how a reader identifies the board in front of them.
+    if o.thickness and _nominal_thickness(o) is None:
+        # Still needed in one case: when the stackup sum matches no standard
+        # thickness the title block prints the raw figure, and an unexplained
+        # number on a drawing is worse than a line of prose.
         notes.append(
-            "Port names differ by family: JA, JB, JC on the adapter and "
-            "Raspberry Pi sheets, by signal direction on the demo boards, "
-            "PMOD 1 to 3 on the plate sheets. TT-MP-02 maps them.")
-    if o.thickness:
-        nominal = _nominal_thickness(o)
-        if nominal is not None:
-            notes.append(
-                f"Board thickness is {nominal:.1f} mm nominal. The KiCad "
-                f"file's {o.thickness:.5f} mm is its stackup sum, not a "
-                "specified finished thickness.")
-        else:
-            # The title block prints the raw stackup figure in this case, so
-            # the note has to say what that figure is, or the sheet asserts an
-            # unexplained number.
-            notes.append(
-                f"MATERIAL gives {o.thickness:.3f} mm, the sum of the KiCad "
-                "stackup layers. It is not a specified finished thickness, "
-                "and it is not within a twentieth of a millimetre of any "
-                "standard one, so no nominal is claimed for it.")
+            f"MATERIAL gives {o.thickness:.3f} mm, the sum of the KiCad "
+            "stackup layers. It is not a specified finished thickness, "
+            "and it is not within a twentieth of a millimetre of any "
+            "standard one, so no nominal is claimed for it.")
     fitted = [f for f in spec.features if is_fitted(f)]
     if fitted:
         # What a chassis actually has to clear, which is not the board
