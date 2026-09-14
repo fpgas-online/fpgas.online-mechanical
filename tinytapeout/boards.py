@@ -104,10 +104,8 @@ BOARDS['tt123-v2.2.5'] = BoardSpec(
                note='row "DB mpw v2.2.5", Used by: TT02.'),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        'Geometrically identical to revision tt123-v2.2.6: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
+        "Hole IDs are the KiCad reference designators.",
+        'Geometrically identical to revision tt123-v2.2.6.',
     ),
 )
 
@@ -179,11 +177,9 @@ BOARDS['tt123-v2.2.6'] = BoardSpec(
                note='row "DB mpw v2.2.6", Used by: TT03.'),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        'Geometrically identical to revision tt123-v2.2.5: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
-        'The title block reads "TinyTapeout 1,2,3 Demo Board", but no PCB served TT01: that was a bare-die trial run.',
+        "Hole IDs are the KiCad reference designators.",
+        'Geometrically identical to revision tt123-v2.2.5.',
+        'Named "TinyTapeout 1,2,3 Demo Board" in KiCad, but no PCB served TT01, which was a bare-die trial run.',
     ),
 )
 
@@ -196,7 +192,7 @@ BOARDS['v1.2.1'] = BoardSpec(
     kits=('TT03p5 ASIC IC kit',),
     outline=Outline(width=104.5, height=81.0,
                     corner_radius=3.0, thickness=1.56252,
-                    profile_note="Upper edge carries a shallow recess for the USB-C shell, contributed by the connector footprint's own edge cuts.",
+                    profile_note='The notch in the upper edge is a recess for the USB-C shell.',
                     edges=(
                         ('line', 33.27, 81.0, 101.5, 81.0),
                         ('line', 101.5, 0.0, 3.0, 0.0),
@@ -275,11 +271,9 @@ BOARDS['v1.2.1'] = BoardSpec(
                note='row "DB 4+ v1.2.1", Used by: TT03p5.'),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        'Geometrically identical to revision v1.2.2, v1.2.3: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
-        'The spreadsheet records 1.2.1 for TT03p5 and flags it unconfirmed: the TT03p5 render is labelled v1.1.2.',
+        "Hole IDs are the KiCad reference designators.",
+        'Geometrically identical to revision v1.2.2, v1.2.3.',
+        "TT03p5's board is recorded as rev 1.2.1 but unconfirmed: the TT03p5 render is labelled v1.1.2.",
     ),
 )
 
@@ -292,7 +286,7 @@ BOARDS['v1.2.2'] = BoardSpec(
     kits=('TT04 Dev Kit',),
     outline=Outline(width=104.5, height=81.0,
                     corner_radius=3.0, thickness=1.56252,
-                    profile_note="Upper edge carries a shallow recess for the USB-C shell, contributed by the connector footprint's own edge cuts.",
+                    profile_note='The notch in the upper edge is a recess for the USB-C shell.',
                     edges=(
                         ('line', 33.27, 81.0, 101.5, 81.0),
                         ('line', 101.5, 0.0, 3.0, 0.0),
@@ -371,10 +365,8 @@ BOARDS['v1.2.2'] = BoardSpec(
                note='row "DB 4+ v1.2.2", Used by: TT04.'),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        'Geometrically identical to revision v1.2.1, v1.2.3: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
+        "Hole IDs are the KiCad reference designators.",
+        'Geometrically identical to revision v1.2.1, v1.2.3.',
     ),
 )
 
@@ -387,7 +379,7 @@ BOARDS['v1.2.3'] = BoardSpec(
     kits=('TT05 Dev Kit',),
     outline=Outline(width=104.5, height=81.0,
                     corner_radius=3.0, thickness=1.56252,
-                    profile_note="Upper edge carries a shallow recess for the USB-C shell, contributed by the connector footprint's own edge cuts.",
+                    profile_note='The notch in the upper edge is a recess for the USB-C shell.',
                     edges=(
                         ('line', 33.27, 81.0, 101.5, 81.0),
                         ('line', 101.5, 0.0, 3.0, 0.0),
@@ -466,11 +458,9 @@ BOARDS['v1.2.3'] = BoardSpec(
                note='row "DB 4+ v1.2.2c", Used by: TT05.'),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        'Geometrically identical to revision v1.2.1, v1.2.2: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
-        "v1.2.2c is the spreadsheet's name for 1.2.3: an assembly variant, no X1 and a 0R at R51.",
+        "Hole IDs are the KiCad reference designators.",
+        'Geometrically identical to revision v1.2.1, v1.2.2.',
+        "v1.2.2c is Tiny Tapeout's name for rev 1.2.3, an assembly variant of 1.2.2.",
     ),
 )
 
@@ -547,10 +537,8 @@ BOARDS['v2.0.1'] = BoardSpec(
                note='row "DB 06+ v2.0.1", Used by: TT06.'),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        'Geometrically identical to revision v2.1.0: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
+        "Hole IDs are the KiCad reference designators.",
+        'Geometrically identical to revision v2.1.0.',
     ),
 )
 
@@ -627,10 +615,8 @@ BOARDS['v2.1.0'] = BoardSpec(
                note='row "DB 06+ v2.1.0", Used by: TT07.'),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        'Geometrically identical to revision v2.0.1: the outline, mounting holes, Pmod hosts and every feature on this sheet are in the same place. Only the electrical design and the shuttle differ.',
+        "Hole IDs are the KiCad reference designators.",
+        'Geometrically identical to revision v2.0.1.',
     ),
 )
 
@@ -707,10 +693,7 @@ BOARDS['v2.1.2'] = BoardSpec(
                note='row "DB 06+ v2.1.2", Used by: TT08.'),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        'No other demo board revision shares this geometry.',
+        "Hole IDs are the KiCad reference designators.",
     ),
 )
 
@@ -776,11 +759,8 @@ BOARDS['v3.2'] = BoardSpec(
                note='row "DB ETR v3.2", Used by: TT09, TTSKY25a, TTSKY25b, TTGF0p2.'),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        'No other demo board revision shares this geometry.',
-        'ETR is Tiny Tapeout\'s own designation for this board. The KiCad title block reads "Tiny Tapeout Demoboard v3" and does not carry it; the name here is the board\'s ID in Tiny Tapeout\'s board revision spreadsheet. Nothing mechanical depends on it.',
+        "Hole IDs are the KiCad reference designators.",
+        '"DB ETR" is the board\'s ID in Tiny Tapeout\'s board revision spreadsheet; the KiCad title block does not carry it.',
     ),
 )
 
@@ -846,10 +826,7 @@ BOARDS['v3.3'] = BoardSpec(
                note='no row: this revision is not in the board revision spreadsheet, so no shuttle is recorded for it.'),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        'No other demo board revision shares this geometry.',
-        "This revision has no row in Tiny Tapeout's board revision spreadsheet, which lists DB ETR v3.2 as the current demoboard. The name used here follows that ID; no shuttle is known to have shipped on it.",
+        "Hole IDs are the KiCad reference designators.",
+        "Not in Tiny Tapeout's board revision spreadsheet, so no shuttle or kit is known to have shipped on it; the name follows the v3.2 ID.",
     ),
 )

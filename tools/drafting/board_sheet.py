@@ -731,52 +731,30 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
                 extra_notes: tuple[str, ...]) -> tuple[list[str], list[str]]:
     """The notes and sources this sheet will carry."""
     o = spec.outline
-    notes = [
-        "All dimensions in millimetres. The datum symbol marks the origin: "
-        "the board's lower-left corner, X right, Y up, seen from the "
-        "component side.",
-    ]
+    # Every note here is something the drawing cannot show.  Units are in the
+    # title block, the datum symbol and the ordinate chains show the origin
+    # and axes, and DRAWN says "generated".  What the view cannot say is which
+    # side it is seen from: a hole pattern viewed from the far side is its own
+    # mirror image, which is the one mistake a plate cut from this sheet
+    # cannot recover from.
+    notes = ["Viewed from the component side."]
     if overlay is not None:
         notes.append(
-            f"Phantom outline is the {overlay.title} on the 40-pin GPIO "
-            "header, drawn in this board's frame: its mounting holes coincide "
-            "with this board's.")
+            f"Phantom outline is the {overlay.title} fitted on the 40-pin "
+            "GPIO header; its mounting holes coincide with this board's.")
     if spec.kits:
         # Which product a board arrives in is how most people identify the one
-        # on their desk: nobody reads a revision number off the silkscreen
-        # first.  It is not the same question as which shuttle the board
-        # served, which is why both are on the sheet -- one board can carry two
-        # kits for a single shuttle, and a kit need not involve a shuttle at
-        # all.
-        notes.append(
-            ("Ships in " + _join(spec.kits) + ". A kit pairs this board with "
-             "a breakout carrying the chip; the board itself is the same in "
-             "each.") if len(spec.kits) > 1 else
-            f"Ships in the {spec.kits[0]}, which pairs this board with a "
-            "breakout carrying the chip.")
+        # on their desk.  Just the list: what a kit is belongs to the shop,
+        # not to a mechanical drawing.
+        notes.append("Ships in " + _join(spec.kits) + ".")
     notes += list(spec.notes) + list(extra_notes)
-    if overlay is not None:
-        notes.append(
-            "Those host positions are DERIVED, not published: Digilent issue "
-            "no mechanical drawing for the adapter. Good to about +/-0.75 mm. "
-            "JA and JB face out of the left edge, JC out of the lower edge. "
-            "The Pmod HAT Adapter sheet has the derivation.")
-    # Two notes used to sit here and no longer do.  One explained that port
-    # names differ between families, which is a cross-reference to TT-MP-02
-    # that the sheet already carries in its sources.  The other explained that
-    # the board is 1.6 mm nominal rather than the KiCad stackup sum, which the
-    # title block's MATERIAL field says in three words.  Both were about
-    # reading the drawing; the space went to which kit the board ships in,
-    # which is how a reader identifies the board in front of them.
     if o.thickness and _nominal_thickness(o) is None:
-        # Still needed in one case: when the stackup sum matches no standard
-        # thickness the title block prints the raw figure, and an unexplained
-        # number on a drawing is worse than a line of prose.
+        # When the stackup sum matches no standard thickness the title block
+        # prints the raw figure, and an unexplained number on a drawing is
+        # worse than a line of prose.
         notes.append(
-            f"MATERIAL gives {o.thickness:.3f} mm, the sum of the KiCad "
-            "stackup layers. It is not a specified finished thickness, "
-            "and it is not within a twentieth of a millimetre of any "
-            "standard one, so no nominal is claimed for it.")
+            f"MATERIAL gives the KiCad stackup sum, {o.thickness:.3f} mm, "
+            "which is within 0.05 mm of no standard finished thickness.")
     fitted = [f for f in spec.features if is_fitted(f)]
     if fitted:
         # What a chassis actually has to clear, which is not the board
@@ -790,29 +768,10 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         y1 = max([o.height] + [f.y1 for f in fitted])
         if (x0, y0, x1, y1) != (0.0, 0.0, o.width, o.height):
             notes.append(
-                f"Assembled envelope, connector overhang included, is "
-                f"{x1 - x0:.2f} x {y1 - y0:.2f} mm against a "
-                f"{o.width:.2f} x {o.height:.2f} mm board outline. The "
-                "FEATURE SCHEDULE gives the extents.")
+                "Assembled envelope, connector overhang included: "
+                f"{x1 - x0:.2f} x {y1 - y0:.2f} mm.")
     if o.profile_note:
         notes.append(o.profile_note)
-    if not spec.tolerance:
-        # Say where the general tolerance comes from.  It is a board house's
-        # usual figures, not something any source here states, and on sheets
-        # whose whole discipline is that every number is traceable an
-        # untraceable one in the title block is the odd thing out.
-        schedule = " A tolerance quoted in the hole schedule is from the " \
-            "source drawing and governs." if any(h.tol for h in spec.holes) \
-            else ""
-        notes.append(
-            "GENERAL TOLERANCE in the title block is a normal board-house "
-            "figure, not one any source here states." + schedule)
-    # Says what DRAWN "generated" means and that nobody countersigned it.
-    # ISO 7200 expects an approver; there isn't one, and a sheet that leaves
-    # the field off without saying so implies there was.
-    notes.append(
-        "Generated from the listed sources and not checked by a second "
-        "party: there is no CHECKED field because nobody has signed it.")
     sources = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
                for s in spec.sources]
     return notes, sources

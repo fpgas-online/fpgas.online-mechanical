@@ -414,15 +414,12 @@ PLATE = BoardSpec(
                     "every revision."),
     ),
     notes=(
-        "Fit the board on standoffs. A board uses only the holes and slots "
-        "its USED BY row names.",
-        "Board holes and slots are {dia} mm, a close clearance fit on M3. "
-        "Plate fixings are {pdia} mm, a clearance fit on M4. A slot spans two "
-        "revisions whose holes are too close together to drill separately.",
-        "The Pmod host connector bodies overhang the plate's front edge by "
-        "{fc} mm, so a peripheral module plugs into clear air.",
-        "Cut file: tt-generic-mounting-plate.dxf, four layers. Sizes here are "
-        "finished sizes; allow for your cutter's kerf.",
+        "Board holes and slots are {dia} mm, clearance for M3 standoffs. "
+        "Plate fixings are {pdia} mm, clearance for M4. A slot serves two "
+        "boards whose holes are too close together to drill separately.",
+        "Pmod connector bodies overhang the front (lower) edge by {fc} mm; "
+        "keep it clear so a peripheral can plug in.",
+        "Cut file: tt-generic-mounting-plate.dxf. Sizes are finished sizes.",
     ),
 )
 '''

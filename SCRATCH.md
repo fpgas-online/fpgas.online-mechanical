@@ -918,3 +918,67 @@ sum (which MATERIAL in the title block says in three words).  The thickness note
 survives in the one case that still needs it, where the stackup sum matches no
 standard thickness and the title block would otherwise print an unexplained
 number.
+
+## Cutting the notes back to what the drawing cannot show
+
+Every sheet was rendered and read as a picture, note by note, with one test:
+does the drawing, its tables, its legend or its title block already say this?
+Most of what was there failed it.  The demo board sheets went from twelve
+notes to between five and nine, the Pi sheets from eleven to fourteen down
+to eight or nine, the plate from eleven to nine, the fitting guide from five
+to three, the enclosures from seven and nine to five and six.  The drill
+templates kept their count and lost a third of their words.
+
+What went, and why:
+
+- **"All dimensions in millimetres. The datum symbol marks the origin, X right,
+  Y up"** -- UNITS is in the title block, the datum symbol is a standard
+  symbol, and the ordinate chains start at 0 on it.  What survives is the one
+  thing a plan view cannot say: which side it is seen from.  A hole pattern
+  viewed from the far side is its own mirror image.
+- **"GENERAL TOLERANCE is a board-house figure"** and **"no CHECKED field
+  because nobody signed it"** -- about the drawing, not the part.  DRAWN says
+  "generated".
+- **"Geometry is design nominal, read from the KiCad board file"** -- SOURCES
+  cites the board file at its commit.
+- **"Connector outlines are the component body as drawn by Raspberry Pi Ltd"**
+  -- the legend says component body and SOURCES says Raspberry Pi Ltd.
+- **"First-angle projection. The plan is the view from above..."** -- the title
+  block carries the projection symbol and every view is captioned.
+- **"The corner radius is nominal, end view only"** -- the callout says
+  "R1.50 nominal (4 places), body section".
+- Process narration: "read from both drawings separately and required to
+  match", "agreed to 0.060 mm and were snapped", "scale recovered as 1.00002",
+  "compared feature by feature before merging".  The result is what a reader
+  needs; how it was checked is in the extractor.
+- Electrical detail on a mechanical sheet: "no X1 and a 0R at R51", "5 V at
+  up to 5 A (25 W)".
+- Things visible on the view: DB mpw's two hosts sitting on positions 2 and 3
+  (the fitting guide draws it and the table says "2, 3"); every revision's
+  hosts landing on the same three positions (the whole sheet shows it); the
+  AUX hole geometry on the Pi 5 (the schedule gives it).
+- Duplicates: the Pi 3B hole tolerance was in the schedule, in the title block
+  ("hole dia per schedule"), in SOURCES and in a note.  The drill template's
+  scale bar length was in the caption and the note; "* shared: drill once" was
+  in the schedule heading and the note; the revision letters were in the legend
+  strip and the note.
+
+What stayed was tightened rather than cut: the kits, now just the list (what a
+kit *is* belongs to the shop); the Pmod pitch's citation, now also naming the
+plate it serves; the keep-out design figure; the JC-over-HDMI warning; the
+derived-hosts tolerance, now stated from `PMOD_HAT_TOL` on the Pi sheets rather
+than a copied 0.75; the two enclosures' clamp-or-strap and cable-lead facts;
+the plate's slot-row and USED BY conventions and its ID letter key.
+
+Two corrections fell out of reading the sheets as a reader would.  The Pmod
+HAT sheet said "only the Pmod host positions are derived", but the barrel jack
+is scaled from the same photo at +/-1.5 mm; the note now names both.  And the
+notes on three sheets showed a blank line between two notes: `notes_height`
+reserved every line at a fixed "99." indent while `notes` drew at the real
+widest number, 2 mm narrower, so a line that wrapped differently at the two
+widths left its reserved extra line empty.  Both now measure at the same
+indent.
+
+The identical-geometry note is now emitted only for a revision that has a
+twin; "no other revision shares this geometry" on a single-revision sheet was a
+sheet saying it was for one board.

@@ -95,23 +95,17 @@ def _ref_tol(spec) -> str:
 
 def _enclosure_text(spec) -> tuple[list[str], list[str]]:
     """The sheet's notes and sources, built before the sheet exists."""
+    # The projection is declared in the title block and each view is
+    # captioned; the radius callout says "nominal" and which view it belongs
+    # to.  What the views cannot say: which way the feature table's axes run,
+    # and what REF means on this sheet.
     notes = [
-        "All dimensions in millimetres. The datum symbol on the plan marks the "
-        "origin: the lower-left corner of the body envelope, X along the "
-        "length, Y across the width, Z up.",
-        "First-angle projection. The plan is the view from above, placed below "
-        "the front elevation; the end view is the view from the RJ45 end, "
-        "placed to the left of it.",
-        "The RJ45 aperture in the end view is a standard 8P8C jack envelope, "
-        "placed centrally because the vendor does not dimension it. Every "
-        "dimension marked REF is scaled from vendor photographs, is good to "
-        "about " + _ref_tol(spec) + ", and is not for inspection. The body "
-        "envelope is the dimension to trust.",
-        ("The corner radius is nominal. It belongs to the body cross-section, "
-         "so it appears in the end view only."
-         if spec.outline.constant_section else
-         "The corner radius is nominal. The case is not a constant section, "
-         "so the radius runs round the plan as well and is drawn there."),
+        "Origin at the datum on the plan: X along the length, Y across the "
+        "width, Z up.",
+        "Dimensions marked REF are scaled from vendor photographs, good to "
+        "about " + _ref_tol(spec) + ", and are not for inspection. The RJ45 "
+        "aperture is a standard 8P8C envelope placed centrally, as the "
+        "vendor does not dimension it.",
     ] + list(spec.notes)
     src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
            for s in spec.sources]

@@ -314,21 +314,23 @@ ALIGNS = ["start", "end", "end", "end", "start"]
 #: that default gets a 95.88 % template and no warning from anything.
 PRINT_CMD = "lp -d <queue> -o media=A4 -o print-scaling=none <file>.pdf"
 
+#: The legend strip already says the washes are board outlines and are not
+#: drilled, and each scale bar is captioned with its length, so the notes
+#: carry only the actions: how to print, what to measure, what the black
+#: means, what the grey means, how to tape it down.
 COMMON_NOTES = [
     "Print at 100 % on A4 with scaling off. Never Fit to page:  " + PRINT_CMD,
-    "Measure both scale bars first. Each is exactly 100.0 mm overall; if "
-    "either is short, reprint.",
+    f"Measure both scale bars; if either is not {BAR_LEN:.1f} mm, reprint.",
     "Black is drilled: a circle is the hole at true size, its cross the punch "
     "centre, a heavy line an edge.",
-    "A pale wash is a board outline and a grey dashed box a Pmod body. Both "
-    "are clearance only; drill neither.",
+    "Grey dashed boxes are Pmod connector bodies: clearance only, not "
+    "drilled.",
 ]
 
 TAIL_NOTES = [
-    "Tape it down printed side up, FRONT EDGE to the edge the Pmod bodies "
-    "overhang, then punch every cross.",
-    "TT-MP-01 tabulates every coordinate. Work from that instead if you have "
-    "a mill, a DRO, or any doubt.",
+    "Tape it down printed side up, FRONT EDGE along the edge the Pmod bodies "
+    "will overhang, and punch every cross.",
+    "With a mill or a DRO, work from the coordinates on TT-MP-01 instead.",
 ]
 
 def _fixing_span() -> str:
@@ -337,22 +339,19 @@ def _fixing_span() -> str:
     return f"P1 to P{len(plate_ids)}"
 
 
-def _letter_span() -> str:
-    """"A to E": the range of revision letters in use."""
-    letters = [REVISION_LETTER[name] for name in PLACEMENTS]
-    return f"{letters[0]} to {letters[-1]}"
-
-
+#: The schedule heading explains the shared mark and the legend strip the
+#: letters, and the DRILL column gives every size, so the plate notes say
+#: only what neither can: that the blocks are a menu, and that a slot is
+#: two drillings and a cut.
 PLATE_NOTES = COMMON_NOTES + [
-    f"A hole's letter is its board revision, {_letter_span()}. Drill only "
-    f"your revision's block; {SHARED_MARK} marks one shared, drill it once.",
-    "Drill 3.40 mm at every lettered hole and at both ends of every slot, "
-    f"4.30 mm at {_fixing_span()}. Cut out each slot web.",
+    "Drill every block for a plate that takes any board, or only the blocks "
+    "for the boards you need.",
+    "Drill both ends of each slot, then cut out the web between them.",
 ] + TAIL_NOTES
 
 CHASSIS_NOTES = COMMON_NOTES + [
-    f"Drill 4.30 mm at {_fixing_span()}. Nothing else here is a hole: the "
-    "plate edge and boards only place the pattern.",
+    f"Only {_fixing_span()} are drilled; the plate edge and board outlines "
+    "only place the pattern.",
 ] + TAIL_NOTES
 
 

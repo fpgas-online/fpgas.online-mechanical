@@ -94,8 +94,8 @@ REVISIONS = [
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB mpw v2.2.6", Used by: {used}.',
         extra_notes=(
-            "The title block reads \"TinyTapeout 1,2,3 Demo Board\", but no "
-            "PCB served TT01: that was a bare-die trial run.",
+            "Named \"TinyTapeout 1,2,3 Demo Board\" in KiCad, but no PCB "
+            "served TT01, which was a bare-die trial run.",
         ),
         source_url="https://github.com/TinyTapeout/tt123-demo-pcb",
     ),
@@ -109,8 +109,8 @@ REVISIONS = [
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB 4+ v1.2.1", Used by: {used}.',
         extra_notes=(
-            "The spreadsheet records 1.2.1 for TT03p5 and flags it "
-            "unconfirmed: the TT03p5 render is labelled v1.1.2.",
+            "TT03p5's board is recorded as rev 1.2.1 but unconfirmed: the "
+            "TT03p5 render is labelled v1.1.2.",
         ),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
@@ -135,8 +135,8 @@ REVISIONS = [
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB 4+ v1.2.2c", Used by: {used}.',
         extra_notes=(
-            "v1.2.2c is the spreadsheet's name for 1.2.3: an assembly "
-            "variant, no X1 and a 0R at R51.",
+            "v1.2.2c is Tiny Tapeout's name for rev 1.2.3, an assembly "
+            "variant of 1.2.2.",
         ),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
@@ -186,10 +186,8 @@ REVISIONS = [
         shuttle_source=SHUTTLE_SHEET,
         shuttle_note='row "DB ETR v3.2", Used by: {used}.',
         extra_notes=(
-            "ETR is Tiny Tapeout's own designation for this board. The KiCad "
-            "title block reads \"Tiny Tapeout Demoboard v3\" and does not "
-            "carry it; the name here is the board's ID in Tiny Tapeout's "
-            "board revision spreadsheet. Nothing mechanical depends on it.",
+            "\"DB ETR\" is the board's ID in Tiny Tapeout's board revision "
+            "spreadsheet; the KiCad title block does not carry it.",
         ),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
@@ -204,10 +202,9 @@ REVISIONS = [
         shuttle_note="no row: this revision is not in the board revision "
                      "spreadsheet, so no shuttle is recorded for it.",
         extra_notes=(
-            "This revision has no row in Tiny Tapeout's board revision "
-            "spreadsheet, which lists DB ETR v3.2 as the current demoboard. "
-            "The name used here follows that ID; no shuttle is known to have "
-            "shipped on it.",
+            "Not in Tiny Tapeout's board revision spreadsheet, so no shuttle "
+            "or kit is known to have shipped on it; the name follows the "
+            "v3.2 ID.",
         ),
         source_url="https://github.com/TinyTapeout/tt-demo-pcb",
     ),
@@ -400,9 +397,11 @@ def extract(rev: dict) -> dict:
         # The recess is a real feature of the outline and belongs on the
         # drawing.  Its fillet radii do not: four numbers to three decimals,
         # contributed by a connector footprint, that nobody cuts to.
-        profile_note = (
-            "Upper edge carries a shallow recess for the USB-C shell, "
-            "contributed by the connector footprint's own edge cuts.")
+        # Half a millimetre deep at 1:1, it reads as a drawing fault unless
+        # the sheet says it is real.  Which footprint contributed it is a
+        # KiCad detail nobody cuts to.
+        profile_note = "The notch in the upper edge is a recess for the " \
+            "USB-C shell."
 
     holes = []
     for ref in roles["holes"]:
@@ -555,12 +554,12 @@ def render(rec: dict) -> str:
         return "".join(f"        {n!r},\n"
                        for n in rec.get("extra_notes", ()))
 
+    # A database fact, kept on the record even though the drawing set merges
+    # twins onto one sheet and says it there once.  A revision with no twin
+    # gets no note: a sheet for one board need not say it is for one board.
     identical_note = (
-        f"Geometrically identical to revision {twins}: the outline, mounting "
-        f"holes, Pmod hosts and every feature on this sheet are in the same "
-        f"place. Only the electrical design and the shuttle differ."
-        if twins else
-        "No other demo board revision shares this geometry.")
+        f"        {'Geometrically identical to revision ' + twins + '.'!r},\n"
+        if twins else "")
     return f'''
 BOARDS[{rec["key"]!r}] = BoardSpec(
     key={rec["key"]!r},
@@ -594,11 +593,8 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
                note={rec["shuttle_note"].format(used=used)!r}),
     ),
     notes=(
-        "Geometry is design nominal, read from the KiCad board file.",
-        "Hole IDs are the board's own reference designators from the KiCad "
-        "file, not assigned by this drawing, and are in no positional order.",
-        {identical_note!r},
-{extra_notes()}    ),
+        "Hole IDs are the KiCad reference designators.",
+{identical_note}{extra_notes()}    ),
 )
 '''
 

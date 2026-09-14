@@ -60,11 +60,9 @@ STANDARD_HOLES = [(3.5, 3.5), (61.5, 3.5), (3.5, 52.5), (61.5, 52.5)]
 #: Said on every model, whatever that model's own drawing gives, so one plate
 #: can be designed for all five.
 KEEPOUT_DESIGN_NOTE = (
-    "Design mounting hole keep-outs to 6.2 mm diameter on every model: that "
-    "is what the Raspberry Pi HAT specification (github.com/raspberrypi/hats) "
-    "requires, and the largest figure the models themselves publish. The "
-    "KEEPOUT column gives what this model's drawing shows, which is not "
-    "always anything."
+    "Design keep-outs to 6.2 mm diameter around every mounting hole, per the "
+    "Raspberry Pi HAT specification; KEEPOUT gives what this model's own "
+    "drawing shows."
 )
 
 #: The order features are numbered in, on every Raspberry Pi sheet.  Numbered
@@ -357,62 +355,35 @@ def render(rec: dict) -> str:
         f"                number={f['number']})"
         for f in rec["features"])
 
-    # The hole note is provenance, so it goes in SOURCES under "Mounting
-    # holes" and not also in the notes: printed in both it was the same
-    # sentence twice on every Raspberry Pi sheet.
-    notes = ['"Connector outlines are the component body as drawn by '
-             'Raspberry Pi Ltd, overhang past the board edge included."',
-             repr("Hole IDs are assigned by this drawing, bottom row first "
-                  "then left to right, and mean the same thing on every "
-                  "Raspberry Pi sheet here.")]
+    # Only what the sheet cannot show.  Provenance is in SOURCES; the hole
+    # schedule, the legend and the title block carry the rest.  Raspberry Pi
+    # Ltd do not name their holes, so the IDs are this drawing's, and a
+    # reader comparing two Pi sheets needs to know MT1 is the same hole on
+    # both.
+    notes = [repr("Hole IDs are assigned by this drawing and mean the same "
+                  "hole on every Raspberry Pi sheet.")]
     for name, _, _ in m.get("also", ()):
         notes.append(repr(
-            f"This sheet covers the {m['title'].split(' and ')[0]} and the "
-            f"{name}. Every connector position was read from both drawings "
-            "separately and required to match, so the sheet covers both only "
-            "while they agree."))
-    for key, spread in rec.get("shared_spreads", {}).items():
+            f"The {m['title'].split(' and ')[0]} and {name} drawings agree "
+            "on every hole and connector position, so one sheet covers "
+            "both."))
+    for key in rec.get("shared_spreads", {}):
         label = next((f["label"] for f in rec["features"] if f["key"] == key),
                      key)
         notes.append(repr(
-            f"The {label} is {SHARED_FEATURES[key]} and carries the same "
-            "position on every Raspberry Pi sheet here. The drawings were "
-            f"read separately, agreed to {spread:.3f} mm, and were snapped to "
-            "one value."))
+            f"The {label} position is {SHARED_FEATURES[key]}, so it is the "
+            "same on every Raspberry Pi sheet."))
     notes.append(repr(KEEPOUT_DESIGN_NOTE))
-    if m.get("hole_tol"):
-        # The schedule's figure is tighter than the sheet's general block, and
-        # a drawing that states two tolerances for the same feature without
-        # saying which wins is ambiguous.
-        notes.append(repr(
-            f"The hole diameter tolerance in the schedule, +/-{m['hole_tol']} "
-            "mm, is quoted from this model's own drawing and governs in place "
-            "of the hole diameter figure in the general tolerance block."))
+    # A hole tolerance in the schedule needs no note: the title block says
+    # "hole dia per schedule" and the source quotes the drawing's figure.
+    # Nor does a true 1:1 PDF source: it carries the general tolerance like
+    # every DXF-derived sheet.  A reduced plot is different, because the
+    # general tolerance would then overstate the sheet.
     if is_reduced(rec["scale"]):
         notes.append(repr(
-            "The source drawing is a reduced plot, not 1:1. Its scale was "
-            f"recovered from the mounting hole rectangle as {rec['scale']:.4f} "
-            "and applied. Residual error over the 85 mm width is a few tenths "
-            "of a millimetre, so treat every dimension on this sheet as "
-            "+/-0.5 rather than the +/-0.20 the other models carry."))
-    elif m["kind"] == "pdf":
-        # Say so explicitly.  A sheet built from a PDF that carries the general
-        # tolerance, next to one that says its plot was reduced, otherwise
-        # leaves a reader wondering whether the scale was checked at all.
-        notes.append(repr(
-            "The source is a PDF, not a DXF, but a true 1:1 vector plot: its "
-            "scale, recovered from the mounting hole rectangle, came out "
-            f"{rec['scale']:.5f}. Geometry was read from the vector paths, so "
-            "this sheet carries the same tolerance as the DXF-derived "
-            "models."))
-    if m.get("aux_holes"):
-        notes.append('"AUX1 and AUX2 are 3.0 mm holes additional to the four '
-                     'M2.5 mounting holes. Each sits 6.0 mm inboard of the '
-                     'mounting hole it shares an X coordinate with, and the '
-                     'pair are diagonally opposite each other."')
-    if not m.get("holes_from_source"):
-        notes.append('"Hole positions are the 3.5 mm inset and 58 x 49 mm '
-                     'rectangle dimensioned on this model\'s drawing."')
+            "The source drawing is a reduced plot; its scale was recovered "
+            f"as {rec['scale']:.4f}. Treat every dimension on this sheet as "
+            "+/-0.5, not the +/-0.20 the other models carry."))
 
     return f'''
 BOARDS[{m["key"]!r}] = BoardSpec(

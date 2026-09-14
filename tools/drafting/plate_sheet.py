@@ -220,66 +220,38 @@ def draw_plate_holes(c: Canvas, view: View, spec: BoardSpec,
 
 
 def _letter_key() -> str:
-    """Spell out letter to revision, read back out of the same mapping.
+    """Spell out letter to board, read back out of the same mapping.
 
-    Written from REVISION_LETTER rather than by hand for the same reason as
-    _group_key: a key that repeats what it explains drifts the first time a
-    revision is added.
+    Written from REVISION_LETTER rather than by hand: a key that repeats what
+    it explains drifts the first time a board is added.
     """
     return ", ".join(f"{letter} {name}"
                      for name, letter in REVISION_LETTER.items())
 
 
-def _group_key() -> str:
-    """Spell out the mixed shuttle-range / board-revision group names.
-
-    The USED BY column mixes two naming schemes because the boards do: three
-    early revisions each covered a run of shuttles and are known by that run,
-    while v3.2 and v3.3 have shipped on none and can only be named by revision.
-    Rather than assert that mapping in prose it is read back out of the data,
-    so the key cannot drift from the labels it explains.
-    """
-    parts = []
-    bare = []
-    for name, pl in PLACEMENTS.items():
-        if pl["shuttles"]:
-            parts.append(f"{name} = " + ", ".join(pl["revisions"]))
-        else:
-            bare.append(name)
-    if bare:
-        parts.append(_and(bare) + " = themselves, no shuttle yet")
-    return "; ".join(parts)
-
-
-def _and(names: list[str]) -> str:
-    if len(names) == 1:
-        return names[0]
-    return ", ".join(names[:-1]) + " and " + names[-1]
-
-
 def _plate_text(spec) -> tuple[list[str], list[str]]:
     """The plate sheet's notes and sources, built before the sheet exists."""
     web_a, web_b, web = tightest_web(spec)
+    # The view shows the datum, the axes and that the holes are tabulated.
+    # It cannot show which side it is seen from, how to read the two tables'
+    # own conventions, or that the PMOD envelopes are not to be cut.  The
+    # revision each board name covers is on TT-MP-02, under its own view,
+    # and on every TT-DB sheet; it is not repeated here.
     notes = [
-        "All dimensions in millimetres. The datum symbol marks the origin: "
-        "the plate's lower-left corner, X right, Y up, seen from the side "
-        "the board mounts on.",
-        "Hole positions are tabulated, not dimensioned on the view: there are "
-        "too many to dimension and keep it readable. A slot row gives its two "
-        "end centres; DIA/WIDTH is the slot width, LENGTH is overall.",
-        "USED BY reads <group>:<hole>; MT1 to MT4 are the board's own hole "
-        "IDs. Groups, by board revision: " + _group_key() + ".",
-        "A board hole's ID letter is the revision it is there for -- "
-        + _letter_key() + " -- numbered within it. S is a slot and P a plate "
-        "fixing. Four features serve two revisions; each keeps one ID.",
-        "The three PMOD envelopes are not machined features. They mark where "
-        "the Pmod host pin fields end up, the same place for every board "
-        "revision. That is the point of the plate.",
+        "Viewed from the side the board mounts on.",
+        "A slot row gives its two end centres; DIA/WIDTH is the slot width "
+        "and LENGTH its overall length.",
+        "USED BY names the board a feature serves and that board's own hole "
+        "ID, MT1 to MT4. Drawing TT-MP-02 shows each board on the plate.",
+        "A hole's ID letter is the board it is there for, " + _letter_key()
+        + ", numbered within it. S is a slot, P a plate fixing. A feature "
+        "two boards share keeps one ID.",
+        "PMOD 1 to 3 are not machined features; they mark where every "
+        "board's Pmod host pin fields land.",
     ] + list(spec.notes) + [
-        "Fit the plate to its chassis before the board: the fixings sit in the "
-        f"border, which a board overhangs. Least material between features is "
-        f"{web:.2f} mm, between {web_a} and {web_b}.",
-        "Drawing TT-MP-02 shows which holes each revision uses.",
+        "Fit the plate to the chassis before the board: a board overhangs "
+        f"the plate fixings. Thinnest web between features is {web:.2f} mm, "
+        f"between {web_a} and {web_b}.",
     ]
     src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
            for s in spec.sources]
@@ -698,22 +670,18 @@ def render_fitting_guide(*, drawing_no: str, version: str,
                 ["BOARD", "X EXTENT mm", "Y EXTENT mm"], rows_u,
                 ["start", "end", "end"])
 
+    # The legend says what solid and grey mean; the views show where each
+    # board's hosts land and that DB mpw's two sit on positions 2 and 3; the
+    # table says so in its PMODS column.  Left are the two table conventions
+    # and the one thing a group hides: what its revisions do not share.
     notes = [
-        "Each view shows one group of demo board revisions on the plate, with "
-        "the holes and slots that group uses drawn solid and labelled, and "
-        "the rest greyed back. Hole IDs match drawing TT-MP-01.",
-        "The revisions in a group share their mounting holes and Pmod host "
-        "positions exactly, which is all the plate registers against. They "
-        "may differ elsewhere: v2.1.2 moved its USB-C connector 0.9 mm "
-        "relative to v2.0.1 and v2.1.0, for instance.",
-        "dX and dY place the board: add them to a coordinate in that board's "
+        "Hole IDs are those of drawing TT-MP-01, which governs every "
+        "dimension.",
+        "Revisions in a group share mounting holes and Pmod host positions "
+        "exactly; they may differ elsewhere. v2.1.2's USB-C, for instance, "
+        "is 0.9 mm from v2.0.1's.",
+        "dX and dY place the board: add them to a coordinate in the board's "
         "own frame to get a plate coordinate.",
-        "The DB mpw board has only two Pmod hosts. They go on plate Pmod "
-        "positions 2 and 3, which makes the plate 5.15 mm narrower than "
-        "putting them on 1 and 2 would.",
-        "Every revision puts its Pmod host pin fields on the same three "
-        "positions, at the same height above the plate's front edge. See "
-        "drawing TT-MP-01 for the plate itself.",
     ]
     spill = notes_spill_needed(sheet, notes, [])
     draw_legend(sheet, GUIDE_LEGEND)

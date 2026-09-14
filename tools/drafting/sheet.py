@@ -343,15 +343,20 @@ class Sheet:
     HEADING_HEIGHT = style.T_SUBHEAD + 3.6
 
     def notes_height(self, width: float, title: str, lines: list[str],
-                     size: float = style.T_NOTE, numbered: bool = True) -> float:
+                     size: float = style.T_NOTE, numbered: bool = True,
+                     widest_index: int | None = None) -> float:
         """Height a note block will occupy, so a caller can reserve it exactly.
 
         Reserving a guessed height and then drawing whatever fits is how the
         notes ended up running through the sources heading.
+
+        *widest_index* must be what ``notes`` will draw with.  Measured at a
+        fixed "99." indent, two millimetres wider than the "6." the notes
+        were drawn at, a line that wrapped one way at the reserved width and
+        the other at the drawn width left a blank line under itself.
         """
-        # Matches the widest number a block can reach in practice, so the
-        # reserved height and the drawn height agree.
-        indent = (style.text_width("99.", size) + 1.6) if numbered else 0.0
+        top = widest_index if widest_index is not None else len(lines)
+        indent = (style.text_width(f"{top}.", size) + 1.6) if numbered else 0.0
         total = self.HEADING_HEIGHT if title else 0.0
         for line in lines:
             total += (len(wrap(line, width - indent, size))
@@ -448,7 +453,8 @@ class Sheet:
             kind, payload, size = item[0], item[1], item[2]
             if kind == "heading":
                 return self.HEADING_HEIGHT
-            return self.notes_height(width, "", [payload[1]], size)
+            return self.notes_height(width, "", [payload[1]], size,
+                                     widest_index=widest)
 
         def block_height(start: int, width: float) -> float:
             """Height of the whole block beginning at *start*."""

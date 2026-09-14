@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from accessories.parts import (ACCESSORIES, GENERIC_POE,  # noqa: E402
-                               PMOD_HAT, WAVESHARE_POE)
+                               PMOD_HAT, PMOD_HAT_TOL, WAVESHARE_POE)
 from raspberry_pi.boards import BOARDS as RPI_BOARDS  # noqa: E402
 from raspberry_pi.boards import FEATURE_NUMBERS as RPI_NUMBERS  # noqa: E402
 from tinytapeout.boards import BOARDS as TT_BOARDS  # noqa: E402
@@ -61,25 +61,27 @@ DRILL_TEMPLATES = {
     "chassis": "tt-generic-mounting-plate-chassis-drill-template",
 }
 
-#: One note, carrying the pitch and its citation.  There were two, this one and
-#: a per-board "Pmod host headers are on a 22.86 mm (0.9 in) pitch, per the
-#: Digilent Pmod Interface Specification 1.2.0", and both appeared on every
-#: Tiny Tapeout sheet saying the same number.  The duplicate was what pushed
-#: the merged 4+ sheet past its notes budget, but it had been a wasted line on
-#: all of them.
+#: The pitch is dimensioned on the view; what the view cannot say is where
+#: the number comes from and that every revision shares it, which is what
+#: lets one mounting plate serve them all.  The sheets are registered on the
+#: hosts, so that the hosts hold still and the board moves between revisions
+#: is visible by flipping through the set and needs no note.
 TT_NOTES = (
-    "The Pmod host headers along the lower edge are what a mounting plate "
-    "registers against. Their 22.86 mm (0.9 in) pitch, per the Digilent Pmod "
-    "Interface Specification 1.2.0, is the same on every revision; their "
-    "distance from the lower edge and their position along it are not.",
+    "Pmod host pitch, 22.86 mm (0.9 in), is the Digilent Pmod Interface "
+    "Specification 1.2.0 figure and is the same on every revision; the "
+    "mounting plate, TT-MP-01, registers against it.",
 )
 
 RPI_NOTES = (
-    "Pmod host JC on the Pmod HAT Adapter overhangs the lower board edge, "
-    "where these boards carry their HDMI and power connectors. Digilent's "
-    "manual warns to fit the two standoffs opposite the 40-pin connector so "
-    "JC's pins cannot touch the HDMI shell. The HDMI connectors are not "
-    "drawn here.",
+    "Pmod host JC overhangs the lower edge, over the HDMI and power "
+    "connectors. Fit the two standoffs opposite the 40-pin header, as "
+    "Digilent's manual warns, so JC's pins cannot touch the HDMI shell. "
+    "HDMI connectors are not drawn.",
+    # The adapter's own sheet carries the derivation; here only the figure a
+    # plate designer needs.  Stated with the adapter's constant rather than
+    # a copied "0.75", so the two sheets cannot drift apart.
+    "Pmod HAT Adapter host positions are DERIVED, good to about "
+    f"+/-{PMOD_HAT_TOL} mm; drawing ACC-01 has the derivation.",
 )
 
 
@@ -171,11 +173,12 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
                 notes += (n,)
         # The per-revision "Geometrically identical to ..." notes are dropped
         # above and replaced by this one, which says the same thing once for
-        # the whole sheet rather than once per revision on it.
+        # the whole sheet rather than once per revision on it.  The subtitle
+        # already lists the revisions; the note adds only what the title
+        # cannot, that they are one board mechanically.
         notes += (
-            f"Covers revisions {covered}, the same board mechanically, "
-            "compared feature by feature before merging; only the electrical "
-            "design and the shuttle differ.",)
+            "The revisions covered are mechanically identical; only the "
+            "electrical design differs.",)
         spec = replace(
             first,
             key="+".join(keys),

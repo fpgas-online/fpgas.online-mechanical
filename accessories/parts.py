@@ -140,20 +140,22 @@ PMOD_HAT = BoardSpec(
                     "dimensioned drawing for this board."),
     ),
     notes=(
-        "DERIVED DIMENSIONS. Digilent publish no mechanical drawing, DXF, STEP "
-        "or board file for this product. Pmod host positions were measured "
-        f"photogrammetrically and are good to about +/-{PMOD_HAT_TOL} mm.",
-        "JA and JB face out of the left edge, JC out of the lower edge. All "
-        "three are right-angle hosts: the connector body overhangs the board "
-        "edge by roughly 3 mm and the through-hole field sits about 9.4 mm in "
-        "from it, so a mating Pmod peripheral plugs in from outside that edge.",
-        f"JA and JB are snapped to the {PMOD_HOST_SPACING} mm host spacing "
-        "the Pmod Interface Specification mandates; they measured 23.18 mm "
-        "apart, inside the measurement uncertainty.",
-        "The board outline, corner radii and mounting holes are the "
-        "Raspberry Pi HAT specification's, which this board conforms to, and "
-        "carry that specification's figures. Only the Pmod host positions are "
-        "derived.",
+        # Which numbers to trust is the one thing this sheet has to say, and
+        # it is said once: the HAT figures are specification, everything
+        # else is read off a photograph.  The barrel jack is named too; a
+        # note that said "only the hosts are derived" was wrong about it.
+        "Outline, corner radii and mounting holes are the Raspberry Pi HAT "
+        "specification's. Everything else is DERIVED from Digilent's "
+        "top-view photo, as they publish no drawing: Pmod hosts good to "
+        f"about +/-{PMOD_HAT_TOL} mm, the barrel jack to +/-1.5 mm.",
+        # Not drawn: the connector bodies, which overhang the edge.  A plate
+        # that ends at the board edge would foul them.
+        "All three hosts are right-angle: the connector body overhangs the "
+        "board edge by roughly 3 mm and a peripheral plugs in from outside "
+        "that edge.",
+        f"JA to JB is snapped to the {PMOD_HOST_SPACING} mm the Pmod "
+        "Interface Specification mandates; it measured 23.18 mm, within the "
+        "uncertainty.",
     ),
     # The general tolerance block otherwise claimed +/-0.20 on the edge and
     # +/-0.10 on hole position for a board whose host positions are known to
@@ -200,15 +202,13 @@ WAVESHARE_POE = BoardSpec(
                     "specification table."),
     ),
     notes=(
-        "Output is 5 V at up to 5 A (25 W) on a USB-C male plug on a captive "
-        "lead, not a panel-mounted receptacle. The lead leaves the end "
-        "opposite the RJ45, at the cable exit dimensioned on the plan; its "
-        "length is not published, so allow for the plug and its bend radius.",
-        "No panel mounting holes. Each end plate is retained by four corner "
-        "screws, whose size and position the vendor does not publish, so any "
-        "bracket has to clamp or strap the body.",
-        "Body is a finned aluminium extrusion; the fin profile is not "
-        "dimensioned here and the outline is the overall envelope.",
+        "Output is a USB-C male plug on a captive lead from the cable exit, "
+        "not a receptacle. Lead length is not published; allow for the plug "
+        "and its bend radius.",
+        "No mounting holes: a bracket has to clamp or strap the body. The "
+        "end-plate corner screws are not published.",
+        "Finned extrusion; the fins are not drawn and the outline is the "
+        "overall envelope.",
     ),
 )
 
@@ -250,25 +250,17 @@ GENERIC_POE = BoardSpec(
                     "gigabit variant in a longer case."),
     ),
     notes=(
-        "NO SINGLE OFFICIAL SOURCE. These are near-identical clones from "
-        "several factories. Two independent sources agree on an 80 mm long "
-        "body: DSLRKIT quote 80 x 27 x 22 mm and Adafruit measure "
-        "80 x 30 x 24 mm.",
-        "The envelope drawn here is the LARGER of those two, 80 x 30 x 24 mm, "
-        "and the title block quotes it as a maximum rather than a nominal: a "
-        "real part may be up to 3 mm narrower and 2 mm shorter in height.",
-        "Length is the one dimension that is not bounded by 80 mm, which is "
-        "why the title block gives it +15/-0 while width and height are "
-        "maxima: gigabit variants come in a longer case, up to about 95 mm. "
-        "Design a cradle that can take that, or check the part before "
-        "committing.",
-        "No mounting holes: the case is a glued plastic clamshell, so a "
-        "bracket has to clamp or strap the body.",
-        "Output is 5 V on a micro-USB male plug on a captive lead, not a "
-        "panel-mounted receptacle. The lead leaves the end opposite the RJ45, "
-        "at the cable exit dimensioned on the plan, and is quoted at 155 to "
-        "205 mm. Allow for it: the plug and its bend radius, not the body, "
-        "set how close the splitter can sit to the board it feeds.",
+        "NO SINGLE OFFICIAL SOURCE: these are clones from several factories. "
+        "The envelope drawn is the larger of the two published figures, "
+        "Adafruit's 80 x 30 x 24 mm over DSLRKIT's 80 x 27 x 22 mm, so a "
+        "real part may be up to 3 mm narrower and 2 mm lower.",
+        "Gigabit variants come in a longer case, up to about 95 mm, hence "
+        "L +15/-0 in the title block. Allow for it or check the part.",
+        "No mounting holes: the case is a glued clamshell, so a bracket has "
+        "to clamp or strap the body.",
+        "Output is a micro-USB male plug on a captive lead, quoted at 155 to "
+        "205 mm, from the cable exit. The plug and its bend radius, not the "
+        "body, set how close the splitter can sit to the board it feeds.",
     ),
 )
 

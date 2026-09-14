@@ -76,13 +76,10 @@ BOARDS['rpi3b'] = BoardSpec(
                note='Drawing note on the Model B drawing, quoted: 4x M2.5 MOUNTING HOLES DRILLED TO 2.75 +/- 0.05mm. The B+ drawing gives no hole size, but its geometry is identical.'),
     ),
     notes=(
-        "Connector outlines are the component body as drawn by Raspberry Pi Ltd, overhang past the board edge included.",
-        'Hole IDs are assigned by this drawing, bottom row first then left to right, and mean the same thing on every Raspberry Pi sheet here.',
-        'This sheet covers the Raspberry Pi 3 Model B and the Raspberry Pi 3 Model B+. Every connector position was read from both drawings separately and required to match, so the sheet covers both only while they agree.',
-        'The 40-pin GPIO header is fixed by the Raspberry Pi HAT specification and carries the same position on every Raspberry Pi sheet here. The drawings were read separately, agreed to 0.060 mm, and were snapped to one value.',
-        "Design mounting hole keep-outs to 6.2 mm diameter on every model: that is what the Raspberry Pi HAT specification (github.com/raspberrypi/hats) requires, and the largest figure the models themselves publish. The KEEPOUT column gives what this model's drawing shows, which is not always anything.",
-        "The hole diameter tolerance in the schedule, +/-0.05 mm, is quoted from this model's own drawing and governs in place of the hole diameter figure in the general tolerance block.",
-        "Hole positions are the 3.5 mm inset and 58 x 49 mm rectangle dimensioned on this model's drawing.",
+        'Hole IDs are assigned by this drawing and mean the same hole on every Raspberry Pi sheet.',
+        'The Raspberry Pi 3 Model B and Raspberry Pi 3 Model B+ drawings agree on every hole and connector position, so one sheet covers both.',
+        'The 40-pin GPIO header position is fixed by the Raspberry Pi HAT specification, so it is the same on every Raspberry Pi sheet.',
+        "Design keep-outs to 6.2 mm diameter around every mounting hole, per the Raspberry Pi HAT specification; KEEPOUT gives what this model's own drawing shows.",
     ),
 )
 
@@ -125,10 +122,9 @@ BOARDS['rpi4b'] = BoardSpec(
                note='Read from the DXF: hole and keep-out circles on layer 0.'),
     ),
     notes=(
-        "Connector outlines are the component body as drawn by Raspberry Pi Ltd, overhang past the board edge included.",
-        'Hole IDs are assigned by this drawing, bottom row first then left to right, and mean the same thing on every Raspberry Pi sheet here.',
-        'The 40-pin GPIO header is fixed by the Raspberry Pi HAT specification and carries the same position on every Raspberry Pi sheet here. The drawings were read separately, agreed to 0.060 mm, and were snapped to one value.',
-        "Design mounting hole keep-outs to 6.2 mm diameter on every model: that is what the Raspberry Pi HAT specification (github.com/raspberrypi/hats) requires, and the largest figure the models themselves publish. The KEEPOUT column gives what this model's drawing shows, which is not always anything.",
+        'Hole IDs are assigned by this drawing and mean the same hole on every Raspberry Pi sheet.',
+        'The 40-pin GPIO header position is fixed by the Raspberry Pi HAT specification, so it is the same on every Raspberry Pi sheet.',
+        "Design keep-outs to 6.2 mm diameter around every mounting hole, per the Raspberry Pi HAT specification; KEEPOUT gives what this model's own drawing shows.",
     ),
 )
 
@@ -173,12 +169,8 @@ BOARDS['rpi5'] = BoardSpec(
                note='Hole diameter dimensioned on the drawing as ø2.7 mm; the keep-out circle is drawn and measures 5.80 mm.'),
     ),
     notes=(
-        "Connector outlines are the component body as drawn by Raspberry Pi Ltd, overhang past the board edge included.",
-        'Hole IDs are assigned by this drawing, bottom row first then left to right, and mean the same thing on every Raspberry Pi sheet here.',
-        'The 40-pin GPIO header is fixed by the Raspberry Pi HAT specification and carries the same position on every Raspberry Pi sheet here. The drawings were read separately, agreed to 0.060 mm, and were snapped to one value.',
-        "Design mounting hole keep-outs to 6.2 mm diameter on every model: that is what the Raspberry Pi HAT specification (github.com/raspberrypi/hats) requires, and the largest figure the models themselves publish. The KEEPOUT column gives what this model's drawing shows, which is not always anything.",
-        'The source is a PDF, not a DXF, but a true 1:1 vector plot: its scale, recovered from the mounting hole rectangle, came out 1.00002. Geometry was read from the vector paths, so this sheet carries the same tolerance as the DXF-derived models.',
-        "AUX1 and AUX2 are 3.0 mm holes additional to the four M2.5 mounting holes. Each sits 6.0 mm inboard of the mounting hole it shares an X coordinate with, and the pair are diagonally opposite each other.",
-        "Hole positions are the 3.5 mm inset and 58 x 49 mm rectangle dimensioned on this model's drawing.",
+        'Hole IDs are assigned by this drawing and mean the same hole on every Raspberry Pi sheet.',
+        'The 40-pin GPIO header position is fixed by the Raspberry Pi HAT specification, so it is the same on every Raspberry Pi sheet.',
+        "Design keep-outs to 6.2 mm diameter around every mounting hole, per the Raspberry Pi HAT specification; KEEPOUT gives what this model's own drawing shows.",
     ),
 )
