@@ -407,8 +407,7 @@ PLATE = BoardSpec(
                     "for every Tiny Tapeout demo board revision, extracted "
                     "from the upstream KiCad files."),
         Source(label="Pmod host pitch",
-               ref="https://digilent.com/reference/_media/reference/pmod/"
-                   "pmod-interface-specification-1_2_0.pdf",
+               ref="https://mith.ro/pmod-spec/",
                note="Digilent mandate .90 in (22.86 mm) between adjacent host "
                     "ports on a board edge, which is why one plate can serve "
                     "every revision."),

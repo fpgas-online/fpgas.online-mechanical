@@ -12,7 +12,8 @@ from tools.schema import BoardSpec, Feature, Hole, Outline, PmodHeader, Source
 
 # ---------------------------------------------------------------------------
 # Digilent Pmod Interface Specification 1.2.0 (revised 5 October 2017)
-# https://digilent.com/reference/_media/reference/pmod/pmod-interface-specification-1_2_0.pdf
+# https://mith.ro/pmod-spec/, a short link to Digilent's
+# pmod-interface-specification-1_2_0.pdf; the sheets print the citation.
 # ---------------------------------------------------------------------------
 
 PMOD_PITCH = 2.54                 # .10 in, both axes, figures 1-5
@@ -28,8 +29,7 @@ PMOD_MODULE_MAX_WIDTH = 20.32     # .80 in, peripheral module width limit
 
 PMOD_SPEC_SOURCE = Source(
     label="Pmod Interface Specification 1.2.0",
-    ref="https://digilent.com/reference/_media/reference/pmod/"
-        "pmod-interface-specification-1_2_0.pdf",
+    ref="https://mith.ro/pmod-spec/",
     note="Digilent, revised 5 October 2017. Host ports on a common board edge "
          "are spaced .90 in (22.86 mm) centre to centre; pins are on a .10 in "
          "(2.54 mm) grid in both axes.",
