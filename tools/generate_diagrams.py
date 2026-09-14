@@ -51,6 +51,9 @@ VERSION = reproducible.source_version()
 #: own.
 TT_BUNDLE = "tinytapeout-sheets.pdf"
 
+#: The three Raspberry Pi sheets bound the same way, for the same reasons.
+RPI_BUNDLE = "raspberry-pi-sheets.pdf"
+
 # Sheet numbering: family prefix, then the order the sheets are meant to be
 # read in.  Numbers are stable so a reference to a drawing keeps working.
 TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.1", "v1.2.2", "v1.2.3",
@@ -210,11 +213,13 @@ def _pmod_frame(spec) -> tuple[float, float]:
     return slot * PMOD_PITCH - pmods[0].cx, -pmods[0].cy
 
 
-def _drawn_bbox(spec) -> tuple[float, float, float, float]:
+def _drawn_bbox(spec, overlay=None) -> tuple[float, float, float, float]:
     """Everything the view has to cover: the board and whatever hangs off it.
 
     The same rule render_board applies, so that the frame built from these
-    cannot be smaller than the one it checks against.
+    cannot be smaller than the one it checks against.  An *overlay* is an
+    adjacent part drawn in phantom on the same view, and its outline and pin
+    fields count too.
     """
     xs = [0.0, spec.outline.width]
     ys = [0.0, spec.outline.height]
@@ -225,7 +230,29 @@ def _drawn_bbox(spec) -> tuple[float, float, float, float]:
         if p.body_x1 > p.body_x0:
             xs += [p.body_x0, p.body_x1]
             ys += [p.body_y0, p.body_y1]
+    if overlay is not None:
+        xs += [0.0, overlay.outline.width]
+        ys += [0.0, overlay.outline.height]
+        for p in overlay.pmods:
+            xs += [p.cx - p.pin_span / 2 - 2, p.cx + p.pin_span / 2 + 2]
+            ys += [p.cy - p.pin_span / 2 - 2, p.cy + p.pin_span / 2 + 2]
     return min(xs), min(ys), max(xs), max(ys)
+
+
+def rpi_view_frame(specs, overlay) -> tuple[float, float, float, float]:
+    """One view frame for every Raspberry Pi sheet.
+
+    What the Tiny Tapeout set does for the Pmod hosts, this does for the
+    board: every Model B sized Pi is 85 x 56 with the same hole pattern and
+    the 40-pin header in the same place, so the sheets share one coordinate
+    frame already and need no offsets.  Each used to be fitted to its own
+    connectors, and the Pi 5's USB ports reach further than the Pi 3B's, so
+    the board itself moved between pages.  The union of what every sheet
+    draws, overlay included, holds it still.
+    """
+    boxes = [_drawn_bbox(spec, overlay) for spec in specs]
+    return (min(b[0] for b in boxes), min(b[1] for b in boxes),
+            max(b[2] for b in boxes), max(b[3] for b in boxes))
 
 
 def tt_view_frames(sheets) -> dict[str, tuple[float, float, float, float]]:
@@ -304,14 +331,24 @@ def main() -> None:
 
     rpi_dir = FAMILY_DIRS["raspberry-pi"]
     rpi_dir.mkdir(parents=True, exist_ok=True)
+    rpi_set: list[tuple[Path, str]] = []
+    rpi_frame = rpi_view_frame([RPI_BOARDS[k] for k in RPI_ORDER], PMOD_HAT)
+    # One band for the family, as for the Tiny Tapeout set: a taller notes
+    # band on one sheet would shrink its view and drop its scale.
+    rpi_band = max(planned_band_height(RPI_BOARDS[k], extra_notes=RPI_NOTES,
+                                       overlay=PMOD_HAT, view_bbox=rpi_frame)
+                   for k in RPI_ORDER)
     for n, key in enumerate(RPI_ORDER, 1):
         spec = RPI_BOARDS[key]
         sheet = render_board(spec, drawing_no=f"RPI-{n:02d}", version=VERSION,
                              overlay=PMOD_HAT, extra_notes=RPI_NOTES,
-                             family_numbers=RPI_NUMBERS)
+                             family_numbers=RPI_NUMBERS, view_bbox=rpi_frame,
+                             band_height=rpi_band)
         path = rpi_dir / f"{slug(key)}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
+        rpi_set.append((path.with_suffix(".pdf"),
+                        f"RPI-{n:02d}  {spec.title}  -  {spec.subtitle}"))
 
     acc_dir = FAMILY_DIRS["accessories"]
     acc_dir.mkdir(parents=True, exist_ok=True)
@@ -380,6 +417,9 @@ def main() -> None:
         bundle = combine_pdfs(tt_set, tt_dir / TT_BUNDLE,
                               "Tiny Tapeout - mechanical drawings")
         print(f"  {rel(bundle)}: {len(tt_set)} sheets bound into one PDF")
+        bundle = combine_pdfs(rpi_set, rpi_dir / RPI_BUNDLE,
+                              "Raspberry Pi - mechanical drawings")
+        print(f"  {rel(bundle)}: {len(rpi_set)} sheets bound into one PDF")
 
 
 if __name__ == "__main__":

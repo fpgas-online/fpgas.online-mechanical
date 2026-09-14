@@ -8,7 +8,7 @@ accepts any revision.
 |---|---|
 | `boards.py` | **Generated.** Every mechanically distinct demo board revision |
 | `extract.py` | Reads the upstream KiCad board files and writes `boards.py` |
-| `output/` | `TT-DB-01` to `TT-DB-06`, as SVG and PDF |
+| `output/` | `TT-DB-01` to `TT-DB-06`, as SVG and PDF, and `tinytapeout-sheets.pdf`, the plate sheets and demo boards bound into one document |
 | `mounting_plate/` | The plate every revision bolts onto, and its drill templates |
 
 ```sh
