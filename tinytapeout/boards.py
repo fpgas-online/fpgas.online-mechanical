@@ -100,7 +100,7 @@ BOARDS['tt123-v2.2.5'] = BoardSpec(
                note="title block: TinyTapeout 1,2,3 Demo Board rev 2.2.5, "
                     "dated 2023-11-13"),
         Source(label="Shuttle mapping",
-               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               ref='https://mith.ro/tt-demoboards/',
                note='row "DB mpw v2.2.5", Used by: TT02.'),
     ),
     notes=(
@@ -173,7 +173,7 @@ BOARDS['tt123-v2.2.6'] = BoardSpec(
                note="title block: TinyTapeout 1,2,3 Demo Board rev 2.2.6, "
                     "dated 2024-02-14"),
         Source(label="Shuttle mapping",
-               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               ref='https://mith.ro/tt-demoboards/',
                note='row "DB mpw v2.2.6", Used by: TT03.'),
     ),
     notes=(
@@ -267,7 +267,7 @@ BOARDS['v1.2.1'] = BoardSpec(
                note="title block: TinyTapeout 4+ Demoboard rev 1.2.1, "
                     "dated 2024-04-12"),
         Source(label="Shuttle mapping",
-               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               ref='https://mith.ro/tt-demoboards/',
                note='row "DB 4+ v1.2.1", Used by: TT03p5.'),
     ),
     notes=(
@@ -361,7 +361,7 @@ BOARDS['v1.2.2'] = BoardSpec(
                note="title block: TinyTapeout 4+ Demoboard rev 1.2.2, "
                     "dated 2024-04-26"),
         Source(label="Shuttle mapping",
-               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               ref='https://mith.ro/tt-demoboards/',
                note='row "DB 4+ v1.2.2", Used by: TT04.'),
     ),
     notes=(
@@ -454,7 +454,7 @@ BOARDS['v1.2.3'] = BoardSpec(
                note="title block: TinyTapeout 4+ Demoboard rev 1.2.3, "
                     "dated 2024-06-11"),
         Source(label="Shuttle mapping",
-               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               ref='https://mith.ro/tt-demoboards/',
                note='row "DB 4+ v1.2.2c", Used by: TT05.'),
     ),
     notes=(
@@ -533,7 +533,7 @@ BOARDS['v2.0.1'] = BoardSpec(
                note="title block: TinyTapeout 06+ Demoboard rev 2.0.1, "
                     "dated 2024-09-05"),
         Source(label="Shuttle mapping",
-               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               ref='https://mith.ro/tt-demoboards/',
                note='row "DB 06+ v2.0.1", Used by: TT06.'),
     ),
     notes=(
@@ -611,7 +611,7 @@ BOARDS['v2.1.0'] = BoardSpec(
                note="title block: TinyTapeout 06+ Demoboard rev 2.1.0, "
                     "dated 2024-12-10"),
         Source(label="Shuttle mapping",
-               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               ref='https://mith.ro/tt-demoboards/',
                note='row "DB 06+ v2.1.0", Used by: TT07.'),
     ),
     notes=(
@@ -689,7 +689,7 @@ BOARDS['v2.1.2'] = BoardSpec(
                note="title block: TinyTapeout 06+ Demoboard rev 2.1.2, "
                     "dated 2025-02-11"),
         Source(label="Shuttle mapping",
-               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               ref='https://mith.ro/tt-demoboards/',
                note='row "DB 06+ v2.1.2", Used by: TT08.'),
     ),
     notes=(
@@ -755,7 +755,7 @@ BOARDS['v3.2'] = BoardSpec(
                note="title block: Tiny Tapeout Demoboard v3 rev 3.2, "
                     "dated 2025-11-12"),
         Source(label="Shuttle mapping",
-               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               ref='https://mith.ro/tt-demoboards/',
                note='row "DB ETR v3.2", Used by: TT09, TTSKY25a, TTSKY25b, TTGF0p2.'),
     ),
     notes=(
@@ -822,7 +822,7 @@ BOARDS['v3.3'] = BoardSpec(
                note="title block: Tiny Tapeout Demoboard v3 rev 3.3, "
                     "dated 2026-06-23"),
         Source(label="Shuttle mapping",
-               ref='https://docs.google.com/spreadsheets/d/1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/edit?gid=1250963370',
+               ref='https://mith.ro/tt-demoboards/',
                note='no row: this revision is not in the board revision spreadsheet, so no shuttle is recorded for it.'),
     ),
     notes=(

@@ -41,9 +41,12 @@ WORK = ROOT / "tmp" / "pcb"
 #: Where the shuttle-to-board-revision mapping comes from.
 HISTORIC_README = ("https://github.com/TinyTapeout/tt-demo-pcb/blob/main/"
                    "doc/historic/README.md")
-SHUTTLE_SHEET = ("https://docs.google.com/spreadsheets/d/"
-                 "1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM/"
-                 "edit?gid=1250963370")
+# A short link, because this URL is printed in the SOURCES block of every
+# demo board sheet and the plate sheet.  It resolves to the sheet's
+# Demoboards tab, spreadsheet 1xD_uemuQcpUnXRY4twOrfFzF0urJLVWMdqAnrOJLetM
+# at gid 1250963370; the redirect lives in github.com/mithro/mithro.github.io
+# under redirects/tt-demoboards.md.
+SHUTTLE_SHEET = "https://mith.ro/tt-demoboards/"
 
 #: The number each feature carries in the schedule and on its balloon, fixed
 #: across the whole demo board family so that a number means the same part on
