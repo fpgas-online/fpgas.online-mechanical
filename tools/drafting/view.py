@@ -41,7 +41,8 @@ class View:
     def fit(cls, rect: Rect, bbox: tuple[float, float, float, float],
             margin: float = 26.0, force_scale: float | None = None,
             margin_top: float | None = None,
-            margin_bottom: float | None = None) -> "View":
+            margin_bottom: float | None = None,
+            margin_right: float | None = None) -> "View":
         """Place *bbox* in *rect*, reserving margins for annotation.
 
         The margins are asymmetric on purpose: dimensions stack up below and to
@@ -52,7 +53,8 @@ class View:
         x0, y0, x1, y1 = bbox
         top = margin if margin_top is None else margin_top
         bottom = margin if margin_bottom is None else margin_bottom
-        avail_w = rect.w - 2 * margin
+        right = margin if margin_right is None else margin_right
+        avail_w = rect.w - margin - right
         avail_h = rect.h - top - bottom
         mw, mh = x1 - x0, y1 - y0
         chosen, label = None, "1:1"
@@ -69,7 +71,10 @@ class View:
         if chosen is None:
             chosen = min(avail_w / mw, avail_h / mh)
             label = f"1:{1 / chosen:.3g}"
-        cx = rect.cx - (x0 + x1) / 2 * chosen
+        # Centred within the space left after the side margins, which is the
+        # rectangle's own centre while they are equal.
+        inner_cx = rect.x + margin + (rect.w - margin - right) / 2
+        cx = inner_cx - (x0 + x1) / 2 * chosen
         # Centre within the space left after the margins, not within the whole
         # rectangle, or the view drifts into the smaller margin.
         inner_cy = rect.y + bottom + (rect.h - top - bottom) / 2

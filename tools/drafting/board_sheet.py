@@ -52,6 +52,13 @@ KIND_LABEL = {
 VIEW_MARGIN_SIDE = 46.0
 VIEW_MARGIN_TOP = 20.0
 VIEW_MARGIN_BOTTOM = 30.0
+#: The right-hand margin a view may shrink to when that is what keeps it at
+#: 1:1.  The left carries the ordinate chain and any host spacing dimension;
+#: the right carries only the overall height, twelve millimetres off the
+#: board and a value wide.  The PYNQ-Z2 is 138.8 mm across with its hosts
+#: and fell to 1:2 for want of fourteen millimetres.  Only ever used when
+#: the symmetric margins would drop the scale, so no sheet that fits moves.
+VIEW_MARGIN_RIGHT_MIN = 24.0
 
 #: How far the overall width and height dimensions sit off the board edge.
 #: They are the only things on the top and right edges, so they can be
@@ -1065,6 +1072,15 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     view = View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
                     margin_top=VIEW_MARGIN_TOP,
                     margin_bottom=VIEW_MARGIN_BOTTOM, force_scale=force_scale)
+    if view.scale < 1.0 and force_scale is None:
+        # A board that misses 1:1 by a few millimetres of width gets the
+        # narrower right margin before it gets a smaller scale.
+        narrow = View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
+                          margin_top=VIEW_MARGIN_TOP,
+                          margin_bottom=VIEW_MARGIN_BOTTOM,
+                          margin_right=VIEW_MARGIN_RIGHT_MIN)
+        if narrow.scale >= 1.0:
+            view = narrow
     sheet.title.scale = view.scale_label
 
     board = Rect(view.x(0), view.y(0), view.d(o.width), view.d(o.height))
@@ -1217,6 +1233,37 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         edge_only.add_segment(view.x(f), view.y(v), balloon_bounds.x,
                               view.y(v), weight=HARD)
 
+    # The host spacing dimensions are drawn after the balloons, and a balloon
+    # parked on one reads as its value.  Reserved at the place each will be
+    # drawn, worked out the same way the drawing code below works it out.
+    # On a board with its hosts on a vertical edge the spacing runs up the
+    # LEFT of the view, across the whole board from the hosts, straight
+    # through the space the PYNQ-Z2's micro-USB balloon wanted.
+    by_edge: dict[str, list] = {}
+    for p in spec.pmods:
+        by_edge.setdefault(p.edge, []).append(p)
+    plan_low, plan_left = dim_bottom, dim_left
+    for edge, group in by_edge.items():
+        if len(group) < 2:
+            continue
+        along = "cx" if edge in ("bottom", "top") else "cy"
+        group = sorted(group, key=lambda p: getattr(p, along))
+        p0, p1 = group[0], group[1]
+        if getattr(p1, along) - getattr(p0, along) < 0.01:
+            continue
+        if along == "cx":
+            line_y = plan_low - 6.0
+            obstacles.add_rect(view.x(p0.cx) - 4.0, line_y - band - 1.2,
+                               view.x(p1.cx) + 4.0, line_y + band + 1.2,
+                               weight=HARD)
+            plan_low -= 6.0 + style.T_DIM + 2.0
+        else:
+            line_x = plan_left - 6.0
+            obstacles.add_rect(line_x - band - 1.2, view.y(p0.cy) - 4.0,
+                               line_x + band + 1.2, view.y(p1.cy) + 4.0,
+                               weight=HARD)
+            plan_left -= 6.0 + style.T_DIM + 2.0
+
     items: list[_Ballooned] = []
     schedule: list[list[str]] = []
     # Largest features first: they have the least freedom, and placing them
@@ -1253,9 +1300,6 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # hosts on that edge.  Taking the first two hosts overall instead gives a
     # meaningless 0.00 on a board like the Pmod HAT Adapter, whose JA and JB
     # sit one above the other on the same edge.
-    by_edge: dict[str, list] = {}
-    for p in spec.pmods:
-        by_edge.setdefault(p.edge, []).append(p)
     for edge, group in by_edge.items():
         if len(group) < 2:
             continue

@@ -302,15 +302,18 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
     """
     out = 1 if line_pos > base else -1
 
-    # A label in the next lane out must clear the one before it.  For a
-    # horizontal chain the labels are turned on their side, so what has to
-    # clear is their height; for a vertical chain it is their width.
+    # Two labels closer along the chain than a label is tall would overprint,
+    # so the second goes to the next lane out.  A lane is a label's WIDTH
+    # further out on either kind of chain: on a horizontal chain the labels
+    # are turned on their side and run outward by their width; on a vertical
+    # chain they read normally and again run outward by their width.  The
+    # horizontal case used the height, which put ButterStick's 18.09 and
+    # 18.50 on top of each other.
     labels = [v[1] for v in values] + [zero_label]
     widest = max((style.text_width(t, size) for t in labels), default=0.0)
     tall = style.text_height(size) + style.descender(size)
     if stagger is None:
-        stagger = (tall + text_gap + 1.6) if horizontal \
-            else (widest + text_gap + 1.6)
+        stagger = widest + text_gap + 1.6
     need = tall + 1.6
 
     # The zero ordinate marks the datum on the chain's own axis.  Using the
@@ -333,7 +336,12 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
             lanes[lane] = pos
         placed.append((pos, label, from_pos, lane))
 
-    extent = line_pos
+    # Two passes: every label's box is known before any witness line is
+    # drawn, so a line to an outer lane can break where it passes a label in
+    # an inner one.  Two holes a millimetre apart on ButterStick put their
+    # labels in different lanes, as they should be, and the outer one's line
+    # then ran straight through the inner one's value.
+    plan = []
     for pos, label, from_pos, lane in placed:
         end = line_pos + out * lane * stagger
         # Start clear of the feature, on the side the dimension line is on, as
@@ -350,22 +358,34 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
         start = _outside_own(pos, from_pos, out, horizontal, blockers)
         if (end - start) * out <= 0:
             start = end - out * style.EXT_OVER
+        width = style.text_width(label, size)
         if horizontal:
-            broken_line(c, pos, start, pos, end, blockers,
-                        w=style.W_THIN, colour=colour)
             # Rotated by 90 degrees and centred, so what has to clear the end
             # of the witness line is half the label's WIDTH, not its height.
-            half = style.text_width(label, size) / 2
-            ty = end + out * (text_gap + half)
-            c.text(pos, ty, label, size=size, colour=colour, anchor="middle",
-                   rotate=90)
-            reach = ty + out * half
+            ty = end + out * (text_gap + width / 2)
+            box = (pos - tall / 2, min(ty - width / 2, ty + width / 2),
+                   pos + tall / 2, max(ty - width / 2, ty + width / 2))
+            reach = ty + out * width / 2
         else:
-            broken_line(c, start, pos, end, pos, blockers,
-                        w=style.W_THIN, colour=colour)
             tx = end + (text_gap if out > 0 else -text_gap)
-            c.text(tx, pos, label, size=size, colour=colour,
+            box = (min(tx, tx + out * width), pos - tall / 2,
+                   max(tx, tx + out * width), pos + tall / 2)
+            reach = tx + out * width
+        plan.append((pos, label, start, end, box, reach))
+
+    extent = line_pos
+    for pos, label, start, end, box, reach in plan:
+        others = list(blockers) + [b for _, _, _, _, b, _ in plan if b is not box]
+        if horizontal:
+            broken_line(c, pos, start, pos, end, others,
+                        w=style.W_THIN, colour=colour)
+            c.text(pos, (box[1] + box[3]) / 2, label, size=size, colour=colour,
+                   anchor="middle", rotate=90)
+        else:
+            broken_line(c, start, pos, end, pos, others,
+                        w=style.W_THIN, colour=colour)
+            c.text(end + (text_gap if out > 0 else -text_gap), pos, label,
+                   size=size, colour=colour,
                    anchor="start" if out > 0 else "end", baseline="middle")
-            reach = tx + out * style.text_width(label, size)
         extent = max(extent, reach) if out > 0 else min(extent, reach)
     return extent
