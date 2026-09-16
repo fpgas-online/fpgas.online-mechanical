@@ -633,8 +633,8 @@ after a rebuild had to be inspected by hand and discarded. Twice I did exactly
 that. `tools/reproducible.py` pins what varies.
 
 - **The PDF carries one field that varies between runs, and it is not where
-  you would look.** (Two more vary between machines; see the note on
-  reproducing across machines, below.)
+  you would look.** (One more varied between machines, and a second is
+  pinned alongside it; see the note on reproducing across machines, below.)
   Two renders of one SVG differ by *four bytes*, and grepping the file for
   `/CreationDate`, `/Producer` or `/ID` finds nothing: cairo puts the Info
   dictionary inside a compressed object stream, so those four bytes are
@@ -660,7 +660,8 @@ that. `tools/reproducible.py` pins what varies.
 
   The general lesson: **two runs is not a determinism test.** Anything
   hash-seed dependent passes it half the time. The check is now three full
-  `make clean && make diagrams` cycles compared across all 65 files.
+  `make clean && make diagrams` cycles compared across every output file,
+  67 of them at the time of writing.
 - **`check_pdfs.py` compares bytes now**, not page content streams. The
   content-stream comparison only existed because the bytes could never match.
 

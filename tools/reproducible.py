@@ -7,10 +7,11 @@ whose drawings are identical, ``git status`` stops meaning anything, every
 rebuild has to be inspected by hand before it can be discarded, and the
 committed artefacts start looking like a liability rather than a deliverable.
 
-Two of the four formats stamp themselves:
+Three of the writers stamp what they write:
 
 * cairo writes a ``/CreationDate`` into every PDF Inkscape produces, and
   both tools write their version numbers into ``/Producer`` and ``/Creator``;
+* pypdf writes a ``/CreationDate`` and its own name into every bound copy;
 * ezdxf writes creation and update times, a "time in drawing" counter and two
   freshly generated GUIDs into every DXF, and emits the CLASSES section in an
   order that varies between runs.
@@ -24,10 +25,10 @@ in ``tools/check_pdfs.py`` is there to say.
 
 So the timestamps are pinned to one arbitrary instant, the tool strings to
 the tools' bare names, and the GUIDs are left to ezdxf, whose fixed-metadata
-mode writes them as all zeros.  The instant is
-deliberately neither "now" nor ``SOURCE_DATE_EPOCH``: reading an environment
-variable would mean two people building the same commit get different bytes,
-which is the exact problem this module exists to remove.
+mode writes them as all zeros.  The instant is deliberately neither "now" nor
+``SOURCE_DATE_EPOCH``: reading an environment variable would mean two people
+building the same commit get different bytes, which is the exact problem this
+module exists to remove.
 
 This module once carried two GUID constants of its own, derived by ``uuid5``
 over the repository's URL.  They were never written to anything -- ezdxf's
