@@ -2057,3 +2057,133 @@ Schedule 11 was renamed "Status LEDs, debug controller" as well.  The name is
 printed on the five sheets that do not carry the row, and "driven by the
 debug controller" pushed every FPGA feature schedule from 140 to 154 mm wide,
 for a row that on five of the six says only that the board has none.
+
+## An Acorn in a PoE M.2 HAT on a Pi 5
+
+Asked for a sheet of the SQRL Acorn CLE-215+ fitted in a Waveshare M.2 / PoE
+HAT on a Raspberry Pi 5, so that a plate or enclosure designer can see what
+the stack's plan envelope really is. Three questions had to be settled before
+anything could be drawn, and each of them had a published answer.
+
+**Which Acorn.** `fpgas.online-docs` says it outright: "The SQRL Acorn CLE-215+
+is an M.2 form factor PCIe FPGA accelerator card ... In the fpgas.online fleet
+it sits either in an M.2 HAT on a Raspberry Pi 5 or in a Compute Blade's own
+M.2 slot", form factor M.2 2280, connector M.2 M-key. Nothing in this
+repository mentioned it before.
+
+**Which Waveshare HAT.** They sell three: PoE M.2 HAT+, PoE M.2 HAT+ (B) and
+PoE M.2 HAT+ (C). Only the (B) is "Compatible with M.2 hard drives of 2230 /
+2242 / 2260 / 2280 sizes"; the other two stop at 2242, so neither can take an
+Acorn. The (B) is also the only one the size of a Pi: its dimension drawing
+says 85.00 x 56.00, against the plain one's 70.00 x 56.50 and the (C)'s
+65.00 x 56.50, both of which those boards' own drawings state. **Waveshare's
+wiki gives the (B) "Product size: 56.5mm x 70.0mm"**, which is the plain HAT's
+size and contradicts the (B)'s own drawing; the sheet says so rather than
+choosing quietly. Their wiki is behind Cloudflare and answers curl and a
+headless browser with 403, so every page and image here came from the Internet
+Archive at `web.archive.org/web/2025id_/`.
+
+**Where the M.2 slot is.** This is the part that had to be earned. Waveshare's
+dimension drawing is a photograph of the real board with six figures printed on
+it and "Unit: mm" in the corner: 85.00 and 56.00 for the outline, 58.00 and
+49.00 for the mounting hole rectangle, 3.50 from a hole centre to the board
+edge at the socket end -- which together are the Raspberry Pi's own hole
+pattern, so the HAT bolts through the Pi's four holes -- and 3.00, which is not
+a board dimension at all but the amount by which the 2280 standoff's boss hangs
+off the opposite edge. Nothing else of the M.2 system is dimensioned, and there
+is no DXF, STEP or board file from Waveshare that carries it.
+
+So `accessories/measure_poe_m2_hat.py` recovers it from that image, the way
+`measure_pmod_hat.py` recovers the Digilent adapter's hosts: scale and origin
+from the four mounting holes, whose pitch the drawing states. What makes this
+one far tighter than the Pmod HAT's +/-0.75 mm is that there are three separate
+checks the fit never used, and they close on each other:
+
+- the board's own edges come out 84.88 x 55.88 against the declared
+  85.00 x 56.00;
+- the three standoffs that sit clear of the board edge each give the M.2
+  connector datum on their own, through the M.2 specification's 30, 42 and
+  60 mm module lengths. They read 5.08, 5.07 and 5.05 mm: a spread of 0.04 mm
+  across fifty millimetres of board;
+- the fourth standoff is then *predicted* at 80 mm from that datum and never
+  measured -- it is the one the drawing rules a dimension line down and the
+  one with white paper behind it, so no threshold separates it from either --
+  and the boss whose diameter the other three fix reaches 88.00 mm, which is
+  exactly the 85.00 + 3.00 Waveshare printed.
+
+The worst residual on any of those three is 0.12 mm, so the derived
+positions are quoted at +/-0.2. The socket's own moulding is read off the same image but off
+a rectangle rather than a circle, and is quoted at +/-1 mm.
+
+Two things fall out that matter to whoever is cutting the plate. The card's far
+end lands at X 85.07 -- the M.2 specification puts the retention screw's
+half-moon cutout on the module's far end edge, so the card ends where the screw
+is -- which is a hair past the Pi's 85 mm edge, and the standoff boss reaches
+88.00. That is the Ethernet and USB edge, which the Pi's own connectors already
+overhang by 2.96 and 2.24 mm, so 3.00 is the figure to allow rather than 2.96.
+The assembled envelope note on the sheet now says 88.00 x 57.32 mm, and it says
+that because `_sheet_text` counts a phantom part drawn in detail into the
+envelope; without that it would have printed 87.96 and contradicted the note
+above it.
+
+The card itself is the specification's 2280 outline with SQRL's own extra
+millimetre: "Acorn should fit comfortably in most M.2 slots, but it is one
+millimeter wider than the official specifications. Ensure you have clearance."
+Their site is gone and the Internet Archive's 2020 capture is the source. The
+CLE-215+ carries a heatsink whose extent nobody publishes, so none is drawn and
+the sheet says no height is claimed.
+
+**What it is called.** `ACC-HAT-M2POE`, by the two rows it needs in
+`tools/layout.py`. The part key is `waveshare-poe-m2-hat-b-acorn`, which
+names the vendor and Waveshare's variant letter because that is what somebody
+buying one types; the title block already prints both, so `ACC_STEMS` drops
+them and the file is `accessories/output/poe-m2-hat-acorn.svg`. `ACC_NAMES`
+cuts that stem to the name a drawing carries: HAT, because the thing sits on
+the Pi's 40-pin header and bolts through the Pi's four mounting holes, which
+is the test `raspmod-vs-pmod-hat.md` applies and the one the Raspmod, filed
+under the same word, fails. Not the specification's shape: that is a
+65 x 56.0/56.5 mm board and this is 85 x 56, and nothing published says
+whether it carries the ID EEPROM, so neither is claimed. Then M2POE, five
+characters for what it adds to the Pi underneath it, an M.2 slot and Power
+over Ethernet. The stem itself is what the file is called and is allowed to
+say more, which is the whole point of the split.
+
+**Where it lives.** `accessories/`, even though the outline on the sheet is a
+Raspberry Pi's. The numbers that are new are hand-curated from a
+dimensioned vendor image and two specifications, which is exactly what
+`accessories/parts.py` is for and exactly the class of source the PoE splitters
+there came from; `raspberry_pi/boards.py` is generated from Raspberry Pi Ltd's
+drawings and nothing hand-curated belongs in it. The Raspberry Pi family also
+shares one view frame and one bound copy across three sheets that are defined
+as "each with a Digilent Pmod HAT Adapter overlaid", and a fourth sheet with a
+different overlay would have had to be held out of both anyway.
+
+**One overlay, not two.** The obvious shape is the HAT overlaid on the Pi and
+the card overlaid on the HAT, and the drafting library has no nesting. It does
+not need any: the card's position *is* the HAT's geometry -- the socket and the
+standoff are what put it there -- so the card is one of the HAT overlay's own
+features, and `POE_M2_HAT_WITH_ACORN` is the HAT with that feature added.
+
+The drafting change is `overlay_detail`, off by default so that not a line
+moves on any sheet that already existed. With it on, an overlay's holes and
+component bodies are drawn in phantom too, they go into the view's bounding
+box, the ordinate chain and the assembled envelope, and they get their own two
+tables headed with the part's name so no row of them can be taken for the
+board's own. Three details were each wrong first:
+
+- A phantom hole that lands on one of the host board's own holes is drawn
+  once, by the host. The HAT bolts through the Pi's four mounting holes, and
+  drawing both put a dashed circle a fortieth of a millimetre outside a solid
+  one, which reads as a defect rather than as the coincidence it is.
+- A phantom body is an obstacle for balloons the way the **board outline** is,
+  not the way a component body is: its edges are hard for a balloon to sit on
+  and free for a leader to cross. Treated as a filled rectangle, the card --
+  eighty millimetres of it -- forbade two thirds of the board, and
+  `check_balloons.py` reported the Pi's USB-C balloon parked across its lower
+  edge in the one corner the placer had left.
+- A phantom body is named inside its own outline, and the name has to be short
+  enough and the paper under it clear. The full name ran over the Pi's USB
+  ports; centred, the shorter one ran through the mounting hole column's
+  ordinate witness line. It now uses the feature's designator where there is
+  one, keeps the full name for the schedule, and is drawn only where it clears
+  the host's own parts -- which is what a designator is for.
