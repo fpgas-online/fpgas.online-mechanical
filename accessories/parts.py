@@ -320,9 +320,13 @@ GENERIC_POE = BoardSpec(
 
 M2_CARD_WIDTH = 22.00             # section 2.3.4.3, figure 13: 22 +/-0.15
 M2_2280_LENGTH = 80.00            # section 2.3.4.3, figure 13: 80 +/-0.15
-M2_NOTCH_DIA = 3.50               # figures 18 and 19: the half-moon cutout
-M2_STANDOFF_DIA = 5.50            # section 2.5.4.2, figure 73, +/-0.10
-M2_STANDOFF_THREAD = "M2 x 0.4"   # section 2.5.4.2, the shouldered stand-off
+
+#: The stand-off's tapped hole, section 2.5.4.2 and figure 73: "M2X0.4 Tapped
+#: Hole-Thru".  It is what the retention screw goes into, so on a drawing of
+#: the host board it is the hole there is to draw; it is not a clearance hole
+#: and nothing passes through it but the screw.
+M2_STANDOFF_THREAD = "M2 x 0.4"
+M2_STANDOFF_TAP_DIA = 2.00
 
 #: Distance from the connector datum to a module's retention screw, which is
 #: that module's own length: the half-moon cutout is centred on the module's
@@ -333,10 +337,9 @@ M2_SPEC_SOURCE = Source(
     label="PCI Express M.2 Specification",
     ref="PCI-SIG, Revision 1.0, 1 November 2013",
     note="Section 2.3.4.3 and figure 13: a Type 2280 module is 22 +/-0.15 by "
-         "80 +/-0.15 mm with a half-moon cutout for the retention screw "
-         "centred on its far end edge, 11 mm from either side. Section 2.5: "
-         'a "5.5 mm diameter Keep-out zone at the end for attaching a screw", '
-         "on an M2 x 0.4 shouldered stand-off, figure 73.",
+         "80 +/-0.15 mm, its retention screw's half-moon cutout centred on "
+         "the far end edge. Section 2.5.4.2 and figure 73: an M2 x 0.4 "
+         "shouldered stand-off, base Ø5.50 +/-0.10.",
 )
 
 # ---------------------------------------------------------------------------
@@ -344,18 +347,26 @@ M2_SPEC_SOURCE = Source(
 # ---------------------------------------------------------------------------
 #
 # Waveshare sell three PoE-plus-M.2 HATs for the Pi 5 and only this one takes
-# a 2280 card: the plain PoE M.2 HAT+ and the (C) are "Compatible with M.2
-# hard drives of 2230 / 2242 sizes", the (B) with "2230 / 2242 / 2260 / 2280".
+# a 2280 card.  Each wiki's feature list, quoted as each one writes it:
+#
+#     PoE M.2 HAT+        "Compatible with M.2 hard drives of 2230/2242 sizes"
+#     PoE M.2 HAT+ (B)    "Compatible with M.2 hard drives of
+#                          2230 / 2242 / 2260 / 2280 sizes"
+#     PoE M.2 HAT+ (C)    "Compatible with M.2 hard drives of 2230 / 2242
+#                          sizes"
+#
 # The (B) is also the only one the size of a Pi: 85.00 x 56.00 against the
-# plain one's 70.00 x 56.50 and the (C)'s 65.00 x 56.50, both of which their
-# own dimension drawings state.
+# plain one's 70.00 x 56.50 and the (C)'s 65.00 x 56.50, both of which those
+# boards' own dimension drawings state.
 #
 # Everything below in the RASPBERRY PI's frame: origin at the Pi's lower-left
 # corner, X right, Y up, viewed from the component side.  Waveshare draw this
 # HAT with its 40-pin header along the lower edge, which is the assembly seen
-# from above and turned through 180 degrees; accessories/measure_poe_m2_hat.py
-# undoes the rotation and checks it by requiring the four mounting holes to
-# land on the Pi's own 3.5 / 61.5 by 3.5 / 52.5.
+# from above and turned through 180 degrees.  accessories/measure_poe_m2_hat.py
+# undoes that rotation and then proves it, by requiring the board's own
+# lower-left corner to land on the origin: the mounting holes sit 3.50 in from
+# one end of an 85 mm board and 23.50 in from the other, so a view read the
+# wrong way round puts that corner twenty millimetres out.
 #
 # DECLARED, printed on Waveshare's dimension drawing with "Unit: mm":
 #     85.00 and 56.00    the outline
@@ -392,10 +403,14 @@ POE_M2_STANDOFF_OVERHANG = 3.00
 POE_M2_DATUM_X = 5.07
 POE_M2_AXIS_Y = 18.26
 
-#: Outside diameter of the standoff bosses, measured: all four read the same,
-#: and 0.37 mm over the M.2 specification's Ø5.50 guideline figure.  It is the
-#: boss, not the screw, that decides how far the assembly reaches past the
-#: Pi's edge, so it is the boss that is drawn.
+#: Outside diameter of the standoff bosses.  Measured on the THREE that sit
+#: clear of the board edge, which all read the same, and 0.37 mm over the M.2
+#: specification's guideline Ø5.50 shouldered stand-off; the fourth is not
+#: measured at all, because it is the 2280 one, and that whole standoff --
+#: position and boss together -- is predicted and then checked against
+#: Waveshare's declared 3.00 mm overhang.  It is the boss, not the screw, that
+#: decides how far the assembly reaches past the Pi's edge, so it is the boss
+#: that is drawn.
 POE_M2_BOSS_DIA = 5.87
 
 #: Everything derived from the drawing, to the worst residual on a check that
@@ -423,15 +438,21 @@ POE_M2_HAT = BoardSpec(
     front_edge="top",
     outline=Outline(width=POE_M2_HAT_WIDTH, height=POE_M2_HAT_HEIGHT,
                     corner_radius=HAT_CORNER_RADIUS),
-    # The four HAT mounting holes are the Pi's own -- the drawing's 58.00 x
-    # 49.00 and 3.50 are the Pi's 3.5 / 61.5 by 3.5 / 52.5 -- so they are not
-    # repeated here: the sheet draws the Pi, and a second circle a fortieth of
-    # a millimetre outside the first is a smudge, not information.  What is
-    # here is the M.2 system, which is this board's own.
+    # The board's own eight holes: four to bolt it to the Pi and four to
+    # retain a card.  The mounting four are at the Pi's own centres, which is
+    # what the drawing's 58.00 x 49.00 and 3.50 say, and on a sheet that also
+    # draws the Pi the renderer draws each of them once rather than putting a
+    # dashed circle a fortieth of a millimetre outside a solid one.  They stay
+    # in the data because they are this board's geometry and its schedule is
+    # not complete without them.  Waveshare do not dimension the hole itself;
+    # HAT_HOLE_DIA is the Raspberry Pi HAT specification's M2.5 clearance.
     holes=tuple(
+        Hole(x=x, y=y, dia=HAT_HOLE_DIA, label=f"MT{i + 1}", kind="mount")
+        for i, (x, y) in enumerate(sorted(HAT_HOLES, key=lambda p: (p[1], p[0])))
+    ) + tuple(
         Hole(x=POE_M2_DATUM_X + M2_LENGTHS[n], y=_STANDOFF_Y,
-             dia=2.0, label=n, kind="aux", keepout_dia=POE_M2_BOSS_DIA,
-             tol=POE_M2_HAT_TOL)
+             dia=M2_STANDOFF_TAP_DIA, label=n, kind="aux",
+             keepout_dia=POE_M2_BOSS_DIA, tol=POE_M2_HAT_TOL)
         for n in ("2230", "2242", "2260", "2280")
     ),
     features=(
@@ -454,8 +475,8 @@ POE_M2_HAT = BoardSpec(
                ref="https://www.waveshare.com/wiki/PoE_M.2_HAT%2B_(B)",
                note='"Compatible with M.2 hard drives of 2230 / 2242 / 2260 / '
                     '2280 sizes", IEEE 802.3af/at, Pi 5 only. Its '
-                    '"Product size: 56.5mm x 70.0mm" is the plain PoE M.2 '
-                    "HAT+'s size and contradicts this board's own drawing."),
+                    '"Product size: 56.5mm x 70.0mm" is the plain HAT+\'s and '
+                    "contradicts this board's own drawing."),
         HAT_SPEC_SOURCE,
         M2_SPEC_SOURCE,
     ),
@@ -464,7 +485,13 @@ POE_M2_HAT = BoardSpec(
     # so anything written here would be a provenance note no drawing prints.
     # What this part's figures are and how good they are is said on the sheet
     # that draws it, by ACC_M2_HAT_NOTES in tools/generate_diagrams.py.
-    tolerance=f"Waveshare outline; M.2 system DERIVED +/-{POE_M2_HAT_TOL}",
+    #
+    # No tolerance override either.  This part has never been the subject of a
+    # drawing -- it is only ever the phantom one on the assembly sheet, where
+    # the title block's general tolerance belongs to the board that IS the
+    # subject -- so a field only the subject's title block can show would be a
+    # figure nothing prints.  What the reader needs is in that sheet's notes
+    # and in the headings of the phantom schedules, which name this part.
 )
 
 # ---------------------------------------------------------------------------
@@ -485,9 +512,9 @@ ACORN_SOURCE = Source(
     ref="https://web.archive.org/web/2020/"
         "http://www.squirrelsresearch.com/acorn-cle-215-plus/",
     note='Squirrels Research Labs, captured 2020; the site is gone. "An M.2 '
-         "2280 M-Key (PCIe) slot is required to use Acorn. Acorn should fit "
-         "comfortably in most M.2 slots, but it is one millimeter wider than "
-         'the official specifications. Ensure you have clearance."',
+         "2280 M-Key (PCIe) slot is required to use Acorn ... it is one "
+         "millimeter wider than the official specifications. Ensure you have "
+         'clearance."',
 )
 
 ACORN_CARD = Feature(
@@ -520,9 +547,15 @@ POE_M2_HAT_WITH_ACORN = replace(
     sources=POE_M2_HAT.sources + (ACORN_SOURCE,),
 )
 
+#: The accessories that are drawn as the SUBJECT of a sheet of their own.
+#: tools/check_balloons.py walks this to redraw each one and inspect where its
+#: balloons went, so a part in here that no generator call renders would have
+#: the checker reporting on a drawing nobody can look at.  POE_M2_HAT is
+#: therefore not here: it is only ever the phantom part on the assembly
+#: sheet, and the checker draws that sheet itself, the Pi with the overlay
+#: on it.
 ACCESSORIES: dict[str, BoardSpec] = {
     PMOD_HAT.key: PMOD_HAT,
     WAVESHARE_POE.key: WAVESHARE_POE,
     GENERIC_POE.key: GENERIC_POE,
-    POE_M2_HAT.key: POE_M2_HAT,
 }
