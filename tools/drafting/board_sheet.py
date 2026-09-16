@@ -844,6 +844,24 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
     boxed the balloons into the board's interior, because a leader from a part
     near one of those two edges had to cross a band to reach any space at all.
 
+    The two ends of that band are the exception: a solid filled arrowhead with
+    a leader ruled through it stops reading as an arrowhead, and it is three
+    millimetres long rather than a band the width of the board, so charging
+    leaders for it cannot box anything in.  The Ultra96-V2's LED balloon went
+    out to the right at the height of the 54.00 dimension's lower arrowhead
+    and straight through it.  Reserved at both ends and on both sides of the
+    tip, because a span too narrow for its value flips its arrows outboard.
+    No padding: the box is the arrowhead's bounding box, already wider than
+    the triangle everywhere but its base.
+
+    Where *crossing* is given the box goes in there, as its four sides at the
+    hard weight, so that a leader through it is charged twice that and a
+    balloon beside it nothing.  Held in *obstacles* instead, it kept every
+    balloon two millimetres clear of it as well, which is not what an
+    arrowhead needs, and once the dimension line cost a leader something too
+    that sent the Cynthion's balloon 9, which sits on the corner the height's
+    lower arrowhead points at, 40 mm down past the ordinate chain.
+
     *height_edge* says which vertical edge the overall height goes up.  The
     right, on every sheet with an ordinate chain, because the chain has the
     left; a sheet with no chain may want the right for something else.
@@ -851,7 +869,9 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
     *crossing*, if given, gets the two dimension lines and their extension
     lines as segments a leader is charged for crossing, at twice what a
     witness line costs: ``tools/check_balloons.py`` reports a leader across
-    either, and it does not report one across a witness line.
+    either, and it does not report one across a witness line.  The
+    arrowheads at their ends are not merely charged: they are hard, as above,
+    because a leader through one is a defect at any price.
     """
     o = spec.outline
     for edge in ((0, 0, o.width, 0), (o.width, 0, o.width, o.height),
@@ -862,6 +882,8 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
     band = dim_text_band()
     edge_y, offset = overall_width_line(board, chain_edge)
     overall_y = edge_y + offset
+    nose, flank = style.ARROW_LEN, style.ARROW_HALF_WIDTH
+    heads: list[tuple[float, float, float, float]] = []
     for value, horizontal in ((o.width, True), (o.height, False)):
         half = style.text_width(f"{value:.2f}", style.T_DIM) / 2
         if horizontal:
@@ -870,6 +892,9 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
             edge_only.add_rect(board.x, lo, board.x1, hi, pad=1.2, weight=HARD)
             obstacles.add_rect(mid - half, lo, mid + half, hi,
                                pad=1.2, weight=HARD)
+            for tip in (board.x, board.x1):
+                heads.append((tip - nose, overall_y - flank,
+                              tip + nose, overall_y + flank))
         else:
             mid = (board.y + board.y1) / 2
             line_x = _height_line(board, height_edge)
@@ -877,6 +902,16 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
             edge_only.add_rect(lo, board.y, hi, board.y1, pad=1.2, weight=HARD)
             obstacles.add_rect(lo, mid - half, hi, mid + half,
                                pad=1.2, weight=HARD)
+            for tip in (board.y, board.y1):
+                heads.append((line_x - flank, tip - nose,
+                              line_x + flank, tip + nose))
+    for x0, y0, x1, y1 in heads:
+        if crossing is None:
+            obstacles.add_rect(x0, y0, x1, y1, weight=HARD)
+            continue
+        for side in ((x0, y0, x1, y0), (x1, y0, x1, y1),
+                     (x1, y1, x0, y1), (x0, y1, x0, y0)):
+            crossing.add_segment(*side, weight=HARD)
     # Their extension lines too, position only like the outline: a balloon
     # parked on one reads as part of the dimension.  On the Orange Pi PC one
     # sat squarely on the width's left extension line, where nothing had
