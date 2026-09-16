@@ -312,10 +312,10 @@ BOARDS['icepi-zero'] = BoardSpec(
                         ('arc', 65.0, 3.5, 61.5, 0.0, 3.5, 0, 0),
                     )),
     holes=(
-        Hole(x=3.5, y=3.5, dia=2.7, label='H3', kind='mount', keepout_dia=2.7),
-        Hole(x=61.5, y=3.5, dia=2.7, label='H4', kind='mount', keepout_dia=2.7),
-        Hole(x=3.5, y=26.5, dia=2.7, label='H1', kind='mount', keepout_dia=2.7),
-        Hole(x=61.5, y=26.5, dia=2.7, label='H2', kind='mount', keepout_dia=2.7),
+        Hole(x=3.5, y=3.5, dia=2.7, label='H3', kind='mount', keepout_dia=None),
+        Hole(x=61.5, y=3.5, dia=2.7, label='H4', kind='mount', keepout_dia=None),
+        Hole(x=3.5, y=26.5, dia=2.7, label='H1', kind='mount', keepout_dia=None),
+        Hole(x=61.5, y=26.5, dia=2.7, label='H2', kind='mount', keepout_dia=None),
     ),
     pmods=(
 
