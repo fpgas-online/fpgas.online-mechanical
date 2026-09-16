@@ -49,6 +49,7 @@ check: diagrams
 	$(DRAW) python tools/check_sheets.py
 	$(UV) python tinytapeout/mounting_plate/verify.py
 	$(DRAW) python tools/check_balloons.py
+	$(UV) --with pillow python tools/check_leader_arrows.py
 	$(UV) --with pdfplumber --with pillow python tools/check_drill_template.py
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
 
