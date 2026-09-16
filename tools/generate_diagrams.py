@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from accessories.parts import (ACCESSORIES, ACORN_WIDTH,  # noqa: E402
-                               GENERIC_POE, HAT_SPEC_SOURCE,
+                               GENERIC_POE,
                                M2_CARD_WIDTH, M2_LENGTHS,
                                M2_STANDOFF_THREAD,
                                POE_M2_BOSS_DIA, POE_M2_DATUM_X,
@@ -129,31 +129,30 @@ _ACORN_END = POE_M2_DATUM_X + M2_LENGTHS["2280"]
 #: describes that are two copies of one number drift apart silently, and the
 #: note is the copy nobody rebuilds.
 ACC_M2_HAT_NOTES = (
-    "Phantom detail is the HAT's four retention standoffs and its M-key "
-    "socket, with the Acorn seated in it; the two schedules that list them "
-    "are headed with the HAT's name.",
     f"The card's far end and its retention screw land at X {_ACORN_END:.2f}, "
     f"just past the Pi's Ethernet-end edge, and the standoff's "
     f"{POE_M2_BOSS_DIA:.2f} mm boss reaches "
     f"{_ACORN_END + POE_M2_BOSS_DIA / 2:.2f}: allow "
     f"{POE_M2_STANDOFF_OVERHANG:.2f} mm past the {POE_M2_HAT_WIDTH:.0f} mm "
-    "board on the edge the RJ45 and the USB ports already overhang.",
-    f"The Acorn CLE-215+ is {ACORN_WIDTH:.0f} mm wide, SQRL's own millimetre "
-    f"over the M.2 specification's {M2_CARD_WIDTH:.0f} +/-0.15, and they say "
-    "to make sure of the clearance.",
-    "PLAN ONLY, no Z anywhere: Waveshare publish no stack-up for the HAT or "
-    "its standoffs, and SQRL neither the card's height nor the extent of the "
-    "heatsink the CLE-215+ carries, which is therefore not drawn.",
+    "board, on the edge the RJ45 and USB already overhang.",
+    f"The Acorn is {ACORN_WIDTH:.0f} mm wide, a millimetre over the M.2 "
+    f"specification's {M2_CARD_WIDTH:.0f} +/-0.15; SQRL say to make sure of "
+    "the clearance.",
+    "PLAN ONLY, no Z anywhere: neither Waveshare nor SQRL publish a height "
+    "for the HAT, its standoffs, the card, or the heatsink the CLE-215+ "
+    "carries, which is therefore not drawn.",
+    # Which figures are NOT derived is as much a provenance question as which
+    # are, and the phantom schedule's four 2.75s are the only ones on the
+    # sheet that come from neither Raspberry Pi Ltd's drawing nor Waveshare's.
     "Waveshare dimension nothing of the M.2 system but the standoff's "
-    f"{POE_M2_STANDOFF_OVERHANG:.2f} mm overhang. Everything phantom inside "
-    "the outline is DERIVED from their drawing by "
-    f"accessories/measure_poe_m2_hat.py, to +/-{POE_M2_HAT_TOL} mm, the "
-    f"socket to +/-{POE_M2_SOCKET_TOL:.0f} mm. The standoffs' DIA is the "
-    f"{M2_STANDOFF_THREAD} tapped thread, not a clearance hole; BOSS is what "
-    "they occupy.",
-    "Only the (B) of Waveshare's three PoE M.2 HATs takes a 2280 card; the "
-    "others stop at 2242. Their wiki gives this one the plain HAT's "
-    "56.5 x 70.0 mm, which its own dimension drawing contradicts.",
+    f"{POE_M2_STANDOFF_OVERHANG:.2f} mm overhang, so the socket, the "
+    "standoffs and the card are DERIVED from their drawing by "
+    f"accessories/measure_poe_m2_hat.py, to +/-{POE_M2_HAT_TOL} mm and the "
+    f"socket to +/-{POE_M2_SOCKET_TOL:.0f} mm; the standoffs' DIA is the "
+    f"{M2_STANDOFF_THREAD} tapped thread, not a clearance hole, and BOSS is "
+    "what they occupy. MT1 to MT4 are not derived at all: their 2.75 mm is "
+    "the Raspberry Pi HAT specification's DECLARED M2.5 clearance, which "
+    "Waveshare do not dimension.",
 )
 
 
@@ -582,18 +581,15 @@ def main() -> None:
                 subtitle=ACC_M2_HAT_SUBTITLE,
                 # Not the Pi 5 sheet's notes: those are about where that
                 # family's numbers come from and about the Pmod HAT Adapter,
-                # and the Pi 5's own sheet is where a reader goes for them.
-                # This sheet says what the assembly does, which is all it is
-                # for.
+                # and the Pi 5's own sheet is where a reader goes for
+                # them.  This sheet says what the assembly does, which is all
+                # it is for.
                 notes=ACC_M2_HAT_NOTES,
-                # The Pi's own drawing, then the HAT's and the card's.  Not
-                # the HAT specification: nothing on this sheet is taken from
-                # it, the 40-pin header it fixes is dimensioned on the Pi 5's
-                # own sheet, and the annotation column is not big enough to
-                # carry a citation nothing here rests on.
+                # The Pi's own drawing, then the HAT's and the card's, all
+                # of them: a figure on this sheet that no line under SOURCES
+                # accounts for is the one thing these drawings are for.
                 sources=RPI_BOARDS["rpi5"].sources[:1]
-                + tuple(s for s in POE_M2_HAT_WITH_ACORN.sources
-                        if s is not HAT_SPEC_SOURCE)),
+                + POE_M2_HAT_WITH_ACORN.sources),
         drawing_no=m2_name, version=VERSION,
         overlay=POE_M2_HAT_WITH_ACORN, overlay_detail=True,
         family_numbers=RPI_NUMBERS)
