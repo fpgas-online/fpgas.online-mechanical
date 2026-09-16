@@ -515,7 +515,15 @@ def main() -> None:
     # The two A3 plate sheets are drawn by a function each rather than by one
     # renderer over a list, so they are rendered one at a time; where each
     # lands and what it is called still comes from plate_sheets().
-    (mp_name, mp_path, _), (fg_name, fg_path, _) = plate_sheets()
+    plate = plate_sheets()
+    if len(plate) != 2:
+        raise SystemExit(
+            f"plate_sheets() lists {len(plate)} A3 mounting plate sheets, and "
+            "this renders exactly two: the plate's own drawing by "
+            "render_plate and the fitting guide by render_fitting_guide. "
+            "Each plate sheet is drawn by a function of its own, so a third "
+            "needs its call added here, in the order the sheets are bound.")
+    (mp_name, mp_path, _), (fg_name, fg_path, _) = plate
     sheet = render_plate(drawing_no=mp_name, version=VERSION)
     save(sheet, mp_path, mp_name)
 

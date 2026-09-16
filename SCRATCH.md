@@ -1608,8 +1608,8 @@ the three bound copies. That is not an oversight anyone would spot from the
 outside, because the walk is over the SVGs: it finds a sheet, renders it, and
 compares. A bundle has no SVG. It is the one output in an `output/` directory
 with no drawing of its own, so there was nothing for the walk to find it by,
-and the check's own summary line — "N problems across N PDFs" — counted the
-sheets and read as though it had covered everything.
+and the check's own summary line -- "N problems across N PDFs" -- counted
+the sheets and read as though it had covered everything.
 
 What that cost was a bound copy shipped with three pages re-rendered at a
 VERSION stamp no committed sheet carried. The set was green. The bundle was a
@@ -1619,16 +1619,26 @@ title block. It was caught by a reviewer extracting content streams and
 hashing them by hand, which is not a thing to rely on twice.
 
 So a bundle is now checked against what it claims to be. Page for page, the
-bound page's content stream against the staged sheet PDF's — the content
+bound page's content stream against the staged sheet PDF's -- the content
 stream rather than the file, because the same drawing bound into a document
-is renumbered and recompressed and only the operators survive intact. Then
-the page count, the bookmark labels in order, and the pinned metadata.
+is renumbered and recompressed and only the operators survive intact -- and
+the page's MediaBox against the sheet's, because a drawing can come through
+whole on a page of the wrong size, which is the same lie as a sheet that does
+not print 1:1. Then the page count, the bookmark labels in order and the page
+each bookmark actually opens, and an Info dictionary whose key set is exactly
+`/Producer`, `/Title` and `/CreationDate`, so that a `/ModDate` or somebody's
+`/Creator` is noticed rather than ignored.
+
+One line per defect, not per page it shows up on. A swapped pair of bookmarks
+is one mistake, and reporting it as five problems would make the count at the
+foot of the run mean nothing, which is what the count meant before any of
+this.
 
 The page list had to come from somewhere, and the only place it existed was
 inside `generate_diagrams.main()`, as lists accumulated while the sheets were
-being rendered — which meant the one way to learn what belonged in a bundle
-was to render the whole set again. Retyping it into the check would have
-given the two copies to drift apart, which is the same shape of bug one level
+being rendered -- which meant the one way to learn what belonged in a bundle
+was to render the whole set again. Retyping it into the check would have given
+the two copies room to drift apart, which is the same shape of bug one level
 up. So the bundle definitions moved out into `bundles()`, with
 `tt_board_sheets()`, `rpi_sheets()`, `fpga_sheets()` and `plate_sheets()`
 under it naming each family's sheets, their drawing names and their paths.
@@ -1637,14 +1647,17 @@ Data only; nothing in there renders or binds, and the check imports it.
 `main()` now draws from those same functions rather than building its lists
 as it goes, so a sheet's name and the file it is written to are stated once.
 Two things confirm the refactor changed nothing: `--no-raster` writes all 21
-SVGs with one line different in each, the `+` that a modified source file
-adds to the VERSION stamp, and rebinding all three bundles from `bundles()`
-over the committed sheet PDFs gives the committed bundles back byte for byte.
+SVGs with exactly one line different in each, and that line is the title
+block's VERSION stamp, which any source commit moves -- the `+` for an
+uncommitted working tree, a new describe hash once the commit lands -- and
+rebinding all three bundles from `bundles()` over the committed sheet PDFs
+gives the committed bundles back byte for byte.
 
 Proved the other way as well, before trusting it. A bad bundle was built
 under `tmp/`: `rpi3b.svg` taken from the index, its stamp changed to
 `v0.0-9-gdeadbee`, rendered, and bound in front of the committed Pi 4B and
 Pi 5 sheets with the real labels and title, so that the only thing wrong with
 it was the thing that actually went wrong. One problem, naming the page, the
-sheet it should have been and both hashes. Bound two pages of three instead,
-it reports three.
+sheet it should have been and both hashes. Binding that same stale page and
+then dropping the Pi 5 sheet gives three: the page count, the stale page, and
+a bookmark list two entries long for three pages.
