@@ -129,16 +129,20 @@ and the sheet says which it was.
   media box is cropped to the drawing, so the sheet frame and title block are
   outside it and the only thing on it that can fix the scale is the board
   outline; the scale is recovered from that, per axis, against the 96Boards
-  Consumer Edition 85 x 54 mm, and then checked -- the four mounting holes
-  land within 13 um of the specification's pattern and the two expansion
-  connectors come out on exactly 2.00 and 0.80 mm. What makes the plot
-  readable is that Altium wrote the pad designators into it as text, so
-  `PAJ501` on a pad says it is pin 1 of J5. There is no component body
-  outline anywhere on it, so every feature is a pad extent. **No Pmod and no
-  Ethernet**: expansion is the 96Boards 40-way low-speed and 60-way
-  high-speed connectors, and the only networking on the board is Wi-Fi and
-  Bluetooth. The hole diameter is the specification's M2.5, because the plot
-  draws each hole as a solid 5.0 mm disc -- the keepout -- and no drill.
+  Consumer Edition 85 x 54 mm, and then checked on both axes -- the four
+  mounting holes land within 13 um of the specification's pattern, and the
+  two expansion connectors come out on exactly 2.00 and 0.80 mm across their
+  columns and exactly 5.00 and 4.40 mm between their pad rows. What makes the
+  plot readable is that Altium wrote the pad designators into it as text, so
+  `PAJ501` on a pad says it is pin 1 of J5; how many pads it names for a
+  component is asserted, which is not always the pin count of the part in the
+  bill of materials. There is no component body outline anywhere on it, so
+  every feature is a pad extent, and this sheet alone heads its schedule
+  "FEATURE SCHEDULE - PAD EXTENTS". **No Pmod and no Ethernet**: expansion
+  is the 96Boards 40-way low-speed and 60-way high-speed connectors, and the
+  only networking on the board is Wi-Fi and Bluetooth. The hole diameter is the
+  specification's M2.5, because the plot draws each hole as a solid 5.0 mm
+  disc -- the keepout -- and no drill.
 
 The PYNQ-Z1 was looked at and left out: Digilent's 3D model of it has no
 mounting holes and its outline disagrees with their own stated size.
