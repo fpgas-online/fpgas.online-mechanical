@@ -2370,3 +2370,74 @@ and thrown away.  And `_chain_room` counts only the spacing dimensions
 `render_board` actually draws: a pair of hosts sharing a coordinate, as the
 Pmod HAT Adapter's JA and JB do, gets no dimension and must not be reserved
 paper for one.
+
+## The Ultra96-V2, out of an Altium plot
+
+Asked for a sheet of Avnet's Ultra96-V2, the Zynq UltraScale+ board built to
+the Linaro 96Boards Consumer Edition form factor. Avnet's own product page is
+indexed as listing a mechanical drawing and three STEP models -- the board
+alone, the heat sink alone, and the two together -- and none of them could be
+reached: the page answers a scripted fetch and a browser under Playwright
+alike with a Cloudflare challenge, and a CDX query of the Internet Archive's
+index of avnet.com turns up the Ultra96-V1 mechanical drawing and the V2
+assembly drawings but no V2 mechanical drawing and no STEP file at all. So
+the page's contents are hearsay from a search index, not something read here.
+What is reachable is Linaro's
+`96boards/documentation` repository, which republishes the vendors' hardware
+documents, and it carries `ultra96-v2-mechanical.PDF` under the heading
+"Mechanical and Drill". That file is Avnet's, an Altium NEXUS plot of the
+U96-US1SBC V2 board dated 2019-03-01, and it is a vector drawing, not a scan.
+
+It is also a plot of the whole board rather than a mechanical drawing in the
+usual sense: 45,883 line segments of copper, silkscreen and drills, with the
+overall sizes dimensioned in inches across the top and bottom. Its media box
+is cropped to the drawing, so the Altium sheet frame, the title block and
+anything like a drill table are outside it -- the content stream still
+reaches from -87 to 631 mm across, and only the crop hides it. Nothing on the
+visible page fixes the scale except the board outline, so the scale is
+recovered from that, per axis, against the 96Boards 85 x 54 mm. The axes
+disagree by 0.02 %, and the drawing's own overall dimensions read 3.346 and
+2.126 in, which are 84.99 and 54.00 mm.
+
+Three things then check that the recovery is right, and all three are
+independent of it. The four mounting holes come out at (4.000, 18.500),
+(4.000, 50.000), (81.013, 18.500) and (81.013, 50.000) against the
+specification's 4.00 and 81.00 by 18.50 and 50.00, so the worst error is
+13 um. The low-speed connector's twenty columns span exactly 2.000 mm each
+and the high-speed connector's thirty exactly 0.800. And the two connectors'
+centre lines land on the specification's own: the low-speed one on y = 50.00,
+which the 2D Reference Drawing calls "center line as per mounting holes", and
+the high-speed one on 15.45, which is the only other ordinate it gives.
+
+What makes the plot readable at all is that Altium wrote the designators into
+it as text. Every pad carries a string -- `PAJ501` for pin 1 of J5, `PAJ5010`
+for pin 10, `PAJ70S1` for the micro-USB's first shield land -- so a filled
+shape can be named without guessing which component it belongs to. The
+strings are drawn glyph by glyph and each ends with a space, and the space
+has to end a word as well as the usual baseline and advance test: without it
+the micro-USB's two middle shield lands came back as one word naming two
+pads. Avnet's bill of materials says what each designator is, and the pad
+count from the BOM part is asserted, so a footprint that changed shape is an
+error rather than a quietly smaller box. Three pads are filled black instead
+of the copper grey -- pin 1 of each USB type A port and one pad of the barrel
+jack -- and black rectangles are taken as copper for that reason, while black
+curves are not, because all 1,545 of those are drill holes.
+
+There is no component body outline anywhere on the plot, which is why every
+feature on the sheet is a pad extent and the sheet says so. The silkscreen
+brackets a connector rather than enclosing it, and the only closed outlines
+it draws are around the 0603 parts. The mounting holes are drawn as solid
+5.0 mm discs with no drill inside them, which is the specification's keepout
+and not a hole, so the diameter in the schedule is the specification's M2.5
+and the note says where it came from.
+
+Two more things the board itself decides. It has no Ethernet -- Avnet's
+hardware user's guide says so in as many words -- and no tri-colour LED, so
+schedule rows 3 and 5 are empty, and it has no Pmod, so the two 96Boards
+connectors take the expansion rows 6 and 7 and row 8 stays unused. Row 1 is
+the family's "USB programming / console port", and on this board it is the
+USB 3.0 device port: programming is JTAG on a 1x8 2 mm header and the console
+is a 1x4 2 mm header, neither of which is drawn, and a note says so rather
+than letting the row imply otherwise. `row_feature` grew an option for a row
+that is not on a pitch, because the four user LEDs sit 1.40, 1.52 and
+1.40 mm apart and a label claiming 1.44 would be inventing one.
