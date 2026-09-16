@@ -70,7 +70,9 @@ FEATURE_NAMES = {
     "exp3": "Expansion connector, third",
     "usb_third": "Third USB port",
     "usb_fourth": "Fourth USB port",
-    "status_leds": "Status LEDs, driven by the debug controller",
+    # Short, because this name is printed on the five sheets that do not
+    # carry the row as well, and it sets the width of every FPGA schedule.
+    "status_leds": "Status LEDs, debug controller",
 }
 
 #: Pin 1 of a 2x6 host, from the pin field's centre and the edge it faces.
