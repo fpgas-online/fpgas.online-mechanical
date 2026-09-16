@@ -58,14 +58,14 @@ KIND_LABEL = {
 #
 # Both are floors, not answers.  Thirty millimetres on the chain's edge is
 # roughly what a chain whose labels all fit in one lane needs -- the Arty
-# A7's wants 30.33 -- and most sheets here stagger a label into a second lane
-# and want ten millimetres more than that.  They get it from the height the
-# sheet has spare, half of which falls on each side of a centred view; every
-# sheet was measured and one came up short, the Zybo Z7 by 9.17 mm, which is
-# the sheet a centred view leaves the least room under.  `_view_margins` is
-# where a short sheet is given what the centring did not, out of the spare
-# height and, if need be, out of the free edge's margin as far as
-# `_view_room_free_edge`.
+# A7's wants 30.33 -- and twelve of the seventeen board sheets
+# `render_board` draws stagger a label into a second lane and want up to
+# 42.76.  They get it from the height the sheet has spare, half of which
+# falls on each side of a centred view; every sheet was measured and one came
+# up short, the Zybo Z7 by 9.17 mm, which is the sheet a centred view leaves
+# the least room under.  `_view_margins` is where a short sheet is given what
+# the centring did not, out of the spare height and, if need be, out of the
+# free edge's margin as far as `_view_room_free_edge`.
 VIEW_MARGIN_SIDE = 46.0
 VIEW_MARGIN_TOP = 20.0
 VIEW_MARGIN_BOTTOM = 30.0
@@ -871,8 +871,17 @@ def _chain_room(spec: BoardSpec, overlay: BoardSpec | None,
     by_edge: dict[tuple[str, str], list] = {}
     for p in spec.pmods:
         by_edge.setdefault((p.edge, p.role), []).append(p)
-    horiz = len([edge for (edge, _), group in by_edge.items()
-                 if len(group) > 1 and edge in ("bottom", "top")])
+    # A spacing dimension is drawn only where there are two hosts to measure
+    # between AND they are not on top of each other: the Pmod HAT Adapter's
+    # JA and JB share a cx, and render_board skips that pair.  Counting it
+    # here would reserve a dimension's worth of paper for nothing.
+    horiz = 0
+    for (edge, _), group in by_edge.items():
+        if edge not in ("bottom", "top") or len(group) < 2:
+            continue
+        along = sorted(p.cx for p in group)
+        if along[1] - along[0] >= 0.01:
+            horiz += 1
     step = 6.0 + style.T_DIM + 2.0
     xvals, _ = _ordinate_values(spec, overlay)
     reach = dims.ordinate_reach(
@@ -899,14 +908,17 @@ def _view_room_free_edge() -> float:
 
 def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
                   area_height: float, drawn_height: float, scale: float,
-                  chain_edge: str = "bottom") -> tuple[float, float]:
+                  chain_edge: str = "bottom",
+                  shared_frame: bool = False) -> tuple[float, float]:
     """This sheet's top and bottom view margins, with the band already fixed.
 
     A view is centred in what its margins leave, so half of whatever height
     the sheet has spare already falls on the chain's side of the board and
     pays for most of a staggered ordinate lane.  Every sheet here leans on
-    that: measured against `_chain_room`, most want more than
-    `VIEW_MARGIN_BOTTOM`, and all but one are given it by the centring alone.
+    that: measured against `_chain_room`, fourteen of the seventeen board
+    sheets `render_board` draws want more than `VIEW_MARGIN_BOTTOM` -- the
+    ULX3S, the Icepi Zero and the Pmod HAT Adapter, all at 19.83, do not --
+    and all but one are given it by the centring alone.
 
     So nothing moves unless the centring leaves a sheet short.  When it does,
     the board is pushed away from the chain: the chain's margin is raised by
@@ -921,7 +933,18 @@ def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
     band: reserving the full figure in `_view_height_needed` was tried and
     rejected, because it pays for the chain out of the notes band, which is
     not this decision's to spend.
+
+    Not applied to a sheet drawn on a family's shared view frame.  The point
+    of such a frame is that a feature lands on the same point of every page,
+    and this is a per-sheet decision: one member of the family whose chain
+    happened to stagger would move alone and break the frame for the rest.
+    No sheet on a shared frame is short today, so nothing is given up; a
+    family that needs it wants the biggest of its members' margins, the way
+    it already takes the tallest of their notes bands.
     """
+    if shared_frame:
+        return ((VIEW_MARGIN_BOTTOM, VIEW_MARGIN_TOP) if chain_edge == "top"
+                else (VIEW_MARGIN_TOP, VIEW_MARGIN_BOTTOM))
     room = _chain_room(spec, overlay, scale)
     free = VIEW_MARGIN_TOP
     spare = area_height - free - drawn_height
@@ -965,6 +988,12 @@ def planned_band_height(spec: BoardSpec, *, sheet_size: str = "A3",
     sheets with different bands centre their views at different heights --
     which defeats a shared view frame, whose whole purpose is that a feature
     lands in the same place on every page.
+
+    The same reasoning is why `_view_margins` does not bias a view drawn on
+    such a frame: that bias is decided per sheet, and one member of a family
+    moving alone would break the frame as surely as a taller band would.  A
+    family that comes to need it should take the largest of its members'
+    margins, as it takes the tallest of their bands here.
     """
     notes, src_lines = _sheet_text(spec, overlay, extra_notes)
     return Sheet.plan_notes_band(
@@ -1577,8 +1606,10 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # scale label is carried over rather than recomputed from the figure.
     bias_top, bias_bottom = _view_margins(
         spec, overlay, sheet.area.h, (bbox[3] - bbox[1]) * view.scale,
-        view.scale, chain_edge)
-    if max(bias_top, bias_bottom) > VIEW_MARGIN_BOTTOM:
+        view.scale, chain_edge, shared_frame=view_bbox is not None)
+    # Either margin may be the one that moved: a sheet can want the free
+    # edge's give without wanting the chain's margin raised past its floor.
+    if (bias_top, bias_bottom) != (m_top, m_bottom):
         view = replace(View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
                                 margin_top=bias_top,
                                 margin_bottom=bias_bottom,
