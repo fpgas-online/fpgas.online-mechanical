@@ -18,7 +18,7 @@ Layout rules that keep these sheets readable:
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from tools.schema import BoardSpec, Feature, Hole
 
@@ -48,15 +48,24 @@ KIND_LABEL = {
 #: Room reserved above and below a view.  Dimensions stack on one horizontal
 #: edge and to the left; only balloons need space on the other.
 # Room the view wants around the part.  The dimensioned edge carries the Pmod
-# spacing dimension, the ordinate chain and the overall dimension; the other
-# carries balloons only.  Both were set generously and then measured: on the
-# fullest sheet the deepest dimension still cleared the notes band by ten
-# millimetres, which is space the notes need more than the view does.
+# spacing dimension and the ordinate chain, the other the overall width
+# dimension and whatever balloons go there.
 #
 # Named for the edge they usually land on, which is the chain below.  A sheet
 # whose X chain goes on the top edge swaps the two, so the deep margin always
 # follows the chain.  Their SUM does not change, which is why the notes band
 # and therefore the scale are the same either way.
+#
+# Both are floors, not answers.  Thirty millimetres on the chain's edge is
+# roughly what a chain whose labels all fit in one lane needs -- the Arty
+# A7's wants 30.33 -- and most sheets here stagger a label into a second lane
+# and want ten millimetres more than that.  They get it from the height the
+# sheet has spare, half of which falls on each side of a centred view; every
+# sheet was measured and two came up short, the Zybo Z7 by 9.17 mm and the
+# Cynthion by 3.33, which are the two sheets a centred view leaves the least
+# room under.  `_view_margins` is where a short sheet is given what the
+# centring did not, out of the spare height and, if need be, out of the free
+# edge's margin as far as `_view_room_free_edge`.
 VIEW_MARGIN_SIDE = 46.0
 VIEW_MARGIN_TOP = 20.0
 VIEW_MARGIN_BOTTOM = 30.0
@@ -834,6 +843,95 @@ def place_legend_and_notes(sheet: Sheet, entries, notes: list[str],
                              spill=spill)
 
 
+def _chain_room(spec: BoardSpec, overlay: BoardSpec | None,
+                scale: float) -> float:
+    """Room the dimensions on the chain's edge need, in sheet millimetres.
+
+    Outboard of the lowest thing drawn come, in this order, one spacing
+    dimension for each horizontal board edge carrying more than one host, then
+    the X ordinate chain nine millimetres beyond that, then its labels.  The
+    labels are the part that varies: two values closer together than a label
+    is tall stagger into a second lane, which reaches a whole lane further
+    out, and `VIEW_MARGIN_BOTTOM` is only enough for a chain that stays in
+    one.
+
+    The figure does not depend on which horizontal edge `_x_chain_edge` put
+    the chain on: the same dimensions in the same order stack outward from
+    the board either way, so this is the depth of that stack and the caller
+    says which margin it belongs to.
+
+    Measured with `dims.ordinate_reach`, so the figure a sheet is planned
+    against comes from the same lane assignment that will place the labels.
+    The positions go in at *scale* because that assignment compares them
+    against a label's height, which is a sheet figure and does not grow with
+    the view: read as model millimetres they crowd a 2:1 sheet that is not
+    crowded, and the Pmod HAT Adapter and the Icepi Zero were each asked to
+    reserve 30.30 mm for a chain that wants 19.83.
+    """
+    by_edge: dict[tuple[str, str], list] = {}
+    for p in spec.pmods:
+        by_edge.setdefault((p.edge, p.role), []).append(p)
+    horiz = len([edge for (edge, _), group in by_edge.items()
+                 if len(group) > 1 and edge in ("bottom", "top")])
+    step = 6.0 + style.T_DIM + 2.0
+    xvals, _ = _ordinate_values(spec, overlay)
+    reach = dims.ordinate_reach(
+        [(v * scale, f"{v:.2f}", f) for v, f in xvals.items()],
+        0.0, zero_pos=0.0)
+    return horiz * step + 9.0 + reach
+
+
+def _view_room_free_edge() -> float:
+    """What the strip on the edge the chain did not take actually holds.
+
+    One dimension.  The overall width sits `OVERALL_GAP` off the board, its
+    extension lines overshoot the dimension line and its value is written
+    above it with the descender allowed for.  Nothing else goes there, which
+    is why the free edge's margin is the smaller of the two to begin with;
+    this is the figure `VIEW_MARGIN_TOP` rounds up, and it is what a board is
+    allowed to move into when the dimensions on the chain's edge are short of
+    room.
+    """
+    return OVERALL_GAP + max(style.EXT_OVER,
+                             style.DIM_TEXT_GAP + style.descender(style.T_DIM)
+                             + style.text_height(style.T_DIM)) + 1.0
+
+
+def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
+                  area_height: float, drawn_height: float, scale: float,
+                  chain_edge: str = "bottom") -> tuple[float, float]:
+    """This sheet's top and bottom view margins, with the band already fixed.
+
+    A view is centred in what its margins leave, so half of whatever height
+    the sheet has spare already falls on the chain's side of the board and
+    pays for most of a staggered ordinate lane.  Every sheet here leans on
+    that: measured against `_chain_room`, most want more than
+    `VIEW_MARGIN_BOTTOM`, and all but two are given it by the centring alone.
+
+    So nothing moves unless the centring leaves a sheet short.  When it does,
+    the board is pushed away from the chain: the chain's margin is raised by
+    twice the shortfall, which puts the whole of the spare height on that side
+    rather than half of it, and the free edge gives way as far as
+    `_view_room_free_edge`, because a strip holding one dimension does not
+    need the generous figure.  The move stops at whatever is available; the
+    board can reach its dimension on the far edge but never leave the sheet,
+    and the scale is fixed before any of this, so it cannot cost one.
+
+    A bias inside the room the sheet already has, not a claim on the notes
+    band: reserving the full figure in `_view_height_needed` was tried and
+    moves fourteen other sheets, whose bands are what the height would come
+    out of.
+    """
+    room = _chain_room(spec, overlay, scale)
+    free = VIEW_MARGIN_TOP
+    spare = area_height - free - drawn_height
+    if 2 * room - spare > VIEW_MARGIN_BOTTOM:
+        free = min(VIEW_MARGIN_TOP, _view_room_free_edge())
+        spare = area_height - free - drawn_height
+    chain = max(VIEW_MARGIN_BOTTOM, min(2 * room - spare, spare))
+    return (chain, free) if chain_edge == "top" else (free, chain)
+
+
 def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None,
                         view_bbox=None) -> float:
     """Vertical room the view and its dimensions want, in sheet millimetres.
@@ -1456,6 +1554,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # room on the other horizontal edge.  The deep margin follows the chain.
     m_top = VIEW_MARGIN_BOTTOM if chain_edge == "top" else VIEW_MARGIN_TOP
     m_bottom = VIEW_MARGIN_TOP if chain_edge == "top" else VIEW_MARGIN_BOTTOM
+    margin_right = VIEW_MARGIN_SIDE
     view = View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
                     margin_top=m_top,
                     margin_bottom=m_bottom, force_scale=force_scale)
@@ -1470,7 +1569,22 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                           margin_bottom=m_bottom,
                           margin_right=VIEW_MARGIN_RIGHT_MIN)
         if narrow.scale > view.scale:
-            view = narrow
+            view, margin_right = narrow, VIEW_MARGIN_RIGHT_MIN
+
+    # The scale is settled; now give the ordinate chain the spare height it
+    # needs, if the centring has not already.  Nothing but the placement
+    # changes -- same rectangle, same margins otherwise, same scale -- so the
+    # scale label is carried over rather than recomputed from the figure.
+    bias_top, bias_bottom = _view_margins(
+        spec, overlay, sheet.area.h, (bbox[3] - bbox[1]) * view.scale,
+        view.scale, chain_edge)
+    if max(bias_top, bias_bottom) > VIEW_MARGIN_BOTTOM:
+        view = replace(View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
+                                margin_top=bias_top,
+                                margin_bottom=bias_bottom,
+                                margin_right=margin_right,
+                                force_scale=view.scale),
+                       scale_label=view.scale_label)
     sheet.title.scale = view.scale_label
 
     board = Rect(view.x(0), view.y(0), view.d(o.width), view.d(o.height))
