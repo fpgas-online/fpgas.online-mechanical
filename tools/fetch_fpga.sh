@@ -1,7 +1,7 @@
 #!/bin/sh
 # Fetch the upstream sources for the FPGA development boards into tmp/src.
 #
-# Three are git repositories and are cloned; the extractor checks each board
+# Four are git repositories and are cloned; the extractor checks each board
 # file out at a pinned commit.  Two are vendor downloads:
 #
 #   Digilent's file host answers a plain curl with 403, but serves the same
@@ -18,6 +18,8 @@ test -d tmp/src/butterstick || git clone --quiet \
     https://github.com/butterstick-fpga/butterstick-hardware tmp/src/butterstick
 test -d tmp/src/icepi-zero || git clone --quiet \
     https://github.com/cheyao/icepi-zero tmp/src/icepi-zero
+test -d tmp/src/cynthion || git clone --quiet \
+    https://github.com/greatscottgadgets/cynthion-hardware tmp/src/cynthion
 
 f=tmp/src/arty_a7/arty_a7_mechanical_drawing.zip
 test -s "$f" || curl -sSL -A "$UA" -o "$f" \
