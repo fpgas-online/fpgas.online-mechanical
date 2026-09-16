@@ -395,9 +395,13 @@ M2_SPEC_SOURCE = Source(
 
 POE_M2_HAT_WIDTH = 85.00
 POE_M2_HAT_HEIGHT = 56.00
-POE_M2_HAT_HOLE_PITCH = (58.00, 49.00)
-POE_M2_HAT_HOLE_EDGE = 3.50
 POE_M2_STANDOFF_OVERHANG = 3.00
+
+# The drawing's other two declared figures, 58.00 x 49.00 and 3.50, are not
+# constants here: they name the Raspberry Pi's own hole pattern, so the holes
+# below are built from HAT_HOLES and the figures are what CHECK that, in
+# accessories/measure_poe_m2_hat.py, which carries its own copy of them
+# because it has to be able to disagree with this file.
 
 #: Where a seated card's mating edge sits, and the axis it sits on.
 POE_M2_DATUM_X = 5.07
