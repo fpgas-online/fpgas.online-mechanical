@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from accessories.parts import GENERIC_POE, PMOD_HAT, WAVESHARE_POE  # noqa: E402
+from accessories.raspmod import RASPMOD                       # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE                              # noqa: E402
 from fpga.boards import BOARDS as FPGA                        # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
@@ -63,7 +64,8 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
           ("ACC-02", WAVESHARE_POE.key,
            WAVESHARE_POE.title, WAVESHARE_POE.subtitle),
           ("ACC-03", GENERIC_POE.key,
-           GENERIC_POE.title, GENERIC_POE.subtitle)]),
+           GENERIC_POE.title, GENERIC_POE.subtitle),
+          ("ACC-04", RASPMOD.key, RASPMOD.title, RASPMOD.subtitle)]),
         ("Mounting plate", "mounting-plate", 2,
          [("TT-MP-01", "tt-generic-mounting-plate",
            PLATE.title, PLATE.subtitle),

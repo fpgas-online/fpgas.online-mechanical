@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT))
 
 from accessories.parts import (ACCESSORIES, GENERIC_POE,  # noqa: E402
                                PMOD_HAT, PMOD_HAT_TOL, WAVESHARE_POE)
+from accessories.raspmod import RASPMOD  # noqa: E402
 from fpga.boards import BOARDS as FPGA_BOARDS  # noqa: E402
 from fpga.boards import FEATURE_NUMBERS as FPGA_NUMBERS  # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI_BOARDS  # noqa: E402
@@ -385,6 +386,14 @@ def main() -> None:
         path = acc_dir / f"{spec.key}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
+
+    # The Raspmod, ACC-04: the other way of putting Pmods on a Raspberry Pi,
+    # drawn beside the Digilent adapter it is compared with.  Numbered after
+    # the splitters because it arrived after them, and the numbers are stable.
+    sheet = render_board(RASPMOD, drawing_no="ACC-04", version=VERSION)
+    path = acc_dir / f"{RASPMOD.key}.svg"
+    sheet.canvas.save(str(path))
+    made.append(path)
 
     plate_dir = FAMILY_DIRS["mounting-plate"]
     plate_dir.mkdir(parents=True, exist_ok=True)
