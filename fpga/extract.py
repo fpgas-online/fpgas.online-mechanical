@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate ``fpga/boards.py`` from each FPGA board's own published source.
 
-Four boards, three kinds of source, one rule: the numbers are machine-read
+Five boards, three kinds of source, one rule: the numbers are machine-read
 and the identification is hand-curated.
 
 ===========  =============================================================
@@ -11,6 +11,8 @@ Arty A7      Digilent's mechanical drawing: a DXF for the outline, the
 ULX3S        the KiCad board file, at every tag Radiona sold boards from
 PYNQ-Z2      TUL's STEP assembly, the only machine-readable source
 ButterStick  the KiCad board file at the release that was sold
+Icepi Zero   the KiCad board file at the mass-production tag, and again at
+             the re-annotated tip of the same revision, which has to agree
 ===========  =============================================================
 
 The sources are expected under ``tmp/src``; ``tools/fetch_fpga.sh`` puts
@@ -344,6 +346,302 @@ def extract_butterstick() -> dict:
             "SC2 are the SYZYGY standoff holes of ports A, B and C, plated, "
             "and the maker's acrylic plate bolts through all eight.",
             "No Pmod host: expansion is three SYZYGY ports.",
+        ],
+    )
+
+
+# ---------------------------------------------------------------------------
+# Icepi Zero: KiCad, read at two commits of one revision
+# ---------------------------------------------------------------------------
+
+ICEPI_REPO = "https://github.com/cheyao/icepi-zero"
+ICEPI_PATH = "hardware/v1.3/icepi-zero.kicad_pcb"
+#: The commit the v1.3 tag names, whose subject is "Final mass production
+#: files".  v1.3 is the revision that was made in quantity and sold, and the
+#: only one the repository tags: v1.0 to v1.2 are the prototypes the maker's
+#: JOURNAL.md describes, and v1.4 is marked work in progress.
+ICEPI_COMMIT = "6e4aaba2"
+#: The same v1.3 board as the repository carries it now: re-saved in KiCad 10
+#: and re-annotated, so the three USB-C receptacles and the five user LEDs
+#: changed reference designators.  It is read only to require that nothing
+#: moved, which is what lets this sheet keep the designators the boards were
+#: fabbed with and say in a note that the current file disagrees.
+ICEPI_RESPIN = "d67bb758"
+ICEPI_README = f"{ICEPI_REPO}/blob/v1.3/README.md"
+ICEPI_BOM = f"{ICEPI_REPO}/blob/v1.3/hardware/v1.3/production/bom.csv"
+ICEPI_RELEASE = f"{ICEPI_REPO}/releases/tag/v1.3"
+
+RPI_ZERO_DRAWING = ("https://datasheets.raspberrypi.com/rpizero/"
+                    "raspberry-pi-zero-mechanical-drawing.pdf")
+#: The Raspberry Pi Zero's own figures, read off drawing RPI-ZERO-V1_2: the
+#: board, its corner radius, the M2.5 drill and the hole pattern as the inset
+#: from each edge.  The board file is what this sheet draws; these are here
+#: so the note claiming the Pi Zero pattern is checked against the drawing it
+#: cites, rather than asserted from memory.
+RPI_ZERO = dict(width=65.0, height=30.0, radius=3.0, inset=3.5,
+                drill=2.75, drill_tol=0.05)
+
+
+def _icepi_net(pad) -> str:
+    """The net name on a pad node.
+
+    KiCad 9 writes ``(net 12 "/LED0")`` and KiCad 10 ``(net "/LED0")``, so the
+    name is the last atom rather than a fixed index.  Both spellings turn up
+    here: the two commits read are on either side of that change.
+    """
+    node = kicad_pcb.child(pad, "net")
+    return node[-1] if node and isinstance(node[-1], str) else ""
+
+
+def _icepi_nets(board) -> dict[str, dict[str, str]]:
+    """Reference designator -> pad number -> net name."""
+    out: dict[str, dict[str, str]] = {}
+    for node in kicad_pcb.children(board.tree, "footprint"):
+        ref = next((p[2] for p in kicad_pcb.children(node, "property")
+                    if len(p) > 2 and p[1] == "Reference"), "")
+        out[ref] = {str(pad[1]): _icepi_net(pad)
+                    for pad in kicad_pcb.children(node, "pad")}
+    return out
+
+
+def _icepi_parts(key: str, board) -> dict:
+    """Everything this sheet draws, found by what a part is rather than named.
+
+    Nothing here is looked up by reference designator, because the Icepi's
+    are not stable: the re-annotation between the two commits read renamed
+    the programming port and reshuffled the five user LEDs.  So the
+    programming port is the receptacle sharing the FTDI's data pair, a user
+    LED is one a resistor drives from ``/LED0`` to ``/LED4``, and the rest
+    are found by footprint.  The same function then reads both commits and
+    the two are required to agree on every box.
+    """
+    to_xy, to_box, (w, h) = kicad_extract.frame(board)
+    fps = board.footprints
+    nets = _icepi_nets(board)
+    edges, radii = kicad_extract.outline(key, board, to_xy, w, h)
+    if radii != [3.5]:
+        raise SystemExit(f"{key}: corner radii {radii}, not one R3.5")
+
+    # Mounting holes: every drill of 2 mm or more, so a revision that gained
+    # or lost one could not be drawn as though it had four.
+    mounts = [fp for fp in fps
+              if any(p.drill and p.drill >= 2.0 for p in fp.pads)]
+    if len(mounts) != 4:
+        raise SystemExit(f"{key}: {len(mounts)} drills of 2 mm or more, not 4")
+    holes = sorted((kicad_extract.hole(key, fp, to_xy) for fp in mounts),
+                   key=lambda hl: (hl["y"], hl["x"]))
+
+    def only(what: str, hits: list):
+        if len(hits) != 1:
+            raise SystemExit(f"{key}: {len(hits)} {what}, not 1")
+        return hits[0]
+
+    def by_footprint(what: str, pattern: str) -> list:
+        return [fp for fp in fps if pattern.lower() in fp.library_id.lower()]
+
+    parts: dict[str, dict] = {}
+
+    def part(role: str, fp) -> None:
+        parts[role] = dict(ref=fp.reference, box=kicad_extract.box(fp, to_box))
+
+    # The three USB-C receptacles, and which of them the FTDI hangs off: the
+    # board's own README says the converter is on board, and the sheet has to
+    # say which port to plug the cable into.
+    usb = sorted(by_footprint("USB-C receptacle", "USB_C_Receptacle"),
+                 key=lambda fp: fp.x)
+    if len(usb) != 3:
+        raise SystemExit(f"{key}: {len(usb)} USB-C receptacles, not 3")
+    ftdi = only("FT231X", [fp for fp in fps if fp.fp_value == "FT231XQ"])
+    ftdi_nets = {n for n in nets[ftdi.reference].values()
+                 if n and n not in ("GND", "+5V")}
+    wired = [fp for fp in usb
+             if ftdi_nets & {n for n in nets[fp.reference].values() if n}]
+    if len(wired) != 1:
+        raise SystemExit(f"{key}: {len(wired)} receptacles share the FTDI's "
+                         "data pair, not 1")
+    part("usb_prog", wired[0])
+    for n, fp in enumerate(fp for fp in usb if fp is not wired[0]):
+        part(f"usb_fpga{n}", fp)
+
+    part("gpdi", only("GPDI connector", by_footprint("GPDI", "A71-05H4")))
+    part("microsd", only("microSD socket", by_footprint("microSD", "microSD")))
+    gpio = only("2x20 GPIO header", by_footprint("GPIO header", "PinHeader_2x20"))
+    part("gpio", gpio)
+    pin1 = to_xy(*next((p.x, p.y) for p in gpio.pads if p.number == "1"))
+    parts["gpio"]["pin1"] = (round(pin1[0], 3), round(pin1[1], 3))
+    # The position is only worth calling a Raspberry Pi header if its pins
+    # are where a Pi puts them, so the note that says so is checked here
+    # against the pins that fix the orientation: the two 5 V pins, the 3V3 at
+    # pin 1, the first two GPIOs and every ground.
+    pi_pins = {"1": "+3V3", "2": "+5V", "3": "/GPIO2", "4": "+5V",
+               "5": "/GPIO3", **{str(n): "GND" for n in
+                                 (6, 9, 14, 20, 25, 30, 34, 39)}}
+    wrong = {n: nets[gpio.reference].get(n) for n, want in pi_pins.items()
+             if nets[gpio.reference].get(n) != want}
+    if wrong:
+        raise SystemExit(f"{key}: the 2x20 header is not on the Raspberry Pi "
+                         f"pinout the note claims: {wrong}")
+
+    # The user LEDs: each is driven through a series resistor from a net the
+    # maker's own constraints file calls led[0] to led[4].  Found this way
+    # rather than by designator, the row comes out in LED order whichever
+    # commit is being read, and the red FTDI activity LED beside the
+    # programming port cannot be mistaken for one of them.
+    for fp in fps:
+        pads = nets.get(fp.reference, {})
+        anodes = [n for n in pads.values() if n and n != "GND"]
+        if fp.fp_value != "WHITE" or len(pads) != 2 or len(anodes) != 1:
+            continue
+        driven = [n for ref, other in nets.items() if ref != fp.reference
+                  and anodes[0] in other.values()
+                  for n in other.values() if n and n != anodes[0]]
+        for n in driven:
+            if n.startswith("/LED"):
+                part(f"led{int(n[4:])}", fp)
+    leds = [r for r in parts if r.startswith("led")]
+    if sorted(leds) != [f"led{n}" for n in range(5)]:
+        raise SystemExit(f"{key}: user LEDs found: {sorted(leds)}, not LED0-4")
+
+    buttons = sorted(by_footprint("push button", "switch_button"),
+                     key=lambda fp: -fp.y)
+    if len(buttons) != 2:
+        raise SystemExit(f"{key}: {len(buttons)} push buttons, not 2")
+    for n, fp in enumerate(buttons):
+        if fp.layer != "B.Cu":
+            raise SystemExit(f"{key}: button {fp.reference} is on {fp.layer}; "
+                             "the note says both are on the underside")
+        part(f"button{n}", fp)
+
+    return dict(width=round(w, 3), height=round(h, 3), edges=edges,
+                radius=radii[0], thickness=board.thickness, holes=holes,
+                parts=parts)
+
+
+def extract_icepi_zero() -> dict:
+    key = "icepi-zero"
+    path = kicad_file("icepi-zero", ICEPI_COMMIT, ICEPI_PATH, "icepi-zero-v1.3")
+    board = kicad_pcb.load(str(path))
+    if board.rev != "v1.3":
+        raise SystemExit(f"{key}: the pinned file is rev {board.rev}, not v1.3")
+    got = _icepi_parts(key, board)
+
+    # The same revision as the repository carries it now.  Everything drawn
+    # has to be in the same place, or the sheet covers one spin of v1.3 and
+    # not the other and has to say which.
+    respin = _icepi_parts(key + " respin", kicad_pcb.load(str(kicad_file(
+        "icepi-zero", ICEPI_RESPIN, ICEPI_PATH, "icepi-zero-v1.3-respin"))))
+    for field in ("width", "height", "radius", "thickness"):
+        if got[field] != respin[field]:
+            raise SystemExit(f"{key}: the re-annotated v1.3 differs in {field}")
+    # The outline as a set: KiCad 10 wrote the same eight edges out in a
+    # different order, which is a re-save and not a change of shape.
+    if sorted(got["edges"]) != sorted(respin["edges"]):
+        raise SystemExit(f"{key}: the re-annotated v1.3 changed the outline")
+    if [dict(h, label="") for h in got["holes"]] != \
+            [dict(h, label="") for h in respin["holes"]]:
+        raise SystemExit(f"{key}: the re-annotated v1.3 moved a mounting hole")
+    for role, rec in got["parts"].items():
+        if rec["box"] != respin["parts"][role]["box"]:
+            raise SystemExit(f"{key}: the re-annotated v1.3 moved {role}")
+
+    p = got["parts"]
+    w, h = got["width"], got["height"]
+    features = []
+
+    def part(role, key_, label, kind, note=""):
+        rec = p[role]
+        features.append(dict(key=key_, kind=kind, designator=rec["ref"],
+                             label=label.format(ref=rec["ref"]),
+                             x0=rec["box"][0], y0=rec["box"][1],
+                             x1=rec["box"][2], y1=rec["box"][3], note=note))
+
+    part("usb_prog", "usb_prog",
+         "USB-C {ref}, JTAG and console", "usb_power",
+         note="Courtyard, including the shell overhang past the board edge. "
+              "The receptacle wired to the on-board FT231X.")
+    pair = [p["usb_fpga0"], p["usb_fpga1"]]
+    features.append(row_feature(
+        [rec["box"] for rec in pair], key="usb_second", kind="connector",
+        label="USB-C {} and {}, to the FPGA".format(*(r["ref"] for r in pair)),
+        designator=", ".join(r["ref"] for r in pair),
+        note="Courtyards, shell overhang included; two separate receptacles "
+             "with 1.86 mm of board between them."))
+    leds = [p[f"led{n}"] for n in range(5)]
+    features.append(row_feature(
+        [rec["box"] for rec in leds], key="leds", kind="led",
+        label="User LEDs LED0-LED4", designator=", ".join(r["ref"] for r in leds),
+        note="LED0 at the left-hand end. Courtyards of the 0603 bodies."))
+    part("gpio", "exp1", "GPIO header {ref}, 2x20, not fitted", "header",
+         note="Courtyard of the unfitted 2x20 position.")
+    part("gpdi", "exp2", "GPDI video connector {ref}", "connector",
+         note="Courtyard; the body overhangs the board edge.")
+    part("microsd", "exp3", "microSD card socket {ref}", "connector",
+         note="Courtyard. A card in the socket stands proud of the left edge; "
+              "the source gives no figure for it.")
+    number_features(key, features)
+
+    hx = sorted({hl["x"] for hl in got["holes"]})
+    hy = sorted({hl["y"] for hl in got["holes"]})
+    drill = got["holes"][0]["dia"]
+    if [round(hx[0], 3), round(h - hy[-1], 3)] != [RPI_ZERO["inset"]] * 2 \
+            or (w, h) != (RPI_ZERO["width"], RPI_ZERO["height"]):
+        raise SystemExit(f"{key}: the board is no longer the Pi Zero outline "
+                         "and hole inset the note claims")
+    gpio_pin1 = p["gpio"]["pin1"]
+    buttons = [p["button0"], p["button1"]]
+    return dict(
+        key=key, title="Icepi Zero", subtitle="v1.3, Raspberry Pi Zero form factor",
+        front_edge="bottom", thickness=got["thickness"],
+        width=w, height=h, corner_radius=got["radius"],
+        edges=got["edges"], holes=got["holes"], pmods=[], features=features,
+        sources=[
+            ("KiCad board file",
+             f"{ICEPI_REPO}  {ICEPI_PATH} @ {ICEPI_COMMIT} (tag v1.3)",
+             f"title block: {board.title} rev {board.rev}, dated {board.date}; "
+             f"{board.company}. Solderpad Hardware Licence 2.1."),
+            ("Board revision", ICEPI_RELEASE,
+             'the v1.3 tag, "Final mass production files": the revision made '
+             "in quantity and sold. The same file at the tip of the "
+             f"repository, {ICEPI_RESPIN}, is read too and agrees on every "
+             "position drawn here."),
+            ("Board size", ICEPI_README,
+             'quoted: "The Icepi Zero is an FPGA development board in the '
+             'popular Raspberry Pi Zero form factor"; the board file gives '
+             f"{w:.2f} x {h:.2f} mm."),
+            ("Assembly", ICEPI_BOM,
+             "the production bill of materials at the same tag lists no "
+             "2x20 header: the GPIO position is not fitted."),
+            ("Form factor compared", RPI_ZERO_DRAWING,
+             "Raspberry Pi Zero, RPI-ZERO-V1_2 of 2015-09-23: 65 x 30 mm, "
+             "corner radius 3.0, 4x M2.5 mounting holes drilled to 2.75 "
+             "+/-0.05, 58 x 23 apart and 3.5 in from each edge."),
+        ],
+        notes=[
+            "Hole IDs are the KiCad reference designators.",
+            f"The mounting holes are the Raspberry Pi Zero pattern: "
+            f"{hx[-1] - hx[0]:.2f} x {hy[-1] - hy[0]:.2f} mm, "
+            f"{RPI_ZERO['inset']:.2f} mm in from each edge of a {w:.0f} x "
+            f"{h:.0f} board. They are drilled {drill:.2f} where the Pi Zero "
+            f"drawing says {RPI_ZERO['drill']:.2f} +/-"
+            f"{RPI_ZERO['drill_tol']:.2f}, and the corners are R"
+            f"{got['radius']:.2f} where the Pi Zero's are "
+            f"R{RPI_ZERO['radius']:.2f}.",
+            "No Pmod host and no Ethernet jack.",
+            "The unfitted GPIO position is a Raspberry Pi 40-pin header: "
+            "1.00 mm holes on a 2.54 mm grid, with the Pi's 5 V, 3V3 and "
+            f"first GPIO pins in the Pi's places and pin 1 at "
+            f"({gpio_pin1[0]:.2f}, {gpio_pin1[1]:.2f}), in the row farther "
+            "from the board edge.",
+            "The two user buttons are on the underside, centred at "
+            + " and ".join(f"({(r['box'][0] + r['box'][2]) / 2:.2f}, "
+                           f"{(r['box'][1] + r['box'][3]) / 2:.2f})"
+                           for r in buttons)
+            + "; a plate under the board has to clear them.",
+            "The board file has been re-annotated since the mass-production "
+            "release. Nothing drawn here moved, but in the current file the "
+            f"programming port is {respin['parts']['usb_prog']['ref']} and "
+            "the user LEDs run D1 to D5 left to right; these are the "
+            "designators the sold boards were fabbed with.",
         ],
     )
 
@@ -721,8 +1019,10 @@ Regenerate with::
 Coordinates follow :mod:`tools.schema`: origin at the lower-left corner of the
 board, X right, Y up, top view, millimetres.  Each board is drawn the way its
 maker draws it: the Arty A7 and ULX3S with their Pmod or GPIO edge and USB
-along the top, the PYNQ-Z2 with its Pmod hosts on the right, and ButterStick
-with its USB-C and Ethernet on the right.
+along the top, the PYNQ-Z2 with its Pmod hosts on the right, ButterStick with
+its USB-C and Ethernet on the right, and the Icepi Zero the way Raspberry Pi
+draw a Zero, its GPIO header along the top and its connector edge at the
+bottom.
 """
 
 from __future__ import annotations
@@ -809,7 +1109,7 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
 
 def main() -> None:
     records = [extract_arty(), extract_ulx3s(), extract_pynq_z2(),
-               extract_butterstick()]
+               extract_butterstick(), extract_icepi_zero()]
     numbers = "{\n" + "".join(
         f"    {i}: {FEATURE_NAMES[key]!r},\n"
         for i, key in enumerate(FEATURE_ORDER, 1)) + "}"
