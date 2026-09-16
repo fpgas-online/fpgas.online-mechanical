@@ -9,17 +9,22 @@ committed artefacts start looking like a liability rather than a deliverable.
 
 Two of the four formats stamp themselves:
 
-* cairo writes a ``/CreationDate`` into every PDF Inkscape produces;
+* cairo writes a ``/CreationDate`` into every PDF Inkscape produces, and
+  both tools write their version numbers into ``/Producer`` and ``/Creator``;
 * ezdxf writes creation and update times, a "time in drawing" counter and two
   freshly generated GUIDs into every DXF, and emits the CLASSES section in an
   order that varies between runs.
 
 None of that carries information.  Git already records when a file changed,
 and it records it more accurately than a timestamp written into a file that is
-rewritten whether or not anything in it changed.
+rewritten whether or not anything in it changed; and which point release of
+Inkscape drew a sheet is no more a property of the drawing than the day it was
+drawn on, as long as the drawing came out the same, which the byte comparison
+in ``tools/check_pdfs.py`` is there to say.
 
-So the timestamps are pinned to one arbitrary instant, and the GUIDs are left
-to ezdxf, whose fixed-metadata mode writes them as all zeros.  The instant is
+So the timestamps are pinned to one arbitrary instant, the tool strings to
+the tools' bare names, and the GUIDs are left to ezdxf, whose fixed-metadata
+mode writes them as all zeros.  The instant is
 deliberately neither "now" nor ``SOURCE_DATE_EPOCH``: reading an environment
 variable would mean two people building the same commit get different bytes,
 which is the exact problem this module exists to remove.
@@ -46,13 +51,31 @@ EPOCH = datetime.datetime(2000, 1, 1, 0, 0, 0)
 #: The same instant in the two formats that want it.
 PDF_CREATION_DATE = "D:20000101000000Z"
 
+#: What a sheet's PDF says drew it, with no version number.  Inkscape 1.4 and
+#: 1.4.3 on the same cairo 1.18.4 write byte-identical content streams and
+#: differ only in "Inkscape 1.4" against "Inkscape 1.4.3" in /Creator, so a
+#: rebuild on the second machine changed every PDF in the repository while
+#: changing no drawing.  /Producer was "cairo 1.18.4" on both and is pinned
+#: alongside so that the next cairo release cannot do the same.
+PDF_CREATOR = "Inkscape"
+PDF_PRODUCER = "cairo"
+
+#: What a bound copy says: pypdf writes it, and pypdf writes its name without
+#: a version to begin with.  It has no /Creator, because no drawing tool
+#: made it; stamping the sheets' tool on it would be a claim about a file
+#: that tool never saw.
+BUNDLE_PRODUCER = "pypdf"
+
 #: This repository's URL, for anything that needs to cite where the drawings
 #: came from.  Nothing in the output carries it today.
 REPO_URL = "https://github.com/fpgas-online/fpgas.online-mechanical"
 
 
-def normalise_pdf(path: Path) -> Path:
-    """Pin *path*'s creation date, in place.
+def normalise_pdf(path: Path, *, bound: bool = False) -> Path:
+    """Pin *path*'s creation date and tool strings, in place.
+
+    A sheet is stamped as drawn by Inkscape on cairo; a *bound* copy, which
+    pypdf assembled from finished sheets, as made by pypdf.
 
     Rewritten through pypdf rather than patched in the bytes, because cairo
     puts the date inside a compressed object stream: the four bytes that
@@ -66,6 +89,12 @@ def normalise_pdf(path: Path) -> Path:
     writer = PdfWriter(clone_from=reader)
     meta = dict(reader.metadata or {})
     meta["/CreationDate"] = PDF_CREATION_DATE
+    if bound:
+        meta["/Producer"] = BUNDLE_PRODUCER
+        meta.pop("/Creator", None)
+    else:
+        meta["/Creator"] = PDF_CREATOR
+        meta["/Producer"] = PDF_PRODUCER
     meta.pop("/ModDate", None)
     writer.add_metadata(meta)
     with open(path, "wb") as handle:

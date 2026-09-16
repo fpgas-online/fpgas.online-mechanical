@@ -21,7 +21,7 @@ Imported, not run.
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
 | `render_svg.py` | SVG to PDF and PNG via Inkscape, text exported as paths |
-| `reproducible.py` | Pins the clocks and GUIDs that cairo and ezdxf stamp into their output |
+| `reproducible.py` | Pins the clocks, tool version strings and GUIDs that cairo, Inkscape, pypdf and ezdxf stamp into their output |
 
 ## Build
 

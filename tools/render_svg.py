@@ -78,8 +78,10 @@ def combine_pdfs(pages: list[tuple[Path, str]], out: Path,
     out.parent.mkdir(parents=True, exist_ok=True)
     with open(out, "wb") as handle:
         writer.write(handle)
-    # pypdf stamps its own clock, exactly as cairo does one layer down.
-    return reproducible.normalise_pdf(out)
+    # pypdf stamps its own clock, exactly as cairo does one layer down; the
+    # tool strings are pinned as pypdf's, not the sheets', because this file
+    # is pypdf's work.
+    return reproducible.normalise_pdf(out, bound=True)
 
 
 def to_png(svg: Path, dpi: float = PNG_DPI, out: Path | None = None) -> Path:

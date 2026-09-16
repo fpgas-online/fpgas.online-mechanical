@@ -196,8 +196,11 @@ make check     # render every sheet, refresh the grids, then run the checks
 Rebuilding is deterministic, and that is checked rather than hoped for: three
 full `make clean && make diagrams` cycles produce all 65 output files
 byte-identical, so `git status` is silent after a rebuild unless a drawing
-actually changed. Cairo and ezdxf both stamp a clock and, in ezdxf's case, two
-random GUIDs into what they write; `tools/reproducible.py` pins all of it.
+actually changed. Cairo and ezdxf both stamp a clock, cairo and Inkscape
+their version numbers, and ezdxf two random GUIDs into what they write;
+`tools/reproducible.py` pins all of it. That is what lets a second machine
+reproduce the set: Inkscape 1.4 and 1.4.3 on the same cairo draw identical
+content and differed only in the version string.
 
 That holds across days as well as within one. Each title block carries a
 `VERSION` -- `git describe` of the last commit that changed anything outside an
