@@ -21,7 +21,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid, and the three of them on the one outline they share |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- Digilent Arty A7, ULX3S, TUL PYNQ-Z2, ButterStick, the Icepi Zero, the Cynthion, the Digilent Zybo Z7 and the Avnet Ultra96-V2, with Pmod, USB, Ethernet and LEDs marked |
-| [`accessories/`](accessories/README.md) | `ACC-*` -- Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
+| [`accessories/`](accessories/README.md) | `ACC-*` -- Pmod HAT Adapter, two PoE splitters as envelope drawings, the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md), and an Acorn CLE-215+ in a Waveshare PoE M.2 HAT+ on a Pi 5 |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
 
 ## What a sheet is called
@@ -51,7 +51,8 @@ are, and only the name is cut:
   every revision and shuttle in full.
 - an accessory is named for what kind of part it is and which one of that kind:
   `ACC-HAT-PMOD` and `ACC-HAT-RMOD` are the two ways of putting Pmod ports on a
-  Raspberry Pi, `ACC-POE-USBC` and `ACC-POE-MUSB` the two PoE splitters. That
+  Raspberry Pi, `ACC-HAT-M2POE` the HAT that gives one an M.2 slot and Power
+  over Ethernet, `ACC-POE-USBC` and `ACC-POE-MUSB` the two PoE splitters. That
   one is a table, `ACC_NAMES`, keyed by file stem, because these stems are
   words rather than codes and nothing mechanical shortens them.
 - a mounting plate sheet is named for which of the family's four it is, in one
@@ -210,7 +211,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="accessories/output/raspmod.pdf"><img src="accessories/output/previews/raspmod.png" width="270" alt="ACC-HAT-RMOD Raspmod"></a><br>
 <b>ACC-HAT-RMOD</b> Raspmod<br>TT Demoboard To Raspi rev 1.0, silkscreen v1.1: a frontplate for the demoboard's three Pmod hosts
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="accessories/output/poe-m2-hat-acorn.pdf"><img src="accessories/output/previews/poe-m2-hat-acorn.png" width="270" alt="ACC-HAT-M2POE Acorn CLE-215+ in a PoE M.2 HAT+ on a Pi 5"></a><br>
+<b>ACC-HAT-M2POE</b> Acorn CLE-215+ in a PoE M.2 HAT+ on a Pi 5<br>Plan envelope of the assembly; the Raspberry Pi 5 is the board drawn
+</td>
 <td width="33%"></td>
 </tr>
 </table>

@@ -6,6 +6,12 @@ of `RPI-3B`, `RPI-4B` and `RPI-5` draws one model with a
 host positions can be read off directly; `RPI-ALL` draws all three
 models on the one 85 x 56 outline they share.
 
+The Pi 5 is drawn a second time, with a different part on it, on
+[`ACC-HAT-M2POE`](../accessories/README.md): an Acorn CLE-215+ in a Waveshare
+PoE M.2 HAT+ (B). That sheet is filed with the accessories because what is new
+on it is the accessory, and because the data behind it is hand-curated where
+everything in this directory is generated.
+
 | | |
 |---|---|
 | `boards.py` | **Generated.** Pi 3B/3B+, 4B and 5 |
