@@ -162,7 +162,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="fpga/output/icepi-zero.pdf"><img src="fpga/output/previews/icepi-zero.png" width="270" alt="FPGA-ICEPI-ZERO Icepi Zero"></a><br>
 <b>FPGA-ICEPI-ZERO</b> Icepi Zero<br>v1.3, Raspberry Pi Zero form factor
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="fpga/output/cynthion.pdf"><img src="fpga/output/previews/cynthion.png" width="270" alt="FPGA-CYNTHION Cynthion"></a><br>
+<b>FPGA-CYNTHION</b> Cynthion<br>r1.4.0
+</td>
 </tr>
 </table>
 
@@ -289,6 +292,7 @@ derived from keep their own licences:
 |---|---|
 | Arty A7 drawing | Digilent's |
 | ButterStick board files | Its maker's open hardware licence |
+| Cynthion board file | Great Scott Gadgets' under the CERN-OHL-P v2 |
 | Icepi Zero board files | Solderpad Hardware Licence 2.1 |
 | PYNQ-Z2 model | TUL's |
 | Raspberry Pi mechanical drawings | Raspberry Pi Ltd's |
