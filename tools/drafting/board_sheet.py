@@ -1322,7 +1322,27 @@ def _depth_lanes(view: View, spec: BoardSpec, by_edge: dict, board: Rect
             blockers.append((lane - half, lo, lane + half, hi))
         else:
             blockers.append((lo, lane - half, hi, lane + half))
-        lanes.append((edge, group, outer, lane, lo, hi))
+        # The dimension's own arguments, built here and nowhere else: the
+        # reservation below asks dims where the value will land and the
+        # drawing then calls dims with the same arguments, so the two cannot
+        # describe different dimensions.
+        o = spec.outline
+        if edge == "bottom":
+            call = ((lane, board.y), (lane, view.y(outer.cy)), 0.0,
+                    dict(horizontal=False, value=outer.cy, text_side="high"))
+        elif edge == "top":
+            call = ((lane, view.y(outer.cy)), (lane, board.y1), 0.0,
+                    dict(horizontal=False, value=o.height - outer.cy,
+                         text_side="low"))
+        elif edge == "left":
+            call = ((board.x, lane), (view.x(outer.cx), lane), 0.0,
+                    dict(horizontal=True, value=outer.cx, text_side="high"))
+        else:
+            call = ((view.x(outer.cx), lane), (board.x1, lane), 0.0,
+                    dict(horizontal=True, value=o.width - outer.cx,
+                         text_side="low"))
+        lanes.append((edge, group, lane, lo, hi, call,
+                      dims.linear_geometry(*call[:3], **call[3])))
     return blockers, lanes
 
 
@@ -1612,21 +1632,31 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                                weight=HARD)
             plan_left -= 6.0 + style.T_DIM + 2.0
 
-    # The pin-field depth dimension is the last thing drawn on the view and it
-    # writes its value along its own lane, so a balloon already parked there
-    # reads as the value: on the Cynthion sheet the user LED balloon landed
-    # 0.45 mm from the 3.23 that dimensions the Pmod pin rows, and the two
-    # read as one word.  Position only, like the ordinate witness lines: a
-    # leader crossing a lane is ordinary, a balloon sitting in one is not.
+    # The pin-field depth dimension is the last thing drawn on the view, so
+    # whatever a balloon has taken by then, it keeps: on the Cynthion sheet
+    # the user LED balloon first landed 0.45 mm from the 3.23 that dimensions
+    # the Pmod pin rows, and when that was reserved as a band centred on the
+    # lane, the TARGET C balloon's rim came down 0.81 mm into the same value's
+    # last digit.  The band was the wrong shape -- this dimension does not
+    # write its value between its arrows, it writes it beside the line -- so
+    # the value's own box is reserved, from the same dims call the drawing
+    # makes.  Position only, like the ordinate witness lines: a leader
+    # crossing the lane is ordinary, a balloon sitting on the value is not.
     blockers, depth_lanes = _depth_lanes(view, spec, by_edge, board)
     lane_half = style.T_DIM / 2 + 0.5
-    for edge, _group, _outer, lane, lo, hi in depth_lanes:
+    for edge, _group, lane, lo, hi, _call, geom in depth_lanes:
         if edge in ("bottom", "top"):
             edge_only.add_rect(lane - lane_half, lo, lane + lane_half, hi,
                                pad=1.2, weight=HARD)
         else:
             edge_only.add_rect(lo, lane - lane_half, hi, lane + lane_half,
                                pad=1.2, weight=HARD)
+        # In both sets.  A balloon parked on the value reads as the value, and
+        # a leader ruled through it is no better: with only the position
+        # reserved, the TARGET C leader went straight through the 3.23 that
+        # the balloon had just been moved off.
+        edge_only.add_rect(*geom.text_box, pad=1.2, weight=HARD)
+        obstacles.add_rect(*geom.text_box, pad=1.2, weight=HARD)
 
     items: list[_Ballooned] = []
     schedule: list[list[str]] = []
@@ -1697,7 +1727,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # overall width; the side is decided by the host's edge, so it stays
     # inboard whichever of those the chain rule put there.  The lanes were
     # worked out before the balloons were placed, and reserved against them.
-    for edge, group, outer, lane, _lo, _hi in depth_lanes:
+    for edge, group, lane, _lo, _hi, call, _geom in depth_lanes:
         # A centre line along the row of pin fields, so the dimension's
         # extension line ends on something.  Without it the lane -- chosen
         # clear of every drawn part, which is what put it in a gap between
@@ -1705,20 +1735,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         # open board, pointing at nothing.  It is a row of centres, so a
         # centre line is what belongs there.
         _pin_row_centre_line(c, view, group, edge, lane)
-        if edge == "bottom":
-            dims.linear(c, (lane, board.y), (lane, view.y(outer.cy)), 0.0,
-                        horizontal=False, value=outer.cy, text_side="high")
-        elif edge == "top":
-            dims.linear(c, (lane, view.y(outer.cy)), (lane, board.y1), 0.0,
-                        horizontal=False, value=o.height - outer.cy,
-                        text_side="low")
-        elif edge == "left":
-            dims.linear(c, (board.x, lane), (view.x(outer.cx), lane), 0.0,
-                        horizontal=True, value=outer.cx, text_side="high")
-        else:
-            dims.linear(c, (view.x(outer.cx), lane), (board.x1, lane), 0.0,
-                        horizontal=True, value=o.width - outer.cx,
-                        text_side="low")
+        dims.linear(c, *call[:3], **call[3])
 
     # The zero ordinate starts from the same edge the rest of the chain does:
     # X=0 is the whole left edge of the board, so any point on it will do, and
