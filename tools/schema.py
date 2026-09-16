@@ -255,6 +255,14 @@ class BoardSpec:
     #: Overrides the sheet's default general tolerance, for a part whose source
     #: does not support the usual figures.
     tolerance: str = ""
+    #: Replaces the sheet's computed "assembled envelope" note.  That note is
+    #: built from the features alone, and features do not include the Pmod
+    #: hosts, which have a table of their own; on a board whose host bodies
+    #: stand outside the outline the computed figure is therefore short by the
+    #: overhang.  Widening the computation is the real fix and moves seven
+    #: already-issued sheets, so a board that the figure gets badly wrong
+    #: states its own, worked out by its extractor from the same data.
+    envelope_note: str = ""
 
     def of_kind(self, *kinds: str) -> tuple[Feature, ...]:
         return tuple(f for f in self.features if f.kind in kinds)
