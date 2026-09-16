@@ -388,6 +388,11 @@ CYNTHION_USB = [
     ("J3", "usb_fourth", "USB-A J3, TARGET A port", "usb_a"),
 ]
 
+#: The three side-actuated buttons.  Not drawn -- the sheet marks ports,
+#: hosts, LEDs, holes and the outline -- but they are what makes the board
+#: wider than its outline, so a case designer needs their reach.
+CYNTHION_BUTTONS = ("SW1", "SW2", "SW3")
+
 #: J5's numbered contacts.  Checked rather than assumed, because the label
 #: calls the part 30-way and nothing else the extractor reads says so; the
 #: footprint carries two mechanical posts and two unnamed pads besides.
@@ -480,12 +485,41 @@ def extract_cynthion() -> dict:
         note="D10 at the left-hand end; the debug controller drives them."))
     number_features(key, features)
 
+    # The assembled envelope, worked out here rather than left to the sheet.
+    # The sheet's figure is built from the features, and the Pmod hosts are
+    # not features -- they have a table of their own -- so on this board it
+    # would be 8.07 mm short in Y, which is most of what a case has to clear.
+    # The buttons are not features either and are what makes the board wider
+    # than its outline, so they are measured and given separately: one number
+    # a reader cannot take apart is no use to someone cutting a front panel.
+    buttons = [kicad_extract.box(one(fps, ref), to_box, "fab")
+               for ref in CYNTHION_BUTTONS]
+    parts = [(f["x0"], f["y0"], f["x1"], f["y1"]) for f in features]
+    parts += [(p["body_x0"], p["body_y0"], p["body_x1"], p["body_y1"])
+              for p in pmods]
+    ex0 = min([0.0] + [p[0] for p in parts])
+    ex1 = max([w] + [p[2] for p in parts])
+    ey0 = min([0.0] + [p[1] for p in parts])
+    ey1 = max([h] + [p[3] for p in parts])
+    cx0 = min([ex0] + [b[0] for b in buttons])
+    cx1 = max([ex1] + [b[2] for b in buttons])
+    cy0 = min([ey0] + [b[1] for b in buttons])
+    cy1 = max([ey1] + [b[3] for b in buttons])
+    envelope = (
+        "Assembled envelope, connector overhang and the Pmod housings "
+        f"included: {ex1 - ex0:.2f} x {ey1 - ey0:.2f} mm. With the three "
+        f"side buttons as well it is {cx1 - cx0:.2f} x {cy1 - cy0:.2f} mm, "
+        "which is what a case has to clear.")
+    left = -min(b[0] for b in buttons)
+    right = max(b[2] for b in buttons) - w
+
     tb = _cynthion_title_block()
     return dict(
         key=key, title="Cynthion", subtitle=CYNTHION_TAG,
         front_edge="bottom", thickness=board.thickness,
         width=round(w, 3), height=round(h, 3), corner_radius=radii[0],
         edges=edges, holes=holes, pmods=pmods, features=features,
+        envelope_note=envelope,
         sources=[
             ("KiCad board file",
              f"{CYNTHION_REPO}  {CYNTHION_PATH} @ {CYNTHION_COMMIT} "
@@ -521,13 +555,13 @@ def extract_cynthion() -> dict:
             "board and the housing hangs off the front edge, so a peripheral "
             "plugs in level with the board rather than standing up from it. "
             f"The housings reach {-min(p['body_y0'] for p in pmods):.2f} mm "
-            "past the edge, which the assembled envelope figure does not "
-            "count.",
+            "past the edge.",
             "The board ships inside an enclosure. The outline drawn is the "
             "bare PCB's; the repository publishes no case dimensions.",
             "Buttons PROGRAM and USER on the left edge and RESET on the "
-            "right are not drawn. Each is a side-actuated tactile switch "
-            "whose body reaches 2.5 mm beyond the board outline.",
+            "right are not drawn. They are side-actuated tactile switches "
+            f"whose bodies reach {left:.2f} mm past the left edge and "
+            f"{right:.2f} mm past the right.",
         ],
     )
 
@@ -1330,6 +1364,7 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
     ),
     notes=(
 {notes()}    ),
+    envelope_note={rec.get("envelope_note", "")!r},
 )
 '''
 
