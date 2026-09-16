@@ -388,6 +388,11 @@ CYNTHION_USB = [
     ("J3", "usb_fourth", "USB-A J3, TARGET A port", "usb_a"),
 ]
 
+#: J5's numbered contacts.  Checked rather than assumed, because the label
+#: calls the part 30-way and nothing else the extractor reads says so; the
+#: footprint carries two mechanical posts and two unnamed pads besides.
+CYNTHION_MEZZANINE_WAYS = 30
+
 
 def _cynthion_title_block() -> dict:
     """The title block the board file's ``${...}`` placeholders stand for.
@@ -446,6 +451,24 @@ def extract_cynthion() -> dict:
         features.append(dict(key=key_, kind=kind, designator=ref, label=label,
                              x0=b[0], y0=b[1], x1=b[2], y1=b[3],
                              note="Fab-layer body outline, shell included."))
+    # J5 is populated -- not dnp, in the BOM, on the "Expansion Interfaces"
+    # schematic sheet -- so the family's first expansion slot is its, and row
+    # 6 cannot go on saying the board has no expansion connector.  It is not
+    # an edge port, though, which is what the other boards put in that slot,
+    # so the sheet says what it is in a note.
+    mez = one(fps, "J5")
+    ways = len([p for p in mez.pads if p.number.isdigit()])
+    if ways != CYNTHION_MEZZANINE_WAYS:
+        raise SystemExit(f"{key}: J5 has {ways} numbered contacts, not "
+                         f"{CYNTHION_MEZZANINE_WAYS}; the label would be "
+                         "wrong")
+    b = kicad_extract.box(mez, to_box, "fab")
+    features.append(dict(
+        key="exp1", kind="connector", designator="J5",
+        label=f"Mezzanine receptacle J5, {ways}-way",
+        x0=b[0], y0=b[1], x1=b[2], y1=b[3],
+        note="Fab-layer body outline. Board-to-board receptacle on the "
+             f"component side, footprint {mez.library_id}."))
     features.append(row_feature(
         [kicad_extract.box(one(fps, f"D{n}"), to_box) for n in range(2, 8)],
         key="leds", label="User LEDs D2-D7", kind="led", designator="D2-D7",
@@ -490,6 +513,10 @@ def extract_cynthion() -> dict:
             "board. 1 to 8 mean what they mean on the other FPGA sheets, so "
             "the four USB ports read 1, 2, 9, 10.",
             "No Ethernet jack.",
+            "Feature 6, J5, is a surface-mount mezzanine receptacle on the "
+            "component side: a board-to-board expansion socket well inside "
+            "the outline, not an edge port like the expansion connectors on "
+            "the other sheets.",
             "Pmod A and B are right-angle sockets: the pin field is on the "
             "board and the housing hangs off the front edge, so a peripheral "
             "plugs in level with the board rather than standing up from it. "
