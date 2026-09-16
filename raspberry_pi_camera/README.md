@@ -166,6 +166,18 @@ drawing never locates the FFC connector in plan at all -- it appears only in
 the side elevation, as a 5.71 x 2.75 section -- so one of the five things
 these sheets exist to mark cannot be marked. `TODO.md` carries it.
 
+**The sensor module's lower body, as a scheduled feature.** It was
+considered and left out. On both boards the module has a body below the lens
+housing that reaches toward the lower edge -- stepped on the Camera Module 2,
+notched on the Camera Module 3 -- and it is raised material a mount has to
+clear, so it is not nothing. But a `Feature` is a bounding box, and a
+schedule entry reading "6.72 to 16.14" for a shape with a step in it would be
+a precise-looking figure that is wrong at the corner it omits. Both sheets
+carry its extents in a note instead, where prose can say "stepped", and both
+say where they came from. Drawing it properly needs a feature that is a
+profile rather than a box, which is the same change the High Quality Camera
+wants; `TODO.md` carries that one.
+
 **The Global Shutter Camera and the AI Camera.** Drawings exist
 ([`RP-008195-DS`](https://pip.raspberrypi.com/documents/RP-008195-DS) for the
 GS Camera); neither was asked for and neither is drawn.
