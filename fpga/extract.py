@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate ``fpga/boards.py`` from each FPGA board's own published source.
 
-Seven boards, three kinds of source, one rule: the numbers are machine-read
+Eight boards, three kinds of source, one rule: the numbers are machine-read
 and the identification is hand-curated.
 
 ===========  =============================================================
@@ -18,6 +18,8 @@ Icepi Zero   the KiCad board file at the mass-production tag, and again at
              agree on every position drawn
 Cynthion     the KiCad board file at the release Great Scott Gadgets call
              the initial production release
+Ultra96-V2   Avnet's Altium "Mechanical and Drill" plot, a vector PDF of the
+             whole board with the pad designators written into it as text
 ===========  =============================================================
 
 The sources are expected under ``tmp/src``; ``tools/fetch_fpga.sh`` puts
@@ -30,6 +32,7 @@ Run: uv run --no-project --with ezdxf --with pdfplumber --with cadquery \\
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -143,23 +146,30 @@ def pmod_from_pins(points, *, key: str, label: str, designator: str,
 
 
 def row_feature(boxes, *, key: str, label: str, kind: str, note: str = "",
-                designator: str = "") -> dict:
+                designator: str = "", uniform: bool = True) -> dict:
     """One feature covering a row of small parts, LEDs mostly.
 
     A row of eight LEDs on 2.54 mm would take eight balloons and say nothing
     a plate designer needs; the row's extent and its pitch say it all.  The
     pitch is measured from the boxes rather than written into the label, so
     the label cannot claim a pitch the parts do not have.
+
+    A row that is not on one pitch gets its count and no pitch.  The
+    Ultra96-V2's four user LEDs are spaced 1.40, 1.52 and 1.40 mm, which is
+    a real row of four and not a row on a pitch, so *uniform* is false there
+    and the label says only how many there are.
     """
     boxes = sorted(boxes)
     cs = sorted(((b[0] + b[2]) / 2, (b[1] + b[3]) / 2) for b in boxes)
     axis = 0 if (cs[-1][0] - cs[0][0]) >= (cs[-1][1] - cs[0][1]) else 1
     steps = [cs[i + 1][axis] - cs[i][axis] for i in range(len(cs) - 1)]
     pitch = sum(steps) / len(steps)
-    if max(abs(s - pitch) for s in steps) > 0.05:
+    if uniform and max(abs(s - pitch) for s in steps) > 0.05:
         raise SystemExit(f"{key}: LED pitch is not uniform: {steps}")
+    count = (f"{len(boxes)} on {pitch:.2f} mm pitch" if uniform
+             else f"{len(boxes)} off")
     return dict(key=key, kind=kind, designator=designator,
-                label=f"{label}, {len(boxes)} on {pitch:.2f} mm pitch",
+                label=f"{label}, {count}",
                 x0=round(min(b[0] for b in boxes), 3),
                 y0=round(min(b[1] for b in boxes), 3),
                 x1=round(max(b[2] for b in boxes), 3),
@@ -1700,6 +1710,460 @@ def extract_zybo_z7() -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Ultra96-V2: Avnet's "Mechanical and Drill" plot, a vector PDF
+# ---------------------------------------------------------------------------
+
+U96_PDF = SRC / "ultra96" / "ultra96-v2-mechanical.PDF"
+U96_MECH = ("https://github.com/96boards/documentation/blob/master/consumer/"
+            "ultra96/ultra96-v2/hardware-docs/files/ultra96-v2-mechanical.PDF")
+U96_BOM = ("https://github.com/96boards/documentation/blob/master/consumer/"
+           "ultra96/ultra96-v2/hardware-docs/files/ultra96-v2-bom.pdf")
+U96_HWUG = ("https://www.avnet.com/wps/wcm/connect/onesite/b85b9556-0b2a-42b3-"
+            "ad6a-8dcf3eac1ff9/Ultra96-V2-HW-User-Guide-v1_3.pdf")
+CE_SPEC = ("https://github.com/96boards/documentation/blob/master/"
+           "Specifications/96Boards-CE-Specification.pdf")
+
+#: The 96Boards Consumer Edition outline, from Linaro's specification.  The
+#: plot carries no scale bar and its sheet frame is cropped away, so this is
+#: what its scale is recovered against; the drawing's own overall dimensions
+#: read 3.346 x 2.126 in, which is 84.99 x 54.00 mm.
+CE_WIDTH, CE_HEIGHT = 85.0, 54.0
+
+#: The specification's mounting hole pattern, its hole and its keepout.  Used
+#: to check the recovered scale rather than to supply the positions: the plot
+#: is read for those and has to agree with these to a hundredth of a
+#: millimetre.  The diameter is the specification's, because the plot draws
+#: each hole as a solid 5.0 mm disc -- the keepout -- and no drill.
+CE_HOLES = ((4.0, 18.5), (81.0, 18.5), (4.0, 50.0), (81.0, 50.0))
+CE_HOLE_DIA = 2.5
+CE_HOLE_KEEPOUT = 5.0
+
+#: Colour Altium gave the copper layer in this export.  Silkscreen is a
+#: lighter grey and the board outline darker, so a pad is recognised by its
+#: fill colour and not by where it is.
+U96_COPPER = (0.1176, 0.1176, 0.1176)
+
+_PT_MM = 72 / 25.4
+
+
+class _Plot:
+    """Avnet's plot of the Ultra96-V2, read in board millimetres.
+
+    The file is an Altium export at about 1.665:1 whose media box is cropped
+    to the drawing, so the sheet frame, the title block and any drill table
+    are outside it and the only thing left that can fix the scale is the
+    board outline.  It is recovered from that, per axis, the way the Arty
+    A7's plot is, and then checked three ways: the axes have to agree, the
+    four mounting holes have to land on the 96Boards pattern, and the two
+    expansion connectors have to come out on their nominal 2.00 and 0.80 mm
+    pitches.
+
+    What makes the file worth reading at all is that Altium wrote the
+    component and pad designators into it as text.  A pad is a filled shape
+    like any other; what says which component it belongs to is a ``PAJ501``
+    sitting on it, which is this export's name for pad 1 of J5.
+    """
+
+    def __init__(self, page):
+        self.page = page
+        self.x0, self.y0, self.sx, self.sy = self._frame(page)
+        self.pads = self._pad_shapes()
+        self.labels = self._pad_labels()
+
+    # -- geometry -----------------------------------------------------------
+
+    def _segments(self, page):
+        """Straight segments inside the media box, in sheet millimetres.
+
+        The content stream reaches from -87 to 631 mm across, because the
+        Altium sheet frame is still in it and only the crop hides it.  A
+        segment outside the page is not on the drawing and would otherwise
+        be the longest line on it.
+        """
+        w, h = page.width / _PT_MM, page.height / _PT_MM
+        out = []
+        for o in page.lines:
+            pts = o["pts"]
+            for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+                a = (ax / _PT_MM, (page.height - ay) / _PT_MM)
+                b = (bx / _PT_MM, (page.height - by) / _PT_MM)
+                if all(0 <= p[0] <= w and 0 <= p[1] <= h for p in (a, b)):
+                    out.append((a, b))
+        return out
+
+    def _frame(self, page):
+        """Board origin and per-axis scale, from the outline rectangle."""
+        spans: dict = {}
+        for a, b in self._segments(page):
+            if abs(a[0] - b[0]) < 0.02 and abs(a[1] - b[1]) > 1.0:
+                key = (round(min(a[1], b[1]), 2), round(max(a[1], b[1]), 2))
+                spans.setdefault(key, set()).add(a[0])
+        best = None
+        for (lo, hi), xs in spans.items():
+            if len(xs) < 2:
+                continue
+            area = (hi - lo) * (max(xs) - min(xs))
+            if best is None or area > best[0]:
+                best = (area, min(xs), lo, max(xs), hi)
+        if best is None:
+            raise SystemExit("ultra96-v2: no outline rectangle on the plot")
+        _, x0, y0, x1, y1 = best
+        sx = CE_WIDTH / (x1 - x0)
+        sy = CE_HEIGHT / (y1 - y0)
+        if abs(sx / sy - 1.0) > 0.005:
+            raise SystemExit(
+                f"ultra96-v2: plot axes disagree by {sx / sy:.4f}; the "
+                "largest rectangle is not the board outline")
+        self.aniso = sx / sy
+        return x0, y0, sx, sy
+
+    def to_xy(self, x_mm, y_mm):
+        return (x_mm - self.x0) * self.sx, (y_mm - self.y0) * self.sy
+
+    def _box(self, o):
+        a, d = self.to_xy(o["x0"] / _PT_MM,
+                          (self.page.height - o["bottom"]) / _PT_MM)
+        c, b = self.to_xy(o["x1"] / _PT_MM,
+                          (self.page.height - o["top"]) / _PT_MM)
+        return tuple(round(v, 3) for v in (a, d, c, b))
+
+    # -- pads ---------------------------------------------------------------
+
+    def _pad_shapes(self):
+        """Every copper pad on the plot, as a box in board millimetres.
+
+        Surface pads are filled paths in the copper colour.  A round pad --
+        the mounting holes and the USB type A shell posts -- is a zero-length
+        stroke as wide as the pad, which is how a round cap draws a disc, so
+        its diameter is its line width and its position is the single point.
+
+        Three rectangular pads are filled black instead: pin 1 of each USB
+        type A port and one pad of the barrel jack, each the same size as its
+        neighbours.  Black rectangles count as pads for that reason, but
+        black CURVES do not: all 1545 of them are drill holes, none wider
+        than half a millimetre.
+        """
+        found = set()
+        for objs in (self.page.rects, self.page.curves):
+            for o in objs:
+                if not o.get("fill"):
+                    continue
+                fill = o.get("non_stroking_color")
+                if fill != U96_COPPER and not (
+                        fill == (0.0, 0.0, 0.0) and objs is self.page.rects):
+                    continue
+                a, b, c, d = self._box(o)
+                if c - a >= 0.3 and d - b >= 0.3:
+                    found.add((a, b, c, d))
+        for o in self.page.lines:
+            pts = o["pts"]
+            if len(pts) != 2 or pts[0] != pts[1]:
+                continue
+            dia = o["linewidth"] * self.sx / _PT_MM
+            if dia < 1.0:
+                continue
+            x, y = self.to_xy(pts[0][0] / _PT_MM,
+                              (self.page.height - pts[0][1]) / _PT_MM)
+            r = dia / 2
+            found.add(tuple(round(v, 3)
+                            for v in (x - r, y - r, x + r, y + r)))
+        return sorted(found)
+
+    def discs(self, dia, tol=0.02):
+        """The round pads of a given diameter, as (x, y) centres."""
+        out = []
+        for a, b, c, d in self.pads:
+            if abs((c - a) - dia) < tol and abs((d - b) - dia) < tol:
+                out.append(((a + c) / 2, (b + d) / 2))
+        return sorted(out)
+
+    # -- designators --------------------------------------------------------
+
+    def _pad_labels(self):
+        """Where each pad designator string sits, in board millimetres.
+
+        Altium writes one string per pad, ``PA`` then the component, then a
+        ``0``, then the pad's own name: ``PAJ501`` is J5 pad 1, ``PAJ5010``
+        is J5 pad 10, ``PAJ70S1`` is the micro-USB's first shield land.  The
+        strings are drawn glyph by glyph, so they are grouped back into words
+        by baseline and advance before their centres are taken.  Each is
+        written with a trailing space, and the space ends a word as well:
+        without that, the micro-USB's neighbouring shield lands came back as
+        one word naming two pads and centred between them.  The centre of a
+        string is good to about a tenth of a millimetre, which is why it is
+        used only to say WHICH pad, never where it is.
+        """
+        out: dict = {}
+        run: list = []
+        prev = None
+
+        def flush():
+            if not run:
+                return
+            text = "".join(c["text"] for c in run).strip()
+            if not text:
+                return
+            x = (min(c["x0"] for c in run) + max(c["x1"] for c in run)) / 2
+            y = (self.page.height
+                 - (min(c["top"] for c in run)
+                    + max(c["bottom"] for c in run)) / 2)
+            out.setdefault(text, []).append(
+                self.to_xy(x / _PT_MM, y / _PT_MM))
+
+        for ch in self.page.chars:
+            if prev is not None:
+                gap = ch["x0"] - prev["x1"]
+                same = (abs(ch["top"] - prev["top"]) < 0.5
+                        and abs(ch["size"] - prev["size"]) < 0.05)
+                if (not same or gap > prev["size"] * 0.6 or gap < -0.5
+                        or prev["text"].isspace()):
+                    flush()
+                    run = []
+            run.append(ch)
+            prev = ch
+        flush()
+        return out
+
+    def pads_of(self, ref, expect, shapes=None):
+        """The pads of one component, by its designator.
+
+        *expect* is how many pads of that component the plot NAMES, which is
+        not always the pad count of the part in Avnet's bill of materials: J5
+        is a 40POS part with forty named pads and J4 a 60POS part with sixty,
+        but J7 is a 10 POS part with fourteen -- ten contacts and four shield
+        lands -- and J8 and J9 are 9PS parts with eleven, nine contacts and
+        two shell posts.  Asserting it means a footprint that changed shape is
+        an error rather than a quietly smaller box.
+
+        Every pad the plot names for that component is taken and nothing else.
+        The plot gives three footprints a pad with no name of its own, written
+        ``PAJ10None``, ``PAJ30None`` and ``PAJ40None``: J1's and J3's hold-down
+        tabs and J4's, each 1.20 mm square.  J4's sits 1.65 mm clear of the
+        left end of its pin field with nothing answering it at the right end,
+        so folding it in would put the connector's box 2.85 mm out on one side
+        of a part that is symmetrical.
+
+        Names are not pads one for one.  Each name is matched to the shape it
+        sits on, and several names can land on one shape: the micro-USB's four
+        shield lands are drawn as a single path, so its fourteen names give
+        eleven shapes.  *shapes*, where given, is how many distinct shapes the
+        names must resolve to, which is what catches two designators collapsing
+        onto one pad because the match went wrong rather than because the plot
+        drew them as one.
+        """
+        keys = [k for k in self.labels
+                if re.fullmatch(f"PA{ref}0[A-Za-z0-9]+", k)
+                and not k.endswith("None")]
+        if len(keys) != expect:
+            raise SystemExit(
+                f"ultra96-v2: {ref} has {len(keys)} named pads on the plot, "
+                f"not the {expect} expected")
+        boxes = {}
+        for key in keys:
+            point = self.labels[key][0]
+            boxes[key] = min(self.pads, key=lambda s: _gap(s, point))
+            if _gap(boxes[key], point) > 0.5:
+                raise SystemExit(f"ultra96-v2: no pad under {key}")
+        if shapes is not None and len(set(boxes.values())) != shapes:
+            raise SystemExit(
+                f"ultra96-v2: {ref}'s {len(keys)} pad names resolve to "
+                f"{len(set(boxes.values()))} shapes, not {shapes}")
+        return boxes
+
+    def extent(self, boxes):
+        v = list(boxes.values()) if isinstance(boxes, dict) else list(boxes)
+        return (round(min(b[0] for b in v), 3), round(min(b[1] for b in v), 3),
+                round(max(b[2] for b in v), 3), round(max(b[3] for b in v), 3))
+
+
+def _gap(box, point):
+    """Distance from a point to a box, zero inside it."""
+    dx = max(box[0] - point[0], 0.0, point[0] - box[2])
+    dy = max(box[1] - point[1], 0.0, point[1] - box[3])
+    return (dx * dx + dy * dy) ** 0.5
+
+
+def extract_ultra96_v2() -> dict:
+    if not U96_PDF.exists():
+        raise SystemExit(f"missing {U96_PDF}; run tools/fetch_fpga.sh")
+    import pdfplumber
+    key = "ultra96-v2"
+    plot = _Plot(pdfplumber.open(str(U96_PDF)).pages[0])
+
+    # The mounting holes.  The plot draws each as a solid disc the diameter
+    # of the specification's keepout and shows no drill, so the hole itself
+    # is the specification's figure and is labelled as such on the sheet.
+    discs = plot.discs(CE_HOLE_KEEPOUT)
+    if len(discs) != 4:
+        raise SystemExit(f"{key}: {len(discs)} discs of "
+                         f"{CE_HOLE_KEEPOUT} mm, not 4")
+    holes = []
+    for n, ((x, y), (wx, wy)) in enumerate(
+            zip(discs, sorted(CE_HOLES)), 1):
+        if abs(x - wx) > 0.05 or abs(y - wy) > 0.05:
+            raise SystemExit(f"{key}: hole at ({x:.3f}, {y:.3f}) is not the "
+                             f"96Boards hole at ({wx}, {wy})")
+        holes.append(dict(x=round(x, 3), y=round(y, 3), dia=CE_HOLE_DIA,
+                          label=f"MT{n}", kind="mount",
+                          keepout_dia=CE_HOLE_KEEPOUT))
+    hole_err = max(max(abs(h["x"] - w[0]), abs(h["y"] - w[1]))
+                   for h, w in zip(holes, sorted(CE_HOLES)))
+
+    # The two expansion connectors.  Pin 1, the last odd pin and pin 2 fix the
+    # column pitch and the row gap, which is the check that the recovered
+    # scale is right on both axes at once: a plot read a quarter of a percent
+    # out would give 2.005 rather than 2.000 across and 5.012 rather than
+    # 5.000 up.  The row gap is the pads' own spacing, not the connector's
+    # pin rows -- both parts are surface mount and their contacts bend
+    # outward -- so it is checked against the figure the plot itself gives
+    # rather than against a catalogue dimension.
+    def connector(ref, pins, pitch, gap):
+        boxes = plot.pads_of(ref, pins, shapes=pins)
+        first = _centre(boxes[f"PA{ref}01"])
+        last = _centre(boxes[f"PA{ref}0{pins - 1}"])
+        got = abs(last[0] - first[0]) / (pins / 2 - 1)
+        if abs(got - pitch) > 0.005:
+            raise SystemExit(f"{key}: {ref} columns come out on {got:.4f} mm, "
+                             f"not {pitch}")
+        rows = abs(_centre(boxes[f"PA{ref}02"])[1] - first[1])
+        if abs(rows - gap) > 0.005:
+            raise SystemExit(f"{key}: {ref} pad rows come out {rows:.4f} mm "
+                             f"apart, not {gap}")
+        return boxes, first, got, rows
+
+    ls, ls_pin1, ls_pitch, ls_gap = connector("J5", 40, 2.0, 5.0)
+    hs, hs_pin1, hs_pitch, hs_gap = connector("J4", 60, 0.8, 4.4)
+    ls_box = plot.extent(ls)
+    hs_box = plot.extent(hs)
+
+    features = [
+        dict(key="exp1", kind="header", designator="J5",
+             label="96Boards low-speed expansion J5, 40 way, 2x20 on 2.00 mm",
+             x0=ls_box[0], y0=ls_box[1], x1=ls_box[2], y1=ls_box[3],
+             note="Pad extent of the forty pads the plot names."),
+        dict(key="exp2", kind="connector", designator="J4",
+             label="96Boards high-speed expansion J4, 60 way, 2x30 on 0.80 mm",
+             x0=hs_box[0], y0=hs_box[1], x1=hs_box[2], y1=hs_box[3],
+             note="Pad extent of the sixty pads the plot names; J4's "
+                  "unnamed hold-down pad is not included."),
+    ]
+
+    # The micro-USB device port, shield lands included: they are named pads
+    # like any other on this export, and they are most of the connector.
+    usb = plot.extent(plot.pads_of("J7", 14, shapes=11))
+    features.append(dict(
+        key="usb_prog", kind="connector", designator="J7",
+        label="micro-USB J7, USB 3.0 upstream (device) port",
+        x0=usb[0], y0=usb[1], x1=usb[2], y1=usb[3],
+        note="Pad extent, the ten contacts and the four shield lands; the "
+             "shell reaches a little beyond them."))
+
+    # The two type A host ports.  One feature for the pair: they are the same
+    # part, the plate designer cuts one window or two on a fixed pitch, and
+    # the family has one slot for a second USB port and not two.
+    hosts = [plot.extent(plot.pads_of(ref, 11, shapes=11))
+             for ref in ("J8", "J9")]
+    features.append(row_feature(
+        hosts, key="usb_second", kind="usb_a", designator="J8, J9",
+        label="USB 3.0 type A host ports J8 and J9",
+        note="Pad extent of each, the nine contacts and the two 3.2 mm "
+             "shell posts."))
+
+    # The four user LEDs.
+    leds = [plot.extent(plot.pads_of(ref, 2, shapes=2))
+            for ref in ("D3", "D4", "D6", "D7")]
+    features.append(row_feature(
+        leds, key="leds", kind="led", designator="D3, D4, D6, D7",
+        label="User LEDs D3, D4, D6 and D7, green 0603", uniform=False,
+        note="Pad extent of the four pairs of pads."))
+    number_features(key, features)
+
+    return dict(
+        key=key, title="Avnet Ultra96-V2", subtitle="96Boards CE, 85 x 54 mm",
+        front_edge="bottom", thickness=None, extent_of="PAD EXTENTS",
+        width=CE_WIDTH, height=CE_HEIGHT, corner_radius=0.0,
+        edges=[("line", 0.0, 0.0, CE_WIDTH, 0.0),
+               ("line", CE_WIDTH, 0.0, CE_WIDTH, CE_HEIGHT),
+               ("line", CE_WIDTH, CE_HEIGHT, 0.0, CE_HEIGHT),
+               ("line", 0.0, CE_HEIGHT, 0.0, 0.0)],
+        holes=holes, pmods=[], features=features,
+        sources=[
+            ("Mechanical drawing", U96_MECH,
+             "Avnet, ultra96-v2-mechanical.PDF, listed as \"Mechanical and "
+             "Drill\": an Altium NEXUS plot of the U96-US1SBC V2 board dated "
+             "2019-03-01, republished by Linaro. Everything "
+             "here is read from its vector content. Its scale is recovered "
+             "from the outline, per axis (the axes agree to "
+             f"{abs(plot.aniso - 1) * 100:.2f} %), then checked: the holes "
+             f"land within {hole_err * 1000:.0f} um of the specification's "
+             f"pattern, and the connectors read {ls_pitch:.3f} / "
+             f"{hs_pitch:.3f} mm across their columns and {ls_gap:.3f} / "
+             f"{hs_gap:.3f} mm between their pad rows."),
+            ("Form factor specification", CE_SPEC,
+             "Linaro, 96Boards Consumer Edition Low Cost Hardware Platform "
+             "Specification, cover \"Version 1.0, January 2015\"; its 2D "
+             "Reference Drawing is a sheet inside it whose own title block "
+             "reads 1 FEB 2015. Quoted: \"The board without population of "
+             "connectors shall fit into a 85 x 54mm footprint +/-0.25mm\"; "
+             "\"Low speed expansion connector \u2013 center line as per "
+             "mounting holes\"; \"Keepout for mating shroud 43.00 x "
+             "6.50\". The hole callout is three stacked rotated "
+             "annotations, \"M2.5\", \"2.5\u00d8 hole\" and "
+             "\"5.0\u00d8 keepout x4\", against ordinates 4.00 and 81.00 "
+             "by 18.50 and 50.00; its 15.45 is unlabelled."),
+            ("Hardware user's guide", U96_HWUG,
+             "Avnet, Ultra96-V2 Hardware User's Guide v1.3, 02 Jun 2021. "
+             "Quoted: \"Note that there is no on-board, wired Ethernet "
+             "interface\"; \"Low Speed Expansion Connector (J5)\" and "
+             "\"High Speed Expansion Connector (J4)\", which v1.3 "
+             "corrected. Table 20 names D3, D4, D6, D7 the user LEDs on "
+             "PS_MIO20 to PS_MIO17 and D9, D10 RADIO_LED0 (yellow) and "
+             "RADIO_LED1 (blue); 8.2 gives the heat sink screws."),
+            ("Bill of materials", U96_BOM,
+             "Avnet, ultra96-v2-bom.pdf, which says which designator is "
+             "which part: J5 \"40POS 2MM STR DL SMD\", J4 \"60POS .8MM "
+             "VERT DUAL SMD\", J7 \"MICRO USB 3.0 AB R/A\", J8 and J9 "
+             "\"USB 3.0 TYPE A R/A 9PS\", D3/D4/D6/D7 green 0603."),
+        ],
+        notes=[
+            "Hole IDs are assigned by this drawing; Avnet's plot names no "
+            "hole.",
+            "THE FEATURE SCHEDULE GIVES PAD EXTENTS, NOT BODIES. The plot "
+            "draws no component body outline at all, so each figure is the "
+            "extent of the pads it names for that part and every connector "
+            "shell reaches beyond it. Do not cut apertures to them.",
+            "Hole diameter is the 96Boards M2.5 figure, not a measurement: "
+            "the plot draws each hole as a solid 5.0 mm disc, its keepout, "
+            "and shows no drill.",
+            f"Expansion pin 1 pad centres: J5 ({ls_pin1[0]:.2f}, "
+            f"{ls_pin1[1]:.2f}), 20 columns on {ls_pitch:.2f} mm; J4 "
+            f"({hs_pin1[0]:.2f}, {hs_pin1[1]:.2f}), 30 on {hs_pitch:.2f} mm; "
+            "odd pins on the lower row of each. Pin field centre lines "
+            f"y = {(ls_box[1] + ls_box[3]) / 2:.2f}, the mounting hole line, "
+            f"and y = {(hs_box[1] + hs_box[3]) / 2:.2f}. Keep 43.00 x "
+            "6.50 mm clear around J5 for its mating shroud.",
+            "J9 is USB host 1, J8 host 2, per the silkscreen. D3 is user "
+            "LED 0 at the right-hand end, then D4, D6, D7, 1.40, 1.52 and "
+            "1.40 mm apart: not one pitch, so none is quoted.",
+            "No Pmod host: the 96Boards connectors take rows 6 and 7, row 8 "
+            "unused. No Ethernet and no tri-colour LED, so rows 3 and 5 are "
+            "empty; networking is Wi-Fi, Bluetooth or a mezzanine.",
+            "Row 1 is the family's programming and console port; here it is "
+            "the USB 3.0 device port. Programming is JTAG on header J3, the "
+            "console header J1; neither is drawn.",
+            "Not marked: the mini DisplayPort J6, overhanging the lower edge "
+            "from x = 20.6 to 29.3; the barrel jack J10 in the upper edge; "
+            "the microSD socket J2 in the left edge; the radio LEDs D9 and "
+            "D10.",
+            "Normally carried by its heat sink, not the four holes alone: "
+            "4x M2.5 x 8 mm through the PCB into the sink, then to a "
+            "bulkhead with 4x M2.5 (Aavid sink) or 4x #4-40 (bracket and "
+            "fan).",
+        ],
+    )
+
+
+# ---------------------------------------------------------------------------
 # Output
 # ---------------------------------------------------------------------------
 
@@ -1735,6 +2199,9 @@ FEATURE_NUMBERS = __NUMBERS__
 
 
 def render(rec: dict) -> str:
+    extent = (f"\n    extent_of={rec['extent_of']!r},"
+              if rec.get("extent_of") else "")
+
     def holes():
         return ",\n".join(
             f"        Hole(x={h['x']}, y={h['y']}, dia={h['dia']}, "
@@ -1778,7 +2245,7 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
     title={rec["title"]!r},
     subtitle={rec["subtitle"]!r},
     family="fpga",
-    front_edge={rec["front_edge"]!r},
+    front_edge={rec["front_edge"]!r},{extent}
     outline=Outline(width={rec["width"]}, height={rec["height"]},
                     corner_radius={rec["corner_radius"]}, thickness={rec["thickness"]},
                     profile_note={rec.get("profile_note", "")!r},
@@ -1807,7 +2274,8 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
 def main() -> None:
     records = [extract_arty(), extract_ulx3s(), extract_pynq_z2(),
                extract_butterstick(), extract_icepi_zero(),
-               extract_cynthion(), extract_zybo_z7()]
+               extract_cynthion(), extract_zybo_z7(),
+               extract_ultra96_v2()]
     numbers = "{\n" + "".join(
         f"    {i}: {FEATURE_NAMES[key]!r},\n"
         for i, key in enumerate(FEATURE_ORDER, 1)) + "}"
