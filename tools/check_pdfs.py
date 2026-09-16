@@ -158,20 +158,32 @@ def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()[:12]
 
 
-def outline_titles(items) -> list[str]:
-    """Every bookmark title, in reading order, flattened.
+def outline_items(items) -> list:
+    """Every bookmark, in reading order, flattened.
 
     ``combine_pdfs`` writes one flat entry per page, but pypdf hands back
     nested lists for a document with sub-entries, and a bundle that had grown
     them should still be read rather than crash.
     """
-    out: list[str] = []
+    out: list = []
     for item in items:
         if isinstance(item, list):
-            out.extend(outline_titles(item))
+            out.extend(outline_items(item))
         else:
-            out.append(str(item.title))
+            out.append(item)
     return out
+
+
+def box(page) -> tuple[float, float, float, float]:
+    """A page's MediaBox, in millimetres: left, bottom, right, top.
+
+    Plain floats in the sheets' own unit, so that the two boxes can be
+    compared and, when they differ, quoted in the unit the drawing is
+    dimensioned in rather than in points.
+    """
+    b = page.mediabox
+    return tuple(round(float(v) * PT, 4)
+                 for v in (b.left, b.bottom, b.right, b.top))
 
 
 def check_bundle(bundle: Bundle, data: bytes | None = None) -> list[str]:
@@ -182,8 +194,10 @@ def check_bundle(bundle: Bundle, data: bytes | None = None) -> list[str]:
     can be checked before anyone stages it, which is how the check itself was
     proved against a deliberately stale one.
 
-    Four questions, and the middle one is the point.  A bound copy is not
-    rendered from anything, so `make diagrams` writing it is not evidence
+    The page count, then each page against the sheet it should be -- its
+    drawing and its page size -- then the bookmarks, by label and by the page
+    each opens, then the metadata.  The second is the point.  A bound copy is
+    not rendered from anything, so `make diagrams` writing it is not evidence
     that the pages in it are the sheets committed beside it: bind the set,
     change a drawing, rebuild three sheets and stage everything, and the
     bundle holds three pages of one version and the rest of another.  Nothing
@@ -194,6 +208,10 @@ def check_bundle(bundle: Bundle, data: bytes | None = None) -> list[str]:
     because that is how the generator writes them, so a bundle whose pages
     are right and whose outline names the wrong drawings is caught by the
     same comparison.
+
+    One line per defect, not per page it shows up on: a swapped pair of
+    bookmarks is one mistake, and reporting it as five problems makes the
+    count at the foot of the run mean nothing.
     """
     if data is None:
         data = blob(rel(bundle.path))
@@ -228,24 +246,62 @@ def check_bundle(bundle: Bundle, data: bytes | None = None) -> list[str]:
                 f"content stream is {len(got)} bytes, sha {digest(got)}, and "
                 f"the sheet's is {len(want)} bytes, sha {digest(want)}; "
                 "rebind with make diagrams and stage the bundle")
+        # The drawing can come through intact on a page of the wrong size,
+        # which is the same lie as a sheet PDF that does not print 1:1 --
+        # checked above for the sheets, and binding is another chance at it.
+        if box(bound) != box(want_page):
+            bad.append(f"page {n} has MediaBox {box(bound)} mm and "
+                       f"{rel(pdf)} has {box(want_page)} mm, so the bound "
+                       "page would not print at the size the sheet does")
 
-    titles = outline_titles(reader.outline)
+    entries = outline_items(reader.outline)
+    titles = [str(item.title) for item in entries]
     want_titles = [label for _, label in bundle.pages]
     if titles != want_titles:
-        bad.append(f"{len(titles)} bookmark(s) for {len(want_titles)} pages"
-                   if len(titles) != len(want_titles) else
-                   "the bookmarks are not the sheets' labels")
-        for n, (got, want) in enumerate(zip(titles, want_titles), 1):
-            if got != want:
-                bad.append(f"    bookmark {n} reads {got!r}, not {want!r}")
+        detail = [f"bookmark {n} reads {got!r}, not {want!r}"
+                  for n, (got, want) in enumerate(zip(titles, want_titles), 1)
+                  if got != want]
+        if len(titles) != len(want_titles):
+            detail.insert(0, f"{len(titles)} entries for "
+                             f"{len(want_titles)} pages")
+        bad.append("the bookmarks are not the sheets' labels in order: "
+                   + "; ".join(detail))
+
+    # A label is only half a bookmark.  pypdf writes the destination
+    # separately, and an outline whose entries all read correctly but open
+    # the wrong pages is a document that cannot be navigated at all.
+    astray = []
+    for n, item in enumerate(entries, 1):
+        try:
+            landed = reader.get_destination_page_number(item)
+        except Exception:  # a destination pypdf cannot resolve at all
+            landed = None
+        if landed != n - 1:
+            where = "no page" if landed is None or landed < 0 else \
+                f"page {landed + 1}"
+            astray.append(f"bookmark {n} opens {where}")
+    if astray:
+        bad.append("a bookmark does not open its own page: "
+                   + "; ".join(astray))
 
     meta = dict(reader.metadata or {})
+    # The whole key set, not four lookups: an Info dictionary that has picked
+    # up a /ModDate or a /Producer's worth of somebody's tooling is a file
+    # that will not reproduce, and naming only the keys expected here is how
+    # a new one gets noticed instead of ignored.
+    want_keys = {"/Producer", "/Title", "/CreationDate"}
+    extra, missing = sorted(set(meta) - want_keys), sorted(want_keys - set(meta))
+    if extra or missing:
+        said = ([f"carries {', '.join(extra)}"] if extra else []) + \
+               ([f"is missing {', '.join(missing)}"] if missing else [])
+        bad.append(
+            "the Info dictionary " + " and ".join(said) + "; a bound copy "
+            f"has {', '.join(sorted(want_keys))} and nothing else -- no "
+            "/Creator, because no drawing tool made it, and no /ModDate: "
+            "see tools/reproducible.py")
     if meta.get("/Producer") != BUNDLE_PRODUCER:
         bad.append(f"/Producer is {meta.get('/Producer')!r}, not "
                    f"{BUNDLE_PRODUCER!r}: see tools/reproducible.py")
-    if "/Creator" in meta:
-        bad.append(f"/Creator is {meta['/Creator']!r}; a bound copy has none, "
-                   "because no drawing tool made it")
     if meta.get("/CreationDate") != PDF_CREATION_DATE:
         bad.append(f"/CreationDate is {meta.get('/CreationDate')!r}, not the "
                    f"pinned {PDF_CREATION_DATE!r}, so it will not reproduce")
@@ -301,7 +357,8 @@ def main() -> int:
                 print(f"    {line}")
         else:
             print(f"{name}: {len(bundle.pages)} pages, each the staged "
-                  "sheet's own drawing, bookmarked in order, metadata pinned")
+                  "sheet's own drawing at its own size, bookmarked in order "
+                  "and opening its own page, Info pinned")
 
     for line in unbound_copies({b.path for b in bound}):
         total += 1
