@@ -65,18 +65,22 @@ the tree with nothing wrong.
 
 - **`check_sheets.py`** re-reads the generated SVGs, recomputes every text
   bounding box from the same font metrics the layout used, and reports text
-  that collides, has a line running through it, falls outside the frame, or
-  drops below the 2.5 mm ISO 3098 floor. It also derives every sheet's drawing
-  name and reads the sheet back for it: the DRAWING NO cell is found by its
-  own label and measured between its own rules, so a name that does not fit
-  and a cell that says something else are two separate reports and neither can
-  be satisfied by a note elsewhere on the sheet citing another drawing. And it
-  checks that every sheet appears in the
+  that collides, has a line running through it, is covered by a balloon,
+  falls outside the frame, or drops below the 2.5 mm ISO 3098 floor. It also
+  derives every sheet's drawing name and reads the sheet back for it: the
+  DRAWING NO cell is found by its own label and measured between its own
+  rules, so a name that does not fit and a cell that says something else are
+  two separate reports and neither can be satisfied by a note elsewhere on the
+  sheet citing another drawing. And it checks that every sheet appears in the
   preview grid and that every reference in it resolves, so adding a sheet
   cannot silently leave the grid showing the wrong set. It found the notes
   block printing over the sources heading on four Raspberry Pi sheets, a datum
   leader running back through its own text, and overall dimension extension
-  lines crossing the ordinate labels.
+  lines crossing the ordinate labels. The balloon test came last and found the
+  defect it was written for: a balloon on the Cynthion sheet whose rim came
+  0.81 mm down into the 3.23 that dimensions the Pmod pin rows. A balloon is a
+  white disc, so it takes a bite out of whatever it lands on, and neither the
+  text-to-text test nor the line test could see it.
 
 - **`check_balloons.py`** looks one level below the finished SVG, at the
   obstacle model the balloon placer works from, and reports every leader whose
