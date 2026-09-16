@@ -132,9 +132,15 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] Ultra96-V2 from Avnet's Altium "Mechanical and Drill" plot, scale
       recovered from the outline and checked against the 96Boards CE
       specification; no Pmod, no Ethernet
+- [x] Zybo Z7 from the same drawing pair as the Arty A7, with Digilent's STEP
+      assembly naming which of the plot's outlines is which
 - [x] `fpga-sheets.pdf`, every FPGA sheet bound into one document
 - [ ] PYNQ-Z2 LED positions, by photogrammetry from TUL's product photo if
       no vector source turns up
+- [ ] The Zybo Z7 sheet is full: its notes band is capped by the view, so the
+      outer lane of the lower ordinate chain ends half a millimetre inside the
+      NOTES rule. Reserving the chain's extra lanes in the view's bottom
+      margin is the fix, and it moves the ButterStick sheet as well
 - [ ] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
       silkscreen; `accessories/parts.py` has it opposite the Pmod convention
 - [ ] Cynthion's three side buttons and its two SWD connectors are not drawn.
