@@ -2092,7 +2092,8 @@ J11, J12 and LD0 to LD13 outright.  Every body the plot supplies is then
 required to land on the model's box and, where the DXF has the same feature,
 on the DXF's own figure: each host on its pin field, the RJ45 on its two
 3.25 mm locating pegs, the micro-USB on its four shell pads, the USB-A on its
-two 2.4 mm shield legs.  All agree to within 0.01 mm.
+two 2.4 mm shield legs.  All agree to about 0.01 mm, the micro-USB
+furthest out at 0.0105.
 
 Three things the sheet says that the drawing cannot:
 
@@ -2128,17 +2129,77 @@ a Wayback Machine snapshot of the Resource Center, which is also where the
 "Width 3.3 in (88 mm)" quote on the sheet comes from -- a figure that
 contradicts its own 3.3 in, and which the drawing settles at 83.82.
 
-The sheet is the fullest in the repository and it shows.  Six hosts, five
-features and four holes fill the annotation column; the notes and sources
-want a 144 mm band and the view can spare 132, so the tail spills into what
-is left of the column with 10 mm to spare.  The cost is at the foot of the
-lower ordinate chain: the datum's 0 and the mounting holes' 3.81 are closer
-together than a label is tall, so 3.81 is staggered out to a second lane, and
-that lane ends about half a millimetre inside the rule under NOTES.  Nothing
-overlaps any text and every check passes, but it is a blemish.  It cannot be
-fixed from this sheet: the band is already capped by the view, so buying the
-9 mm the lane needs means either dropping below 1:1 or cutting a third of the
-provenance text.  The real fix is for the view's bottom margin to reserve the
-chain's extra lanes instead of a flat 30 mm, and that moves the ButterStick
-sheet, which stages its own labels the same way and today has the paper for
-it.
+Four sources, four vintages, and a drawing that does not say which board it
+is of.  The reference manual is revised 2018-02-21 and says it applies to
+rev. B; the schematic is revision D.1; the drawing files are dated
+2020-09-03; the STEP is an OpenCascade export of 2023-03-07.  Nothing in the
+DXF or the plot carries a revision, and the zip's stale Altium previews are
+dated 2017, so the drawing is most likely of the same rev B the manual is.
+What ties them together is not their dates but that they are checked against
+each other on the board itself: the model's outline is the DXF's to a
+millionth of a millimetre, its connector boxes land on the DXF's pads and
+pegs to a hundredth, and the designators it supplies are the ones
+silkscreened in Digilent's own photograph of the board.  A revision that had
+moved any of that would have failed one of those checks rather than passed
+all of them.
+
+## The Zybo Z7's ordinate lane, and the room a chain actually needs
+
+The first cut of the sheet put a digit through a rule.  The datum's 0 and the
+mounting holes' 3.81 are closer together along the lower ordinate chain than
+a label is tall, so 3.81 staggers out to a second lane -- and that lane ended
+inside the stroke of the rule under NOTES, with the whole "3" glyph below it.
+
+`VIEW_MARGIN_BOTTOM` was the culprit: a flat 30 mm, which is about what a
+chain needs when its labels all fit in one lane and nothing like enough for
+two.  Measuring every sheet in the repository with `dims.ordinate_reach`, the
+new function that runs the chain's own lane assignment without drawing it,
+all but two want more than 30 and the Tiny Tapeout sheets want 42.76.  They
+do not collide because a view is centred in what its margins leave, so half
+of whatever height the sheet has spare already falls below the board.  One sheet is left short by that
+centring and no other: this one, by 9.17 mm, because it is the sheet whose
+notes band is capped by its own view.
+
+Reserving the full figure in `_view_height_needed`, which is what decides how
+tall the notes band may be, was tried first and rejected: it pays for the
+chain out of the notes band, which is not this decision's to spend.
+So the reservation happens after the band is fixed instead, in
+`_view_margins`: a sheet the centring leaves short has its bottom margin
+raised by twice the shortfall, which puts all of the spare height below the
+board rather than half, and its top margin cut to `_view_room_above`, the
+room the one dimension up there actually occupies.  Only a short sheet moves,
+which is this one and nothing else: its margins go from (20.00, 30.00) to
+(17.21, 39.97).
+
+That is worth 6.38 mm here -- the board rises by exactly the difference --
+and it is the whole of the fix.  The label now clears the rule by 6.3 mm,
+measured on the render at 2400 px rather than computed, where before it ran
+into the stroke.
+
+There was nothing left to win in the text, because the text had already been
+cut once.  The board size and the board photograph are two facts on one
+Resource Center page and were folded into a single citation when the sheet
+was written, not here: spelled out separately they cost a hundred and ninety
+characters and a whole URL, and the notes band wants 52 mm of the annotation
+column against the 45 there are, which is not a blemish but a sheet that
+cannot be drawn at all.
+
+One thing the measuring turned up on the way.  `ordinate_reach` decides that
+two values crowd each other by comparing their gap with the height of a
+label, and a label's height is a sheet figure that does not grow with the
+view, so the gap has to be a sheet figure too.  Feeding it model millimetres
+reads a 2:1 sheet as crowded when it is not: the Pmod HAT Adapter and the
+Icepi Zero, the two sheets drawn at 2:1 with a chain, were each asking for
+30.30 mm of margin for a chain that wants 19.83.  `_chain_room` takes the
+view's scale and multiplies the positions by it.  Neither sheet was short at
+either figure, so nothing moved; it was wrong by 10.47 mm in the direction
+that happens not to show.
+
+Two things worth writing down.  The library's text metrics are conservative
+against what Inkscape draws -- `text_width("3.81")` is 9.42 mm where the
+rendered glyph run is 6.1 -- so a chain given less than `ordinate_reach` asks
+for can still clear comfortably, as this one does at 39.97 against 42.76.
+And the annotation column, not the paper, is what makes this sheet tight: six
+hosts, five features, eight schedule rows and a legend leave 32 mm, and every
+millimetre the notes band gives back costs two and a half in the column,
+because the column is narrower than a band column.
