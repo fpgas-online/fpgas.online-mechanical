@@ -56,11 +56,19 @@ TT_STEM_LEAD = "tt-demo-board"
 #: * ``waveshare-poe-usbc`` and ``generic-poe-microusb`` are keys that do name
 #:   the vendor, because the data is a catalogue of parts somebody has to buy
 #:   and that is what they buy.  The stem drops it.
+#: * ``waveshare-poe-m2-hat-b-acorn`` names its vendor for the same reason,
+#:   and the sheet is an assembly rather than one part: what is left says
+#:   which HAT and what is in it.  The ``-b`` goes with the vendor, since
+#:   which of Waveshare's three PoE M.2 HATs this is is exactly what the
+#:   title block's part number says.
 #: * ``raspmod`` is already what the thing is called; nothing to drop.
+#:
+#: The table below is in that order.
 ACC_STEMS = {
     "pmod-hat-adapter": "pmod-hat",
     "waveshare-poe-usbc": "poe-usbc",
     "generic-poe-microusb": "poe-microusb",
+    "waveshare-poe-m2-hat-b-acorn": "poe-m2-hat-acorn",
     "raspmod": "raspmod",
 }
 
@@ -83,9 +91,17 @@ PMOD_HAT_STEM = ACC_STEMS["pmod-hat-adapter"]
 #: other way of getting Pmod ports onto a Pi, though it is not a HAT in the
 #: Raspberry Pi specification's sense and reaches the Pi over a ribbon cable
 #: instead -- which is what ``accessories/raspmod-vs-pmod-hat.md`` is about.
+#: The PoE M.2 HAT+ (B) is filed under HAT on the test that file uses and the
+#: Raspmod fails: it sits on the Pi's 40-pin header and bolts through the Pi's
+#: four mounting holes.  Not on the specification's shape -- that is a
+#: 65 x 56.0/56.5 mm board and this one is 85 x 56 -- and nothing published
+#: says
+#: whether it carries the ID EEPROM, so neither is claimed.  M2POE is what it
+#: adds to the Pi underneath it: an M.2 slot and Power over Ethernet.
 ACC_NAMES = {
     "pmod-hat": "hat-pmod",      # Digilent's Pmod HAT Adapter
     "raspmod": "hat-rmod",       # the Raspmod, the other Pi-to-Pmod board
+    "poe-m2-hat-acorn": "hat-m2poe",  # the PoE M.2 HAT+ (B) and its card
     "poe-usbc": "poe-usbc",      # Waveshare's splitter, Type-C output
     "poe-microusb": "poe-musb",  # the generic splitter, micro-USB output
 }
