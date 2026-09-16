@@ -118,22 +118,24 @@ checker that measures the finished PDFs rather than trusting them.
       preview and branch that cites a stem keeps working
 - [ ] The open pull requests each rename their own sheets on top of this
 
-## 9. FPGA development boards  -- DONE
+## 9. FPGA development boards  -- sheets done, three items open
 - [x] Arty A7 from Digilent's DXF and PDF plot; no mounting holes, rubber feet
 - [x] ULX3S from KiCad at the four tags sold, required to agree
 - [x] PYNQ-Z2 from TUL's STEP assembly; LEDs not in the model, said in words
 - [x] ButterStick from KiCad r1.0a, SYZYGY standoff holes in the schedule
 - [x] Cynthion from KiCad at r1.4.0, the initial production release; four USB
       ports took two new numbers at the end of the family schedule and the
-      status LED row a third
+      status LED row a third, and its mezzanine receptacle J5 took the
+      family's first expansion slot
 - [x] `fpga-sheets.pdf`, the six bound into one document
 - [ ] PYNQ-Z2 LED positions, by photogrammetry from TUL's product photo if
       no vector source turns up
 - [ ] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
       silkscreen; `accessories/parts.py` has it opposite the Pmod convention
-- [ ] Cynthion's three side buttons and its two SWD connectors are not drawn;
-      the buttons reach 2.5 mm past the outline and a case needs holes for
-      them, which at present is a note rather than a feature
+- [ ] Cynthion's three side buttons and its two SWD connectors are not drawn.
+      The buttons reach 2.50 mm past the left and right edges and a case
+      needs holes for them, which is in the notes and the envelope figure but
+      is not a feature with a balloon
 
 ## 10. Raspmod, the other Pi-to-Pmod adapter  -- DONE
 - [x] Pat Deegan's TT Demoboard To Raspi, from its KiCad board file at a
@@ -183,12 +185,14 @@ checker that measures the finished PDFs rather than trusting them.
       third USB-C port shares feature 2 with the second: both want a feature
       number, which means renumbering the family and restamping its sheets
 
-## 15. The assembled envelope leaves out the Pmod housings
+## 15. The assembled envelope leaves out the Pmod host bodies
 - [ ] `_sheet_text` builds the "assembled envelope" note from the features
-      only, so on every board whose Pmod hosts are right-angle it is short of
-      the housings that hang off the front edge: the six demo board sheets
-      and Cynthion. Counting the host bodies moves the figure on all six demo
-      sheets (TT-DB-V33 goes 86.65 -> 95.20 mm) and needs the demo board
-      output and `tinytapeout-sheets.pdf` rebuilt with it, so it is a change
-      of its own. The Cynthion sheet states its 8.07 mm overhang in a note
-      meanwhile.
+      only, and Pmod hosts are not features, so wherever a board's host
+      bodies stand outside its outline the figure is short by that overhang.
+      Seven issued sheets: the six demo boards, whose right-angle housings
+      hang off the front edge (TT-DB-V33 goes 86.65 -> 95.20 mm), and the
+      PYNQ-Z2, whose hosts reach 1.24 mm past the right edge (137.60 ->
+      138.84). Widening the computation needs the demo board output and
+      `tinytapeout-sheets.pdf` rebuilt with it, so it is a change of its own.
+      Cynthion states its own figure through `BoardSpec.envelope_note`
+      meanwhile; that field should go when this is fixed.
