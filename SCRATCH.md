@@ -1780,3 +1780,85 @@ sheets were still numbered, none of them broke a sheet number; with the names,
 at 838, and the plate's Sheet column has not been re-measured since its names
 were shortened.  That is this same squeeze turning up somewhere else, on
 tables this branch does not touch; it is noted here rather than fixed here.
+
+## The Orange Pi PC is 85 x 55 mm, and that is every number Xunlong publish
+
+Asked for an Orange Pi PC sheet in the `raspberry_pi/` family. It was asked for
+as RPI-04, the next number in the family; sheets are named rather than numbered
+now, so the one that is not drawn would have been `RPI-ORANGEPI-PC`, from the
+stem `orangepi-pc` it would have been written to. It is not drawn, and the
+reason is worth writing down so nobody repeats the search: Shenzhen Xunlong
+publish the board's overall size and no other mechanical figure at all. There
+is no dimension drawing, no DXF, no DWG and no vector PDF of the outline for
+this model, on their site or anywhere they point to.
+
+What was read, all of it:
+
+- **The official resource page**,
+  `orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-PC.html`,
+  offers five documents, each a Google Drive link, and none of them is a
+  drawing: User Manual, Schematic, Certified, Datasheet, Official Tools.
+- **The user manual** (136 pages, WPS 文字, dated 2021-12-13) gives, in the
+  hardware table in section 1.4, `Product Size 85mm×55mm` and `Weight 43g`.
+  Section 1.5 "Top and bottom views" and section 1.6 "Interface Details" are
+  annotated photographs, not drawings: the callouts name the ports and carry
+  no dimension. Every other page with vector content in it is a table or a
+  screenshot; there is no page of drawing geometry anywhere in the file.
+- **The schematic**, 15 A3 sheets titled ORANGE_PI_PC whose revision block
+  runs to 2015-05-29, is electrical throughout and has no mechanical page.
+- **The datasheet** is Allwinner's H3 chip datasheet, 614 pages, about the SoC
+  and not about the board. **Certified** is two regulatory certificates
+  covering the PC and the One.
+- **The wiki**, `orangepi.org/orangepiwiki/index.php/Orange_Pi_PC`, is the
+  manual's first chapter re-typed, down to the same `Product Size 85mm×55mm`.
+  The product page says `Product size 85 mm × 55mm`. The oldest manual that
+  survives, v0.9.1, says `Product size 85mm × 55mm` and `Weight 38g` -- the
+  size agrees across seven years, the weight does not.
+- **The old download host.** `orangepi.org/download/` was where hardware files
+  lived before the site moved to Drive, and the Wayback CDX index of it holds
+  844 fetched URLs. Four of them are mechanical: `ORANGE_PI-Lite-V1_1mechanical_drawing.dwg.rar`,
+  `ORANGE_PI-PC-PLUS_V1_1_mechanical_drawing.rar`, `ORANGE_PI-Zero-V1_1_PCB-DWG.rar`
+  and `ORANGE_PI-Zero-V1_5_mechanical.dxf`, plus `ORANGEPI-PLUS-2E-V1_1-PCB-DWG(Autocad2000).rar`.
+  None is the PC. The archived per-model resource index for the PC itself
+  lists only Images, Android SDK, Source Code, Linux Source code, User Manual,
+  Office Tools, Android Image, Ubuntu Image and Debian Image: there was never
+  a hardware section on it.
+- **The forum.** People have asked for this drawing since 2015 and never got
+  it. Thread 494, "Orange Pi PC - Mechanical drawing and OPi vector logo",
+  ends in a Thingiverse link; thread 426, "Hardware Mechanical Drawings", in
+  four Baidu links for other models; thread 2164 in a user's own Autodesk 360
+  model, "I made these dimensions of my orange pi pc". Thread 4846,
+  "Measurements to Panel Mount Orange Pi PC", is answered with "search
+  ORANGE_PI-PC-PLUS_V1_1 mechanical drawing, PC and PC-Plus has the same
+  size", which is a claim by a forum member about two different boards and
+  not a source. That file does exist and is two DWGs, `ASMTOP.dwg` and
+  `ASMBOT.dwg` in a directory named 结构图; it is the PC Plus, so it is not
+  this board's geometry whatever it contains.
+- **linux-sunxi** gives `Dimensions 85 mm x 55 mm` and no more.
+
+So the whole published mechanical record is one overall size. The sheets in
+this repository dimension mounting holes, connector bodies and an origin
+datum, and none of those exist for this board in any form a drawing could
+cite. Transcribing printed dimensions from a raster drawing would have been
+fine; there is no drawing to transcribe from.
+
+Two things settled on the way, for when a source does turn up:
+
+- **The 40-pin header is claimed compatible with the Raspberry Pi's, and that
+  claim is electrical.** Xunlong's own wording, in the manual and on the wiki,
+  is "40 pin connector, compatible with Raspberry Pi", in a row of a table
+  whose other rows are all about function. Nothing they publish says where the
+  header sits. So the Digilent Pmod HAT Adapter must **not** be overlaid on an
+  Orange Pi PC sheet: the overlay is only truthful if the header is in the
+  Pi's position *and* the adapter's four holes land on the board's, and the
+  board is 55 mm deep against the Pi's 56, so at least one of those is already
+  in doubt.
+- **It would not join `rpi_view_frame` either.** That frame exists because
+  every Model B sized Pi is the same outline with the same hole pattern and
+  the HAT header in one fixed place, so the sheets share a coordinate frame
+  and the board holds still from page to page. An 85 x 55 board with unknown
+  holes shares none of that, and `RPI_NOTES` -- both of whose notes are about
+  the Pmod HAT Adapter -- would be false on its sheet.
+
+The manual, the schematic and the H3 datasheet are cached under
+`tmp/src/orangepi_pc/` so the next attempt does not have to find them again.
