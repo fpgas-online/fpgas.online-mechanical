@@ -156,7 +156,21 @@ sit clear of the edge, each of which gives the connector datum independently
 through the M.2 specification's 30, 42 and 60 mm module lengths, agreeing to
 0.04 mm; and the fourth standoff, predicted at 80 mm from that datum and never
 measured, whose boss then reaches exactly the 88.00 mm Waveshare's 3.00 puts
-it at.
+it at. Only three bosses are measured, so the fourth's diameter is the other
+three's; Waveshare's 3.00 is what checks the pair of them.
+
+The first of those checks is also what proves the image is being read the
+right way up. Waveshare draw the HAT turned through 180 degrees from the way
+Raspberry Pi Ltd draw a Pi, and nothing about the hole rectangle can show
+that: it is symmetric, so a fit made on it comes out the same either way
+round. What is not symmetric is that those holes sit 3.50 mm in from one end
+of an 85 mm board and 23.50 in from the other, so the board's own lower-left
+corner has to come back at the origin, and a view read the wrong way round
+misses it by twenty millimetres. Read the right way round it lands at
+(0.17, 0.23), which is a fourth residual and the widest of any check the fit
+did not use; it is what the +/-0.2 mm on the sheet is rounded from, and why
+a whole millimetre of tolerance on the orientation check itself is generous
+and still cannot be in doubt.
 
 ```sh
 uv run --no-project --with pillow --with numpy python \
@@ -169,6 +183,13 @@ millimetre of width: they publish no drawing, their site is gone, and what the
 Internet Archive has is the sentence that the Acorn "is one millimeter wider
 than the official specifications". The CLE-215+ carries a heatsink whose
 extent nobody publishes, so none is drawn and the sheet says so.
+
+The sheet is plan only and gives no height for anything: Waveshare publish no
+stack-up for the HAT or its standoffs, and SQRL none for the card. What the
+sheet's `DIA` column gives for a standoff is the M2 x 0.4 tapped thread the
+retention screw goes into, not a clearance hole; `BOSS` is what the standoff
+actually occupies, and it is the boss, not the screw, that decides how far
+past the Pi's edge the assembly reaches.
 
 ## PoE splitters (`ACC-POE-USBC`, `ACC-POE-MUSB`)
 
