@@ -80,3 +80,35 @@ for f in tmp/rpi/cm1/*; do
   esac
   printf '%-52s %8s bytes\n' "cm1/$(basename "$f")" "$(wc -c < "$f")"
 done
+
+# The optical figures for the camera position sheets, the RPICAM-OVER-*,
+# which no mechanical drawing carries: field of view, focal length, sensor
+# size and focus range.
+#
+# Raspberry Pi Ltd's own camera documentation is the source for the OV5647
+# Camera Module 1 figures, and it is fetched from the Internet Archive: a
+# direct request to raspberrypi.com is answered 403 from here, and a pinned
+# snapshot is what makes the quotes on the sheets reproducible anyway.
+#
+# Arducam's OV5647 documentation is the source for the wide and the autofocus
+# variants, which Raspberry Pi never made: their product catalogue table names
+# a horizontal and a vertical field of view and a focus type per SKU, which is
+# the only place either is written down by the company that sells the part.
+mkdir -p tmp/src/rpi-camera-optics
+fetch_optics() {
+  curl -sSL -A "Mozilla/5.0 (X11; Linux x86_64) mechanical-drawings/1.0" \
+       -o "tmp/src/rpi-camera-optics/$2" "$1"
+  printf '%-52s %8s bytes\n' "$2" "$(wc -c < "tmp/src/rpi-camera-optics/$2")"
+}
+fetch_optics \
+  'https://web.archive.org/web/20241230011811/https://www.raspberrypi.com/documentation/accessories/camera.html' \
+  raspberry-pi-camera-documentation.html
+fetch_optics \
+  'https://docs.arducam.com/Raspberry-Pi-Camera/Native-camera/5MP-OV5647/' \
+  arducam-5mp-ov5647.html
+fetch_optics \
+  'https://docs.arducam.com/Raspberry-Pi-Camera/Motorized-Focus-Camera/Motorized-Focus-Camera/' \
+  arducam-motorized-focus-camera.html
+fetch_optics \
+  'https://docs.arducam.com/Raspberry-Pi-Camera/Motorized-Focus-Camera/Quick-Start-Guide/OV5647-Motorized-Focus-Camera/' \
+  arducam-ov5647-motorized-focus-camera.html
