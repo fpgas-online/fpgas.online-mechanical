@@ -2070,3 +2070,25 @@ order, so the outlines are compared as sets.
 The board file's stackup sums to 1.6458 mm, which the title block prints as
 "PCB, 1.6 nominal"; the README's "1.2mm/1.6mm PCB with JLC04121H-7628 Stackup"
 is an ordering option for someone fabbing their own and is not on the sheet.
+
+**What review found.**  The hole schedule printed KEEPOUT 2.70 against a 2.70
+drill on all four holes.  `tools/kicad_extract.hole` took the largest pad as
+the keep-out whatever it was, which is right for a plated hole -- the pad is
+the annular ring a screw head must not touch, and it is where the demo boards'
+6.4 against a 3.2 drill comes from -- and wrong for an unplated one, where the
+pad is the aperture.  A plate designer reads a keep-out equal to the drill as
+no clearance at all, and the sheet was also drawing a phantom circle exactly on
+top of each hole and carrying a LEGEND row for linework that never showed.  A
+pad no bigger than its drill now reports nothing, and the schedule says "not
+given"; regenerating every family's data module changed those four rows and
+nothing else.
+
+The rest of that round was the sheet asserting what it had not checked: the
+tag was never resolved against the pinned commit, the Pi Zero guard compared
+two insets and never the 58 x 23 span, "LED0 at the left-hand end" was taken
+on trust, one hole's drill spoke for four, and pin 1 of the GPIO position --
+the one thing about that header the boxes cannot catch, since a header turned
+end for end keeps its courtyard -- was not compared between the two commits.
+Each guard was made to fire on a doctored input before it was kept.  The
+README quote was also the wording at the tip rather than at v1.3, where the
+sentence begins "Icepi Zero is an FPGA development board" with no "The".
