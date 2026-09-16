@@ -1691,7 +1691,7 @@ def extract_zybo_z7() -> dict:
             "the board and 0.82 past the left edge; C250, under the Ethernet "
             "jack, goes deepest at 3.10.",
             "HDMI, audio, Pcam, microSD, the power jack and external JTAG "
-            "are not marked, so the envelope above counts only what is "
+            "are not marked, so the envelope below counts only what is "
             "drawn; the model's, with the audio jacks 1.71 past the right "
             "edge, is 124.44 x 83.90.",
             "Bodies read from the PDF plot are good to about +/-0.3 mm.",

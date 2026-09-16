@@ -2289,9 +2289,12 @@ inside the stroke of the rule under NOTES, with the whole "3" glyph below it.
 chain needs when its labels all fit in one lane and nothing like enough for
 two.  Measuring every sheet in the repository with `dims.ordinate_reach`, the
 new function that runs the chain's own lane assignment without drawing it,
-all but two want more than 30 and the Tiny Tapeout sheets want 42.76.  They
-do not collide because a view is centred in what its margins leave, so half
-of whatever height the sheet has spare already falls below the board.  Two sheets are left short by that
+fifteen of the eighteen board sheets `render_board` draws want more than 30
+-- the ULX3S, the Icepi Zero and the Pmod HAT Adapter, all at 19.83, do not
+-- and thirteen of them stagger a label into a second lane.  The Tiny Tapeout
+sheets want 42.76, as does this one.  They do not collide because a view is
+centred in what its margins leave, so half of whatever height the sheet has
+spare already falls below the board.  Two sheets are left short by that
 centring and no others: this one by 9.17 mm, because it is the sheet whose
 notes band is capped by its own view, and the Cynthion by 3.33.
 
@@ -2300,7 +2303,7 @@ tall the notes band may be, was tried first and moves fourteen other sheets.
 So the reservation happens after the band is fixed instead, in
 `_view_margins`: a sheet the centring leaves short has its bottom margin
 raised by twice the shortfall, which puts all of the spare height below the
-board rather than half, and its top margin cut to `_view_room_above`, the
+board rather than half, and its top margin cut to `_view_room_free_edge`, the
 room the one dimension up there actually occupies.  Only a short sheet moves,
 which is those two and nothing else: this sheet's margins go from (20.00,
 30.00) to (17.21, 39.97) and the Cynthion's to (17.21, 33.87).
@@ -2329,11 +2332,41 @@ view's scale and multiplies the positions by it.  Neither sheet was short at
 either figure, so nothing moved; it was wrong by 10.47 mm in the direction
 that happens not to show.
 
-Two things worth writing down.  The library's text metrics are conservative
-against what Inkscape draws -- `text_width("3.81")` is 9.42 mm where the
-rendered glyph run is 6.1 -- so a chain given less than `ordinate_reach` asks
-for can still clear comfortably, as this one does at 39.97 against 42.76.
-And the annotation column, not the paper, is what makes this sheet tight: six
-hosts, five features, eight schedule rows and a legend leave 62 mm, and every
-millimetre the notes band gives back costs two and a half in the column,
-because the column is narrower than a band column.
+Two things worth writing down, both of which the first draft of this section
+got wrong.
+
+Why 39.97 mm of margin beats a 42.76 mm reach is not that the text metrics
+are loose.  `text_width("3.81", T_DIM)` is 6.867 mm -- the 9.42 in the first
+draft was that call made with `em(T_DIM)`, the SVG font size, where a cap
+height belongs -- and 6.867 is an advance width containing 6.34 mm of ink,
+which is what an advance width is for.  Taking the library at its own word
+the label's run ends 5.91 mm above the rule; measured on the render it is
+6.30.  The margin is the smaller number because `_chain_room` measures
+to the floor of the drawing area, and the first thing drawn in the notes
+band is 8.70 mm below that floor: 4 mm of gap between the area and the band,
+and 4.70 mm of heading above the band's first rule.  A chain may reach a
+little past the margin and still land on blank paper.
+
+And the annotation column is not narrow.  At this band's three columns it is
+165 mm against their 65, two and a half times as wide; at two columns it is
+still a little over one and a half.  What makes a millimetre of band height
+cost more than a millimetre of column is that the band is two or three
+columns, so a millimetre of it is two or three millimetres of text, and the
+tail that moves carries a repeated SOURCES heading with it.  The column is
+what makes this sheet tight all the same -- six hosts, five features, an
+eleven-row feature schedule and a legend leave 62 mm of it -- which is why
+folding two citations into one was worth more than any amount of rewording.
+
+Three edges of the mechanism worth having closed even though none of them
+bites today.  A sheet drawn on a family's shared view frame is not biased at
+all: the bias is a per-sheet decision, and one member of a family moving
+alone would break the frame as surely as a taller notes band would, so a
+family that comes to need it should take the largest of its members' margins
+the way it already takes the tallest of their bands.  The pair of margins is
+applied when either has moved, not only when the bottom has, or a sheet
+wanting the top margin's give without wanting the bottom raised past its
+floor -- a shortfall between 30.00 and 32.79 -- would have had it computed
+and thrown away.  And `_chain_room` counts only the spacing dimensions
+`render_board` actually draws: a pair of hosts sharing a coordinate, as the
+Pmod HAT Adapter's JA and JB do, gets no dimension and must not be reserved
+paper for one.

@@ -546,7 +546,7 @@ BOARDS['zybo-z7'] = BoardSpec(
         "Pin rows 2.50 mm apart on the drawing, not 2.54; the host pitch dimensioned below is not the specification's 22.86 (0.90 in).",
         'Drawn fully fitted, as the Zybo Z7-20; the Z7-10 leaves Pmod JB and one tri-colour LED off the same board.',
         'J10, a micro-AB USB socket UNDER J11, projects 2.72 mm below the board and 0.82 past the left edge; C250, under the Ethernet jack, goes deepest at 3.10.',
-        "HDMI, audio, Pcam, microSD, the power jack and external JTAG are not marked, so the envelope above counts only what is drawn; the model's, with the audio jacks 1.71 past the right edge, is 124.44 x 83.90.",
+        "HDMI, audio, Pcam, microSD, the power jack and external JTAG are not marked, so the envelope below counts only what is drawn; the model's, with the audio jacks 1.71 past the right edge, is 124.44 x 83.90.",
         'Bodies read from the PDF plot are good to about +/-0.3 mm.',
     ),
     envelope_note='',
