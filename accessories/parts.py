@@ -371,7 +371,16 @@ M2_SPEC_SOURCE = Source(
 # 0.04 mm.  The board's own edges then come out 84.88 x 55.88 against the
 # declared 85.00 x 56.00, and the 2280 standoff -- predicted at 80 mm from
 # that datum and never measured -- reaches exactly the 88.00 mm the declared
-# 3.00 puts it at.  The worst of those three residuals is 0.12 mm.
+# 3.00 puts it at.  The worst of those three residuals is 0.12 mm, which is
+# the board's own width and height.
+#
+# A fourth check is the board's lower-left corner, which has to come back at
+# the origin once the fit is made on the holes: it reads (0.17, 0.23), and
+# 0.23 mm is therefore the widest residual on any check the fit did not use.
+# It is an orientation check rather than a measurement -- a view read the
+# wrong way round misses the origin by twenty millimetres -- so it is allowed
+# a whole millimetre, but it is still a residual and the tolerance below is
+# taken from it.
 
 POE_M2_HAT_WIDTH = 85.00
 POE_M2_HAT_HEIGHT = 56.00
@@ -390,7 +399,8 @@ POE_M2_AXIS_Y = 18.26
 POE_M2_BOSS_DIA = 5.87
 
 #: Everything derived from the drawing, to the worst residual on a check that
-#: was not used to make the fit.
+#: was not used to make the fit: 0.23 mm, the corner, rounded to one decimal
+#: as measure_poe_m2_hat.py prints it.
 POE_M2_HAT_TOL = 0.2
 
 #: The M.2 socket's own footprint, from the same drawing but read off the

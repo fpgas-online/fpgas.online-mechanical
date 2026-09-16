@@ -220,7 +220,7 @@ checker that measures the finished PDFs rather than trusting them.
       three that takes a 2280 card
 - [x] Waveshare's dimension drawing transcribed as declared figures, and the
       M.2 socket and standoffs recovered from it by photogrammetry, checked
-      three ways to 0.12 mm
+      three ways to 0.12 mm and a fourth, the board's corner, to 0.23
 - [x] Card outline from the PCI Express M.2 Specification's Type 2280, with
       SQRL's own extra millimetre of width
 - [x] `overlay_detail`: an overlay's holes and bodies drawn in phantom, in
