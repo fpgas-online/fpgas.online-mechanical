@@ -19,7 +19,9 @@ Scale and origin come from the four HAT mounting holes, whose 58.00 x 49.00
 pitch the drawing states.  The fit is then *checked* against things not used to
 derive it:
 
-* the board's own edges, which must come out 85.00 x 56.00;
+* the board's own edges, which must come out 85.00 x 56.00 and whose
+  lower-left corner must land on the origin -- that second half is also what
+  proves the image is being read the right way round, see below;
 * the three M.2 standoffs that sit clear of the board edge, each of which
   gives the M.2 connector datum independently: the PCI Express M.2
   Specification fixes a module's retention screw at 30, 42 or 60 mm from the
@@ -35,9 +37,16 @@ behind the board runs into, so it is predicted and then checked instead.
 Output is in the **Raspberry Pi's** frame, not the image's.  Waveshare draw the
 HAT with its 40-pin header along the lower edge, which is the assembly seen
 from above and turned through 180 degrees from the way Raspberry Pi Ltd draw a
-Pi, so X runs right to left across the image.  The script asserts that by
-requiring the four mounting holes to land on the Pi's own 3.5 / 61.5 by
-3.5 / 52.5 pattern.
+Pi, so X runs right to left across the image and Y down it.
+
+That turn is proved, not assumed.  Naming the four rings by which half of the
+image each falls in cannot prove it: a picture the other way up has a ring in
+each quadrant too, and the hole pitch is symmetric, so the fit comes out with
+the same scale either way.  What is not symmetric is where the holes sit in
+the board: 3.50 mm in from one end of an 85 mm board and 23.50 in from the
+other.  So the check is the first one below -- with the origin put on the
+holes, the board's own lower-left corner has to come back at (0, 0), and a
+view read the wrong way round puts it twenty millimetres out.
 
 Run: uv run --no-project --with pillow --with numpy python \\
          accessories/measure_poe_m2_hat.py \\
@@ -58,6 +67,13 @@ DECLARED_HOLE_PITCH_X = 58.00
 DECLARED_HOLE_PITCH_Y = 49.00
 DECLARED_HOLE_EDGE = 3.50
 DECLARED_STANDOFF_OVERHANG = 3.00
+
+#: How far the board's lower-left corner may land from the origin before the
+#: view is being read the wrong way round.  Generous on purpose: the failure
+#: it exists to catch is 20 mm wide, because the mounting holes are 3.50 in
+#: from one end of the board and 23.50 in from the other, while the residuals
+#: of a fit that is the right way round run to about a tenth of a millimetre.
+ORIGIN_TOL = 1.0
 
 #: Raspberry Pi HAT mounting hole centres, in the Pi's own frame.  The HAT
 #: bolts through the Pi's own holes, so these are known before anything is
@@ -148,9 +164,11 @@ def main() -> None:
     named: dict[str, tuple[float, float]] = {}
     for _, _, _, x0, x1, y0, y1 in ring:
         box = ((x0 + x1) / 2, (y0 + y1) / 2)
-        # Waveshare's view is the Pi turned through 180 degrees, so the
-        # image's right is the Pi's left and the image's bottom is the Pi's
-        # top.  Name the holes in the PI's frame.
+        # Named in the PI's frame on the assumption this is Waveshare's view,
+        # the Pi turned through 180 degrees, so that the image's right is the
+        # Pi's left and its bottom the Pi's top.  Naming proves nothing on its
+        # own -- a picture the other way up also has one ring per quadrant --
+        # and the assumption is tested by the board-origin check below.
         key = ("t" if box[1] > h / 2 else "b") + ("l" if box[0] > w / 2 else "r")
         if key in named:
             raise SystemExit(f"two candidate rings in quadrant {key}")
@@ -175,7 +193,7 @@ def main() -> None:
     def to_mm(px: float, py: float) -> tuple[float, float]:
         return (ox - px) / sx, (py - oy) / sy
 
-    # --- check 1: the board's own outline ----------------------------------
+    # --- check 1: the board's own outline, and which way up it is ----------
     x_lo, x_hi, y_lo, y_hi = board_edges(lum)
     x_max, y_min = to_mm(x_lo, y_lo)
     x_min, y_max = to_mm(x_hi, y_hi)
@@ -185,8 +203,19 @@ def main() -> None:
           f"({x_max - x_min - DECLARED_WIDTH:+.2f})")
     print(f"  Y {y_min:6.2f} .. {y_max:6.2f}  height {y_max - y_min:6.2f} mm "
           f"({y_max - y_min - DECLARED_HEIGHT:+.2f})")
+    print(f"  lower-left corner at ({x_min:.2f}, {y_min:.2f}), "
+          f"origin tolerance {ORIGIN_TOL:.2f}")
+    if abs(x_min) > ORIGIN_TOL or abs(y_min) > ORIGIN_TOL:
+        raise SystemExit(
+            f"the board's lower-left corner lands at ({x_min:.2f}, "
+            f"{y_min:.2f}), not the origin. The mounting holes are "
+            f"{DECLARED_HOLE_EDGE:.2f} in from one end of the board and "
+            f"{DECLARED_WIDTH - DECLARED_HOLE_EDGE - DECLARED_HOLE_PITCH_X:.2f}"
+            " in from the other, so this is what an image turned the wrong "
+            "way round looks like once the fit has been made on them")
     resid = [abs(x_max - x_min - DECLARED_WIDTH),
-             abs(y_max - y_min - DECLARED_HEIGHT)]
+             abs(y_max - y_min - DECLARED_HEIGHT),
+             abs(x_min), abs(y_min)]
 
     # --- the three inboard M.2 standoffs -----------------------------------
     #
