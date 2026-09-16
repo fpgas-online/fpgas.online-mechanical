@@ -108,6 +108,7 @@ BOARDS['arty-a7'] = BoardSpec(
         'The 1.6 x 1.6 mm LED row nearest the edge is taken as the tri-colour LD0-LD3 and the 0603 row behind it as LD4-LD7; no source names them.',
         'Bodies read from the PDF plot are good to about +/-0.3 mm; the DXF figures carry the general tolerance.',
     ),
+    envelope_note='',
 )
 
 BOARDS['ulx3s'] = BoardSpec(
@@ -175,6 +176,7 @@ BOARDS['ulx3s'] = BoardSpec(
         'No Pmod host. J1 and J2 are right-angle 2x20 sockets on 2.54 mm whose pinout is Pmod compatible, per the maker; pin 1 of each is given in the schedule note.',
         'No Ethernet jack.',
     ),
+    envelope_note='',
 )
 
 BOARDS['pynq-z2'] = BoardSpec(
@@ -229,6 +231,7 @@ BOARDS['pynq-z2'] = BoardSpec(
         'The user LEDs LD0-LD3 and the two tri-colour LEDs are not in the model, so schedule rows 4 and 5 are empty; the board has them, above the four push buttons near the lower edge.',
         "TUL's product sheet gives the board as 87 x 140 mm; the model's laminate is 137.0 wide and the Pmod hosts reach 1.2 beyond it.",
     ),
+    envelope_note='',
 )
 
 BOARDS['butterstick'] = BoardSpec(
@@ -297,6 +300,7 @@ BOARDS['butterstick'] = BoardSpec(
         "Hole IDs H1 and H2 are the KiCad reference designators; SA1 to SC2 are the SYZYGY standoff holes of ports A, B and C, plated, and the maker's acrylic plate bolts through all eight.",
         'No Pmod host: expansion is three SYZYGY ports.',
     ),
+    envelope_note='',
 )
 
 BOARDS['icepi-zero'] = BoardSpec(
@@ -371,6 +375,7 @@ BOARDS['icepi-zero'] = BoardSpec(
         'The two user buttons are on the underside, centred at (46.40, 15.45) and (46.40, 18.85); a plate under the board has to clear them.',
         'The board file has been re-annotated since the mass-production release. Nothing drawn here moved, but at d67bb758 the programming port is J5 and the user LEDs run D1 to D5 left to right; the designators here are the ones the sold boards were fabbed with.',
     ),
+    envelope_note='',
 )
 
 BOARDS['cynthion'] = BoardSpec(
@@ -451,8 +456,9 @@ BOARDS['cynthion'] = BoardSpec(
         'Schedule numbers 9, 10 and 11 were added to the family for this board. 1 to 8 mean what they mean on the other FPGA sheets, so the four USB ports read 1, 2, 9, 10.',
         'No Ethernet jack.',
         'Feature 6, J5, is a surface-mount mezzanine receptacle on the component side: a board-to-board expansion socket well inside the outline, not an edge port like the expansion connectors on the other sheets.',
-        'Pmod A and B are right-angle sockets: the pin field is on the board and the housing hangs off the front edge, so a peripheral plugs in level with the board rather than standing up from it. The housings reach 8.07 mm past the edge, which the assembled envelope figure does not count.',
+        'Pmod A and B are right-angle sockets: the pin field is on the board and the housing hangs off the front edge, so a peripheral plugs in level with the board rather than standing up from it. The housings reach 8.07 mm past the edge.',
         "The board ships inside an enclosure. The outline drawn is the bare PCB's; the repository publishes no case dimensions.",
-        'Buttons PROGRAM and USER on the left edge and RESET on the right are not drawn. Each is a side-actuated tactile switch whose body reaches 2.5 mm beyond the board outline.',
+        'Buttons PROGRAM and USER on the left edge and RESET on the right are not drawn. They are side-actuated tactile switches whose bodies reach 2.50 mm past the left edge and 2.50 mm past the right.',
     ),
+    envelope_note='Assembled envelope, connector overhang and the Pmod housings included: 58.00 x 64.07 mm. With the three side buttons as well it is 61.00 x 64.07 mm, which is what a case has to clear.',
 )
