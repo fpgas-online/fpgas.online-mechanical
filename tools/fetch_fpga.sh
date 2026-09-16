@@ -8,9 +8,12 @@
 #   URL to anything that sends a browser User-Agent.
 #   TUL's PYNQ-Z2 model is the copy Xilinx posted on the PYNQ forum, which is
 #   where TUL directed people to for it.
+#   Avnet's Ultra96-V2 drawing is taken from Linaro's 96Boards documentation
+#   repository, which publishes it "directly from the board vendors"; Avnet's
+#   own product page is behind a bot check that a script cannot pass.
 set -eu
 cd "$(dirname "$0")/.."
-mkdir -p tmp/src/arty_a7 tmp/src/pynq
+mkdir -p tmp/src/arty_a7 tmp/src/pynq tmp/src/ultra96
 UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36"
 
 test -d tmp/src/ulx3s || git clone --quiet https://github.com/emard/ulx3s tmp/src/ulx3s
@@ -33,4 +36,9 @@ test -s "$f" || curl -sSL -o "$f" \
     https://discuss.pynq.io/uploads/short-url/qjtW7Vu29ih0nugzuDuR5k33uWQ.zip
 test -s tmp/src/pynq/PYNQ_Z2_20220218/PYNQ_Z2_20220218.STEP || \
     unzip -q -o "$f" -d tmp/src/pynq
+printf '%-40s %9s bytes\n' "$(basename "$f")" "$(wc -c < "$f")"
+
+f=tmp/src/ultra96/ultra96-v2-mechanical.PDF
+test -s "$f" || curl -sSL -o "$f" \
+    https://raw.githubusercontent.com/96boards/documentation/master/consumer/ultra96/ultra96-v2/hardware-docs/files/ultra96-v2-mechanical.PDF
 printf '%-40s %9s bytes\n' "$(basename "$f")" "$(wc -c < "$f")"
