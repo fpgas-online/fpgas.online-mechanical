@@ -538,6 +538,9 @@ def _icepi_parts(key: str, board) -> dict:
 
 def extract_icepi_zero() -> dict:
     key = "icepi-zero"
+    # The checkout first: it is where a missing clone is reported in words,
+    # and a rev-parse on a clone that is not there is a traceback instead.
+    path = kicad_file("icepi-zero", ICEPI_COMMIT, ICEPI_PATH, "icepi-zero-v1.3")
     # The tag is what the citation names and the commit is what is read, so
     # the two are required to be the same object.  ULX3S resolves its tags
     # the same way, for the same reason: a tag that moved would otherwise
@@ -549,7 +552,6 @@ def extract_icepi_zero() -> dict:
     if named != ICEPI_COMMIT:
         raise SystemExit(f"{key}: tag {ICEPI_TAG} is {named}, not "
                          f"{ICEPI_COMMIT}; the pin and the citation disagree")
-    path = kicad_file("icepi-zero", ICEPI_COMMIT, ICEPI_PATH, "icepi-zero-v1.3")
     board = kicad_pcb.load(str(path))
     if board.rev != ICEPI_TAG:
         raise SystemExit(f"{key}: the pinned file is rev {board.rev}, not "
