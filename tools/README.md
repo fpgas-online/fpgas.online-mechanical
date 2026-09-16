@@ -28,7 +28,7 @@ Imported, not run.
 | | |
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's board mechanical drawings into `tmp/` |
-| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/` |
+| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/`, and the four vendor pages the camera position sheets quote their optics from |
 | `fetch_fpga.sh` | Clones the ULX3S, ButterStick, Icepi Zero and Cynthion repositories and downloads the Arty A7 and Zybo Z7 drawings, the Arty A7 schematic, Bel's drawing of the RJ45 on it, Bivar's light pipe drawing and the PYNQ-Z2 model into `tmp/` |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the four A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
@@ -45,10 +45,15 @@ The extractors are not here. Each lives with its subject:
 ## Checks
 
 Each has caught a real defect. `make check` runs all but `crosscheck_gerber.py`,
-which needs network. Two more are specific to a made part and live with it, a
-`verify.py` each: the mounting plate's, and the Ethernet light pipe's, which
-proves the cable still fits, the pipes see the LED windows and the jack's own
-springs hold the part on.
+which needs network. Three more are specific to one family or one made part
+and live with it, a `verify.py` each: the mounting plate's; the Ethernet
+light pipe's, which proves the cable still fits, the pipes see the LED
+windows and the jack's own springs hold the part on; and
+[`raspberry_pi_camera/verify.py`](../raspberry_pi_camera/README.md), which
+proves every quote on the camera position sheets is in the page it is
+credited to, that the pinhole model reproduces Raspberry Pi's own declared
+field of view from their own focal length and sensor size, and that every
+frame holds its target at the height the sheet prints.
 
 - **`check_sheets.py`** re-reads the generated SVGs, recomputes every text
   bounding box from the same font metrics the layout used, and reports text

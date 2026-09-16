@@ -3132,3 +3132,219 @@ mount over an ø22.4 aperture, a tripod boss 13.86 across reaching 11.35 below
 the lower edge -- but it has no sheet: `render_board` draws every feature as a
 rectangle and a ø36 knurled ring drawn square is a worse drawing than none,
 and the drawing never locates the FFC connector in plan at all.
+
+## Where the camera goes: the four RPICAM-OVER-* sheets
+
+Issue #7. Four sheets saying where an OV5647 camera has to sit above a Tiny
+Tapeout mounting plate, a Digilent Arty A7 and an Acorn CLE-215+, for a 65
+and a 120 degree lens, framing the whole board and framing just the
+indicators.
+
+### The decision that shaped everything: the frame does not depend on the lens
+
+The obvious layout is one sheet per lens, which is how the issue is worded.
+It is the wrong shape, and working out why decided the rest of the sheet.
+
+A frame footprint -- the rectangle of the subject that ends up in the picture
+-- is the **sensor's** aspect ratio, not the lens's. The OV5647 is 2592 x
+1944, which is 4:3 exactly, and that is the shape of the file that comes out
+whatever is screwed onto the front. So the smallest frame holding a given
+target is the same rectangle for both lenses, and the only thing the lens
+changes is how far above it the camera goes.
+
+That means a subject has exactly as many rectangles as it has things worth
+framing -- two, here, or one on the Arty's extra sheet -- and both lenses
+share them. One sheet per subject with both lenses on it therefore draws each
+rectangle once; one sheet per lens would have drawn all of them twice, on
+three different boards at three different scales on one A3 page, and still
+sent anyone setting up a rig to the other page to find out what the other
+lens does. **One sheet per subject, both lenses in the tables.**
+
+All four come out at 1:1, which is what the rest of the set is.
+
+### No side elevation
+
+The issue offers "a side elevation or a table giving the heights". The heights
+run from 12.3 to 146.8 mm. An elevation at the plan's own 1:1 would want
+another 150 mm of sheet height, which an A3 carrying a 1:1 plan and a notes
+band does not have; at any other scale it would be a view beside a 1:1 view,
+inviting exactly the measurement it cannot support. A table, and the notes say
+what Z is measured from.
+
+### Every height fails the focus check, and that is the finding
+
+Raspberry Pi give the Camera Module 1's focus as `Fixed` and its depth of
+field as `Approx 1 m to ∞`. The *largest* height on any of these sheets is
+146.8 mm, a seventh of that metre; the smallest is 12.3 mm. So a stock Camera
+Module OV5647 cannot focus on any of these boards, at either lens, at any of
+the framings asked for.
+
+`verify.py` passes while reporting `TOO CLOSE` on all seven rows that have a
+published limit. It has to: what is being checked is that the sheet prints the
+verdict the arithmetic gives, not that the problem has gone away. The 120
+degree lens prints `UNKNOWN` instead, because Arducam publish no near limit
+for it at all.
+
+The useful conclusion is a mount decision rather than a drawing one: a rig
+built to these sheets needs an adjustable-focus or motorised OV5647.
+
+### The pinhole model is established, not assumed
+
+The one piece of luck in the sources. Raspberry Pi publish a focal length, a
+sensor size, a pixel count *and* a field of view, and any two predict the
+third -- so the model can be checked instead of asserted.
+
+    2 x atan(2592 x 0.0014 / 2 / 3.60) = 53.496    declared 53.50 +/- 0.13
+    2 x atan(1944 x 0.0014 / 2 / 3.60) = 41.413    declared 41.41 +/- 0.11
+
+Four thousandths of a degree on both axes. And it only works against the
+**active pixel array**: their own "Sensor image area", 3.76 x 2.74 mm, printed
+one row above in the same table, gives 55.149 across and misses by 1.65
+degrees. So the declared field of view is the rectilinear angle to the edge of
+the array, which is the arithmetic the sheets do. `FOV_CHECK` carries both
+rows and `verify.py` requires the array to match and the image area not to.
+
+### "65 degrees" is the diagonal, and it is the image area's diagonal
+
+Neither Raspberry Pi nor Arducam ever print 65. What they print for the stock
+lens is 53.50 x 41.41 and 54 x 41 respectively. The 65 is the diagonal:
+
+    image area:    2 x atan(sqrt(3.76^2 + 2.74^2) / 2 / 3.60) = 65.74
+    active array:  2 x atan(sqrt(3.6288^2 + 2.7216^2) / 2 / 3.60) = 64.42
+
+So the marketing figure comes from the rectangle that does *not* reproduce the
+declared H and V. Both are on the sheet, and the computation uses the pair the
+vendors do print.
+
+### Arducam's 120 x 90 cannot both be right
+
+On a 4:3 sensor a rectilinear lens has tan(V/2) = tan(H/2) x 3/4. The stock
+lens passes: 53.50 implies 41.416 against a declared 41.41. The wide lens does
+not: 120 implies 104.82, not 90. Nearly fifteen degrees.
+
+Rather than pick one, the height is taken as the greater of what each declared
+angle asks for. On every frame here that is the vertical, so at the height
+printed the picture is wider across than the rectangle drawn -- which is the
+safe direction, and the sheet says it.
+
+### The margin is five millimetres flat
+
+Not a percentage. What a hand-aimed camera on a stand has to absorb is where
+the stand ends up, which is a few millimetres whatever is being framed. Ten
+per cent round the Arty's LED row would have been 0.36 mm on the short axis,
+which is under the board data's own tolerance and would have been a number
+pretending to be a margin.
+
+### The camera may be turned through ninety degrees
+
+The frame is the smaller of the two 4:3 orientations. It matters exactly once,
+and by a lot: the Arty's LED row with the Ethernet jack above it is half as
+wide as it is tall, and framing it landscape puts the camera at 80 mm where
+turning the camera puts it at 60. The `LONG` column says which way round, and
+`verify.py` checks that the declared angles reach the frame the way round it
+was drawn -- which is the one place the orientation could have been got
+backwards without anything looking wrong.
+
+### The indicators on the plate are not clustered
+
+Worth knowing before building a rig: across the five revision families the
+LEDs and 7-segment displays span 90.91 x 62.79 mm of a 135 x 101 mm plate, so
+framing "just the LEDs" buys 47 mm of height over framing the whole plate and
+not much else. That is not a fault in the plate; it is that the LEDs move
+between revisions and a fixed rig has to cover all of them. The sheet draws
+every position, over all five, and says so.
+
+### The Arty's Ethernet LEDs are not visible at all
+
+They are on the front face of the RJ45 jack, pointing out of the board edge.
+Nothing a camera above the board can do will see them.
+`RPICAM-OVER-ETH` therefore frames the jack's **body
+footprint**, on the stated assumption that a light pipe adapter brings them
+to the top somewhere near it.
+
+`FPGA-LP-ARTY` draws such an adapter, and it does not put
+them over the body: its pipe tips sit on the facet 5.01 mm in *front* of the
+jack's front face, which is 5.11 mm past the board edge. The frame reaches
+7.28 mm past that same edge -- 5.00 mm of margin out from the jack body's own
+front edge at -0.24, plus the 2.04 mm the 4:3 expansion adds on the short
+axis -- so the tips are inside it, and so is the 6.53 mm the adapter's cheeks
+reach. The frame is not wrong, it is loose. Every figure here is computed
+from `fpga/light_pipe/adapter.py` and the frame model rather than measured by
+hand, the sheet still says ASSUMED twice, and `TODO.md` carries tightening
+the frame onto the exits.
+
+### The Arty's second sheet is OVER-ETH, and its key is arty-ethernet
+
+The position sheets are named from a table, `RPICAM_NAMES` in
+`tools/layout.py`, keyed by their file stems: OVER and one word for the
+subject, `RPICAM-OVER-PLATE`, `RPICAM-OVER-ARTY`, `RPICAM-OVER-ETH` and
+`RPICAM-OVER-ACORN`, the widest of them 37.70 mm at the ISO 3098 floor
+where the stems in capitals ran to 63.16. The owner's bound is four or five
+characters behind the prefix, and a stem that says its subject in full --
+`over-acorn-cle-215-plus` -- is right for a file and far past it for a
+drawing number; the sheet's title says the subject in full anyway.
+
+The key for the second Arty sheet is `arty-ethernet` rather than
+`arty-a7-ethernet`, which is what the sheet is of, because it is already what
+`fpga/light_pipe/` calls that end of the board, so the two sheets about the
+Arty's Ethernet jack read `RPICAM-OVER-ETH` and `FPGA-LP-ARTY`. The names
+must not be prefixes of one another -- `tools/layout.py` makes producing
+such a name a rule and `check_sheets.py` enforces it, for the reason the
+mounting plate taught: nothing that quotes the shorter name can be read
+unambiguously -- and OVER-ARTY against OVER-ETH is not.
+
+### The Acorn, and where the card sits
+
+The card itself needs no branch: the PCI Express M.2 specification gives Type
+2280 as 22 x 80 mm, and SQRL's own archived product page adds the millimetre
+-- "it is one millimeter wider than the official specifications" -- so 23 x
+80, with both citations on the sheet.
+
+Where it *sits* is `accessories/parts.py`'s, which `ACC-HAT-M2POE` is drawn
+from: the connector datum at X 5.07, the module axis at Y 18.26, and the
+3.00 mm the 2280 standoff projects past the HAT's 85.00 edge. Nothing is
+restated here -- the card feature itself is imported, so the rectangle on
+this sheet is the rectangle on that one. The assembly's 88.00 x 57.32 mm
+envelope then falls out of this repository's own Pi 5 data: the Pi alone is
+87.960 x 57.320, and the standoff takes the 87.960 to 88.00.
+
+The boss itself is not drawn. Drawing it would have meant restating a fourth
+figure, its ø5.87, for a circle 2 mm outside the Pi's own Ethernet jack; the
+note carries the 88.00 instead.
+
+Its LEDs are simply not published. SQRL issued no mechanical drawing and the
+company's site is gone, so there is no indicator frame for the Acorn: frame B
+is the card. The sheet says that rather than inventing one.
+
+### The annotation column stayed at 165 mm, and the notes were cut
+
+These sheets carry three small tables and no schedule, so the column could
+have been narrower, and every millimetre off it is a millimetre on every line
+of the notes band beside it -- which these sheets want, because their notes are
+mostly optics, a subject the drawing cannot show at all. At 138 mm everything
+fitted except the title block: the `VERSION` cell is a quarter of the column
+and below about 157 mm it can no longer hold a `git describe` string. Widening
+the grid's cells unequally would have been the right fix and would have
+changed every title block in the repository, so the notes were cut instead.
+
+Two small library changes did go in: a title block may rename its `MATERIAL`
+field, because these sheets draw no part and a field headed MATERIAL with a
+board name in it is worse than either (they say `SUBJECT`); and the legend
+gained the two frame line styles. Those are colours as well as a line type,
+because on a sheet where one frame contains the other, type K alone cannot
+say *which* frame a rectangle is, and that is the only question a reader has.
+
+### What is left uncertain
+
+- Z is to the lens's entrance pupil, and no vendor says where that sits behind
+  the front element. On a 3.60 mm lens it is a few millimetres. Set Z from the
+  lens face; the sheets say ASSUMED.
+- The 120 degree figure is Arducam's, for the M6 lens on their B006604, which
+  is a Pi Zero sized OV5647 board rather than a Camera Module shaped one. The
+  sensor is the same and the framing arithmetic carries over, but the source
+  is a catalogue row and not a lens datasheet. Nobody appears to publish a
+  full H/V/D set, measured and defined, for any 120 degree OV5647 module.
+- Neither vendor says how the field of view is measured. The check above says
+  it behaves like a rectilinear angle to the array edge on the stock lens; at
+  120 degrees real lenses are not rectilinear and the frame will be barrel
+  distorted. Nothing here models distortion.

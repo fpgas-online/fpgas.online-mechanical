@@ -52,6 +52,7 @@ diagrams:
 check: diagrams
 	$(DRAW) python tools/check_sheets.py
 	$(UV) python tinytapeout/mounting_plate/verify.py
+	$(UV) --with pillow python raspberry_pi_camera/verify.py
 	$(UV) python fpga/light_pipe/verify.py
 	$(DRAW) python tools/check_balloons.py
 	$(UV) --with pillow python tools/check_leader_arrows.py
@@ -59,7 +60,7 @@ check: diagrams
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
 
 # Every output/ directory is build product: `make clean && make diagrams`
-# restores all 96 files, every one of them byte for byte, since
+# restores all 108 files, every one of them byte for byte, since
 # tools/reproducible.py pins the clocks and tool version strings the formats
 # would otherwise stamp in.  So remove them outright rather than picking off
 # extensions one at a time -- and remove all of them: a directory left off

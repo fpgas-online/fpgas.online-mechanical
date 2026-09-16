@@ -18,6 +18,7 @@ one millimetre on paper and every line weight below is a real pen width.
 | `board_sheet.py` | The board drawing: outline, holes, features, schedules, and the balloon placer |
 | `plate_sheet.py` | The mounting plate fabrication drawing and the fitting guide |
 | `rpi_compare_sheet.py` | `RPI-ALL`: the three Raspberry Pi models on the one outline they share |
+| `camera_sheet.py` | Camera position sheets: a subject with the footprints a picture covers drawn over it |
 | `enclosure_sheet.py` | Three-view envelope drawings, for the PoE splitters |
 | `template_sheet.py` | A4 portrait drill templates, always 1:1 |
 
