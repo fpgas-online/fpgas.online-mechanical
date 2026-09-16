@@ -87,10 +87,19 @@ and lives with it.
   had been committed. The comparison is byte for byte, which it can be because
   `reproducible.py` makes rendering reproducible; it used to compare only page
   content streams, because cairo stamped a clock into every file it wrote.
-  It reads the bound copies too: every page of a bundle has to be a committed
-  sheet, matched on its content stream, and every bookmark has to open with
-  that sheet's drawing name. Until then nothing checked a bundle at all, and
-  the only evidence one was what it claimed was a manual rebuild.
+
+  It then walks the three bound copies, which have no SVG and so cannot be
+  checked by re-rendering anything. Each is held against the page list
+  `generate_diagrams.bundles()` defines — imported, not retyped, so the two
+  cannot drift — page by page on the content stream, then on its bookmark
+  labels, which open with the drawing names, and on its pinned metadata. A
+  bound copy left in an output directory that the generator does not bind is
+  reported as well. Until this nothing read a bundle at all and the only
+  evidence one was what it claimed was a manual rebuild: one went out holding
+  three pages re-rendered at a VERSION stamp no committed sheet carried, the
+  set was green, the bundle was a PDF like any other, and only a reviewer
+  hashing content streams by hand could see it. Fed such a bundle this names
+  the page, the sheet it should have been, and both hashes.
 
 - **`crosscheck_gerber.py`** compares an extracted board outline against the
   upstream Edge_Cuts gerber, which KiCad's own plotter produced from the same
