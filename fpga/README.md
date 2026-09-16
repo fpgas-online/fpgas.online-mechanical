@@ -82,20 +82,22 @@ and the sheet says which it was.
   holes in the schedule.
 - **Icepi Zero**: the KiCad board file at the `v1.3` tag, whose commit is
   "Final mass production files" -- the revision made in quantity and sold,
-  and the only one the repository tags. It is read a second time at the tip
-  of the same repository, where that revision has been re-saved in KiCad 10
-  and **re-annotated**: the three USB-C receptacles and the five user LEDs
-  changed reference designators and nothing moved. Every position is
-  required to agree between the two, and the sheet carries the designators
-  the sold boards were fabbed with and says the current file disagrees.
+  and the only one the repository tags. It is read a second time at a later
+  commit of that same revision, where it has been re-saved in KiCad 10 and
+  **re-annotated**: two of the three USB-C receptacles swapped designators
+  and three of the five user LEDs were renumbered, and nothing moved. Every
+  position is required to agree between the two, and the sheet carries the
+  designators the sold boards were fabbed with and says the later file
+  disagrees.
   Nothing is looked up by designator for that reason: the programming port
   is the receptacle sharing the FT231X's data pair, a user LED is one a
   resistor drives from `/LED0` to `/LED4`, and the rest are found by
   footprint. No Pmod host and no Ethernet. The board is the Raspberry Pi
   Zero outline and hole pattern, which the sheet states and the extractor
   checks against the figures on Raspberry Pi's own Zero drawing: same
-  65 x 30 and same 58 x 23 hole pattern 3.5 mm in from each edge, drilled
-  2.70 rather than 2.75 and cornered R3.50 rather than R3.00. The 2x20 GPIO
+  65 x 30 and same 58 x 23 hole pattern 3.5 mm in from all four edges,
+  drilled 2.70, the bottom of the Pi Zero's 2.75 +/-0.05 band, and cornered
+  R3.50 rather than R3.00. The 2x20 GPIO
   header is **not fitted** -- it is absent from the production BOM -- and
   the position's pins are checked to sit on the Raspberry Pi arrangement
   before the note says so.
