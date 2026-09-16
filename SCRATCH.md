@@ -1957,3 +1957,64 @@ end for end keeps its courtyard -- was not compared between the two commits.
 Each guard was made to fire on a doctored input before it was kept.  The
 README quote was also the wording at the tip rather than at v1.3, where the
 sentence begins "Icepi Zero is an FPGA development board" with no "The".
+
+## Cynthion, and four USB ports in a schedule with room for two
+
+Asked for a sheet of the production Cynthion, Great Scott Gadgets' USB test
+instrument.  Which revision ships is answered by the repository itself: the
+`r1.4.0` release notes read "Initial production release", that tag is the
+newest one, it is the tip of `cynthion-hardware`, and nothing committed since
+has touched the board file.  CERN-OHL-P v2.  There is no mechanical drawing,
+no STEP file, and no board size stated on the product page or in the
+documentation's device overview, so `cynthion.kicad_pcb` is the whole source
+and every figure on the sheet comes out of it.  The title block is templated -- the board file
+says `${TITLE}` and `${VERSION}` -- so the citation reads the project file's
+text variables at the same commit rather than taking the revision from the
+tag name.
+
+56.00 x 56.00 mm on R3.00, four M2 holes 50 mm apart and 3 mm in from each
+edge, a 1.0 mm deep recess in the top edge between x = 41 and 47, two Pmod
+hosts on the front edge on the usual 22.86 mm, six user LEDs the FPGA drives
+and five status LEDs the debug microcontroller drives, both rows on 3.00 mm,
+and no Ethernet.  The hosts are right-angle sockets: the pin field is on the
+board and the housing hangs 8.07 mm off the front edge, so the fab outline is
+taken rather than the courtyard -- what a case has to clear, not what an
+assembly machine wants free.
+
+**The board file numbers its own Pmod pads**, which neither of the other two
+Pmod boards in this family does, so pin 1 could be checked rather than
+asserted: `pmod_from_pins` works out where the Pmod convention puts pin 1 and
+the extractor then requires the pad the board file calls "1" to be within
+0.01 mm of it.  Both hosts agree, on a board whose maker had no reason to
+follow this repository's reading of the convention.
+
+Four USB ports -- CONTROL and AUX on the left edge, TARGET C and TARGET A on
+the right -- where `FEATURE_ORDER` had `usb_prog` and one `usb_second`.
+Renumbering was not available, because a feature number is printed on
+balloons and schedules on sheets that are already out, so 9 and 10 were added
+at the end for the third and fourth ports and 11 for the status LED row,
+which is a second row of LEDs and not the tri-colour row slot 5 means.  The
+ports take the slots in the order Great Scott Gadgets' own device overview
+introduces them, which is also the order the top-level schematic lists the
+port sheets in, so Cynthion's four read 1, 2, 9, 10 and its sheet says why.
+The other five FPGA sheets each gained three "not on this board" rows; that
+is the whole of their diff, at x >= 243 mm, and no view geometry moved.
+
+One drafting fault, found by `check_sheets.py` and of a kind already on
+record: the balloon for the user LEDs landed 0.45 mm from the 3.23 that
+dimensions the Pmod pin rows, and the two read as one word.  The pin-field
+depth dimension is drawn last of everything and writes its value along its
+own lane, and unlike the host spacing dimension beside it -- reserved when
+the PYNQ-Z2 arrived -- that lane was never reserved against the balloons.
+The lane follows from the drawn parts alone, so it now moves into
+`_depth_lanes`, is worked out before the balloons, reserved for position
+only, and then drawn from the same answer.  No other sheet moved.
+
+**Found on the way and deliberately not fixed here**: the "assembled
+envelope" note counts features but not Pmod host bodies, so on every board
+whose hosts are right-angle -- the six demo board sheets as well as this one
+-- it is short of the housings that hang off the front edge.  Counting them
+moves the figure on all six demo sheets (TT-DB-V33 goes 86.65 -> 95.20 mm),
+which is a change of its own and not one to slip in beside a new board.  It
+is in TODO.md, and the Cynthion sheet states the 8.07 mm in its notes so
+nobody reads 58.00 x 56.00 and builds a case eight millimetres short.
