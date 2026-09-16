@@ -2542,7 +2542,12 @@ anything could be drawn, and each of them had a published answer.
 is an M.2 form factor PCIe FPGA accelerator card ... In the fpgas.online fleet
 it sits either in an M.2 HAT on a Raspberry Pi 5 or in a Compute Blade's own
 M.2 slot", form factor M.2 2280, connector M.2 M-key. Nothing in this
-repository mentioned it before.
+repository mentioned it before. That page is cached beside the other sources
+this drawing was made from, at
+`tmp/src/acorn-cle-215/fpgas-online-docs-boards-acorn-index.md`, with the
+commit it was read at in the `.provenance` file next to it; it is `gh api
+repos/fpgas-online/fpgas.online-docs/contents/docs/boards/acorn/index.md`, so
+a reader can fetch it again rather than take the quotation on trust.
 
 **Which Waveshare HAT.** They sell three: PoE M.2 HAT+, PoE M.2 HAT+ (B) and
 PoE M.2 HAT+ (C). Only the (B) is "Compatible with M.2 hard drives of 2230 /
@@ -2573,7 +2578,7 @@ one far tighter than the Pmod HAT's +/-0.75 mm is that there are three separate
 checks the fit never used, and they close on each other:
 
 - the board's own edges come out 84.88 x 55.88 against the declared
-  85.00 x 56.00;
+  85.00 x 56.00, with the lower-left corner at (0.17, 0.23);
 - the three standoffs that sit clear of the board edge each give the M.2
   connector datum on their own, through the M.2 specification's 30, 42 and
   60 mm module lengths. They read 5.08, 5.07 and 5.05 mm: a spread of 0.04 mm
@@ -2589,6 +2594,28 @@ and height. The corner in the first of them is a fourth check, and the widest
 residual of the four at 0.23 mm, which is what the derived positions' +/-0.2
 is rounded from. The socket's own moulding is read off the same image but off
 a rectangle rather than a circle, and is quoted at +/-1 mm.
+
+**That corner is also the only thing proving which way up the drawing is
+read**, and the first version of the script did not check it. It named the
+four hole rings by which half of the image each fell in and said in a comment
+that this asserted the 180 degree turn. It asserts nothing: a picture the
+other way up has one ring per quadrant too, and the hole rectangle is
+symmetric, so the fit comes out with the same 8.1767 px/mm either way. Turn
+the image and the script ran happily on to `X -20.04 .. 64.83` and only died
+later, in the standoff search, for reasons that had nothing to do with the
+orientation. What is *not* symmetric is where those holes sit in the board:
+3.50 mm in from one end of an 85 mm board and 23.50 in from the other. So the
+check is that the board's lower-left corner comes back at the origin, and a
+view read the wrong way round misses it by twenty millimetres -- against the
+0.17 and 0.23 it is out the right way round, which is why the tolerance on it
+can be a generous millimetre and still never be in doubt.
+
+Adding it moved the script's headline figure, which is the worst residual on
+any check the fit did not use: 0.12 mm, the board's own width and height,
+before, and 0.23 mm, this corner's Y, after. The quoted +/-0.2 is the same
+either way, because the script rounds -- `max(0.2, round(worst, 1))` -- but
+`parts.py`, this file and `TODO.md` all said 0.12 was the worst of
+everything, and they say what it is the worst of now.
 
 Two things fall out that matter to whoever is cutting the plate. The card's far
 end lands at X 85.07 -- the M.2 specification puts the retention screw's
@@ -2643,13 +2670,25 @@ The drafting change is `overlay_detail`, off by default so that not a line
 moves on any sheet that already existed. With it on, an overlay's holes and
 component bodies are drawn in phantom too, they go into the view's bounding
 box, the ordinate chain and the assembled envelope, and they get their own two
-tables headed with the part's name so no row of them can be taken for the
-board's own. Three details were each wrong first:
+schedules headed with the part's own name -- `WAVESHARE POE M.2 HAT+ (B):
+HOLES` and `: BODIES`, not the word "phantom", because a table of holes called
+2230 to 2280 says nothing about whose standoffs they are and a reader who has
+not reached the notes yet will take an unattributed schedule for the board's.
+Four details were each wrong first:
 
 - A phantom hole that lands on one of the host board's own holes is drawn
   once, by the host. The HAT bolts through the Pi's four mounting holes, and
   drawing both put a dashed circle a fortieth of a millimetre outside a solid
-  one, which reads as a defect rather than as the coincidence it is.
+  one, which reads as a defect rather than as the coincidence it is. The four
+  holes stay in the HAT's own data, where they are its geometry and where its
+  schedule is not complete without them; it is the *drawing* that shows each
+  of them once.
+- The detail goes on after the board's own features, not with the overlay
+  outline. The board's component bodies are filled, the card runs the length
+  of the Pi and ends over the Ethernet jack, and drawn in one pass with the
+  outline the 2280 standoff and the card's far end -- the one thing the sheet
+  exists to show -- vanished under that fill. The outline still goes on first:
+  it is the edge of the part, not a thing sitting on the board.
 - A phantom body is an obstacle for balloons the way the **board outline** is,
   not the way a component body is: its edges are hard for a balloon to sit on
   and free for a leader to cross. Treated as a filled rectangle, the card --
@@ -2662,3 +2701,22 @@ board's own. Three details were each wrong first:
   ordinate witness line. It now uses the feature's designator where there is
   one, keeps the full name for the schedule, and is drawn only where it clears
   the host's own parts -- which is what a designator is for.
+
+Two smaller things the sheet does not show, and therefore does not carry.
+`ACCESSORIES` in `accessories/parts.py` is what `check_balloons.py` walks to
+redraw each accessory and inspect where its balloons went, so it means "drawn
+as the subject of a sheet of its own"; the M.2 HAT is never that, so it is not
+in there and the checker draws the assembly sheet itself instead. And the HAT
+carries no `tolerance` override, because that field can only ever reach a
+title block belonging to the *subject* of a drawing: on this sheet the general
+tolerance is the Pi's, which is right, and what the reader needs about the
+phantom part is in the notes and in the heading of its own two schedules.
+
+Fitting all that in cost a round of trimming. Putting the HAT's four mounting
+holes back into its schedule is four more table rows, the standoff thread and
+the missing-Z note are two more lines of notes, and the annotation column ran
+out by thirty millimetres. The sources kept their figures and lost their
+padding -- the M.2 citation is now the two sections the drawing rests on, the
+SQRL quotation elides the sentence between the two halves that matter -- and
+the notes lost the sentence that said what the phantom schedules contain, now
+that those schedules are headed with the name of the part they belong to.
