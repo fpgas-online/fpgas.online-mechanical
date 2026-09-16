@@ -109,11 +109,14 @@ and the sheet says which it was.
   repository, and no commit since has touched the board file. Great Scott
   Gadgets publish it under the CERN-OHL-P v2 and publish no mechanical
   drawing, so every figure on the sheet is read from that file. A 56 x 56 mm
-  square on R3, four M2 holes, two Pmod hosts on the front edge and **four
-  USB ports**. The board file numbers its own Pmod pads, so pin 1 is checked
-  against the Pmod convention rather than asserted from it; the two agree.
-  Its hosts are right-angle sockets, so the housings hang off the front edge
-  and a peripheral plugs in level with the board.
+  square on R3 with a recess in its top edge, four M2 holes, two Pmod hosts
+  on the front edge, a 30-way mezzanine receptacle in the middle of the
+  component side, and **four USB ports**. The board file numbers its own Pmod
+  pads, so pin 1 is checked against the Pmod convention rather than asserted
+  from it; the two agree. Its hosts are right-angle sockets, so the housings
+  hang off the front edge and a peripheral plugs in level with the board --
+  which is also why this is the first sheet to state its own assembled
+  envelope rather than take the computed one.
 
 The PYNQ-Z1 was looked at and left out: Digilent's 3D model of it has no
 mounting holes and its outline disagrees with their own stated size.
@@ -136,7 +139,10 @@ Cynthion is the first board here with more than two USB ports and the first
 with a second LED row that is not the user row, so 9, 10 and 11 were added
 for the third and fourth USB ports and the status LEDs. That is why its four
 USB ports read 1, 2, 9, 10 and not 1 to 4, and why the other five sheets'
-schedules each gained three "not on this board" rows.
+schedules each gained three "not on this board" rows. Its mezzanine
+receptacle takes slot 6, the family's first expansion connector, which is the
+one slot it did fit; a note says it is a board-to-board socket rather than
+the edge port that slot holds on the other sheets.
 
 Pin 1 of every Pmod host follows the Pmod convention, top right looking into
 the socket, fed by the row of holes farther from the board edge. The Tiny
