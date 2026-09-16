@@ -131,6 +131,14 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>ACC-03</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
 </td>
 </tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="accessories/output/raspmod.pdf"><img src="accessories/output/previews/raspmod.png" width="270" alt="ACC-04 Raspmod"></a><br>
+<b>ACC-04</b> Raspmod<br>TT Demoboard To Raspi rev 1.0, silkscreen v1.1: a frontplate for the demoboard's three Pmod hosts
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
+</tr>
 </table>
 
 ### Mounting plate
