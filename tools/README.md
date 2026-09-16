@@ -140,5 +140,5 @@ were arrived at and how a disputed one would be checked again. Not run by
 | | |
 |---|---|
 | `dump_rpi_dxf.py` | Dumps the mechanical features of a Raspberry Pi DXF, layer by layer |
-| `dump_rpi_pdf.py` | Dumps features from the Pi 5's vector PDF, recovering the plot scale; its rectangle recovery also serves the Arty A7 plot |
+| `dump_rpi_pdf.py` | Dumps features from the Pi 5's vector PDF, recovering the plot scale; its rectangle recovery also serves the Arty A7 plot, and its segment-run recovery the Zybo Z7's notched Pmod sockets |
 | `plot_pcb_check.py` | Sanity plot of an extracted `.kicad_pcb` |

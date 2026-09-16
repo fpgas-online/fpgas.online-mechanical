@@ -16,6 +16,8 @@ maker draws it:
 * the Icepi Zero the way Raspberry Pi draw a Zero, its GPIO header along the
   top and its connector edge at the bottom
 * Cynthion with its two Pmod hosts along the bottom
+* the Zybo Z7 with four of its six Pmod hosts along the bottom edge and one
+  on each side
 """
 
 from __future__ import annotations
@@ -467,4 +469,89 @@ BOARDS['cynthion'] = BoardSpec(
         'Buttons PROGRAM and USER on the left edge and RESET on the right are not drawn. They are side-actuated tactile switches whose bodies reach 2.50 mm past the left edge and 2.50 mm past the right.',
     ),
     envelope_note='Assembled envelope, connector overhang and the Pmod housings included: 58.00 x 64.07 mm. With the three side buttons as well it is 61.00 x 64.07 mm, which is what a case has to clear.',
+)
+
+BOARDS['zybo-z7'] = BoardSpec(
+    key='zybo-z7',
+    title='Digilent Zybo Z7',
+    subtitle='Z7-10 and Z7-20',
+    family="fpga",
+    front_edge='bottom',
+    outline=Outline(width=121.92, height=83.82,
+                    corner_radius=0.0, thickness=1.571,
+                    profile_note='',
+                    edges=(
+                        ('line', 0.0, 0.0, 121.92, 0.0),
+                        ('line', 121.92, 0.0, 121.92, 83.82),
+                        ('line', 121.92, 83.82, 0.0, 83.82),
+                        ('line', 0.0, 83.82, 0.0, 0.0),
+                    )),
+    holes=(
+        Hole(x=3.81, y=3.81, dia=3.658, label='MT1', kind='mount', keepout_dia=None),
+        Hole(x=118.11, y=3.81, dia=3.658, label='MT2', kind='mount', keepout_dia=None),
+        Hole(x=3.81, y=80.01, dia=3.658, label='MT3', kind='mount', keepout_dia=None),
+        Hole(x=118.11, y=80.01, dia=3.658, label='MT4', kind='mount', keepout_dia=None),
+    ),
+    pmods=(
+        PmodHeader(key='pmod_ja', label='JA', designator='JA', edge='right',
+                   cx=113.1, cy=16.6, pin1_x=111.85, pin1_y=22.95,
+                   body_x0=110.583, body_y0=8.978, body_x1=115.619, body_y1=24.226),
+        PmodHeader(key='pmod_jb', label='JB', designator='JB', edge='bottom',
+                   cx=95.5, cy=8.85, pin1_x=101.85, pin1_y=10.1,
+                   body_x0=87.886, body_y0=6.335, body_x1=103.104, body_y1=11.381),
+        PmodHeader(key='pmod_jc', label='JC', designator='JC', edge='bottom',
+                   cx=72.5, cy=8.85, pin1_x=78.85, pin1_y=10.1,
+                   body_x0=64.884, body_y0=6.335, body_x1=80.124, body_y1=11.381),
+        PmodHeader(key='pmod_jd', label='JD', designator='JD', edge='bottom',
+                   cx=49.5, cy=8.85, pin1_x=55.85, pin1_y=10.1,
+                   body_x0=41.883, body_y0=6.335, body_x1=57.123, body_y1=11.381),
+        PmodHeader(key='pmod_je', label='JE', designator='JE', edge='bottom',
+                   cx=26.5, cy=8.85, pin1_x=32.85, pin1_y=10.1,
+                   body_x0=18.881, body_y0=6.335, body_x1=34.121, body_y1=11.381),
+        PmodHeader(key='pmod_jf', label='JF', designator='JF', edge='left',
+                   cx=8.85, cy=36.0, pin1_x=10.1, pin1_y=29.65,
+                   body_x0=6.345, body_y0=28.377, body_x1=11.381, body_y1=43.625),
+    ),
+    features=(
+        Feature(key='usb_prog', label='micro-USB J12, programming and console', kind='usb_power',
+                designator='J12', x0=-0.501, y0=49.742, x1=5.407, y1=57.737,
+                note="Shell outline from the PDF plot; centre line from the DXF's shell pads.", number=1),
+        Feature(key='usb_second', label='USB type A host port J11', kind='usb_a',
+                designator='J11', x0=0.24, y0=9.437, x1=14.76, y1=24.052,
+                note="Body outline from the PDF plot; centre line from the DXF's shield-leg holes.", number=2),
+        Feature(key='ethernet', label='Ethernet RJ45 J3', kind='ethernet',
+                designator='J3', x0=23.634, y0=62.171, x1=39.375, y1=83.754,
+                note="Body outline from the PDF plot; centre line from the DXF's locating pegs.", number=3),
+        Feature(key='leds', label='LEDs LD0-LD3, 4 on 7.00 mm pitch', kind='led',
+                designator='LD0-LD3', x0=21.65, y0=29.841, x1=44.368, y1=30.758,
+                note="Bodies from the PDF plot; which LED is which from the 3D model's designators.", number=4),
+        Feature(key='rgb_leds', label='Tri-colour LEDs LD5 and LD6, 2 on 6.50 mm pitch', kind='led',
+                designator='LD5, LD6', x0=78.991, y0=29.294, x1=87.101, y1=30.889,
+                note="Bodies from the PDF plot; which LED is which from the 3D model's designators.", number=5),
+    ),
+    sources=(
+        Source(label='Mechanical drawing',
+               ref='https://digilent.com/reference/_media/reference/programmable-logic/zybo-z7/zybo_z7_dimensions.zip',
+               note='Digilent, "Zybo Z7 Mechanical Drawings", dated 2020-09-03. Edge, holes, pin fields, pegs and shell pads from the DXF; bodies from the PDF plot, its scale recovered from the outline per axis (the two agree to 0.20 %).'),
+        Source(label='3D model',
+               ref='https://files.digilent.com/resources/programmable-logic/zybo-z7/Zybo_Z7.step',
+               note="Digilent, Zybo_Z7.step, in the drawing's frame: its solids carry the designators, so they name the plot's outlines. Laminate 1.571 mm."),
+        Source(label='Reference manual',
+               ref='https://digilent.com/reference/_media/reference/programmable-logic/zybo-z7/zybo-z7_rm.pdf',
+               note='Revised 2018-02-21, section 16: JA is the XADC port, JB, JC and JD high-speed, JE standard, JF the MIO port; four user LEDs, and "the Zybo Z7-10 only has one tri-color LED".'),
+        Source(label='Schematic',
+               ref='https://files.digilent.com/resources/programmable-logic/zybo-z7/zybo-z7-d1-sch.pdf',
+               note='Revision D.1: J12 is the micro-USB PROG/UART port, J11 the "USB A" host and J10 a "USB Micro AB" beneath it.'),
+        Source(label='Resource Center',
+               ref='https://digilent.com/reference/programmable-logic/zybo-z7/start',
+               note='Physical, quoted: "Width 3.3 in (88 mm)" and "Length 4.8 in (122 mm)"; the drawing gives 121.92 x 83.82, exactly 4.8 x 3.3 in. Its top view of the board has 3V3 and GND silkscreened at each host\'s end farthest from pin 1.'),
+    ),
+    notes=(
+        'Hole IDs are assigned by this drawing; the DXF names nothing.',
+        "Pin rows 2.50 mm apart on the drawing, not 2.54. The four lower-edge hosts are on 23.00 mm, not the Pmod specification's 22.86 (0.90 in).",
+        'Drawn fully fitted, as the Zybo Z7-20; the Zybo Z7-10 leaves Pmod JB and one tri-colour LED unfitted. The board is the same.',
+        'J10, a micro-AB USB socket UNDER J11, hangs 2.7 mm below the board. HDMI, audio, Pcam, microSD, the power jack and the external JTAG header are not marked.',
+        'Bodies read from the PDF plot are good to about +/-0.3 mm.',
+    ),
+    envelope_note='',
 )
