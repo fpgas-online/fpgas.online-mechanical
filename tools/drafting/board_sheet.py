@@ -180,13 +180,17 @@ def draw_feature(c: Canvas, view: View, f: Feature) -> None:
     x1, y1 = view.pt(f.x1, f.y1)
     fitted = is_fitted(f)
     colour = style.C_HIGHLIGHT if fitted else style.C_PHANTOM
+    # Type K, not the dashed hidden-detail type, for a position not fitted:
+    # it is not hidden behind material, it is an alternative position that
+    # this revision does not populate.  A part on the underside is exactly
+    # hidden behind material, and gets the dashed type.
+    dash = None if fitted else style.D_PHANTOM
+    if fitted and f.side == "bottom":
+        dash = style.D_HIDDEN
     c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
            weight=style.W_COMPONENT, colour=colour,
-           fill=style.C_FILL_LIGHT if fitted else "none",
-           # Type K, not the dashed hidden-detail type: these positions are
-           # not hidden behind material, they are alternative positions that
-           # this revision does not populate.
-           dash=None if fitted else style.D_PHANTOM)
+           fill=style.C_FILL_LIGHT if fitted and f.side == "top" else "none",
+           dash=dash)
     if f.kind == "led":
         c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
                weight=0.05, colour=colour, fill=colour)
@@ -218,14 +222,17 @@ def draw_pmod(c: Canvas, view: View, p, spec: BoardSpec) -> None:
     cx, cy = view.pt(p.cx, p.cy)
     span = view.d(p.pin_span)
     rows = view.d(p.row_span)
+    # A plug is on the far side of the board: its holes show through, its
+    # envelope is hidden detail.
+    dash = style.D_HIDDEN if p.role == "plug" else None
     if horizontal:
         c.rect(cx - span / 2 - view.d(1.3), cy - rows / 2 - view.d(1.3),
                span + view.d(2.6), rows + view.d(2.6),
-               weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT)
+               weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT, dash=dash)
     else:
         c.rect(cx - rows / 2 - view.d(1.3), cy - span / 2 - view.d(1.3),
                rows + view.d(2.6), span + view.d(2.6),
-               weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT)
+               weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT, dash=dash)
 
 
 #: How much worse it is to touch one kind of obstacle than another.  A
@@ -417,6 +424,12 @@ def _ordinate_values(spec: BoardSpec, overlay: BoardSpec | None
         note_x(h.x, h.y)
         note_y(h.y, h.x)
     for p in list(spec.pmods) + list(overlay.pmods if overlay else ()):
+        # Hosts only.  The Raspmod's underside plugs sit 0.05 mm from its
+        # hosts along the chain's axis, which is two witness lines printing
+        # as one; the plugs' positions are in the table, and the note gives
+        # their offset from the hosts.
+        if p.role != "host":
+            continue
         if p.edge in ("bottom", "top"):
             note_x(p.cx, p.cy)
         else:
@@ -695,6 +708,7 @@ LEGEND_STYLES = {
     "component": ("line", style.W_COMPONENT, style.C_HIGHLIGHT, None),
     "dnp": ("line", style.W_COMPONENT, style.C_PHANTOM, style.D_PHANTOM),
     "phantom": ("line", style.W_PHANTOM, style.C_PHANTOM, style.D_PHANTOM),
+    "hidden": ("line", style.W_COMPONENT, style.C_HIGHLIGHT, style.D_HIDDEN),
     "centre": ("line", style.W_CENTRE, style.C_LINE, style.D_CENTRE),
     "dimension": ("arrow", style.W_THIN, style.C_DIM, None),
     "usbc": ("line", style.W_PHANTOM, "#7a4a00", style.D_PHANTOM),
@@ -745,6 +759,9 @@ def _legend_entries(spec: BoardSpec, overlay: BoardSpec | None
         entries.append(("component", "Component body, scheduled"))
     if any(not is_fitted(f) for f in spec.features):
         entries.append(("dnp", "Position not fitted on this revision"))
+    if any(p.role == "plug" for p in spec.pmods) or \
+            any(f.side == "bottom" for f in spec.features):
+        entries.append(("hidden", "On the underside, seen through the board"))
     phantom = ["Pmod connector body" if spec.pmods else ""]
     if overlay is not None:
         phantom.append("adjacent part")
@@ -941,6 +958,31 @@ def _pin_row_centre_line(c: Canvas, view: View, group, edge: str,
                dash=style.D_CENTRE)
 
 
+def _lane_extent(view: View, host, edge: str, board: Rect
+                 ) -> tuple[float, float]:
+    """How far along its lane a depth dimension reaches, in sheet mm.
+
+    From just outside the board edge to the pin row, plus the stub and the
+    value written beyond it on the inboard side.  This is what the lane has
+    to keep clear, and no more: tested against the whole board height, the
+    Raspmod's ribbon header, which spans most of the board's width but sits
+    nowhere near the pin rows, blocked every candidate lane, and both rows
+    fell back to the same nearest one with their values on top of each other.
+    """
+    value = host.cy if edge in ("bottom", "top") else host.cx
+    if edge in ("top", "right"):
+        value = (board.h if edge == "top" else board.w) / view.scale - value
+    reach = (style.ARROW_LEN * 2.2 + 1.4
+             + style.text_width(f"{value:.2f}", style.T_DIM) + 1.0)
+    if edge == "bottom":
+        return board.y - 6.0, view.y(host.cy) + reach
+    if edge == "top":
+        return view.y(host.cy) - reach, board.y1 + 6.0
+    if edge == "left":
+        return board.x - 6.0, view.x(host.cx) + reach
+    return view.x(host.cx) - reach, board.x1 + 6.0
+
+
 def _clear_lane(view: View, host, edge: str, board: Rect,
                 blockers: list[tuple[float, float, float, float]]) -> float:
     """Where to run the pin-field depth dimension for *host*, in sheet mm.
@@ -955,9 +997,9 @@ def _clear_lane(view: View, host, edge: str, board: Rect,
     along_edge = edge in ("bottom", "top")
     centre = host.cx if along_edge else host.cy
     half = host.pin_span / 2
+    lo, hi = _lane_extent(view, host, edge, board)
 
     def blocked(pos: float) -> bool:
-        lo, hi = (board.y, board.y1) if along_edge else (board.x, board.x1)
         for x0, y0, x1, y1 in blockers:
             a, b = (x0, x1) if along_edge else (y0, y1)
             other0, other1 = (y0, y1) if along_edge else (x0, x1)
@@ -1072,14 +1114,17 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     view = View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
                     margin_top=VIEW_MARGIN_TOP,
                     margin_bottom=VIEW_MARGIN_BOTTOM, force_scale=force_scale)
-    if view.scale < 1.0 and force_scale is None:
-        # A board that misses 1:1 by a few millimetres of width gets the
-        # narrower right margin before it gets a smaller scale.
+    if force_scale is None:
+        # A board that misses a standard scale by a few millimetres of width
+        # gets the narrower right margin before it gets the smaller scale.
+        # First for 1:1, for the PYNQ-Z2; then for any step, because the
+        # Raspmod at 72.3 mm missed 2:1 by 1.6 mm and was drawn at 1:1 on a
+        # sheet that was three-quarters empty.
         narrow = View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
                           margin_top=VIEW_MARGIN_TOP,
                           margin_bottom=VIEW_MARGIN_BOTTOM,
                           margin_right=VIEW_MARGIN_RIGHT_MIN)
-        if narrow.scale >= 1.0:
+        if narrow.scale > view.scale:
             view = narrow
     sheet.title.scale = view.scale_label
 
@@ -1107,10 +1152,16 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # How far the dimensions will reach below and to the left, worked out
     # before anything is placed.  A Pmod spacing dimension goes in first, then
     # the ordinate chain nine millimetres below that.
-    horiz_edges = len({p.edge for p in spec.pmods if p.edge in ("bottom", "top")
-                       and len([q for q in spec.pmods if q.edge == p.edge]) > 1})
-    vert_edges = len({p.edge for p in spec.pmods if p.edge in ("left", "right")
-                      and len([q for q in spec.pmods if q.edge == p.edge]) > 1})
+    # Headers grouped by the edge they face and by role, because a spacing
+    # dimension between a host and the plug 0.05 mm from it means nothing,
+    # and a depth dimension for a mixed group would put its centre line
+    # through one row and its value on the other.
+    by_edge: dict[tuple[str, str], list] = {}
+    for p in spec.pmods:
+        by_edge.setdefault((p.edge, p.role), []).append(p)
+    spaced = [edge for (edge, _), group in by_edge.items() if len(group) > 1]
+    horiz_edges = len([e for e in spaced if e in ("bottom", "top")])
+    vert_edges = len([e for e in spaced if e in ("left", "right")])
     step = 6.0 + style.T_DIM + 2.0
     chain_y = dim_bottom - horiz_edges * step - 9.0
     chain_x = dim_left - vert_edges * step - 9.0
@@ -1239,11 +1290,8 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # On a board with its hosts on a vertical edge the spacing runs up the
     # LEFT of the view, across the whole board from the hosts, straight
     # through the space the PYNQ-Z2's micro-USB balloon wanted.
-    by_edge: dict[str, list] = {}
-    for p in spec.pmods:
-        by_edge.setdefault(p.edge, []).append(p)
     plan_low, plan_left = dim_bottom, dim_left
-    for edge, group in by_edge.items():
+    for (edge, _), group in by_edge.items():
         if len(group) < 2:
             continue
         along = "cx" if edge in ("bottom", "top") else "cy"
@@ -1300,7 +1348,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # hosts on that edge.  Taking the first two hosts overall instead gives a
     # meaningless 0.00 on a board like the Pmod HAT Adapter, whose JA and JB
     # sit one above the other on the same edge.
-    for edge, group in by_edge.items():
+    for (edge, _), group in by_edge.items():
         if len(group) < 2:
             continue
         along = "cx" if edge in ("bottom", "top") else "cy"
@@ -1346,10 +1394,20 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # is written along the lane on the inboard side, where the lane is clear
     # by construction.  Outboard is where the host spacing dimension and the
     # ordinate chain already are.
-    for edge, group in by_edge.items():
+    for (edge, _), group in by_edge.items():
         along = "cx" if edge in ("bottom", "top") else "cy"
         outer = max(group, key=lambda p: getattr(p, along))
         lane = _clear_lane(view, outer, edge, board, blockers)
+        # The lane is taken: on the Raspmod the host row and the plug row
+        # each want one beside the same outermost header, and left to the
+        # same search the second lane landed 1.45 mm from the first, with
+        # its value written across the other's line.
+        half = style.T_DIM / 2 + 0.5
+        lo, hi = _lane_extent(view, outer, edge, board)
+        if edge in ("bottom", "top"):
+            blockers.append((lane - half, lo, lane + half, hi))
+        else:
+            blockers.append((lo, lane - half, hi, lane + half))
         # A centre line along the row of pin fields, so the dimension's
         # extension line ends on something.  Without it the lane -- chosen
         # clear of every drawn part, which is what put it in a gap between
@@ -1423,9 +1481,16 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         # does on the Pmod HAT Adapter where both read JA, JB, JC.
         show_ref = any(p.designator and p.designator != p.label
                        for p in spec.pmods)
+        # And a ROLE column only when there is something other than a host
+        # to tell apart, which is the Raspmod's underside plugs.  The table
+        # is then headed HEADERS rather than HOST HEADERS, because it no
+        # longer is.
+        show_role = any(p.role != "host" for p in spec.pmods)
         head = ["PORT"] + (["REF"] if show_ref else []) + \
+            (["ROLE"] if show_role else []) + \
             ["EDGE", "CX mm", "CY mm", "PIN1 X mm", "PIN1 Y mm"]
         align = ["start"] + (["start"] if show_ref else []) + \
+            (["start"] if show_role else []) + \
             ["start", "end", "end", "end", "end"]
         # Three decimals here on purpose: at two, 27.695 and 50.555 print as
         # 27.70 and 50.55, whose difference is 22.85, contradicting the 22.86
@@ -1433,10 +1498,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         # a third decimal otherwise reads as a claim to micrometre accuracy
         # that neither the source nor the general tolerance supports.
         rows = [[p.label] + ([p.designator] if show_ref else [])
+                + ([p.role] if show_role else [])
                 + [p.edge, f"{p.cx:.3f}", f"{p.cy:.3f}",
                    f"{p.pin1_x:.3f}", f"{p.pin1_y:.3f}"] for p in spec.pmods]
-        block = sheet.column_block(sheet.table_height("PMOD HOST HEADERS", len(rows)))
-        sheet.table(block, "PMOD HOST HEADERS", head, rows, align)
+        title = "PMOD HEADERS" if show_role else "PMOD HOST HEADERS"
+        block = sheet.column_block(sheet.table_height(title, len(rows)))
+        sheet.table(block, title, head, rows, align)
 
     if schedule:
         block = sheet.column_block(sheet.table_height("FEATURE SCHEDULE", len(schedule)))

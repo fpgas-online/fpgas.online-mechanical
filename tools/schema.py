@@ -109,6 +109,10 @@ class Feature:
     note: str = ""
     tol: float | None = None
     designator: str = ""
+    #: "top" for a part on the component side, "bottom" for one on the far
+    #: side, which the drawing shows as hidden detail.  The Raspmod's
+    #: clock/reset pins are on its underside, where the demoboard is.
+    side: str = "top"
     #: The number this feature carries in the schedule and on its balloon.
     #: Fixed per family rather than counted off, so a given number means the
     #: same part on every sheet of that family; a revision that does not carry
@@ -160,7 +164,16 @@ class PmodHeader:
     rows: int = 2
     #: Board edge the host faces: "bottom", "top", "left" or "right".  The six
     #: columns run parallel to that edge and the two rows perpendicular to it.
+    #: A vertical header faces no edge; it takes the edge whose axis its
+    #: columns run along, and the sheet says so.
     edge: str = "bottom"
+    #: "host" for a socket a peripheral plugs into, which is every header on
+    #: every board until the Raspmod; "plug" for a peripheral-side pin header
+    #: that goes into someone else's host.  The Raspmod carries three of each,
+    #: one row above the other, and a drawing that treated the plugs as hosts
+    #: dimensioned a 0.05 mm spacing between the two rows and called the
+    #: plugs hosts in the table.
+    role: str = "host"
     body_x0: float = 0.0
     body_y0: float = 0.0
     body_x1: float = 0.0
