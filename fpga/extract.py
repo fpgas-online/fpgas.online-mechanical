@@ -14,6 +14,8 @@ ButterStick  the KiCad board file at the release that was sold
 Icepi Zero   the KiCad board file at the mass-production tag, and again at
              a later, re-annotated commit of the same revision, which has to
              agree on every position drawn
+Cynthion     the KiCad board file at the release Great Scott Gadgets call
+             the initial production release
 ===========  =============================================================
 
 The sources are expected under ``tmp/src``; ``tools/fetch_fpga.sh`` puts
@@ -44,8 +46,17 @@ WORK = ROOT / "tmp" / "pcb"
 #: flipping between them finds the Ethernet jack at 3 whether the board has
 #: one or not.  Pmod hosts are not features: they have their own table, as
 #: on every other family.
+#:
+#: A number, once issued, keeps its meaning: it is printed on balloons and in
+#: schedules on sheets that are already out, so a board that needs a slot the
+#: family has not got gets a NEW number at the end rather than a renumbering.
+#: Cynthion is the first board here with more than two USB ports -- four of
+#: them -- and the first with a second row of LEDs that is not the user row,
+#: so 9, 10 and 11 were added for those.  That is why the USB ports read
+#: 1, 2, 9, 10 on its sheet and not 1 to 4.
 FEATURE_ORDER = ["usb_prog", "usb_second", "ethernet", "leds", "rgb_leds",
-                 "exp1", "exp2", "exp3"]
+                 "exp1", "exp2", "exp3", "usb_third", "usb_fourth",
+                 "status_leds"]
 
 FEATURE_NAMES = {
     "usb_prog": "USB programming / console port",
@@ -56,6 +67,9 @@ FEATURE_NAMES = {
     "exp1": "Expansion connector, first",
     "exp2": "Expansion connector, second",
     "exp3": "Expansion connector, third",
+    "usb_third": "Third USB port",
+    "usb_fourth": "Fourth USB port",
+    "status_leds": "Status LEDs, driven by the debug controller",
 }
 
 #: Pin 1 of a 2x6 host, from the pin field's centre and the edge it faces.
@@ -347,6 +361,146 @@ def extract_butterstick() -> dict:
             "SC2 are the SYZYGY standoff holes of ports A, B and C, plated, "
             "and the maker's acrylic plate bolts through all eight.",
             "No Pmod host: expansion is three SYZYGY ports.",
+        ],
+    )
+
+
+CYNTHION_REPO = "https://github.com/greatscottgadgets/cynthion-hardware"
+CYNTHION_PATH = "cynthion.kicad_pcb"
+#: The tip of the repository, which is what the ``r1.4.0`` tag points at.  The
+#: release notes for that tag read "Initial production release", so it is the
+#: revision that ships, and nothing has been committed since.
+CYNTHION_COMMIT = "13aa71c2"
+CYNTHION_TAG = "r1.4.0"
+CYNTHION_RELEASE = f"{CYNTHION_REPO}/releases/tag/{CYNTHION_TAG}"
+CYNTHION_LICENCE = f"{CYNTHION_REPO}/blob/{CYNTHION_TAG}/LICENSE"
+CYNTHION_OVERVIEW = ("https://cynthion.readthedocs.io/en/latest/hardware/"
+                     "device_overview.html")
+
+#: The four USB ports, in the order Great Scott Gadgets' own device overview
+#: introduces them, which is also the order the top-level schematic lists the
+#: port sheets in.  Ordering them is the whole of the numbering decision: the
+#: family had one spare USB slot and this board wants four.
+CYNTHION_USB = [
+    ("J2", "usb_prog", "USB-C J2, CONTROL port", "usb_power"),
+    ("J1", "usb_second", "USB-C J1, AUX port", "connector"),
+    ("J4", "usb_third", "USB-C J4, TARGET C port", "connector"),
+    ("J3", "usb_fourth", "USB-A J3, TARGET A port", "usb_a"),
+]
+
+
+def _cynthion_title_block() -> dict:
+    """The title block the board file's ``${...}`` placeholders stand for.
+
+    Cynthion's title block is templated: the board file says ``${TITLE}`` and
+    ``${VERSION}`` and the strings live in the project file's text variables.
+    Reading them at the same pinned commit is what lets the sheet quote a
+    title block at all, and it is how the board file itself states its own
+    revision rather than the citation taking it from the tag name.
+    """
+    import json
+    blob = subprocess.run(
+        ["git", "-C", str(SRC / "cynthion"), "show",
+         f"{CYNTHION_COMMIT}:cynthion.kicad_pro"],
+        capture_output=True, text=True, check=True).stdout
+    return json.loads(blob).get("text_variables", {})
+
+
+def extract_cynthion() -> dict:
+    path = kicad_file("cynthion", CYNTHION_COMMIT, CYNTHION_PATH,
+                      f"cynthion-{CYNTHION_TAG}")
+    board = kicad_pcb.load(str(path))
+    key = "cynthion"
+    to_xy, to_box, (w, h) = kicad_extract.frame(board)
+    fps = board.footprints
+    edges, radii = kicad_extract.outline(key, board, to_xy, w, h)
+    if len(radii) != 1:
+        raise SystemExit(f"{key}: expected one corner radius, got {radii}")
+
+    holes = [kicad_extract.hole(key, one(fps, ref), to_xy)
+             for ref in ("H1", "H2", "H3", "H4")]
+
+    pmods = []
+    for ref, label in (("J7", "A"), ("J8", "B")):
+        fp = one(fps, ref)
+        # The fab outline, not the courtyard: these are right-angle sockets
+        # whose housing hangs off the front edge, and what a case or plate has
+        # to clear is the housing, not the housing plus assembly clearance.
+        pm = pmod_from_pins([to_xy(p.x, p.y) for p in fp.pads],
+                            key=f"pmod_{label.lower()}", label=f"Pmod {label}",
+                            designator=ref, edge="bottom",
+                            body=kicad_extract.box(fp, to_box, "fab"))
+        # The Pmod convention says where pin 1 is; this board file numbers its
+        # own pads, so the two can be checked against each other instead of
+        # the convention being asserted.  They agree.
+        p1 = to_xy(*next((p.x, p.y) for p in fp.pads if p.number == "1"))
+        if abs(pm["pin1_x"] - p1[0]) > 0.01 or abs(pm["pin1_y"] - p1[1]) > 0.01:
+            raise SystemExit(
+                f"{key}: {ref} pad 1 is at {p1}, but the Pmod convention puts "
+                f"pin 1 at ({pm['pin1_x']}, {pm['pin1_y']})")
+        pmods.append(pm)
+
+    features = []
+    for ref, key_, label, kind in CYNTHION_USB:
+        b = kicad_extract.box(one(fps, ref), to_box, "fab")
+        features.append(dict(key=key_, kind=kind, designator=ref, label=label,
+                             x0=b[0], y0=b[1], x1=b[2], y1=b[3],
+                             note="Fab-layer body outline, shell included."))
+    features.append(row_feature(
+        [kicad_extract.box(one(fps, f"D{n}"), to_box) for n in range(2, 8)],
+        key="leds", label="User LEDs D2-D7", kind="led", designator="D2-D7",
+        note="D2 at the left-hand end; the FPGA drives them."))
+    features.append(row_feature(
+        [kicad_extract.box(one(fps, f"D{n}"), to_box) for n in range(10, 15)],
+        key="status_leds", label="Status LEDs D10-D14", kind="led",
+        designator="D10-D14",
+        note="D10 at the left-hand end; the debug controller drives them."))
+    number_features(key, features)
+
+    tb = _cynthion_title_block()
+    return dict(
+        key=key, title="Cynthion", subtitle=CYNTHION_TAG,
+        front_edge="bottom", thickness=board.thickness,
+        width=round(w, 3), height=round(h, 3), corner_radius=radii[0],
+        edges=edges, holes=holes, pmods=pmods, features=features,
+        sources=[
+            ("KiCad board file",
+             f"{CYNTHION_REPO}  {CYNTHION_PATH} @ {CYNTHION_COMMIT} "
+             f"(tag {CYNTHION_TAG})",
+             f"title block: {tb.get('TITLE')} rev {tb.get('VERSION')}, "
+             f"{tb.get('COPYRIGHT')}, resolved from the project file's text "
+             "variables at the same commit; Great Scott Gadgets."),
+            ("Revision sold", CYNTHION_RELEASE,
+             f'the {CYNTHION_TAG} release notes read "Initial production '
+             'release."; it is the newest release and the tip of the '
+             "repository, and no commit since has touched the board file."),
+            ("Licence", CYNTHION_LICENCE,
+             "CERN Open Hardware Licence Version 2 - Permissive, "
+             "Copyright (c) 2019-2024 Great Scott Gadgets."),
+            ("Ports and indicators", CYNTHION_OVERVIEW,
+             "names the four USB ports CONTROL, AUX, TARGET C and TARGET A, "
+             "in that order; six user LEDs driven by the FPGA and five "
+             "status LEDs driven by the debug microcontroller."),
+        ],
+        notes=[
+            "Every dimension is read from the board file; Great Scott "
+            "Gadgets publish no mechanical drawing. Hole IDs are the KiCad "
+            "reference designators.",
+            "Schedule numbers 9, 10 and 11 were added to the family for this "
+            "board. 1 to 8 mean what they mean on the other FPGA sheets, so "
+            "the four USB ports read 1, 2, 9, 10.",
+            "No Ethernet jack.",
+            "Pmod A and B are right-angle sockets: the pin field is on the "
+            "board and the housing hangs off the front edge, so a peripheral "
+            "plugs in level with the board rather than standing up from it. "
+            f"The housings reach {-min(p['body_y0'] for p in pmods):.2f} mm "
+            "past the edge, which the assembled envelope above does not "
+            "count.",
+            "The board ships inside an enclosure. The outline drawn is the "
+            "bare PCB's; the repository publishes no case dimensions.",
+            "Buttons PROGRAM and USER on the left edge and RESET on the "
+            "right are not drawn. Each is a side-actuated tactile switch "
+            "whose body reaches 2.5 mm beyond the board outline.",
         ],
     )
 
@@ -1071,6 +1225,7 @@ maker draws it:
 * ButterStick with its USB-C and Ethernet on the right
 * the Icepi Zero the way Raspberry Pi draw a Zero, its GPIO header along the
   top and its connector edge at the bottom
+* Cynthion with its two Pmod hosts along the bottom
 """
 
 from __future__ import annotations
@@ -1157,7 +1312,8 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
 
 def main() -> None:
     records = [extract_arty(), extract_ulx3s(), extract_pynq_z2(),
-               extract_butterstick(), extract_icepi_zero()]
+               extract_butterstick(), extract_icepi_zero(),
+               extract_cynthion()]
     numbers = "{\n" + "".join(
         f"    {i}: {FEATURE_NAMES[key]!r},\n"
         for i, key in enumerate(FEATURE_ORDER, 1)) + "}"

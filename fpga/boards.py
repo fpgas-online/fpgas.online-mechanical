@@ -15,6 +15,7 @@ maker draws it:
 * ButterStick with its USB-C and Ethernet on the right
 * the Icepi Zero the way Raspberry Pi draw a Zero, its GPIO header along the
   top and its connector edge at the bottom
+* Cynthion with its two Pmod hosts along the bottom
 """
 
 from __future__ import annotations
@@ -35,6 +36,9 @@ FEATURE_NUMBERS = {
     6: 'Expansion connector, first',
     7: 'Expansion connector, second',
     8: 'Expansion connector, third',
+    9: 'Third USB port',
+    10: 'Fourth USB port',
+    11: 'Status LEDs, driven by the debug controller',
 }
 
 
@@ -366,5 +370,85 @@ BOARDS['icepi-zero'] = BoardSpec(
         "The unfitted GPIO position is a Raspberry Pi 40-pin header: 1.00 mm holes on a 2.54 mm grid, with the Pi's 5 V, 3V3 and first GPIO pins in the Pi's places and pin 1 at (8.38, 25.23), in the row farther from the board edge.",
         'The two user buttons are on the underside, centred at (46.40, 15.45) and (46.40, 18.85); a plate under the board has to clear them.',
         'The board file has been re-annotated since the mass-production release. Nothing drawn here moved, but at d67bb758 the programming port is J5 and the user LEDs run D1 to D5 left to right; the designators here are the ones the sold boards were fabbed with.',
+    ),
+)
+
+BOARDS['cynthion'] = BoardSpec(
+    key='cynthion',
+    title='Cynthion',
+    subtitle='r1.4.0',
+    family="fpga",
+    front_edge='bottom',
+    outline=Outline(width=56.0, height=56.0,
+                    corner_radius=3.0, thickness=1.5584,
+                    edges=(
+                        ('line', 3.0, 0.0, 53.0, 0.0),
+                        ('line', 39.0, 56.0, 3.0, 56.0),
+                        ('line', 41.0, 55.0, 39.0, 56.0),
+                        ('line', 47.0, 55.0, 41.0, 55.0),
+                        ('line', 0.0, 53.0, 0.0, 3.0),
+                        ('line', 53.0, 56.0, 49.0, 56.0),
+                        ('line', 56.0, 3.0, 56.0, 53.0),
+                        ('line', 49.0, 56.0, 47.0, 55.0),
+                        ('arc', 56.0, 3.0, 53.0, 0.0, 3.0, 0, 0),
+                        ('arc', 3.0, 0.0, 0.0, 3.0, 3.0, 0, 0),
+                        ('arc', 0.0, 53.0, 3.0, 56.0, 3.0, 0, 0),
+                        ('arc', 53.0, 56.0, 56.0, 53.0, 3.0, 0, 0),
+                    )),
+    holes=(
+        Hole(x=3.0, y=3.0, dia=2.2, label='H1', kind='mount', keepout_dia=4.4),
+        Hole(x=3.0, y=53.0, dia=2.2, label='H2', kind='mount', keepout_dia=4.4),
+        Hole(x=53.0, y=53.0, dia=2.2, label='H3', kind='mount', keepout_dia=4.4),
+        Hole(x=53.0, y=3.0, dia=2.2, label='H4', kind='mount', keepout_dia=4.4),
+    ),
+    pmods=(
+        PmodHeader(key='pmod_a', label='Pmod A', designator='J7', edge='bottom',
+                   cx=16.57, cy=3.23, pin1_x=22.92, pin1_y=4.5,
+                   body_x0=8.95, body_y0=-8.07, body_x1=24.19, body_y1=4.5),
+        PmodHeader(key='pmod_b', label='Pmod B', designator='J8', edge='bottom',
+                   cx=39.43, cy=3.23, pin1_x=45.78, pin1_y=4.5,
+                   body_x0=31.81, body_y0=-8.07, body_x1=47.05, body_y1=4.5),
+    ),
+    features=(
+        Feature(key='usb_prog', label='USB-C J2, CONTROL port', kind='usb_power',
+                designator='J2', x0=-1.0, y0=31.53, x1=6.3, y1=40.47,
+                note='Fab-layer body outline, shell included.', number=1),
+        Feature(key='usb_second', label='USB-C J1, AUX port', kind='connector',
+                designator='J1', x0=-1.0, y0=6.53, x1=6.3, y1=15.47,
+                note='Fab-layer body outline, shell included.', number=2),
+        Feature(key='leds', label='User LEDs D2-D7, 6 on 3.00 mm pitch', kind='led',
+                designator='D2-D7', x0=9.77, y0=6.52, x1=26.23, y1=9.48,
+                note='D2 at the left-hand end; the FPGA drives them.', number=4),
+        Feature(key='usb_third', label='USB-C J4, TARGET C port', kind='connector',
+                designator='J4', x0=49.7, y0=6.53, x1=57.0, y1=15.47,
+                note='Fab-layer body outline, shell included.', number=9),
+        Feature(key='usb_fourth', label='USB-A J3, TARGET A port', kind='usb_a',
+                designator='J3', x0=45.515, y0=28.7, x1=56.875, y1=43.3,
+                note='Fab-layer body outline, shell included.', number=10),
+        Feature(key='status_leds', label='Status LEDs D10-D14, 5 on 3.00 mm pitch', kind='led',
+                designator='D10-D14', x0=5.27, y0=42.02, x1=18.73, y1=44.98,
+                note='D10 at the left-hand end; the debug controller drives them.', number=11),
+    ),
+    sources=(
+        Source(label='KiCad board file',
+               ref='https://github.com/greatscottgadgets/cynthion-hardware  cynthion.kicad_pcb @ 13aa71c2 (tag r1.4.0)',
+               note="title block: Cynthion rev 1.4.0, Copyright 2019-2024 Great Scott Gadgets, resolved from the project file's text variables at the same commit; Great Scott Gadgets."),
+        Source(label='Revision sold',
+               ref='https://github.com/greatscottgadgets/cynthion-hardware/releases/tag/r1.4.0',
+               note='the r1.4.0 release notes read "Initial production release."; it is the newest release and the tip of the repository, and no commit since has touched the board file.'),
+        Source(label='Licence',
+               ref='https://github.com/greatscottgadgets/cynthion-hardware/blob/r1.4.0/LICENSE',
+               note='CERN Open Hardware Licence Version 2 - Permissive, Copyright (c) 2019-2024 Great Scott Gadgets.'),
+        Source(label='Ports and indicators',
+               ref='https://cynthion.readthedocs.io/en/latest/hardware/device_overview.html',
+               note='names the four USB ports CONTROL, AUX, TARGET C and TARGET A, in that order; six user LEDs driven by the FPGA and five status LEDs driven by the debug microcontroller.'),
+    ),
+    notes=(
+        'Every dimension is read from the board file; Great Scott Gadgets publish no mechanical drawing. Hole IDs are the KiCad reference designators.',
+        'Schedule numbers 9, 10 and 11 were added to the family for this board. 1 to 8 mean what they mean on the other FPGA sheets, so the four USB ports read 1, 2, 9, 10.',
+        'No Ethernet jack.',
+        'Pmod A and B are right-angle sockets: the pin field is on the board and the housing hangs off the front edge, so a peripheral plugs in level with the board rather than standing up from it. The housings reach 8.07 mm past the edge, which the assembled envelope above does not count.',
+        "The board ships inside an enclosure. The outline drawn is the bare PCB's; the repository publishes no case dimensions.",
+        'Buttons PROGRAM and USER on the left edge and RESET on the right are not drawn. Each is a side-actuated tactile switch whose body reaches 2.5 mm beyond the board outline.',
     ),
 )
