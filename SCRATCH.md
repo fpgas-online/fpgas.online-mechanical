@@ -2111,8 +2111,10 @@ checks the fit never used, and they close on each other:
   and the boss whose diameter the other three fix reaches 88.00 mm, which is
   exactly the 85.00 + 3.00 Waveshare printed.
 
-The worst residual on any of those three is 0.12 mm, so the derived
-positions are quoted at +/-0.2. The socket's own moulding is read off the same image but off
+The worst residual on any of those three is 0.12 mm, the board's own width
+and height. The corner in the first of them is a fourth check, and the widest
+residual of the four at 0.23 mm, which is what the derived positions' +/-0.2
+is rounded from. The socket's own moulding is read off the same image but off
 a rectangle rather than a circle, and is quoted at +/-1 mm.
 
 Two things fall out that matter to whoever is cutting the plate. The card's far
