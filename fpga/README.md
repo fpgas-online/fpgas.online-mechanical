@@ -1,14 +1,14 @@
 # FPGA development boards
 
-Seven FPGA boards that turn up in the same racks as the Tiny Tapeout demo
+Eight FPGA boards that turn up in the same racks as the Tiny Tapeout demo
 boards, each drawn on its own sheet with its Pmod hosts, USB ports, Ethernet
 jack and user LEDs marked.
 
 | | |
 |---|---|
-| `boards.py` | **Generated.** Arty A7, ULX3S, PYNQ-Z2, ButterStick, Icepi Zero, Cynthion and Zybo Z7 |
+| `boards.py` | **Generated.** Arty A7, ULX3S, PYNQ-Z2, ButterStick, Icepi Zero, Cynthion, Zybo Z7 and Ultra96-V2 |
 | `extract.py` | Reads each board's own published source and writes `boards.py` |
-| `output/` | `FPGA-ARTY-A7`, `FPGA-ULX3S`, `FPGA-PYNQ-Z2`, `FPGA-BUTTERSTICK`, `FPGA-ICEPI-ZERO`, `FPGA-CYNTHION` and `FPGA-ZYBO-Z7`, as SVG and PDF, and `fpga-sheets.pdf`, the seven bound into one document |
+| `output/` | `FPGA-ARTY-A7`, `FPGA-ULX3S`, `FPGA-PYNQ-Z2`, `FPGA-BUTTERSTICK`, `FPGA-ICEPI-ZERO`, `FPGA-CYNTHION`, `FPGA-ZYBO-Z7` and `FPGA-ULTRA96-V2`, as SVG and PDF, and `fpga-sheets.pdf`, the eight bound into one document |
 
 ```sh
 tools/fetch_fpga.sh                                   # once, needs network
@@ -56,7 +56,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="output/zybo-z7.pdf"><img src="output/previews/zybo-z7.png" width="270" alt="FPGA-ZYBO-Z7 Digilent Zybo Z7"></a><br>
 <b>FPGA-ZYBO-Z7</b> Digilent Zybo Z7<br>Z7-10 and Z7-20
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="output/ultra96-v2.pdf"><img src="output/previews/ultra96-v2.png" width="270" alt="FPGA-ULTRA96-V2 Avnet Ultra96-V2"></a><br>
+<b>FPGA-ULTRA96-V2</b> Avnet Ultra96-V2<br>96Boards CE, 85 x 54 mm
+</td>
 <td width="33%"></td>
 </tr>
 </table>
@@ -141,6 +144,21 @@ and the sheet says which it was.
   the drawing says which board revision it is of, and its four sources are
   four vintages; what ties them together is that each is checked against the
   others on the board rather than on its date.
+
+- **Ultra96-V2**: Avnet's "Mechanical and Drill" plot, a vector PDF. Its
+  media box is cropped to the drawing, so the sheet frame and title block are
+  outside it and the only thing on it that can fix the scale is the board
+  outline; the scale is recovered from that, per axis, against the 96Boards
+  Consumer Edition 85 x 54 mm, and then checked -- the four mounting holes
+  land within 13 um of the specification's pattern and the two expansion
+  connectors come out on exactly 2.00 and 0.80 mm. What makes the plot
+  readable is that Altium wrote the pad designators into it as text, so
+  `PAJ501` on a pad says it is pin 1 of J5. There is no component body
+  outline anywhere on it, so every feature is a pad extent. **No Pmod and no
+  Ethernet**: expansion is the 96Boards 40-way low-speed and 60-way
+  high-speed connectors, and the only networking on the board is Wi-Fi and
+  Bluetooth. The hole diameter is the specification's M2.5, because the plot
+  draws each hole as a solid 5.0 mm disc -- the keepout -- and no drill.
 
 The PYNQ-Z1 was looked at and left out: Digilent's 3D model of it has no
 mounting holes and its outline disagrees with their own stated size.
