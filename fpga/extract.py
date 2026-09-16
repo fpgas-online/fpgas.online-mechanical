@@ -160,18 +160,8 @@ def number_features(key: str, features: list[dict]) -> None:
 
 def kicad_file(repo: str, commit: str, path: str, name: str) -> Path:
     """Check the board file out of the upstream clone at a pinned commit."""
-    WORK.mkdir(parents=True, exist_ok=True)
-    out = WORK / f"{name}.kicad_pcb"
-    if out.exists():
-        return out
-    clone = SRC / repo
-    if not clone.exists():
-        raise SystemExit(f"missing clone {clone}; run tools/fetch_fpga.sh")
-    blob = subprocess.run(
-        ["git", "-C", str(clone), "show", f"{commit}:{path}"],
-        capture_output=True, text=True, check=True).stdout
-    out.write_text(blob)
-    return out
+    return kicad_extract.pinned_board(SRC / repo, commit, path,
+                                      WORK / f"{name}.kicad_pcb")
 
 
 ULX3S_REPO = "https://github.com/emard/ulx3s"

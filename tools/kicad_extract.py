@@ -16,6 +16,30 @@ rounded to three decimals.
 from __future__ import annotations
 
 import math
+import subprocess
+from pathlib import Path
+
+
+def pinned_board(clone: Path, commit: str, path: str, out: Path) -> Path:
+    """Check *path* out of the upstream *clone* at *commit*, into *out*.
+
+    The board file is read at a pinned commit rather than at whatever the
+    clone's working tree happens to be on, so a sheet cites the exact
+    revision it was made from and a later upstream change cannot move a
+    dimension without the pin being moved on purpose.  Written once and
+    reused: the FPGA extractor reads ULX3S at four commits and this keeps
+    the checkouts beside each other under ``tmp/pcb``.
+    """
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if out.exists():
+        return out
+    if not clone.exists():
+        raise SystemExit(f"missing clone {clone}; run make fetch")
+    blob = subprocess.run(
+        ["git", "-C", str(clone), "show", f"{commit}:{path}"],
+        capture_output=True, text=True, check=True).stdout
+    out.write_text(blob)
+    return out
 
 
 def frame(board):
