@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """Generate ``fpga/boards.py`` from each FPGA board's own published source.
 
-Six boards, three kinds of source, one rule: the numbers are machine-read
+Seven boards, three kinds of source, one rule: the numbers are machine-read
 and the identification is hand-curated.
 
 ===========  =============================================================
 Arty A7      Digilent's mechanical drawing: a DXF for the outline, the
              through-hole pads and the connector slots, and the PDF plot
              beside it for the component bodies the DXF does not carry
+Zybo Z7      the same pair, read the same way, with Digilent's own STEP
+             assembly naming which of the plot's outlines is which
 ULX3S        the KiCad board file, at every tag Radiona sold boards from
 PYNQ-Z2      TUL's STEP assembly, the only machine-readable source
 ButterStick  the KiCad board file at the release that was sold
@@ -36,7 +38,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from tools import kicad_extract, kicad_pcb  # noqa: E402
-from tools.dump_rpi_pdf import rectangles  # noqa: E402
+from tools.dump_rpi_pdf import outlines, rectangles  # noqa: E402
 from tools.kicad_extract import one  # noqa: E402
 
 SRC = ROOT / "tmp" / "src"
@@ -1104,7 +1106,195 @@ def extract_pynq_z2() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Arty A7: Digilent's DXF and its PDF plot
+# Digilent: a mechanical drawing is a DXF and a PDF plot of the same board
+# ---------------------------------------------------------------------------
+#
+# Digilent publish the same pair for the Arty A7 and the Zybo Z7, out of the
+# same Altium job a day apart in September 2020, and the two are read the same
+# way.  The DXF carries the board edge, every plated hole and the shaped pads
+# of the connector shells, and not one component body; the PDF plot carries
+# the bodies and no pad data.  So the numbers a plate is built on come from
+# the DXF, the bodies from the plot, and the plot is checked against the DXF
+# wherever both have the same feature.  What differs between the two boards is
+# which hole means what, and that is each board's own table.
+
+
+def _digilent_dxf(key: str, path: Path):
+    """Board size, plated holes and shaped pads, in board millimetres.
+
+    Returns ``((width, height), circles, slots)``, where a circle is
+    ``(x, y, dia)`` and a slot the bounding box of a shaped pad.  Everything
+    is measured from the lower-left corner of the board edge.
+    """
+    import ezdxf
+    msp = ezdxf.readfile(str(path)).modelspace()
+    pads = [(e.dxf.center.x, e.dxf.center.y, 2 * e.dxf.radius)
+            for e in msp if e.dxftype() == "CIRCLE" and e.dxf.layer == "PadHoleLayer"]
+    shaped = []
+    for e in msp:
+        if e.dxftype() == "LWPOLYLINE" and e.dxf.layer == "PadHoleLayer":
+            pts = e.get_points("xy")
+            sx = [p[0] for p in pts]
+            sy = [p[1] for p in pts]
+            if max(sx) - min(sx) > 0.1 and max(sy) - min(sy) > 0.1:
+                shaped.append((min(sx), min(sy), max(sx), max(sy)))
+    x0, y0, x1, y1 = _digilent_edge(key, msp, [(p[0], p[1]) for p in pads])
+    circles = [(x - x0, y - y0, d) for x, y, d in pads]
+    slots = [(a - x0, b - y0, c - x0, d - y0) for a, b, c, d in shaped]
+    return (x1 - x0, y1 - y0), circles, slots
+
+
+def _digilent_edge(key: str, msp, holes):
+    """Where the board edge is, which the two drawings disagree about.
+
+    The Arty A7 has a ``KeepOutLayer`` holding the outline and nothing else,
+    so its extent is the board.  The Zybo Z7 drawing has no such layer: its
+    edge is on ``Mechanical1``, among the dimension lines, and is picked out
+    by what a board edge is and an extension line is not -- four whole
+    segments meeting at four corners, around every plated hole.
+    """
+    keep = [(e.dxf.start.x, e.dxf.start.y, e.dxf.end.x, e.dxf.end.y)
+            for e in msp if e.dxftype() == "LINE" and e.dxf.layer == "KeepOutLayer"]
+    if not keep:
+        lines = [(e.dxf.start.x, e.dxf.start.y, e.dxf.end.x, e.dxf.end.y)
+                 for e in msp if e.dxftype() == "LINE" and e.dxf.layer == "Mechanical1"]
+        return _closed_rectangle(key, lines, holes)
+    xs = [c for s in keep for c in (s[0], s[2])]
+    ys = [c for s in keep for c in (s[1], s[3])]
+    x0, y0, x1, y1 = min(xs), min(ys), max(xs), max(ys)
+    # Every keep-out line has to lie on the rectangle's boundary, or the
+    # layer holds something other than the outline.  The file carries about
+    # fifteen microns of unit-conversion noise on every coordinate.
+    for ax, ay, bx, by in keep:
+        on = all(abs(x - x0) < 1e-3 or abs(x - x1) < 1e-3
+                 or abs(y - y0) < 1e-3 or abs(y - y1) < 1e-3
+                 for x, y in ((ax, ay), (bx, by)))
+        if not on:
+            raise SystemExit(f"{key}: KeepOutLayer is not just the outline")
+    return x0, y0, x1, y1
+
+
+def _closed_rectangle(key: str, lines, holes):
+    """The smallest rectangle four whole segments close around every hole.
+
+    A mechanical layer is mostly dimension and extension lines, and those run
+    past whatever they measure, so their ends do not meet.  A board edge is
+    four segments whose ends do: each side is one segment, and the two
+    horizontals share their span with each other and with the ends of the two
+    verticals.  On the Zybo Z7 drawing exactly one such rectangle contains
+    every plated hole.
+    """
+    horizontal: dict[tuple[float, float], set[float]] = {}
+    vertical: dict[tuple[float, float], set[float]] = {}
+    for ax, ay, bx, by in lines:
+        span = (round(min(ax, bx), 3), round(max(ax, bx), 3))
+        rise = (round(min(ay, by), 3), round(max(ay, by), 3))
+        if span[1] - span[0] > 1e-3 and rise[1] - rise[0] < 1e-3:
+            horizontal.setdefault(span, set()).add(round(ay, 3))
+        elif rise[1] - rise[0] > 1e-3 and span[1] - span[0] < 1e-3:
+            vertical.setdefault(rise, set()).add(round(ax, 3))
+    best = None
+    for (x0, x1), ys in horizontal.items():
+        for y0 in sorted(ys):
+            for y1 in sorted(y for y in ys if y > y0):
+                sides = vertical.get((y0, y1), ())
+                if x0 not in sides or x1 not in sides:
+                    continue
+                if any(not (x0 <= x <= x1 and y0 <= y <= y1) for x, y in holes):
+                    continue
+                area = (x1 - x0) * (y1 - y0)
+                if best is None or area < best[0]:
+                    best = (area, (x0, y0, x1, y1))
+    if best is None:
+        raise SystemExit(f"{key}: no closed rectangle on Mechanical1 holds "
+                         "every plated hole, so the board edge is not there")
+    return best[1]
+
+
+def _digilent_plot(key: str, path: Path, width: float, height: float):
+    """Component outlines from the PDF plot, in board millimetres.
+
+    The plot's scale is taken from the board outline, per axis: the largest
+    closed rectangle on the page with the board's own aspect ratio is the
+    board, and it measures the DXF's size to within a quarter of a percent.
+    The axes are scaled separately because they disagree by that much, and
+    the result is checked against the DXF where the two overlap.
+
+    Bodies come back twice over: as the rectangles the plot closes, and as
+    the extent of each connected run of segments.  A Pmod socket is drawn
+    with a keying notch in both long edges and closes no rectangle at all,
+    and an LED body is drawn inside its own pads; the runs find both.  A run
+    over-reaches wherever a dimension's extension line starts on a body's own
+    corner, so the caller says which of the two it wants for each part.
+    """
+    import pdfplumber
+    page = pdfplumber.open(str(path)).pages[0]
+    raw = []
+    for obj in page.lines:
+        pts = obj["pts"]
+        for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+            raw.append((ax, page.height - ay, bx, page.height - by))
+    # Dimension extension lines run past the outline, so the outline is the
+    # largest closed rectangle on the page with the board's own aspect ratio.
+    boxes = [r for r in rectangles(raw)
+             if abs((r[2] - r[0]) / (r[3] - r[1]) / (width / height) - 1) < 0.01]
+    if not boxes:
+        raise SystemExit(f"{key}: could not find the board outline in the PDF")
+    x_lo, y_lo, x_hi, y_hi = max(boxes, key=lambda r: (r[2] - r[0]) * (r[3] - r[1]))
+    sx = width / (x_hi - x_lo)
+    sy = height / (y_hi - y_lo)
+    if abs(sx / sy - 1.0) > 0.005:
+        raise SystemExit(f"{key}: PDF axes disagree by {sx / sy:.4f}")
+    segs = [((s[0] - x_lo) * sx, (s[1] - y_lo) * sy,
+             (s[2] - x_lo) * sx, (s[3] - y_lo) * sy) for s in raw]
+    return rectangles(segs), outlines(segs), sx / sy
+
+
+def _pick(shapes, key, centre, size, tol_pos=0.6, tol_size=0.4):
+    cx, cy = centre
+    w, h = size
+    hits = [r for r in shapes
+            if abs((r[0] + r[2]) / 2 - cx) < tol_pos
+            and abs((r[1] + r[3]) / 2 - cy) < tol_pos
+            and abs((r[2] - r[0]) - w) < tol_size
+            and abs((r[3] - r[1]) - h) < tol_size]
+    if not hits:
+        raise SystemExit(f"{key}: no outline near {centre} sized {size}")
+    # The largest of the near-identical readings: a body drawn with tabs or
+    # a shell is bounded by its outermost lines.
+    hits.sort(key=lambda r: -((r[2] - r[0]) * (r[3] - r[1])))
+    return tuple(round(v, 3) for v in hits[0])
+
+
+def _pin_fields(points, reach: float = 2.7):
+    """Split plated-hole centres into the groups a connector's pins form.
+
+    Two holes belong to the same connector if they are within one pin pitch
+    of each other on both axes; the groups of twelve are the 2x6 hosts.
+    """
+    parent = list(range(len(points)))
+
+    def root(i: int) -> int:
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    for i, a in enumerate(points):
+        for j, b in enumerate(points[i + 1:], i + 1):
+            if abs(a[0] - b[0]) <= reach and abs(a[1] - b[1]) <= reach:
+                ra, rb = root(i), root(j)
+                if ra != rb:
+                    parent[ra] = rb
+    groups: dict[int, list] = {}
+    for i, p in enumerate(points):
+        groups.setdefault(root(i), []).append(p)
+    return sorted(groups.values(), key=lambda g: (min(p[1] for p in g),
+                                                  min(p[0] for p in g)))
+
+
+# ---------------------------------------------------------------------------
+# Arty A7
 # ---------------------------------------------------------------------------
 
 ARTY_DIR = SRC / "arty_a7" / "mechanical_drawing" / "Arty A7"
@@ -1130,91 +1320,12 @@ ARTY_LED_ROWS = {
 ARTY_LED_X = [9.017 + n * 6.985 for n in range(4)]
 
 
-def _arty_dxf():
-    import ezdxf
-    doc = ezdxf.readfile(str(ARTY_DXF))
-    msp = doc.modelspace()
-    keep = [(e.dxf.start.x, e.dxf.start.y, e.dxf.end.x, e.dxf.end.y)
-            for e in msp if e.dxftype() == "LINE" and e.dxf.layer == "KeepOutLayer"]
-    xs = [c for s in keep for c in (s[0], s[2])]
-    ys = [c for s in keep for c in (s[1], s[3])]
-    x0, y0, x1, y1 = min(xs), min(ys), max(xs), max(ys)
-    # Every keep-out line has to lie on the rectangle's boundary, or the
-    # layer holds something other than the outline.  The file carries about
-    # fifteen microns of unit-conversion noise on every coordinate.
-    for ax, ay, bx, by in keep:
-        on = all(abs(x - x0) < 1e-3 or abs(x - x1) < 1e-3
-                 or abs(y - y0) < 1e-3 or abs(y - y1) < 1e-3
-                 for x, y in ((ax, ay), (bx, by)))
-        if not on:
-            raise SystemExit("arty-a7: KeepOutLayer is not just the outline")
-    circles = [(e.dxf.center.x - x0, e.dxf.center.y - y0, 2 * e.dxf.radius)
-               for e in msp if e.dxftype() == "CIRCLE" and e.dxf.layer == "PadHoleLayer"]
-    slots = []
-    for e in msp:
-        if e.dxftype() == "LWPOLYLINE" and e.dxf.layer == "PadHoleLayer":
-            pts = [(p[0] - x0, p[1] - y0) for p in e.get_points("xy")]
-            sx = [p[0] for p in pts]
-            sy = [p[1] for p in pts]
-            if max(sx) - min(sx) > 0.1 and max(sy) - min(sy) > 0.1:
-                slots.append((min(sx), min(sy), max(sx), max(sy)))
-    return (x1 - x0, y1 - y0), circles, slots
-
-
-def _arty_pdf(width: float, height: float):
-    """Component outlines from the PDF plot, in board millimetres.
-
-    The plot's scale is taken from the board outline, per axis: the two
-    longest horizontal and vertical lines on the page are the outline, and
-    they measure the DXF's 109.0 x 87.0 to within a quarter of a percent.
-    The axes are scaled separately because they disagree by that much, and
-    the result is checked against the DXF where the two overlap.
-    """
-    import pdfplumber
-    page = pdfplumber.open(str(ARTY_PDF)).pages[0]
-    raw = []
-    for obj in page.lines:
-        pts = obj["pts"]
-        for (ax, ay), (bx, by) in zip(pts, pts[1:]):
-            raw.append((ax, page.height - ay, bx, page.height - by))
-    # Dimension extension lines run past the outline, so the outline is the
-    # largest closed rectangle on the page with the board's own aspect ratio.
-    boxes = [r for r in rectangles(raw)
-             if abs((r[2] - r[0]) / (r[3] - r[1]) / (width / height) - 1) < 0.01]
-    if not boxes:
-        raise SystemExit("arty-a7: could not find the board outline in the PDF")
-    x_lo, y_lo, x_hi, y_hi = max(boxes, key=lambda r: (r[2] - r[0]) * (r[3] - r[1]))
-    sx = width / (x_hi - x_lo)
-    sy = height / (y_hi - y_lo)
-    if abs(sx / sy - 1.0) > 0.005:
-        raise SystemExit(f"arty-a7: PDF axes disagree by {sx / sy:.4f}")
-    segs = [((s[0] - x_lo) * sx, (s[1] - y_lo) * sy,
-             (s[2] - x_lo) * sx, (s[3] - y_lo) * sy) for s in raw]
-    return rectangles(segs), sx / sy
-
-
-def _pick(rects, key, centre, size, tol_pos=0.6, tol_size=0.4):
-    cx, cy = centre
-    w, h = size
-    hits = [r for r in rects
-            if abs((r[0] + r[2]) / 2 - cx) < tol_pos
-            and abs((r[1] + r[3]) / 2 - cy) < tol_pos
-            and abs((r[2] - r[0]) - w) < tol_size
-            and abs((r[3] - r[1]) - h) < tol_size]
-    if not hits:
-        raise SystemExit(f"arty-a7 {key}: no outline near {centre} sized {size}")
-    # The largest of the near-identical readings: a body drawn with tabs or
-    # a shell is bounded by its outermost lines.
-    hits.sort(key=lambda r: -((r[2] - r[0]) * (r[3] - r[1])))
-    return tuple(round(v, 3) for v in hits[0])
-
-
 def extract_arty() -> dict:
     if not ARTY_DXF.exists():
         raise SystemExit(f"missing {ARTY_DXF}; run tools/fetch_fpga.sh")
     key = "arty-a7"
-    (w, h), circles, slots = _arty_dxf()
-    rects, aniso = _arty_pdf(w, h)
+    (w, h), circles, slots = _digilent_dxf(key, ARTY_DXF)
+    rects, _, aniso = _digilent_plot(key, ARTY_PDF, w, h)
 
     # Pmod pin fields: the 1.067 mm pad holes within 15 mm of the top edge,
     # split into groups along x.
@@ -1234,7 +1345,7 @@ def extract_arty() -> dict:
         cx = (min(p[0] for p in g) + max(p[0] for p in g)) / 2
         ys = sorted({p[1] for p in g})
         row_gap = ys[-1] - ys[0]
-        body = _pick(rects, f"pmod {label}", (cx, h - 6.8), (15.24, 13.56),
+        body = _pick(rects, f"{key} pmod {label}", (cx, h - 6.8), (15.24, 13.56),
                      tol_pos=1.0)
         # The plot and the drawing have to agree on where the host is.
         if abs((body[0] + body[2]) / 2 - cx) > 0.1:
@@ -1251,7 +1362,7 @@ def extract_arty() -> dict:
     if len(pegs) != 2:
         raise SystemExit(f"{key}: {len(pegs)} RJ45 pegs, not 2")
     rj_cy = sum(p[1] for p in pegs) / 2
-    rj = _pick(rects, "rj45", (13.0, rj_cy), (26.3, 18.8), tol_pos=1.0)
+    rj = _pick(rects, f"{key} rj45", (13.0, rj_cy), (26.3, 18.8), tol_pos=1.0)
     if abs((rj[1] + rj[3]) / 2 - rj_cy) > 0.1:
         raise SystemExit(f"{key}: PDF RJ45 body is off the DXF pegs")
     # Micro-USB: the two shell slots in the DXF give its centre line.
@@ -1261,7 +1372,7 @@ def extract_arty() -> dict:
     if len(usb_slots) != 2:
         raise SystemExit(f"{key}: {len(usb_slots)} USB shell slots, not 2")
     usb_cy = sum((s[1] + s[3]) / 2 for s in usb_slots) / 2
-    usb = _pick(rects, "usb", (2.0, usb_cy), (5.2, 7.4), tol_pos=1.0)
+    usb = _pick(rects, f"{key} usb", (2.0, usb_cy), (5.2, 7.4), tol_pos=1.0)
     if abs((usb[1] + usb[3]) / 2 - usb_cy) > 0.1:
         raise SystemExit(f"{key}: PDF USB body is off the DXF slots")
 
@@ -1278,7 +1389,7 @@ def extract_arty() -> dict:
                   "DXF's locating pegs."),
     ]
     for key_, (row_y, size) in ARTY_LED_ROWS.items():
-        boxes = [_pick(rects, f"{key_} {n}", (x, row_y), size, tol_pos=0.5,
+        boxes = [_pick(rects, f"{key} {key_} {n}", (x, row_y), size, tol_pos=0.5,
                        tol_size=0.3) for n, x in enumerate(ARTY_LED_X)]
         label = "Tri-colour LEDs LD0-LD3" if key_ == "rgb_leds" else "LEDs LD4-LD7"
         features.append(row_feature(
@@ -1325,6 +1436,256 @@ def extract_arty() -> dict:
             "source names them.",
             "Bodies read from the PDF plot are good to about +/-0.3 mm; the "
             "DXF figures carry the general tolerance.",
+        ],
+    )
+
+
+# ---------------------------------------------------------------------------
+# Zybo Z7
+# ---------------------------------------------------------------------------
+
+ZYBO_DIR = SRC / "zybo_z7" / "mechanical_drawing" / "ZYBO_Z7"
+ZYBO_DXF = ZYBO_DIR / "ZYBO_Z7_DXF.DXF"
+ZYBO_PDF = ZYBO_DIR / "Mechanical_ZYBO_Z7.pdf"
+ZYBO_ZIP = ("https://digilent.com/reference/_media/reference/"
+            "programmable-logic/zybo-z7/zybo_z7_dimensions.zip")
+ZYBO_STEP = ("https://files.digilent.com/resources/programmable-logic/"
+             "zybo-z7/Zybo_Z7.step")
+ZYBO_SCH = ("https://files.digilent.com/resources/programmable-logic/"
+            "zybo-z7/zybo-z7-d1-sch.pdf")
+ZYBO_RC = "https://digilent.com/reference/programmable-logic/zybo-z7/start"
+ZYBO_RM = ("https://digilent.com/reference/_media/reference/"
+           "programmable-logic/zybo-z7/zybo-z7_rm.pdf")
+
+#: Where Digilent's own 3D model puts each part this sheet draws, as the box
+#: the plot's outlines are matched against.
+#:
+#: Nothing in the drawing names anything: the DXF has holes and the plot has
+#: bodies, and neither says which connector is which.  The STEP assembly does
+#: -- every solid in it carries its reference designator -- and it is placed
+#: in the same frame as the DXF, origin on the board's lower-left corner, so
+#: its boxes can be used directly.  They identify; the drawing measures.
+#:
+#: Six Pmod hosts: four along the lower edge, the XADC host JA on the right
+#: and the MIO host JF on the left.  ``edge`` is the board edge each faces,
+#: which fixes where pin 1 is; Digilent's own top view of the board shows
+#: 3V3 and GND silkscreened at the far end of every one of them, which is
+#: where the Pmod convention this family follows puts pins 5 and 6.
+ZYBO_HOSTS = [
+    ("JA", "right", (110.58, 8.98, 115.62, 24.22)),
+    ("JB", "bottom", (87.88, 6.33, 103.12, 11.37)),
+    ("JC", "bottom", (64.88, 6.33, 80.12, 11.37)),
+    ("JD", "bottom", (41.88, 6.33, 57.12, 11.37)),
+    ("JE", "bottom", (18.88, 6.33, 34.12, 11.37)),
+    ("JF", "left", (6.33, 28.38, 11.37, 43.62)),
+]
+
+#: The same, for the LEDs the sheet marks: the four user LEDs in a row above
+#: the slide switches, and the two tri-colour ones beside the push buttons.
+#: The model's designators are the silkscreen's -- LD3 to LD0 read left to
+#: right, LD6 then LD5 -- which Digilent's top view confirms.
+ZYBO_LED_ROWS = {
+    "leds": ("LEDs LD0-LD3", "LD0-LD3",
+             ((42.64, 29.84, 44.36, 30.76), (35.64, 29.84, 37.36, 30.76),
+              (28.64, 29.84, 30.36, 30.76), (21.64, 29.84, 23.36, 30.76))),
+    "rgb_leds": ("Tri-colour LEDs LD5 and LD6", "LD5, LD6",
+                 ((85.50, 29.30, 87.10, 30.90), (79.00, 29.30, 80.60, 30.90))),
+}
+
+#: And for the three connectors the sheet marks: the micro-USB the board is
+#: programmed through, the USB type A host port and the Ethernet jack.
+ZYBO_BODIES = {
+    "usb_prog": ("J12", (-0.499, 49.751, 5.399, 57.749)),
+    "usb_second": ("J11", (0.200, 9.440, 14.800, 24.040)),
+    "ethernet": ("J3", (23.626, 62.172, 39.374, 83.762)),
+}
+
+#: Bare PCB thickness, the Zybo Z7 model's slab.  The drawing gives a plan
+#: view only and says nothing about thickness.
+ZYBO_THICKNESS = 1.571
+
+
+def _centre(box) -> tuple[float, float]:
+    return (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+
+
+def _size(box) -> tuple[float, float]:
+    return box[2] - box[0], box[3] - box[1]
+
+
+def extract_zybo_z7() -> dict:
+    if not ZYBO_DXF.exists():
+        raise SystemExit(f"missing {ZYBO_DXF}; run tools/fetch_fpga.sh")
+    key = "zybo-z7"
+    (w, h), circles, slots = _digilent_dxf(key, ZYBO_DXF)
+    rects, blobs, aniso = _digilent_plot(key, ZYBO_PDF, w, h)
+
+    # The 3.658 mm holes, one in from each corner, are the mounting holes and
+    # the only holes of that size on the board.
+    holes = [dict(x=round(x, 3), y=round(y, 3), dia=round(d, 3), kind="mount",
+                  keepout_dia=None)
+             for x, y, d in circles if abs(d - 3.658) < 0.01]
+    if len(holes) != 4:
+        raise SystemExit(f"{key}: {len(holes)} holes of 3.658 mm, not 4")
+    holes.sort(key=lambda hole: (hole["y"], hole["x"]))
+    for i, hole in enumerate(holes, 1):
+        hole["label"] = f"MT{i}"
+
+    # Every 2x6 field of 1.067 mm pin holes, found in the drawing rather than
+    # looked for where the model says: a seventh host would fail here rather
+    # than be quietly left off the sheet.
+    pins = sorted((x, y) for x, y, d in circles if abs(d - 1.067) < 0.01)
+    fields = [g for g in _pin_fields(pins) if len(g) == PMOD_COLUMNS * PMOD_ROWS]
+    if len(fields) != len(ZYBO_HOSTS):
+        raise SystemExit(f"{key}: found {len(fields)} Pmod pin fields, not "
+                         f"{len(ZYBO_HOSTS)}")
+    pmods = []
+    row_gap = None
+    for designator, edge, box in ZYBO_HOSTS:
+        mine = [g for g in fields
+                if all(box[0] <= p[0] <= box[2] and box[1] <= p[1] <= box[3]
+                       for p in g)]
+        if len(mine) != 1:
+            raise SystemExit(f"{key}: {len(mine)} pin fields inside the "
+                             f"model's box for {designator}")
+        field = mine[0]
+        cx = (min(p[0] for p in field) + max(p[0] for p in field)) / 2
+        cy = (min(p[1] for p in field) + max(p[1] for p in field)) / 2
+        across = sorted({p[1] if edge in ("bottom", "top") else p[0]
+                         for p in field})
+        row_gap = across[-1] - across[0]
+        # The socket is drawn with a keying notch in both long edges, so it
+        # closes no rectangle; the run of segments is its outline.
+        body = _pick(blobs, f"{key} pmod {designator}", (cx, cy), _size(box),
+                     tol_pos=0.3, tol_size=0.2)
+        # The plot and the drawing have to agree on where the host sits along
+        # its own edge, which is the coordinate a mating peripheral cares
+        # about and the one the sheet dimensions.
+        i = 0 if edge in ("bottom", "top") else 1
+        if abs(_centre(body)[i] - (cx, cy)[i]) > 0.1:
+            raise SystemExit(f"{key}: the plot's body of {designator} is off "
+                             "its DXF pin field")
+        pmods.append(pmod_from_pins(
+            field, key=f"pmod_{designator.lower()}", label=designator,
+            designator=designator, edge=edge, body=body))
+
+    # The RJ45 J3: the two 3.25 mm locating pegs fix its centre line on the
+    # DXF, and the plot's body has to sit on them.
+    box = ZYBO_BODIES["ethernet"][1]
+    pegs = [(x, y) for x, y, d in circles if abs(d - 3.25) < 0.01]
+    if len(pegs) != 2:
+        raise SystemExit(f"{key}: {len(pegs)} RJ45 pegs, not 2")
+    peg_cx = sum(p[0] for p in pegs) / 2
+    rj = _pick(blobs, f"{key} rj45", _centre(box), _size(box),
+               tol_pos=0.3, tol_size=0.2)
+    if abs(_centre(rj)[0] - peg_cx) > 0.1:
+        raise SystemExit(f"{key}: the plot's RJ45 body is off the DXF pegs")
+
+    # The micro-USB J12: its four shaped shell pads fix its centre line, the
+    # way the Arty A7's two shell slots do.
+    box = ZYBO_BODIES["usb_prog"][1]
+    shell = [s for s in slots
+             if box[0] <= _centre(s)[0] <= box[2]
+             and box[1] <= _centre(s)[1] <= box[3]]
+    if len(shell) != 4:
+        raise SystemExit(f"{key}: {len(shell)} micro-USB shell pads, not 4")
+    shell_cy = sum(_centre(s)[1] for s in shell) / len(shell)
+    usb = _pick(blobs, f"{key} micro-usb", _centre(box), _size(box),
+                tol_pos=0.3, tol_size=0.2)
+    if abs(_centre(usb)[1] - shell_cy) > 0.1:
+        raise SystemExit(f"{key}: the plot's micro-USB body is off its pads")
+
+    # The USB-A J11: its two 2.4 mm shield-leg holes fix its centre line.
+    # This one body is read from the plot's rectangles rather than its runs,
+    # because a dimension's extension line leaves the connector's own front
+    # corner and carries the run 1.5 mm past the back of the shell.
+    box = ZYBO_BODIES["usb_second"][1]
+    legs = [(x, y) for x, y, d in circles if abs(d - 2.4) < 0.01]
+    if len(legs) != 2:
+        raise SystemExit(f"{key}: {len(legs)} USB-A shield legs, not 2")
+    leg_cy = sum(p[1] for p in legs) / 2
+    usba = _pick(rects, f"{key} usb-a", _centre(box), _size(box),
+                 tol_pos=0.3, tol_size=0.3)
+    if abs(_centre(usba)[1] - leg_cy) > 0.1:
+        raise SystemExit(f"{key}: the plot's USB-A body is off its shield legs")
+
+    features = [
+        dict(key="usb_prog", kind="usb_power",
+             designator=ZYBO_BODIES["usb_prog"][0],
+             label="micro-USB J12, programming and console",
+             x0=usb[0], y0=usb[1], x1=usb[2], y1=usb[3],
+             note="Shell outline from the PDF plot; centre line from the "
+                  "DXF's shell pads."),
+        dict(key="usb_second", kind="usb_a",
+             designator=ZYBO_BODIES["usb_second"][0],
+             label="USB type A host port J11",
+             x0=usba[0], y0=usba[1], x1=usba[2], y1=usba[3],
+             note="Body outline from the PDF plot; centre line from the "
+                  "DXF's shield-leg holes."),
+        dict(key="ethernet", kind="ethernet",
+             designator=ZYBO_BODIES["ethernet"][0],
+             label="Ethernet RJ45 J3",
+             x0=rj[0], y0=rj[1], x1=rj[2], y1=rj[3],
+             note="Body outline from the PDF plot; centre line from the "
+                  "DXF's locating pegs."),
+    ]
+    for key_, (label, designator, boxes) in ZYBO_LED_ROWS.items():
+        bodies = [_pick(blobs, f"{key} {key_} {n}", _centre(b), _size(b),
+                        tol_pos=0.3, tol_size=0.3)
+                  for n, b in enumerate(boxes)]
+        features.append(row_feature(
+            bodies, key=key_, label=label, kind="led", designator=designator,
+            note="Bodies from the PDF plot; which LED is which from the 3D "
+                 "model's designators."))
+    number_features(key, features)
+    return dict(
+        key=key, title="Digilent Zybo Z7", subtitle="Z7-10 and Z7-20",
+        front_edge="bottom", thickness=ZYBO_THICKNESS,
+        width=round(w, 3), height=round(h, 3), corner_radius=0.0,
+        edges=[("line", 0.0, 0.0, round(w, 3), 0.0),
+               ("line", round(w, 3), 0.0, round(w, 3), round(h, 3)),
+               ("line", round(w, 3), round(h, 3), 0.0, round(h, 3)),
+               ("line", 0.0, round(h, 3), 0.0, 0.0)],
+        holes=holes, pmods=pmods, features=features,
+        sources=[
+            ("Mechanical drawing", ZYBO_ZIP,
+             'Digilent, "Zybo Z7 Mechanical Drawings", dated 2020-09-03. '
+             "Edge, holes, pin fields, pegs and shell pads from the DXF; "
+             "bodies from the PDF plot, its scale recovered from the "
+             f"outline per axis (the two agree to {abs(aniso - 1) * 100:.2f} %)."),
+            ("3D model", ZYBO_STEP,
+             "Digilent, Zybo_Z7.step, in the drawing's frame: its "
+             "solids carry the designators, so they name the plot's "
+             f"outlines. Laminate {ZYBO_THICKNESS} mm."),
+            ("Reference manual", ZYBO_RM,
+             "Revised 2018-02-21, section 16: JA is the XADC port, JB, JC "
+             "and JD high-speed, JE standard, JF the MIO port; four user "
+             'LEDs, and "the Zybo Z7-10 only has one tri-color LED".'),
+            ("Schematic", ZYBO_SCH,
+             'Revision D.1: J12 is the micro-USB PROG/UART port, J11 the '
+             '"USB A" host and J10 a "USB Micro AB" beneath it.'),
+            # One citation, not two: the board size and the photograph are
+            # both on the Resource Center page, and this sheet is the fullest
+            # in the repository -- with the two spelled out separately its
+            # notes band wants 52 mm of the annotation column and has 45, so
+            # the sheet cannot be drawn at all.
+            ("Resource Center", ZYBO_RC,
+             'Physical, quoted: "Width 3.3 in (88 mm)" and "Length 4.8 in '
+             '(122 mm)"; the drawing gives 121.92 x 83.82, exactly 4.8 x '
+             "3.3 in. Its top view of the board has 3V3 and GND "
+             "silkscreened at each host's end farthest from pin 1."),
+        ],
+        notes=[
+            "Hole IDs are assigned by this drawing; the DXF names nothing.",
+            f"Pin rows {row_gap:.2f} mm apart on the drawing, not 2.54. "
+            "The four lower-edge hosts are on 23.00 mm, not the Pmod "
+            "specification's 22.86 (0.90 in).",
+            "Drawn fully fitted, as the Zybo Z7-20; the Zybo Z7-10 leaves "
+            "Pmod JB and one tri-colour LED unfitted. The board is the same.",
+            "J10, a micro-AB USB socket UNDER J11, hangs 2.7 mm below the "
+            "board. HDMI, audio, Pcam, microSD, the power jack and the "
+            "external JTAG header are not marked.",
+            "Bodies read from the PDF plot are good to about +/-0.3 mm.",
         ],
     )
 
@@ -1437,7 +1798,7 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
 def main() -> None:
     records = [extract_arty(), extract_ulx3s(), extract_pynq_z2(),
                extract_butterstick(), extract_icepi_zero(),
-               extract_cynthion()]
+               extract_cynthion(), extract_zybo_z7()]
     numbers = "{\n" + "".join(
         f"    {i}: {FEATURE_NAMES[key]!r},\n"
         for i, key in enumerate(FEATURE_ORDER, 1)) + "}"

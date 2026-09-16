@@ -121,6 +121,50 @@ def rectangles(segments):
     return sorted(rects)
 
 
+def outlines(segments):
+    """Bounding box of every connected run of segments.
+
+    A body whose outline is not an axis-aligned rectangle never closes as one,
+    so :func:`rectangles` cannot see it at all.  Digilent's Zybo Z7 plot draws
+    each Pmod socket as a rectangle with a keying notch cut into both long
+    edges, and its four 2x6 hosts along the lower edge are invisible to the
+    rectangle matcher.  Walking the segment graph instead costs nothing extra
+    and finds any closed body, whatever shape it is drawn as; what it gives
+    back is the extent of the run, which for a connector outline is the body.
+
+    Endpoints are snapped to a ``TOL`` grid before they are joined, because a
+    plot carries a few microns of rounding on every coordinate and two runs
+    that touch have to come back as one.
+    """
+    adjacent = defaultdict(set)
+    corners = defaultdict(list)
+    for x0, y0, x1, y1 in segments:
+        a = (round(x0 / TOL), round(y0 / TOL))
+        b = (round(x1 / TOL), round(y1 / TOL))
+        corners[a].append((x0, y0))
+        corners[b].append((x1, y1))
+        adjacent[a].add(b)
+        adjacent[b].add(a)
+
+    found, seen = [], set()
+    for start in adjacent:
+        if start in seen:
+            continue
+        seen.add(start)
+        stack, run = [start], []
+        while stack:
+            node = stack.pop()
+            run.append(node)
+            for other in adjacent[node]:
+                if other not in seen:
+                    seen.add(other)
+                    stack.append(other)
+        pts = [p for node in run for p in corners[node]]
+        found.append((min(p[0] for p in pts), min(p[1] for p in pts),
+                      max(p[0] for p in pts), max(p[1] for p in pts)))
+    return sorted(found)
+
+
 def _merge_collinear(lines):
     """Join segments that lie on the same line and touch or overlap.
 

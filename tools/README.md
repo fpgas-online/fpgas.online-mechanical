@@ -28,7 +28,7 @@ Imported, not run.
 | | |
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's mechanical drawings into `tmp/` |
-| `fetch_fpga.sh` | Clones the ULX3S, ButterStick, Icepi Zero and Cynthion repositories and downloads the Arty A7 drawing and the PYNQ-Z2 model into `tmp/` |
+| `fetch_fpga.sh` | Clones the ULX3S, ButterStick, Icepi Zero and Cynthion repositories and downloads the Arty A7 and Zybo Z7 drawings and the PYNQ-Z2 model into `tmp/` |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the three A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
 
@@ -121,5 +121,5 @@ were arrived at and how a disputed one would be checked again. Not run by
 | | |
 |---|---|
 | `dump_rpi_dxf.py` | Dumps the mechanical features of a Raspberry Pi DXF, layer by layer |
-| `dump_rpi_pdf.py` | Dumps features from the Pi 5's vector PDF, recovering the plot scale; its rectangle recovery also serves the Arty A7 plot |
+| `dump_rpi_pdf.py` | Dumps features from the Pi 5's vector PDF, recovering the plot scale; its rectangle recovery also serves the Arty A7 plot, and its segment-run recovery the Zybo Z7's notched Pmod sockets |
 | `plot_pcb_check.py` | Sanity plot of an extracted `.kicad_pcb` |
