@@ -3,7 +3,7 @@
 <rect width="100%" height="100%" fill="#ffffff"/>
 
 <text x="10" y="12.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">DRILL TEMPLATE - MOUNTING PLATE</text>
-<text x="200" y="12.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">TT-MP-03    v0.0-128-g69f311f    A4 PORTRAIT    SCALE 1:1</text>
+<text x="200" y="12.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">TT-MP-03    v0.0-129-g83acf9e    A4 PORTRAIT    SCALE 1:1</text>
 <text x="10" y="17.8" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Tiny Tapeout generic mounting plate: outline, board fastener holes, slots and plate fixings</text>
 <rect x="10" y="21.4" width="190" height="11" fill="none" stroke="#000000" stroke-width="0.7"/>
 <text x="105" y="29.4" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="middle" font-weight="bold">PRINT AT 100 %   -   DO NOT FIT TO PAGE</text>
