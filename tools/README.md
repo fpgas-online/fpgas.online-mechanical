@@ -41,7 +41,7 @@ The extractors are not here. Each lives with its subject:
 ## Checks
 
 Each has caught a real defect. `make check` runs all but `crosscheck_gerber.py`,
-which needs network. A sixth, `verify.py`, is specific to the mounting plate
+which needs network. A seventh, `verify.py`, is specific to the mounting plate
 and lives with it.
 
 - **`check_sheets.py`** re-reads the generated SVGs, recomputes every text
@@ -70,6 +70,20 @@ and lives with it.
   witness line. It found that a Pmod host's two-letter label was reserving the
   whole height of its pin field, which walled off the diagonal every leader
   from the lower-left corner of a Raspberry Pi wanted to take.
+
+- **`check_leader_arrows.py`** reads the finished SVGs back and reports every
+  balloon leader ruled through a dimension arrowhead, testing segment against
+  triangle rather than sampling. A leader across a dimension *line* is
+  ordinary and the placer allows it; a leader through the solid triangle at
+  its end is not. It found one, on the sheet being added at the time, which
+  reserving the overall dimensions' arrowheads fixed. What a leader is comes
+  off the sheet -- a line in a balloon ring's colour with an end on that ring
+  -- because one fixed colour sees none of RPI-ALL's eight
+  leaders, whose balloons wear their model's colour, and sees the Pmod
+  pin-row centre line, which wears the balloon colour and lies along the
+  dimension that measures to it, as four more. It says how many leaders it
+  examined as well as how many were through an arrowhead, because a rule that
+  finds no leaders on a sheet otherwise reports it clean.
 
 - **`check_drill_template.py`** measures the drill template PDFs instead of
   trusting them. It reads each page back, finds every hole as a circle, and
