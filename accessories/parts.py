@@ -163,6 +163,54 @@ PMOD_HAT = BoardSpec(
     tolerance=f"HAT spec outline; hosts DERIVED +/-{PMOD_HAT_TOL}, see notes",
 )
 
+#: The adapter's pin map, from the "Pmod Pinout Table" of Digilent's
+#: reference manual, which says it applies to Revision B of the board.  Each
+#: port's Pmod pin -> (Raspberry Pi 40-pin header pin, the manual's name for
+#: it).  Pins 5 and 11 of every port are ground and 6 and 12 the 3V3 rail,
+#: which the manual states in prose under the table rather than in it.  Not
+#: machine-read: Digilent publish no board file, and the page is behind a
+#: bot check, so the table was transcribed by hand and is cited on the
+#: comparison page it feeds.
+PMOD_HAT_PINS: dict[str, dict[int, tuple[int, str]]] = {
+    "JA": {1: (24, "SPI0_CE0/GPIO08"), 2: (19, "SPI0_MOSI/GPIO10"),
+           3: (21, "SPI0_MISO/GPIO09"), 4: (23, "SPI0_CLK/GPIO11"),
+           7: (35, "PCM_FS/GPIO19/PWM1"), 8: (40, "PCM_DOUT/GPIO21/GPCLK1"),
+           9: (38, "PCM_DIN/GPIO20/GPCLK0"), 10: (12, "PCM_CLK/GPIO18/PWM0")},
+    "JB": {1: (26, "SPI0_CE1/GPIO07"), 2: (19, "SPI0_MOSI/GPIO10"),
+           3: (21, "SPI0_MISO/GPIO09"), 4: (23, "SPI0_CLK/GPIO11"),
+           7: (37, "GPIO26"), 8: (33, "PWM1/GPIO13"),
+           9: (5, "SCL1/GPIO03"), 10: (3, "SDA1/GPIO02")},
+    "JC": {1: (36, "CTS0/GPIO16"), 2: (8, "TXD0/GPIO14"),
+           3: (10, "RXD0/GPIO15"), 4: (11, "RTS0/GPIO17"),
+           7: (7, "GPCLK0/GPIO04"), 8: (32, "PWM0/GPIO12"),
+           9: (29, "GPCLK1/GPIO05"), 10: (31, "GPCLK2/GPIO06")},
+}
+
+#: The five GPIOs the manual says the adapter leaves free, quoted: "five
+#: GPIO pins (GPIO22, GPIO23, GPIO24, GPIO25, and GPIO27) are unused by the
+#: Pmod HAT Adapter."  Checked against the table above at import.
+PMOD_HAT_UNUSED_GPIO = (22, 23, 24, 25, 27)
+
+PMOD_HAT_PINOUT_SOURCE = Source(
+    label="Pmod HAT Adapter Reference Manual",
+    ref="https://digilent.com/reference/add-ons/pmod-hat/reference-manual",
+    note='Digilent; "This reference manual applies to Revision B of the '
+         'Pmod HAT Adapter." Appendix: Pinout Tables.',
+)
+
+
+def _check_hat_pins() -> None:
+    """The transcribed table has to agree with the manual's own prose."""
+    used = {int(name.rsplit("GPIO", 1)[1][:2]) for port in PMOD_HAT_PINS.values()
+            for _, name in port.values()}
+    free = {n for n in range(2, 28)} - used
+    if free != set(PMOD_HAT_UNUSED_GPIO):
+        raise SystemExit(f"PMOD_HAT_PINS leaves GPIO {sorted(free)} unused, "
+                         f"but the manual says {PMOD_HAT_UNUSED_GPIO}")
+
+
+_check_hat_pins()
+
 # ---------------------------------------------------------------------------
 # PoE splitters
 # ---------------------------------------------------------------------------

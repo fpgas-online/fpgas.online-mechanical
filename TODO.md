@@ -100,3 +100,15 @@ checker that measures the finished PDFs rather than trusting them.
       no vector source turns up
 - [ ] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
       silkscreen; `accessories/parts.py` has it opposite the Pmod convention
+
+## 10. Raspmod, the other Pi-to-Pmod adapter  -- DONE
+- [x] Pat Deegan's TT Demoboard To Raspi, from its KiCad board file at a
+      pinned commit; plugs checked to sit on the demoboard's 22.86 mm pitch
+- [x] Pmod headers can be plugs as well as hosts; a part can be on the
+      underside; the depth-dimension lane keeps clear of the dimension's
+      own extent rather than the whole board
+- [x] `accessories/raspmod-vs-pmod-hat.md`: both adapters' Pi pin maps and
+      mechanics side by side, tables regenerated from the data modules
+- [ ] Measure how far in front of the demoboard's front edge the Raspmod's
+      faces sit when mated: the plug pin length and the host socket depth
+      are footprint figures, not measured ones

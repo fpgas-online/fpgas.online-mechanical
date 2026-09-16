@@ -42,6 +42,7 @@ diagrams:
 	$(DRAW) python tools/generate_diagrams.py
 	$(UV) --with ezdxf python tinytapeout/mounting_plate/export_dxf.py
 	$(DRAW) python tools/update_readme.py
+	$(UV) python accessories/compare.py
 
 ## check: the things that have caught real defects
 check: diagrams

@@ -5,14 +5,25 @@ up in the same assemblies.
 
 | | |
 |---|---|
-| `parts.py` | Hand-curated, with per-value provenance |
+| `parts.py` | Hand-curated, with per-value provenance: the Pmod HAT Adapter, its pin map, and the PoE splitters |
 | `measure_pmod_hat.py` | Photogrammetry for the Pmod HAT Adapter |
-| `output/` | `ACC-01` to `ACC-03`, as SVG and PDF |
+| `raspmod.py` | **Generated.** The Raspmod's geometry and pin map |
+| `extract.py` | Reads the Raspmod's KiCad board file and writes `raspmod.py` |
+| `compare.py` | Rewrites the tables in `raspmod-vs-pmod-hat.md` from the two data modules |
+| [`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md) | The two ways of putting Pmods on a Raspberry Pi, compared: pin maps and mechanics |
+| `output/` | `ACC-01` to `ACC-04`, as SVG and PDF |
 
-`parts.py` is the one hand-curated data module, because its sources are not
-machine-readable: a product photo and a dimensioned marketing image. Every
-value cites where it came from and, where the figure is a measurement rather
-than a published dimension, its error bar.
+`parts.py` is hand-curated because its sources are not machine-readable: a
+product photo, a dimensioned marketing image, and a pinout table on a web
+page. Every value cites where it came from and, where the figure is a
+measurement rather than a published dimension, its error bar. The Raspmod is
+the exception: its KiCad board file is published, so `extract.py` reads it
+the way the FPGA and Tiny Tapeout extractors read theirs.
+
+```sh
+uv run --no-project python accessories/extract.py      # needs tmp/src, see make fetch
+uv run --no-project python accessories/compare.py
+```
 
 ## The sheets
 
@@ -55,6 +66,21 @@ else measured here.
 uv run --no-project --with pillow --with numpy python \
     accessories/measure_pmod_hat.py tmp/digilent/hat.png
 ```
+
+## Raspmod (ACC-04)
+
+Pat Deegan's "TT Demoboard To Raspi": not a HAT but a frontplate. Three
+2x6 pin headers on its underside go into a Tiny Tapeout demoboard's three
+Pmod hosts, three sockets on its front take external Pmods in their place,
+and a 2x20 box header carries every signal to a Raspberry Pi over a ribbon
+cable. It has no mounting holes; the plugs carry it.
+
+Everything on the sheet is read from the board file at a pinned commit,
+including the fact that the plugs sit on the demoboard's 22.86 mm host pitch,
+which the extractor checks. The pin map comes from the same file, because
+KiCad writes each pad's net into it. Which demoboard it fits, and how it
+differs from the Digilent adapter, is in
+[`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md).
 
 ## PoE splitters (ACC-02, ACC-03)
 
