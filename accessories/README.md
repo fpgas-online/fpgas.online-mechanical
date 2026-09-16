@@ -147,6 +147,10 @@ Waveshare's dimension drawing states the outline and the mounting holes --
 is the Pi's own pattern -- and one more figure, the 3.00 mm by which the 2280
 standoff projects past the opposite board edge. It dimensions nothing else of
 the M.2 system, and there is no drawing, DXF, STEP or board file that does.
+What it dimensions of those mounting holes is the centres, not the holes, so
+the 2.75 mm diameter is the Raspberry Pi HAT specification's declared M2.5
+clearance and the sheet cites it for that and says which of its figures are
+therefore not derived at all.
 
 So the socket and the four standoffs are recovered from the same image the way
 the Pmod HAT Adapter's hosts are, with scale and origin from the mounting
