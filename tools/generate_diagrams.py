@@ -21,6 +21,7 @@ sys.path.insert(0, str(ROOT))
 from accessories.parts import (ACCESSORIES, ACORN_WIDTH,  # noqa: E402
                                GENERIC_POE, HAT_SPEC_SOURCE,
                                M2_CARD_WIDTH, M2_LENGTHS,
+                               M2_STANDOFF_THREAD,
                                POE_M2_BOSS_DIA, POE_M2_DATUM_X,
                                POE_M2_HAT_TOL, POE_M2_HAT_WIDTH,
                                POE_M2_HAT_WITH_ACORN, POE_M2_SOCKET_TOL,
@@ -131,9 +132,9 @@ _ACORN_END = POE_M2_DATUM_X + M2_LENGTHS["2280"]
 #: describes that are two copies of one number drift apart silently, and the
 #: note is the copy nobody rebuilds.
 ACC_M2_HAT_NOTES = (
-    "Phantom detail is the HAT's four M.2 retention standoffs, its M-key "
-    "socket and the Acorn seated in it. The HAT's own outline and mounting "
-    "holes are the Pi's, so they are drawn once.",
+    "Phantom detail is the HAT's four retention standoffs and its M-key "
+    "socket, with the Acorn seated in it; the two schedules that list them "
+    "are headed with the HAT's name.",
     f"The card's far end and its retention screw land at X {_ACORN_END:.2f}, "
     f"just past the Pi's Ethernet-end edge, and the standoff's "
     f"{POE_M2_BOSS_DIA:.2f} mm boss reaches "
@@ -142,13 +143,17 @@ ACC_M2_HAT_NOTES = (
     "board on the edge the RJ45 and the USB ports already overhang.",
     f"The Acorn CLE-215+ is {ACORN_WIDTH:.0f} mm wide, SQRL's own millimetre "
     f"over the M.2 specification's {M2_CARD_WIDTH:.0f} +/-0.15, and they say "
-    "to make sure of the clearance. Its heatsink's extent is not published, "
-    "so none is drawn and no height is claimed.",
+    "to make sure of the clearance.",
+    "PLAN ONLY, no Z anywhere: Waveshare publish no stack-up for the HAT or "
+    "its standoffs, and SQRL neither the card's height nor the extent of the "
+    "heatsink the CLE-215+ carries, which is therefore not drawn.",
     "Waveshare dimension nothing of the M.2 system but the standoff's "
     f"{POE_M2_STANDOFF_OVERHANG:.2f} mm overhang. Everything phantom inside "
     "the outline is DERIVED from their drawing by "
     f"accessories/measure_poe_m2_hat.py, to +/-{POE_M2_HAT_TOL} mm, the "
-    f"socket body to +/-{POE_M2_SOCKET_TOL:.0f} mm.",
+    f"socket to +/-{POE_M2_SOCKET_TOL:.0f} mm. The standoffs' DIA is the "
+    f"{M2_STANDOFF_THREAD} tapped thread, not a clearance hole; BOSS is what "
+    "they occupy.",
     "Only the (B) of Waveshare's three PoE M.2 HATs takes a 2280 card; the "
     "others stop at 2242. Their wiki gives this one the plain HAT's "
     "56.5 x 70.0 mm, which its own dimension drawing contradicts.",
