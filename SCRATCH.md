@@ -1981,10 +1981,9 @@ debug microcontroller drives, both rows on 3.00 mm, and no Ethernet.  Nothing
 in the repository says what the recess is for, so its `profile_note` gives
 the geometry and says as much; the figures are measured off the resolved
 outline, which checks the shape as it measures.  The hosts are right-angle
-sockets: the pin field is on the
-board and the housing hangs 8.07 mm off the front edge, so the fab outline is
-taken rather than the courtyard -- what a case has to clear, not what an
-assembly machine wants free.
+sockets: the pin field is on the board and the housing hangs 8.07 mm off the
+front edge, so the fab outline is taken rather than the courtyard -- what a
+case has to clear, not what an assembly machine wants free.
 
 **The board file numbers its own Pmod pads**, which neither of the other two
 Pmod boards in this family does, so pin 1 could be checked rather than
