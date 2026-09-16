@@ -78,7 +78,8 @@ RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
 #: boards, which register on their Pmod hosts, and the Pis, which share an
 #: outline, these have nothing in common to hold still, so each sheet is
 #: fitted to its own board.
-FPGA_ORDER = ["arty-a7", "ulx3s", "pynq-z2", "butterstick", "icepi-zero"]
+FPGA_ORDER = ["arty-a7", "ulx3s", "pynq-z2", "butterstick", "icepi-zero",
+              "cynthion"]
 
 #: The pitch is dimensioned on the view; what the view cannot say is where
 #: the number comes from and that every revision shares it, which is what
