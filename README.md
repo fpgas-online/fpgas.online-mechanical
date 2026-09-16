@@ -167,6 +167,14 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>FPGA-CYNTHION</b> Cynthion<br>r1.4.0
 </td>
 </tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="fpga/output/zybo-z7.pdf"><img src="fpga/output/previews/zybo-z7.png" width="270" alt="FPGA-ZYBO-Z7 Digilent Zybo Z7"></a><br>
+<b>FPGA-ZYBO-Z7</b> Digilent Zybo Z7<br>Z7-10 and Z7-20
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
+</tr>
 </table>
 
 ### Accessories
