@@ -494,7 +494,7 @@ def extract_cynthion() -> dict:
             "board and the housing hangs off the front edge, so a peripheral "
             "plugs in level with the board rather than standing up from it. "
             f"The housings reach {-min(p['body_y0'] for p in pmods):.2f} mm "
-            "past the edge, which the assembled envelope above does not "
+            "past the edge, which the assembled envelope figure does not "
             "count.",
             "The board ships inside an enclosure. The outline drawn is the "
             "bare PCB's; the repository publishes no case dimensions.",

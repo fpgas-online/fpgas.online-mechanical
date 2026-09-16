@@ -444,7 +444,7 @@ BOARDS['cynthion'] = BoardSpec(
         'Every dimension is read from the board file; Great Scott Gadgets publish no mechanical drawing. Hole IDs are the KiCad reference designators.',
         'Schedule numbers 9, 10 and 11 were added to the family for this board. 1 to 8 mean what they mean on the other FPGA sheets, so the four USB ports read 1, 2, 9, 10.',
         'No Ethernet jack.',
-        'Pmod A and B are right-angle sockets: the pin field is on the board and the housing hangs off the front edge, so a peripheral plugs in level with the board rather than standing up from it. The housings reach 8.07 mm past the edge, which the assembled envelope above does not count.',
+        'Pmod A and B are right-angle sockets: the pin field is on the board and the housing hangs off the front edge, so a peripheral plugs in level with the board rather than standing up from it. The housings reach 8.07 mm past the edge, which the assembled envelope figure does not count.',
         "The board ships inside an enclosure. The outline drawn is the bare PCB's; the repository publishes no case dimensions.",
         'Buttons PROGRAM and USER on the left edge and RESET on the right are not drawn. Each is a side-actuated tactile switch whose body reaches 2.5 mm beyond the board outline.',
     ),
