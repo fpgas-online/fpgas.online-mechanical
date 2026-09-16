@@ -414,6 +414,14 @@ def _cynthion_top_recess(edges: list[tuple], h: float) -> tuple:
     checked as it is measured: two floor corners at one depth, each reached
     from the edge by its own ramp, or the board has grown a profile this note
     does not cover and the extractor stops.
+
+    The 3.0 mm window is a coincidence worth knowing about: this board's
+    corner radius is 3.0 too, so ``h - 3.0`` lands exactly on the tangent
+    where each corner arc leaves its side edge, and the side edges' top
+    endpoints sit precisely on the window's lower bound.  Only the strict
+    ``h - 3.0 < y`` keeps them out of the floor set.  Widen the window and
+    they come in, the floor is four corners rather than two, and the check
+    rejects a board that is perfectly ordinary.
     """
     lines = [e for e in edges if e[0] == "line"]
     floor = sorted({(round(x, 3), round(y, 3)) for e in lines
