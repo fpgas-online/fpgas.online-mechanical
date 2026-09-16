@@ -27,6 +27,7 @@ Run: uv run --no-project --with ezdxf --with pdfplumber --with cadquery \\
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -388,6 +389,10 @@ CYNTHION_USB = [
     ("J3", "usb_fourth", "USB-A J3, TARGET A port", "usb_a"),
 ]
 
+#: The project text variables the sheet's citation quotes.  All three are
+#: required: a missing one used to read as "None" in the title block line.
+CYNTHION_TITLE_VARS = ("TITLE", "VERSION", "COPYRIGHT")
+
 #: The three side-actuated buttons.  Not drawn -- the sheet marks ports,
 #: hosts, LEDs, holes and the outline -- but they are what makes the board
 #: wider than its outline, so a case designer needs their reach.
@@ -438,13 +443,24 @@ def _cynthion_title_block() -> dict:
     Reading them at the same pinned commit is what lets the sheet quote a
     title block at all, and it is how the board file itself states its own
     revision rather than the citation taking it from the tag name.
+
+    Every variable the citation uses has to be there.  ``dict.get`` would have
+    put "None" on a sheet, in the one field a reader checks to find out which
+    revision they are looking at, and nothing would have complained.
     """
-    import json
+    project = str(Path(CYNTHION_PATH).with_suffix(".kicad_pro"))
     blob = subprocess.run(
         ["git", "-C", str(SRC / "cynthion"), "show",
-         f"{CYNTHION_COMMIT}:cynthion.kicad_pro"],
+         f"{CYNTHION_COMMIT}:{project}"],
         capture_output=True, text=True, check=True).stdout
-    return json.loads(blob).get("text_variables", {})
+    variables = json.loads(blob).get("text_variables", {})
+    missing = [k for k in CYNTHION_TITLE_VARS if not variables.get(k)]
+    if missing:
+        raise SystemExit(
+            f"cynthion: {project} @ {CYNTHION_COMMIT} has no "
+            f"{', '.join(missing)} in text_variables, so the board file's "
+            "title block cannot be resolved. Do not guess it.")
+    return variables
 
 
 def extract_cynthion() -> dict:
@@ -562,8 +578,8 @@ def extract_cynthion() -> dict:
             ("KiCad board file",
              f"{CYNTHION_REPO}  {CYNTHION_PATH} @ {CYNTHION_COMMIT} "
              f"(tag {CYNTHION_TAG})",
-             f"title block: {tb.get('TITLE')} rev {tb.get('VERSION')}, "
-             f"{tb.get('COPYRIGHT')}, resolved from the project file's text "
+             f"title block: {tb['TITLE']} rev {tb['VERSION']}, "
+             f"{tb['COPYRIGHT']}, resolved from the project file's text "
              "variables at the same commit; Great Scott Gadgets."),
             ("Revision sold", CYNTHION_RELEASE,
              f'the {CYNTHION_TAG} release notes read "Initial production '
