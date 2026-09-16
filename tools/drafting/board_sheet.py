@@ -1052,18 +1052,26 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
             f"MATERIAL gives the KiCad stackup sum, {o.thickness:.3f} mm, "
             "which is within 0.05 mm of no standard finished thickness.")
     fitted = [f for f in spec.features if is_fitted(f)]
-    if fitted:
+    if spec.envelope_note:
+        # A board whose envelope the computation below gets badly wrong states
+        # its own, rather than headlining a figure that is short.  Cynthion is
+        # the first: its Pmod housings hang 8.07 mm off the front edge.
+        notes.append(spec.envelope_note)
+    elif fitted:
         # What a chassis actually has to clear, which is not the board
         # outline: on the Pi 4B the connectors reach 88 mm across an 85 mm
         # board, and the demo boards' USB-C shells overhang too.  Positions
         # that are not fitted are left out, or the figure describes a board
         # that was never built.
         #
-        # Pmod host bodies are NOT counted, and on every board here that have
-        # right-angle hosts -- the demo boards and Cynthion -- the figure is
-        # therefore short of the housings that hang off the front edge.  See
-        # TODO.md: fixing it moves the figure on six demo board sheets, which
-        # is a change of its own and not one to slip in beside a new board.
+        # Pmod host bodies are NOT counted, so on any board whose host bodies
+        # stand outside the outline the figure is short by that overhang: the
+        # six demo board sheets, whose hosts hang off the front edge, and the
+        # PYNQ-Z2, whose hosts reach 1.24 mm past the right edge.  See
+        # TODO.md: widening the computation moves the figure on all seven,
+        # which is a change of its own and not one to slip in beside a new
+        # board.  ``envelope_note`` is how the new board says the truth
+        # meanwhile.
         x0 = min([0.0] + [f.x0 for f in fitted])
         x1 = max([o.width] + [f.x1 for f in fitted])
         y0 = min([0.0] + [f.y0 for f in fitted])
