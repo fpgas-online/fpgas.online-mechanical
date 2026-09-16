@@ -1795,8 +1795,11 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         sheet.table(block, title, head, rows, align)
 
     if schedule:
-        block = sheet.column_block(sheet.table_height("FEATURE SCHEDULE", len(schedule)))
-        sheet.table(block, "FEATURE SCHEDULE",
+        title = "FEATURE SCHEDULE"
+        if spec.extent_of:
+            title += f" - {spec.extent_of}"
+        block = sheet.column_block(sheet.table_height(title, len(schedule)))
+        sheet.table(block, title,
                     ["#", "FEATURE", "X EXTENT mm", "Y EXTENT mm"], schedule,
                     ["middle", "start", "end", "end"])
 

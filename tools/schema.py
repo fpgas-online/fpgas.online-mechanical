@@ -263,6 +263,17 @@ class BoardSpec:
     #: already-issued sheets, so a board that the figure gets badly wrong
     #: states its own, worked out by its extractor from the same data.
     envelope_note: str = ""
+    #: What the feature schedule's extents are extents OF, when that is not
+    #: the component body.  Every board drawn from a board file or a model
+    #: gives a body, and a column headed "X EXTENT mm" over one is
+    #: unambiguous.  The Ultra96-V2 is read from a plot that draws no bodies
+    #: at all, so its figures are pad extents, and a table headed the same as
+    #: everyone else's invites an aperture to be cut to a connector's pads.
+    #: It goes in the table's own heading rather than in the column heads,
+    #: which are too narrow to take another word: "X PAD EXTENT mm" and
+    #: "Y PAD EXTENT mm" came out 0.08 mm apart and check_sheets read them as
+    #: one word.
+    extent_of: str = ""
 
     def of_kind(self, *kinds: str) -> tuple[Feature, ...]:
         return tuple(f for f in self.features if f.kind in kinds)
