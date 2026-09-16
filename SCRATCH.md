@@ -2057,3 +2057,84 @@ Schedule 11 was renamed "Status LEDs, debug controller" as well.  The name is
 printed on the five sheets that do not carry the row, and "driven by the
 debug controller" pushed every FPGA feature schedule from 140 to 154 mm wide,
 for a row that on five of the six says only that the board has none.
+
+## The Zybo Z7, and a drawing that names nothing
+
+Digilent publish the Zybo Z7's mechanical drawing as the same pair as the
+Arty A7's -- `ZYBO_Z7_DXF.DXF` and `Mechanical_ZYBO_Z7.pdf`, in a zip the
+Resource Center links as "Zybo Z7 Mechanical Drawings" -- and the two files
+are dated a day apart in September 2020, out of the same Altium job.  So the
+Arty's reader became a shared one and the Zybo's numbers came out of it,
+with two differences the drawing itself forced:
+
+- **No keep-out layer.**  The Arty's outline is the whole of its
+  `KeepOutLayer`; the Zybo drawing has no such layer and keeps its edge on
+  `Mechanical1`, among the dimension lines.  Those run past whatever they
+  measure and their ends do not meet, so the edge is picked out as the one
+  closed rectangle of whole segments that every plated hole sits inside:
+  121.92 x 83.82, exactly 4.8 x 3.3 in.
+- **Notched Pmod sockets.**  The plot draws each 2x6 host as a rectangle
+  with a keying notch cut into both long edges, so it closes no rectangle at
+  all and `rectangles()` cannot see it -- all six hosts were invisible.
+  `outlines()` walks the segment graph and returns the extent of each
+  connected run, which finds any closed body whatever shape it is drawn as.
+  It over-reaches in exactly one place on this sheet: a dimension's extension
+  line leaves the USB-A's own front corner and carries the run 1.5 mm past
+  the back of the shell, so that one body is read from the rectangles.
+
+Nothing in either file is named.  What identifies the parts is Digilent's own
+STEP assembly, `Zybo_Z7.step`: every solid in it carries its reference
+designator and it is placed in the drawing's frame, origin on the board's
+lower-left corner, so its boxes can be used as they are.  That is the role
+the Arty Rev C model plays there, but far stronger -- the Arty model only
+told two LED rows apart by package size, and this one names JA to JF, J3,
+J11, J12 and LD0 to LD13 outright.  Every body the plot supplies is then
+required to land on the model's box and, where the DXF has the same feature,
+on the DXF's own figure: each host on its pin field, the RJ45 on its two
+3.25 mm locating pegs, the micro-USB on its four shell pads, the USB-A on its
+two 2.4 mm shield legs.  All agree to within 0.01 mm.
+
+Three things the sheet says that the drawing cannot:
+
+- **The host pitch is 23.00 mm, not 22.86.**  The four hosts along the lower
+  edge are on a round metric pitch, so a plate cut to the 0.9 in grid the
+  Tiny Tapeout plate uses does not fit them.  The pin rows are 2.50 apart
+  rather than 2.54, the same metric-grid drawing as the Arty's.
+- **Which variant.**  The Z7-10 and the Z7-20 are one PCB; the -10 leaves
+  Pmod JB and one of the two tri-colour LEDs unfitted, which the reference
+  manual says and the Resource Center's own table counts ("Pmod Connectors
+  6 (5*)", "2 RGB LEDs (1*)").  The drawing is of the fully fitted board.
+- **J10.**  A micro-AB USB socket shares the OTG signals with the USB-A and
+  is fitted on the UNDERSIDE directly below it, hanging 2.7 mm below the
+  board.  A plate that clamps the board flat has to clear it.
+
+Pin 1 came out checkable for once.  The family's rule -- top right looking
+into the socket, fed by the row of holes farther from the board edge -- puts
+pins 5 and 6, GND and VCC, at the far end of every host.  Digilent's top view
+of the board has 3V3 and GND silkscreened at exactly that end of all six,
+across all three edges they sit on.  The XADC host JA is the clearest: its
+six labels read AD14, AD7, AD15, AD6, GND, 3V3 down the column the rule
+picks, which is pins 1 to 6 in order.
+
+Getting at any of this took a detour.  Digilent's wiki pages answer a script
+with a Cloudflare challenge, and the browser could not pass it either; the
+`_media` and `files.digilent.com` URLs are served normally to a browser
+User-Agent, but nothing says what they are called.  The filename came out of
+a Wayback Machine snapshot of the Resource Center, which is also where the
+"Width 3.3 in (88 mm)" quote on the sheet comes from -- a figure that
+contradicts its own 3.3 in, and which the drawing settles at 83.82.
+
+The sheet is the fullest in the repository and it shows.  Six hosts, five
+features and four holes fill the annotation column; the notes and sources
+want a 144 mm band and the view can spare 132, so the tail spills into what
+is left of the column with 10 mm to spare.  The cost is at the foot of the
+lower ordinate chain: the datum's 0 and the mounting holes' 3.81 are closer
+together than a label is tall, so 3.81 is staggered out to a second lane, and
+that lane ends about half a millimetre inside the rule under NOTES.  Nothing
+overlaps any text and every check passes, but it is a blemish.  It cannot be
+fixed from this sheet: the band is already capped by the view, so buying the
+9 mm the lane needs means either dropping below 1:1 or cutting a third of the
+provenance text.  The real fix is for the view's bottom margin to reserve the
+chain's extra lanes instead of a flat 30 mm, and that moves the ButterStick
+sheet, which stages its own labels the same way and today has the paper for
+it.
