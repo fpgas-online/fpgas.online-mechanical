@@ -2377,12 +2377,19 @@ Asked for a sheet of Avnet's Ultra96-V2, the Zynq UltraScale+ board built to
 the Linaro 96Boards Consumer Edition form factor. Avnet's own product page is
 indexed as listing a mechanical drawing and three STEP models -- the board
 alone, the heat sink alone, and the two together -- and none of them could be
-reached: the page answers a scripted fetch and a browser under Playwright
-alike with a Cloudflare challenge, and a CDX query of the Internet Archive's
-index of avnet.com turns up the Ultra96-V1 mechanical drawing and the V2
-assembly drawings but no V2 mechanical drawing and no STEP file at all. So
-the page's contents are hearsay from a search index, not something read here.
-What is reachable is Linaro's
+reached. Avnet sit behind Akamai, and it refuses in two different ways: the
+product page answers a scripted fetch and a browser under Playwright alike
+with a Bot Manager interstitial -- a kilobyte of JavaScript, HTTP 200, `_abck`
+and `ak_bmsc` cookies -- while a file URL under `wps/wcm/connect` refuses a
+plain `curl` with an Akamai WAF `PR_WAF_DENY` and HTTP 400 but serves the same
+URL to a request carrying a browser User-Agent, exactly as Digilent's file
+host does. That is how the hardware user's guide is fetched. It is not how the
+product page can be read, so the mechanical drawing and the STEP models it is
+indexed as offering stayed out of reach, and a CDX query of the Internet
+Archive's index of avnet.com turns up the Ultra96-V1 mechanical drawing and
+the V2 assembly drawings but no V2 mechanical drawing and no STEP file at all.
+So the page's contents are hearsay from a search index, not something read
+here. What is reachable is Linaro's
 `96boards/documentation` repository, which republishes the vendors' hardware
 documents, and it carries `ultra96-v2-mechanical.PDF` under the heading
 "Mechanical and Drill". That file is Avnet's, an Altium NEXUS plot of the
@@ -2396,18 +2403,23 @@ anything like a drill table are outside it -- the content stream still
 reaches from -87 to 631 mm across, and only the crop hides it. Nothing on the
 visible page fixes the scale except the board outline, so the scale is
 recovered from that, per axis, against the 96Boards 85 x 54 mm. The axes
-disagree by 0.02 %, and the drawing's own overall dimensions read 3.346 and
-2.126 in, which are 84.99 and 54.00 mm.
+disagree by 0.02 %.
 
-Three things then check that the recovery is right, and all three are
-independent of it. The four mounting holes come out at (4.000, 18.500),
-(4.000, 50.000), (81.013, 18.500) and (81.013, 50.000) against the
-specification's 4.00 and 81.00 by 18.50 and 50.00, so the worst error is
-13 um. The low-speed connector's twenty columns span exactly 2.000 mm each
-and the high-speed connector's thirty exactly 0.800. And the two connectors'
-centre lines land on the specification's own: the low-speed one on y = 50.00,
-which the 2D Reference Drawing calls "center line as per mounting holes", and
-the high-speed one on 15.45, which is the only other ordinate it gives.
+That reference figure is the one number on the sheet that is not measured,
+which makes the checks on it worth stating. The drawing dimensions itself, in
+inches and as stroked glyphs rather than text, and those figures are not used
+for anything -- but read off the page they say 3.346 and 2.126 in, which are
+84.99 and 54.00 mm, and 0.157, 0.728, 1.240 and 1.969 in for the mounting
+holes, which are 3.99, 18.49, 31.50 and 50.01 mm. Measured, the four holes
+come out at (4.000, 18.500), (4.000, 50.000), (81.013, 18.500) and
+(81.013, 50.000) against the specification's 4.00 and 81.00 by 18.50 and
+50.00, so the worst error is 13 um. The low-speed connector's twenty columns
+span exactly 2.000 mm each and its pad rows exactly 5.000 apart; the
+high-speed connector's thirty span exactly 0.800 and its rows exactly 4.400 --
+one check per axis, neither of them the axis's own reference. And the two
+connectors' centre lines land on the specification's: the low-speed one on
+y = 50.00, which the 2D Reference Drawing calls "center line as per mounting
+holes", and the high-speed one on 15.45, an unlabelled ordinate on it.
 
 What makes the plot readable at all is that Altium wrote the designators into
 it as text. Every pad carries a string -- `PAJ501` for pin 1 of J5, `PAJ5010`
@@ -2416,12 +2428,28 @@ shape can be named without guessing which component it belongs to. The
 strings are drawn glyph by glyph and each ends with a space, and the space
 has to end a word as well as the usual baseline and advance test: without it
 the micro-USB's two middle shield lands came back as one word naming two
-pads. Avnet's bill of materials says what each designator is, and the pad
-count from the BOM part is asserted, so a footprint that changed shape is an
-error rather than a quietly smaller box. Three pads are filled black instead
-of the copper grey -- pin 1 of each USB type A port and one pad of the barrel
-jack -- and black rectangles are taken as copper for that reason, while black
-curves are not, because all 1,545 of those are drill holes.
+pads. Avnet's bill of materials says what each designator is, and how many
+pads the plot names for each component is asserted, so a footprint that
+changed shape is an error rather than a quietly smaller box. That count is
+not the BOM part's pin count and the first version of this said it was: J5 is
+a 40POS part with forty named pads and J4 a 60POS part with sixty, but J7 is
+a "10 POS" part with fourteen, ten contacts and four shield lands, and J8 and
+J9 are "9PS" parts with eleven, nine contacts and two shell posts. Nor are
+names and pads one for one: the micro-USB's four shield lands are drawn as a
+single path, so its fourteen names resolve to eleven shapes, and the number of
+distinct shapes is asserted too, because two names collapsing onto one pad is
+otherwise indistinguishable from a match that went wrong. Three pads are
+filled black instead of the copper grey -- pin 1 of each USB type A port and
+one pad of the barrel jack -- and black rectangles are taken as copper for
+that reason, while black curves are not, because all 1,545 of those are drill
+holes.
+
+The plot gives three footprints a pad with no name of its own, written
+`PAJ10None`, `PAJ30None` and `PAJ40None`: the hold-down tabs of the two 2 mm
+right-angle headers and one on J4, each 1.20 mm square. J4's sits 1.65 mm
+clear of the left end of its pin field with nothing answering it at the right
+end, so folding it in would put the box of a symmetrical part 2.85 mm out on
+one side. All three are left out and the extractor says why.
 
 There is no component body outline anywhere on the plot, which is why every
 feature on the sheet is a pad extent and the sheet says so. The silkscreen
@@ -2441,3 +2469,64 @@ is a 1x4 2 mm header, neither of which is drawn, and a note says so rather
 than letting the row imply otherwise. `row_feature` grew an option for a row
 that is not on a pitch, because the four user LEDs sit 1.40, 1.52 and
 1.40 mm apart and a label claiming 1.44 would be inventing one.
+
+Two things the drafting library gained. The feature schedule can now say what
+its extents are extents of, because "X EXTENT mm" over a pad extent reads
+exactly like "X EXTENT mm" over the component bodies the other seven sheets
+carry, and an aperture cut to a connector's pads is too small. It goes in the
+table's heading -- "FEATURE SCHEDULE - PAD EXTENTS" -- and not in the column
+heads, which turned out to be too narrow to take another word: "X PAD EXTENT
+mm" and "Y PAD EXTENT mm" came out 0.08 mm apart and `check_sheets.py` read
+them as one word. The first note under the drawing says the same thing in
+capitals. And the balloon placer now reserves the two
+arrowheads of each overall dimension against leaders as well as balloons: the
+band between them is deliberately left crossable, because pricing the whole
+of it boxes balloons into the board's interior, but an arrowhead is a solid
+filled triangle three millimetres long and a leader ruled through one stops it
+reading as an arrowhead. The LED balloon on this sheet went out to the right
+at exactly the height of the 54.00 dimension's lower arrowhead and straight
+through it. `tools/check_leader_arrows.py` reads the finished SVGs back and
+tests segment against triangle, and it found that one and nothing else.
+
+Its first version asked only whether a line was `style.C_HIGHLIGHT`, which
+is the balloon colour on every single-board sheet, and that was wrong in
+both directions. RPI-MODELS-COMPARED draws each model's balloons in that
+model's colour so a monochrome print can tell them apart, so none of its
+eight leaders was examined at all and the sheet passed for having nothing on
+it to check. And four sheets -- FPGA-ARTY-A7, FPGA-ZYBO-Z7, ACC-HAT-PMOD and
+ACC-HAT-RMOD -- were reported as having a leader through an arrowhead when
+what the checker had found was the Pmod pin-row centre line: drawn in the
+balloon colour, dashed `D_CENTRE`, running along the lane the pin-field
+depth dimension occupies, and meeting that dimension's arrowhead because the
+dimension measures to it. Those four were written up as a deferred defect
+and were never one.
+
+So a leader is now read off the sheet: a balloon is a ring of the balloon
+radius, and its leader is a line in that ring's colour with an end on that
+ring. With that, the checker sees the comparison sheet's eight leaders,
+loses the four centre lines, and reports nothing across the set -- which is
+why it goes into `make check` beside `check_balloons.py` rather than waiting
+outside it for a defect to justify it. Its summary line counts the leaders it
+examined as well as the problems it found, because a rule that matches none
+of a sheet's leaders reports that sheet clean, and that is exactly how the
+first version passed the comparison sheet.
+
+The reservation is an obstacle and not only a test, so it moves two balloons
+on sheets that were already issued: balloon 9 on FPGA-CYNTHION, which used to
+leave the board diagonally for the space beyond the top right corner, and
+balloon 4 on RPI-MODELS-COMPARED, which goes further out along the same
+diagonal. Neither leader was ruled through an arrowhead: rendered
+before the reservation and after it, both sheets show eight and seven
+leaders respectively and none through one. So what changed is where the
+placer was willing to put them, and both are re-rendered in this branch's
+output commit. No other sheet in the set moves.
+
+One consequence of adding a sheet without restamping the rest: the committed
+`fpga-sheets.pdf` now carries two VERSION stamps, this branch's on the two
+pages it draws -- the Ultra96-V2 and the re-rendered Cynthion -- and the
+earlier one on the other six; `raspberry-pi-sheets.pdf` is the same across
+its comparison page. The front page's claim that `git status` is silent after
+a rebuild is false here until the whole set is restamped after merge. That is
+deliberate. Restamping twenty-five sheets to add one makes a pull request
+that cannot be read and conflicts with every other branch in flight; the
+stale stamps are a day's inconvenience and the conflicts are not.

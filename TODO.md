@@ -149,9 +149,9 @@ checker that measures the finished PDFs rather than trusting them.
 - [ ] Ultra96-V2 connector shells: the plot has pads and no body outlines,
       so every feature on FPGA-ULTRA96-V2 is a pad extent. Avnet's product
       page is indexed as offering STEP models of the board and of its heat
-      sink, and the page itself answers with a Cloudflare challenge; with
-      one of those models the shells and the heat sink envelope could be
-      drawn instead
+      sink, and the page itself answers with an Akamai Bot Manager
+      interstitial; with one of those models the shells and the heat sink
+      envelope could be drawn instead
 
 ## 10. Raspmod, the other Pi-to-Pmod adapter  -- DONE
 - [x] Pat Deegan's TT Demoboard To Raspi, from its KiCad board file at a
