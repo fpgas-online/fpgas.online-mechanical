@@ -50,6 +50,7 @@ dims.balloon = _spy_balloon
 
 from accessories.parts import (ACCESSORIES, PMOD_HAT,  # noqa: E402
                                POE_M2_HAT_WITH_ACORN)
+from accessories.raspmod import RASPMOD              # noqa: E402
 from fpga.boards import BOARDS as FPGA               # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI        # noqa: E402
 from tinytapeout.boards import BOARDS as TT          # noqa: E402
@@ -170,6 +171,10 @@ def main() -> int:
     sheets.append(("accessories/pmod-hat", board(PMOD_HAT)))
     sheets += [(f"accessories/{k}", board(v)) for k, v in ACCESSORIES.items()
                if v is not PMOD_HAT]
+    # The Raspmod is an accessory sheet whose data lives in its own
+    # generated module rather than in ACCESSORIES, so walking that dict alone
+    # left its sheet unchecked.
+    sheets.append((f"accessories/{RASPMOD.key}", board(RASPMOD)))
     # The M.2 HAT assembly: the board drawn is the Pi 5 with the phantom part
     # drawn in detail, because its bodies and standoffs are obstacles the
     # placer has to work round and leaving the flag off would check a sheet
