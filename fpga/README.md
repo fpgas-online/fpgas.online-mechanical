@@ -137,7 +137,10 @@ and the sheet says which it was.
   on the right edge, JF, the MIO port, on the left, and JB to JE along the
   lower edge on a 23.00 mm pitch -- not the specification's 22.86. The
   drawing is of the fully fitted board, which is the Zybo Z7-20; the Z7-10
-  leaves JB and one of the two tri-colour LEDs off the same PCB.
+  leaves JB and one of the two tri-colour LEDs off the same PCB. Nothing in
+  the drawing says which board revision it is of, and its four sources are
+  four vintages; what ties them together is that each is checked against the
+  others on the board rather than on its date.
 
 The PYNQ-Z1 was looked at and left out: Digilent's 3D model of it has no
 mounting holes and its outline disagrees with their own stated size.

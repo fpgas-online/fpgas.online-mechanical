@@ -2104,9 +2104,13 @@ Three things the sheet says that the drawing cannot:
   Pmod JB and one of the two tri-colour LEDs unfitted, which the reference
   manual says and the Resource Center's own table counts ("Pmod Connectors
   6 (5*)", "2 RGB LEDs (1*)").  The drawing is of the fully fitted board.
-- **J10.**  A micro-AB USB socket shares the OTG signals with the USB-A and
-  is fitted on the UNDERSIDE directly below it, hanging 2.7 mm below the
-  board.  A plate that clamps the board flat has to clear it.
+- **What hangs below.**  J10, a micro-AB USB socket sharing the OTG signals
+  with the USB-A, is fitted on the UNDERSIDE directly below it and projects
+  2.72 mm below the laminate and 0.82 past the left edge.  It is not the
+  figure a plate has to clear, though: C250, a bottom-side capacitor inside
+  the Ethernet jack's footprint, reaches 3.10 mm in Digilent's model, and a
+  note quoting an underside projection has to quote the governing one.  The
+  sheet gives 3.10 and names both.
 
 Pin 1 came out checkable for once.  The family's rule -- top right looking
 into the socket, fed by the row of holes farther from the board edge -- puts

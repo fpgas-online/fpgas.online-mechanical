@@ -1220,12 +1220,15 @@ def _digilent_plot(key: str, path: Path, width: float, height: float):
     The axes are scaled separately because they disagree by that much, and
     the result is checked against the DXF where the two overlap.
 
-    Bodies come back twice over: as the rectangles the plot closes, and as
-    the extent of each connected run of segments.  A Pmod socket is drawn
-    with a keying notch in both long edges and closes no rectangle at all,
-    and an LED body is drawn inside its own pads; the runs find both.  A run
-    over-reaches wherever a dimension's extension line starts on a body's own
-    corner, so the caller says which of the two it wants for each part.
+    What comes back is the plot's segments in board millimetres, for the
+    caller to recover shapes from as it needs them.  Two recoveries are on
+    offer and they are not interchangeable: `rectangles` closes a body drawn
+    as one, and `outlines` returns the extent of each connected run, which is
+    the only way to see a body that closes no rectangle -- a Pmod socket with
+    a keying notch in both long edges, say.  A run over-reaches wherever a
+    dimension's extension line starts on a body's own corner.  Handing back
+    the segments leaves the choice, and the cost, with the board that needs
+    it: the Arty A7 uses rectangles alone and pays for nothing else.
     """
     import pdfplumber
     page = pdfplumber.open(str(path)).pages[0]
@@ -1247,7 +1250,7 @@ def _digilent_plot(key: str, path: Path, width: float, height: float):
         raise SystemExit(f"{key}: PDF axes disagree by {sx / sy:.4f}")
     segs = [((s[0] - x_lo) * sx, (s[1] - y_lo) * sy,
              (s[2] - x_lo) * sx, (s[3] - y_lo) * sy) for s in raw]
-    return rectangles(segs), outlines(segs), sx / sy
+    return segs, sx / sy
 
 
 def _pick(shapes, key, centre, size, tol_pos=0.6, tol_size=0.4):
@@ -1325,7 +1328,8 @@ def extract_arty() -> dict:
         raise SystemExit(f"missing {ARTY_DXF}; run tools/fetch_fpga.sh")
     key = "arty-a7"
     (w, h), circles, slots = _digilent_dxf(key, ARTY_DXF)
-    rects, _, aniso = _digilent_plot(key, ARTY_PDF, w, h)
+    segs, aniso = _digilent_plot(key, ARTY_PDF, w, h)
+    rects = rectangles(segs)
 
     # Pmod pin fields: the 1.067 mm pad holes within 15 mm of the top edge,
     # split into groups along x.
@@ -1518,7 +1522,8 @@ def extract_zybo_z7() -> dict:
         raise SystemExit(f"missing {ZYBO_DXF}; run tools/fetch_fpga.sh")
     key = "zybo-z7"
     (w, h), circles, slots = _digilent_dxf(key, ZYBO_DXF)
-    rects, blobs, aniso = _digilent_plot(key, ZYBO_PDF, w, h)
+    segs, aniso = _digilent_plot(key, ZYBO_PDF, w, h)
+    rects, blobs = rectangles(segs), outlines(segs)
 
     # The 3.658 mm holes, one in from each corner, are the mounting holes and
     # the only holes of that size on the board.
@@ -1676,15 +1681,19 @@ def extract_zybo_z7() -> dict:
              "silkscreened at each host's end farthest from pin 1."),
         ],
         notes=[
-            "Hole IDs are assigned by this drawing; the DXF names nothing.",
-            f"Pin rows {row_gap:.2f} mm apart on the drawing, not 2.54. "
-            "The four lower-edge hosts are on 23.00 mm, not the Pmod "
-            "specification's 22.86 (0.90 in).",
-            "Drawn fully fitted, as the Zybo Z7-20; the Zybo Z7-10 leaves "
-            "Pmod JB and one tri-colour LED unfitted. The board is the same.",
-            "J10, a micro-AB USB socket UNDER J11, hangs 2.7 mm below the "
-            "board. HDMI, audio, Pcam, microSD, the power jack and the "
-            "external JTAG header are not marked.",
+            "Hole IDs are this drawing's; the DXF names nothing.",
+            f"Pin rows {row_gap:.2f} mm apart on the drawing, not 2.54; "
+            "the host pitch dimensioned below is not the specification's "
+            "22.86 (0.90 in).",
+            "Drawn fully fitted, as the Zybo Z7-20; the Z7-10 leaves Pmod "
+            "JB and one tri-colour LED off the same board.",
+            "J10, a micro-AB USB socket UNDER J11, projects 2.72 mm below "
+            "the board and 0.82 past the left edge; C250, under the Ethernet "
+            "jack, goes deepest at 3.10.",
+            "HDMI, audio, Pcam, microSD, the power jack and external JTAG "
+            "are not marked, so the envelope above counts only what is "
+            "drawn; the model's, with the audio jacks 1.71 past the right "
+            "edge, is 124.44 x 83.90.",
             "Bodies read from the PDF plot are good to about +/-0.3 mm.",
         ],
     )
