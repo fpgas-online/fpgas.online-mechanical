@@ -50,6 +50,7 @@ BOARDS['arty-a7'] = BoardSpec(
     front_edge='top',
     outline=Outline(width=109.0, height=87.0,
                     corner_radius=0.0, thickness=None,
+                    profile_note='',
                     edges=(
                         ('line', 0.0, 0.0, 109.0, 0.0),
                         ('line', 109.0, 0.0, 109.0, 87.0),
@@ -119,6 +120,7 @@ BOARDS['ulx3s'] = BoardSpec(
     front_edge='top',
     outline=Outline(width=93.98, height=50.8,
                     corner_radius=0.0, thickness=1.6,
+                    profile_note='',
                     edges=(
                         ('line', 0.0, 50.8, 0.0, 0.0),
                         ('line', 93.98, 50.8, 0.0, 50.8),
@@ -187,6 +189,7 @@ BOARDS['pynq-z2'] = BoardSpec(
     front_edge='right',
     outline=Outline(width=137.0, height=87.0,
                     corner_radius=0.0, thickness=1.6,
+                    profile_note='',
                     edges=(
                         ('line', 0.0, 87.0, 0.0, 0.0),
                         ('line', 137.0, 87.0, 0.0, 87.0),
@@ -242,6 +245,7 @@ BOARDS['butterstick'] = BoardSpec(
     front_edge='right',
     outline=Outline(width=80.0, height=49.0,
                     corner_radius=3.0, thickness=1.6,
+                    profile_note='',
                     edges=(
                         ('line', 77.0, 0.0, 3.0, 0.0),
                         ('line', 3.0, 49.0, 77.0, 49.0),
@@ -311,6 +315,7 @@ BOARDS['icepi-zero'] = BoardSpec(
     front_edge='bottom',
     outline=Outline(width=65.0, height=30.0,
                     corner_radius=3.5, thickness=1.6458,
+                    profile_note='',
                     edges=(
                         ('line', 65.0, 26.5, 65.0, 3.5),
                         ('line', 0.0, 3.5, 0.0, 26.5),
@@ -386,6 +391,7 @@ BOARDS['cynthion'] = BoardSpec(
     front_edge='bottom',
     outline=Outline(width=56.0, height=56.0,
                     corner_radius=3.0, thickness=1.5584,
+                    profile_note='The top edge carries a recess 1.00 mm deep, flat from x = 41.00 to 47.00, each end ramping 2.00 back to the edge at x = 39.00 and 49.00. The board file gives no purpose for it.',
                     edges=(
                         ('line', 3.0, 0.0, 53.0, 0.0),
                         ('line', 39.0, 56.0, 3.0, 56.0),

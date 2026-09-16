@@ -399,6 +399,37 @@ CYNTHION_BUTTONS = ("SW1", "SW2", "SW3")
 CYNTHION_MEZZANINE_WAYS = 30
 
 
+def _cynthion_top_recess(edges: list[tuple], h: float) -> tuple:
+    """The notch in the top edge: opening, flat, depth, ramp run.
+
+    Measured off the resolved outline rather than typed into a note, so the
+    note cannot describe a profile the drawing does not have.  The shape is
+    checked as it is measured: two floor corners at one depth, each reached
+    from the edge by its own ramp, or the board has grown a profile this note
+    does not cover and the extractor stops.
+    """
+    lines = [e for e in edges if e[0] == "line"]
+    floor = sorted({(round(x, 3), round(y, 3)) for e in lines
+                    for x, y in ((e[1], e[2]), (e[3], e[4]))
+                    if h - 3.0 < y < h - 0.001})
+    if len(floor) != 2 or floor[0][1] != floor[1][1]:
+        raise SystemExit(f"cynthion: the top edge recess is not two corners "
+                         f"at one depth: {floor}")
+    opening = sorted({round(q[0], 3) for e in lines
+                      for p, q in (((e[1], e[2]), (e[3], e[4])),
+                                   ((e[3], e[4]), (e[1], e[2])))
+                      if (round(p[0], 3), round(p[1], 3)) in floor
+                      and abs(q[1] - h) < 0.001})
+    if len(opening) != 2:
+        raise SystemExit(f"cynthion: the recess does not meet the top edge "
+                         f"at two points: {opening}")
+    runs = {round(floor[0][0] - opening[0], 3), round(opening[1] - floor[1][0], 3)}
+    if len(runs) != 1:
+        raise SystemExit(f"cynthion: the recess ramps are not equal: {runs}")
+    return opening[0], floor[0][0], floor[1][0], opening[1], \
+        round(h - floor[0][1], 3), runs.pop()
+
+
 def _cynthion_title_block() -> dict:
     """The title block the board file's ``${...}`` placeholders stand for.
 
@@ -513,13 +544,20 @@ def extract_cynthion() -> dict:
     left = -min(b[0] for b in buttons)
     right = max(b[2] for b in buttons) - w
 
+    o0, f0, f1, o1, depth, run = _cynthion_top_recess(edges, h)
+    profile_note = (
+        f"The top edge carries a recess {depth:.2f} mm deep, flat from "
+        f"x = {f0:.2f} to {f1:.2f}, each end ramping {run:.2f} back to the "
+        f"edge at x = {o0:.2f} and {o1:.2f}. The board file gives no purpose "
+        "for it.")
+
     tb = _cynthion_title_block()
     return dict(
         key=key, title="Cynthion", subtitle=CYNTHION_TAG,
         front_edge="bottom", thickness=board.thickness,
         width=round(w, 3), height=round(h, 3), corner_radius=radii[0],
         edges=edges, holes=holes, pmods=pmods, features=features,
-        envelope_note=envelope,
+        envelope_note=envelope, profile_note=profile_note,
         sources=[
             ("KiCad board file",
              f"{CYNTHION_REPO}  {CYNTHION_PATH} @ {CYNTHION_COMMIT} "
@@ -1350,6 +1388,7 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
     front_edge={rec["front_edge"]!r},
     outline=Outline(width={rec["width"]}, height={rec["height"]},
                     corner_radius={rec["corner_radius"]}, thickness={rec["thickness"]},
+                    profile_note={rec.get("profile_note", "")!r},
                     edges=(
 {edges()},
                     )),
