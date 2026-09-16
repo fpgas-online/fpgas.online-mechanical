@@ -35,7 +35,7 @@ FEATURE_NUMBERS = {
     8: 'Expansion connector, third',
     9: 'Third USB port',
     10: 'Fourth USB port',
-    11: 'Status LEDs, driven by the debug controller',
+    11: 'Status LEDs, debug controller',
 }
 
 
