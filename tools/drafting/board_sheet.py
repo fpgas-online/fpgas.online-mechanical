@@ -221,6 +221,13 @@ def draw_feature(c: Canvas, view: View, f: Feature) -> None:
     if f.kind == "led":
         c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
                weight=0.05, colour=colour, fill=colour)
+    if f.kind == "lens":
+        # The one feature whose centre is the point of it.  A camera board is
+        # mounted to put the optical axis somewhere, and the housing outline
+        # alone leaves the reader to halve two ordinates to find it; the hole
+        # schedule marks every hole centre for the same reason.
+        cx, cy = view.pt(f.cx, f.cy)
+        dims.centre_mark(c, cx, cy, view.d(min(f.width, f.height)) / 4)
 
 
 def draw_pmod(c: Canvas, view: View, p, spec: BoardSpec) -> None:
@@ -1116,7 +1123,12 @@ def _pcb_material(o) -> str:
     nominal = _nominal_thickness(o)
     if nominal is not None:
         return f"PCB, {nominal:.1f} nominal"
-    return f"PCB, {o.thickness:.3f} stackup sum"
+    # Not every thickness comes from a board file: the Camera Module 3 is
+    # dimensioned 1.12 on its own drawing, which is a finished thickness and
+    # not a stackup sum, and calling it one would be a claim about a source
+    # this function never sees.  No sheet reached this branch before that
+    # board arrived; every other thickness here is within 0.05 mm of 1.6.
+    return f"PCB, {o.thickness:.3f} as given"
 
 
 #: How tall one legend row is, and how long its line sample is.
@@ -1257,8 +1269,9 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         # prints the raw figure, and an unexplained number on a drawing is
         # worse than a line of prose.
         notes.append(
-            f"MATERIAL gives the KiCad stackup sum, {o.thickness:.3f} mm, "
-            "which is within 0.05 mm of no standard finished thickness.")
+            "MATERIAL gives the thickness the source states, "
+            f"{o.thickness:.3f} mm, which is within 0.05 mm of no standard "
+            "finished thickness.")
     fitted = [f for f in spec.features if is_fitted(f)]
     if spec.envelope_note:
         # A board whose envelope the computation below gets badly wrong states
