@@ -1058,6 +1058,12 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         # board, and the demo boards' USB-C shells overhang too.  Positions
         # that are not fitted are left out, or the figure describes a board
         # that was never built.
+        #
+        # Pmod host bodies are NOT counted, and on every board here that have
+        # right-angle hosts -- the demo boards and Cynthion -- the figure is
+        # therefore short of the housings that hang off the front edge.  See
+        # TODO.md: fixing it moves the figure on six demo board sheets, which
+        # is a change of its own and not one to slip in beside a new board.
         x0 = min([0.0] + [f.x0 for f in fitted])
         x1 = max([o.width] + [f.x1 for f in fitted])
         y0 = min([0.0] + [f.y0 for f in fitted])
@@ -1264,6 +1270,52 @@ def _clear_lane(view: View, host, edge: str, board: Rect,
     return first if first is not None else (
         view.x(centre + half + 4.0) if along_edge else
         view.y(centre + half + 4.0))
+
+
+def _depth_lanes(view: View, spec: BoardSpec, by_edge: dict, board: Rect
+                 ) -> tuple[list[tuple[float, float, float, float]], list[tuple]]:
+    """The witness-line blockers, and the lane each depth dimension runs on.
+
+    The blockers are the drawn parts an ordinate witness line breaks over
+    rather than running through, plus the lanes themselves once they are
+    chosen.  Both follow from the drawn parts alone, which is why they can be
+    worked out here, before the balloons are placed: the pin-field depth
+    dimension is drawn last of everything and writes its value along its own
+    lane, so a balloon already parked there reads as the value.  Reserved from
+    this answer and then drawn from the same one, so the reservation cannot
+    describe a lane the drawing does not use.
+    """
+    blockers = [(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1))
+                for f in spec.features]
+    blockers += [(*view.pt(h.x - h.dia / 2 - 0.6, h.y - h.dia / 2 - 0.6),
+                  *view.pt(h.x + h.dia / 2 + 0.6, h.y + h.dia / 2 + 0.6))
+                 for h in spec.holes]
+    for p in spec.pmods:
+        half_a, half_b = p.pin_span / 2 + 1.4, p.row_span / 2 + 1.4
+        hx, hy = ((half_a, half_b) if p.edge in ("bottom", "top")
+                  else (half_b, half_a))
+        blockers.append((*view.pt(p.cx - hx, p.cy - hy),
+                         *view.pt(p.cx + hx, p.cy + hy)))
+    blockers = [(min(b[0], b[2]), min(b[1], b[3]),
+                 max(b[0], b[2]), max(b[1], b[3])) for b in blockers]
+
+    lanes: list[tuple] = []
+    for (edge, _), group in by_edge.items():
+        along = "cx" if edge in ("bottom", "top") else "cy"
+        outer = max(group, key=lambda p: getattr(p, along))
+        lane = _clear_lane(view, outer, edge, board, blockers)
+        # The lane is taken: on the Raspmod the host row and the plug row
+        # each want one beside the same outermost header, and left to the
+        # same search the second lane landed 1.45 mm from the first, with
+        # its value written across the other's line.
+        half = style.T_DIM / 2 + 0.5
+        lo, hi = _lane_extent(view, outer, edge, board)
+        if edge in ("bottom", "top"):
+            blockers.append((lane - half, lo, lane + half, hi))
+        else:
+            blockers.append((lo, lane - half, hi, lane + half))
+        lanes.append((edge, group, outer, lane, lo, hi))
+    return blockers, lanes
 
 
 def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
@@ -1552,6 +1604,22 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                                weight=HARD)
             plan_left -= 6.0 + style.T_DIM + 2.0
 
+    # The pin-field depth dimension is the last thing drawn on the view and it
+    # writes its value along its own lane, so a balloon already parked there
+    # reads as the value: on the Cynthion sheet the user LED balloon landed
+    # 0.45 mm from the 3.23 that dimensions the Pmod pin rows, and the two
+    # read as one word.  Position only, like the ordinate witness lines: a
+    # leader crossing a lane is ordinary, a balloon sitting in one is not.
+    blockers, depth_lanes = _depth_lanes(view, spec, by_edge, board)
+    lane_half = style.T_DIM / 2 + 0.5
+    for edge, _group, _outer, lane, lo, hi in depth_lanes:
+        if edge in ("bottom", "top"):
+            edge_only.add_rect(lane - lane_half, lo, lane + lane_half, hi,
+                               pad=1.2, weight=HARD)
+        else:
+            edge_only.add_rect(lo, lane - lane_half, hi, lane + lane_half,
+                               pad=1.2, weight=HARD)
+
     items: list[_Ballooned] = []
     schedule: list[list[str]] = []
     # Largest features first: they have the least freedom, and placing them
@@ -1609,22 +1677,6 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                         text=label)
             leftmost -= 6.0 + style.T_DIM + 2.0
 
-    # Witness lines break where they cross a drawn part, rather than running
-    # through it.
-    blockers = [(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1))
-                for f in spec.features]
-    blockers += [(*view.pt(h.x - h.dia / 2 - 0.6, h.y - h.dia / 2 - 0.6),
-                  *view.pt(h.x + h.dia / 2 + 0.6, h.y + h.dia / 2 + 0.6))
-                 for h in spec.holes]
-    for p in spec.pmods:
-        half_a, half_b = p.pin_span / 2 + 1.4, p.row_span / 2 + 1.4
-        hx, hy = ((half_a, half_b) if p.edge in ("bottom", "top")
-                  else (half_b, half_a))
-        blockers.append((*view.pt(p.cx - hx, p.cy - hy),
-                         *view.pt(p.cx + hx, p.cy + hy)))
-    blockers = [(min(b[0], b[2]), min(b[1], b[3]),
-                 max(b[0], b[2]), max(b[1], b[3])) for b in blockers]
-
     # The Pmod pin-field depth, dimensioned once per edge rather than folded
     # into an ordinate chain.  It runs on a lane alongside the outermost host
     # of that edge, chosen clear of every drawn part: fixed five millimetres
@@ -1635,21 +1687,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # by construction.  Outboard is the host's own edge of the sheet, which
     # carries either the ordinate chain and the host spacing dimension or the
     # overall width; the side is decided by the host's edge, so it stays
-    # inboard whichever of those the chain rule put there.
-    for (edge, _), group in by_edge.items():
-        along = "cx" if edge in ("bottom", "top") else "cy"
-        outer = max(group, key=lambda p: getattr(p, along))
-        lane = _clear_lane(view, outer, edge, board, blockers)
-        # The lane is taken: on the Raspmod the host row and the plug row
-        # each want one beside the same outermost header, and left to the
-        # same search the second lane landed 1.45 mm from the first, with
-        # its value written across the other's line.
-        half = style.T_DIM / 2 + 0.5
-        lo, hi = _lane_extent(view, outer, edge, board)
-        if edge in ("bottom", "top"):
-            blockers.append((lane - half, lo, lane + half, hi))
-        else:
-            blockers.append((lo, lane - half, hi, lane + half))
+    # inboard whichever of those the chain rule put there.  The lanes were
+    # worked out before the balloons were placed, and reserved against them.
+    for edge, group, outer, lane, _lo, _hi in depth_lanes:
         # A centre line along the row of pin fields, so the dimension's
         # extension line ends on something.  Without it the lane -- chosen
         # clear of every drawn part, which is what put it in a gap between
