@@ -339,7 +339,7 @@ M2_SPEC_SOURCE = Source(
     note="Section 2.3.4.3 and figure 13: a Type 2280 module is 22 +/-0.15 by "
          "80 +/-0.15 mm, its retention screw's half-moon cutout centred on "
          "the far end edge. Section 2.5.4.2 and figure 73: an M2 x 0.4 "
-         "shouldered stand-off, base Ø5.50 +/-0.10.",
+         "shouldered stand-off.",
 )
 
 # ---------------------------------------------------------------------------
@@ -473,15 +473,24 @@ POE_M2_HAT = BoardSpec(
                    "PoE-M.2-HAT-Plus-B-details-size.jpg",
                note='Annotated 85.00, 56.00, 58.00, 49.00, 3.50 and 3.00, '
                     '"Unit: mm". The 3.00 is the 2280 standoff\'s projection '
-                    "past the board edge; nothing else of the M.2 system is "
-                    "dimensioned."),
+                    "past the board edge."),
         Source(label="Product wiki",
                ref="https://www.waveshare.com/wiki/PoE_M.2_HAT%2B_(B)",
                note='"Compatible with M.2 hard drives of 2230 / 2242 / 2260 / '
-                    '2280 sizes", IEEE 802.3af/at, Pi 5 only. Its '
-                    '"Product size: 56.5mm x 70.0mm" is the plain HAT+\'s and '
-                    "contradicts this board's own drawing."),
-        HAT_SPEC_SOURCE,
+                    '2280 sizes", which of their three PoE M.2 HATs only this '
+                    'one is. Its "Product size: 56.5mm x 70.0mm" is the plain '
+                    "HAT+'s and contradicts this board's own drawing."),
+        # Not HAT_SPEC_SOURCE, which is the same document read for what a
+        # standard 65 x 56.0/56.5 HAT is; this board is 85 x 56 and takes
+        # from it only the hole, which is all its sheet should say it takes.
+        Source(label="Raspberry Pi HAT mechanical specification",
+               ref="https://github.com/raspberrypi/hats  "
+                   "hat-board-mechanical.pdf",
+               note="Waveshare dimension the hole CENTRES and not the holes: "
+                    "MT1 to MT4's 2.75 mm is this specification's declared "
+                    "M2.5 clearance. Its 58 x 49 mm rectangle 3.5 mm in from "
+                    "the edges is what their 58.00, 49.00 and 3.50 agree "
+                    "with."),
         M2_SPEC_SOURCE,
     ),
     # No notes.  A sheet's notes are its SUBJECT's: tools/drafting/
