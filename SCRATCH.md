@@ -1772,9 +1772,11 @@ fix, unchanged apart from what the cells say.
 582 px recorded above.  Same window, same page; GitHub's own furniture around
 the column has moved in between.)
 
-The family READMEs name their sheets inside the description rather than in a
-column of their own, except the mounting plate's, which keeps a Sheet column
-of four.  Measured the same way, none of them broke a sheet number -- but
+The family READMEs name their sheets, where they name them at all, inside
+the description rather than in a column of their own, except the mounting
+plate's, which keeps a Sheet column of four.  Measured the same way while the
+sheets were still numbered, none of them broke a sheet number; with the names,
 `FPGA-BUTTERSTICK` comes back in two pieces at a 605 px body width and whole
-at 838.  That is this same squeeze turning up somewhere else, on tables this
-branch does not touch; it is noted here rather than fixed here.
+at 838, and the plate's Sheet column has not been re-measured since its names
+were shortened.  That is this same squeeze turning up somewhere else, on
+tables this branch does not touch; it is noted here rather than fixed here.
