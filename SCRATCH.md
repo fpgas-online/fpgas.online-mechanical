@@ -2751,10 +2751,11 @@ part. The rest of the numbers followed:
 | | from | value |
 |---|---|---|
 | Jack centre plane | DXF pegs, midpoint | y = 44.000 |
-| Front face | plot and Bel, three readings | x = 0.463 |
+| Front face | DXF pegs + Bel's 7.75 | x = -0.101 +/-0.63 |
 | LED window (each) | Bel front view, measured | y 5.04..7.92, z 10.63..13.20 |
+| LED window, proud of the face | Bel side view, stated | 0.64 |
 | Plug aperture | Bel front view, measured | \|y\| <= 6.56, z 3.02..10.64 |
-| Latch keyway | Bel front view, measured | \|y\| <= 3.32, z 10.64..13.49 |
+| Latch keyway, widest | Bel front view, measured | \|y\| <= 3.32, z 10.64..12.46 |
 | Side EMI spring | Bel front view, measured | y 9.18, z 7.95..8.80 |
 | Top EMI spring | Bel front view, measured | y 2.92..4.12, up to z 14.52 |
 
@@ -2765,26 +2766,54 @@ the 25.53 body plus the 0.64 the side springs wrap round the front. So
 Digilent's rectangle is the jack over its springs, which is the right thing
 for a board drawing and the wrong thing to design a clip against.
 
-### The front face, and the dimension that was read backwards
+### The front face, and the dimension that was read twice
 
-The first version of this took Bel's `0.305 [7.75]`, which the side view's
-bottom stack measures from the board-lock pegs, as running to the housing's
-front face, and put that face at x = -0.101 -- a tenth of a millimetre proud
-of the board's own edge, which is a suspiciously neat answer. It is wrong by
-0.64 mm, and the plot is what caught it. Read as the jack over its springs,
-the plot says the face is at 0.400 measured from its front edge and 0.527
-from its back; 7.75 read to the face says -0.101, which is 0.5 mm outside the
-plot's own +/-0.3. Read instead to the spring tips, where the drawing's other
-extremity dimension puts them, it says 0.539 and all three agree to 0.14 mm.
+Bel's side view carries a stack of four dimensions under the part -- 0.305,
+0.125, 0.565, 0.662 -- and all four are measured from the jack's board-lock
+pegs. The one that matters is the 0.305 [7.75], because the other end of it
+is the front face and that is what puts the jack on the board.
 
-The vector geometry settles it: in the side view, the peg's own extension
-line to the LED lead row measures exactly Bel's 16.81, and the same peg is
-7.19 mm behind the housing's front face -- 7.75 less the 0.64 the springs
-wrap forward. `design.py` now takes the mean of the three readings, 0.463,
-and raises if any of them disagrees with another by more than the plot's
-+/-0.3. The lesson is the old one in a new place: a dimension on someone
-else's drawing is a number *and* a pair of witness lines, and only one of
-those is written down.
+This was read three times and got two different answers. First: face = peg
+- 7.75 = x -0.101, a tenth of a millimetre proud of the board's own edge.
+Then Digilent's own plot of the jack was brought in as a check and disagreed
+by 0.63 mm, which is twice what that plot is good to; read as if the 7.75 ran
+to the frontmost point of the jack rather than to its face, the three numbers
+agreed to 0.14 and the answer moved to +0.463. That is what the first version
+of this sheet said, and it was wrong.
+
+The vector geometry settles it, and the lesson is that a dimension on someone
+else's drawing is a number *and* a pair of witness lines, of which only the
+number is written down. In the side view the four bottom dimensions run
+between extension lines at x = 523.92 pt and x = 556.80, 570.24, 617.28 and
+627.84; the 25.53 overall starts from that same 523.92, which is therefore
+the front face; and 556.80 - 523.92 is 7.786 mm at the front view's own
+scale, against a stated 7.75. The 0.025 [0.64] is dimensioned between 521.28
+and 523.92 -- in front of that face, not behind it.
+
+So the face is at x = -0.101 after all, and Digilent's plot simply is not the
+jack's envelope: 0.63 mm is outside both its own +/-0.3 and Bel's +/-0.254,
+which means the plot's rectangle is a courtyard or a footprint drawn with
+clearance rather than the part. `design.py` records the disagreement, uses
+the DXF reading, and puts +/-0.63 on the board placement -- which is the only
+thing that depends on it. The part itself butts against the front face,
+wherever the front face is.
+
+### The front of the jack is two planes
+
+The same vector pass turned up something the first version missed entirely.
+Between z = 10.46 and 13.20 -- the LED window band -- Bel's side view draws
+no front face at all; it draws a block from x -0.69 to -0.06, standing in
+front of the face, and that block is what the 0.025 [0.64] dimensions. The
+LED windows are proud of the shield.
+
+That is a collision, not a detail. The pipe tips had been set 0.30 mm in
+front of the face, which is 0.34 mm inside a window standing 0.64 proud, and
+the cheeks land on the shield rather than on the windows, so nothing would
+have taken up the difference. The tips are now set from the window and at
+maximum material -- the 0.025 carries Bel's +/-0.254, so the window may stand
+0.894 proud -- which puts them 1.19 mm in front of the face and makes the
+part 0.9 mm deeper. The light crosses that gap in air; the alternative is a
+part that cannot be pushed on.
 
 ### Reading the drawing by machine, and the three ways it went wrong
 
@@ -2840,8 +2869,8 @@ has two slots through it so the springs pass rather than press.
 so a board-edge clip would have to be sized to a board thickness nobody
 publishes for this board, and reach round to an underside nobody has drawn.
 The jack's own side springs are a documented interference that works across
-both tolerance bands: 0.12 mm of deflection per side at minimum material,
-1.39 at maximum, with the shield never touching the skirt.
+both tolerance bands: 0.33 mm of deflection per side at minimum material,
+1.60 at maximum, with the shield never touching the skirt.
 
 ### The squeeze, in one paragraph
 
@@ -2850,9 +2879,10 @@ through, both at z = 10.63. Everything the part puts in front of the jack has
 to live in the 2.9 mm between that edge and the top of the shield, outside a
 6.64 mm keyway in the middle of it, and still look at a window 2.88 mm wide
 sitting 0.28 mm inside the shield's edge. What fell out is a 3.2 mm bore at
-45 degrees whose tip projects onto the window as a 2.80 x 1.98 mm ellipse,
-0.45 mm above the plug, with a 0.80 mm wall inboard of it and the channel
-over the latch 8.16 mm wide. There was no room to round any of it off, which
+45 degrees whose tip projects onto the window as a 2.80 x 1.98 mm ellipse --
+centred on it to within a fifth of the +/-0.20 the window is read to, which
+is all that can honestly be claimed -- 0.45 mm above the plug, with a 0.80 mm
+wall inboard of it and the channel over the latch 8.16 mm wide. There was no room to round any of it off, which
 is why the part's dimensions are three-decimal numbers derived from the
 jack's rather than the round figures a hand-drawn part would have.
 
@@ -2872,6 +2902,32 @@ plan's caption.
 The section is the view the part exists for: it is the only one where the
 bore, the pipe in it, the air gap to the jack and the LED window are all in
 true shape.
+
+### What the review of this branch changed
+
+Eight should-fixes and a handful of nits, of which three were substantive.
+
+The 7.75 reading, above: the correction was itself wrong, and the vector
+geometry says so. The proud LED window, above: a collision nobody had looked
+for, because "the front face" sounded like one plane.
+
+And the retention. The skirts had been put 0.52 mm clear of the shield at
+maximum material, which leaves the spring 0.11 mm of deflection at minimum
+material -- and the spring is the only thing holding the part on. Those two
+numbers trade one for one: the shield's tolerance and the spring's tolerance
+leave 0.64 mm between them and every tenth given to clearing the shield is a
+tenth taken from the grip. It is split 0.31/0.33 now, and the sheet says both
+figures, with the 0.59 mm the spring is deflected at the figures Bel actually
+draws beside them. It has still never been tried on a jack.
+
+Two smaller ones worth recording. `verify.py` advertised 38 checks of which
+about half were arithmetic restatements of how `design.py` had built the
+number -- that the bore is as long as the pipe it was cut for, that the
+press-fit diameter is the one it was set from. Those are not checks; they are
+gone, and the two lines that genuinely only report a figure now say so and
+are counted separately. And the sheet's section was hatched at 45 degrees,
+which is parallel to the bore it is drawn to show; 60 degrees is parallel to
+neither the bore nor the facet.
 
 ## The light pipe sheet is named with the boards, not apart from them
 

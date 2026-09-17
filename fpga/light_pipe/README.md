@@ -60,18 +60,24 @@ Three drawings and one chain between them, all machine-read by `design.py`:
   good to about ±0.20 mm and are marked MEASURED on the sheet; figures Bel
   dimensions carry Bel's own ±0.254 mm (`.XXX ±0.010 in`) and are marked
   STATED.
-- **Digilent's Arty A7 DXF and plot** put that jack on the board. The DXF's
-  two Ø1.575 mm pads are the jack's board locks; they are 16.104 mm apart
-  against Bel's `0.635 [16.13]`, which is what says the two drawings are of
-  the same part, and their midpoint is the jack's centre plane, `y = 44.000`.
-  The front face takes three readings that agree to 0.14 mm: the plot draws
-  the jack over its EMI springs, so the face is Bel's 0.64 mm spring wrap
-  behind the plot's front edge (0.400) and Bel's 25.53 mm body in front of
-  its back edge (0.527), and Bel's `0.305 [7.75]` from the board locks,
-  which runs to those same spring tips rather than to the face, gives 0.539.
-  The mean, `x = 0.463`, is what the sheet uses. Reading that 7.75 as if it
-  ran to the front face instead puts the jack 0.6 mm forward and fails both
-  of the plot's readings, which is how the misreading was caught.
+- **Digilent's Arty A7 DXF** puts that jack on the board. Its two Ø1.575 mm
+  pads are the jack's board locks; they are 16.104 mm apart against Bel's
+  `0.635 [16.13]`, which is what says the two drawings are of the same part,
+  and their midpoint is the jack's centre plane, `y = 44.000`. Bel's
+  `0.305 [7.75]` runs from those locks forward to the front face -- both ends
+  of it are in the side view's vector geometry, the face line the
+  `1.005 [25.53]` also starts from and the peg's own extension line 7.786 mm
+  behind it -- so the face is at `x = -0.101`, a tenth of a millimetre proud
+  of the board's own edge.
+
+  **Digilent's plot of the same jack disagrees**, and that is worth knowing
+  rather than averaging away. Read as the body plus what stands in front of
+  it, the plot puts that face 0.63 mm further back. The plot's own bodies are
+  good to about ±0.3, so 0.63 means its rectangle is not the jack's envelope:
+  a courtyard, or a footprint drawn with clearance. The sheet uses the DXF
+  reading and carries ±0.63 on it, and that uncertainty is on **where the
+  part sits on the board**, not on the part: the adapter butts against the
+  front face, wherever the front face is.
 - **Bivar's PLP2 drawing** is the bore. The pipe is a Ø2.8 mm rod on Ø3.1 mm
   press-fit ribs with a Ø3.3 x 0.8 mm domed flange, for a Ø2.92 mm hole in a
   1.19 to 2.36 mm panel, and the bore is built from exactly those figures.
@@ -81,8 +87,14 @@ Three drawings and one chain between them, all machine-read by `design.py`:
 The light leaves the window horizontally and has to arrive vertically, and
 there is almost nowhere to do the turn. In front of the jack is the cable; in
 the middle of the front face is the latch; the window itself is 2.88 x 2.57 mm
-and sits 0.28 mm inside the shield's edge with its lower edge **on** the top
-edge of the opening the plug goes through. So:
+and sits 0.235 mm inside the shield's edge with its lower edge **on** the top
+edge of the opening the plug goes through. And the front of this jack is not
+one plane: Bel's side view draws the face over z 0.51..10.46 and
+13.20..13.49 and, between those, the window band standing 0.64 mm in front of
+it. So the pipe tips are set from the window rather than from the face, and
+at maximum material, because the `0.025` that dimensions it carries Bel's
+±0.254: the tip stands 0.30 mm clear of a window as proud as it is allowed
+to be, and 0.55 mm clear of one as drawn. So:
 
 - **A bore at 45 degrees, not a bend.** A flexible light pipe looks like the
   obvious answer until you draw it: turning light through a right angle with
@@ -105,20 +117,24 @@ edge of the opening the plug goes through. So:
 - **Everything in front of the jack is above the plug.** The cheeks' undersides
   and both pipe tips stand 0.45 mm above the top edge of the plug aperture.
   A plug and a plain boot pass under them; a snagless boot standing proud of
-  the plug's own top face within 6 mm of the jack will not.
+  the plug's own top face within 7 mm of the jack will not.
 - **The jack's own EMI springs hold it on.** They stand 1.40 ±0.51 mm proud of
-  a 16.31 ±0.254 mm shield, and the skirts sit at ±8.81, so the spring is
-  deflected by between 0.12 and 1.39 mm per side across the whole of both
-  tolerance bands while the shield itself never touches. Nothing else fixes
-  the part: no screw, no glue, and nothing that has to be got at once the
-  board is in a box.
+  a 16.31 ±0.254 mm shield, and those two tolerances leave 0.64 mm to split
+  between clearing the shield and deflecting the spring. The skirts sit at
+  ±8.59: 0.31 mm clear of the shield at maximum material, and the spring
+  deflected by 0.33 mm at minimum material, 1.60 at maximum and 0.59 at the
+  figures Bel actually draws. The first version of this split it 0.53/0.11
+  and 0.11 mm of leaf-spring deflection is no grip at all, which matters
+  because nothing else fixes the part: no screw, no glue, and nothing that
+  has to be got at once the board is in a box. It has still never been tried
+  on a real jack.
 
 ## Printing it
 
 Print it **upside down, on its top face**. Everything else then grows from
 the build plate, the two 45 degree facets and the two bores are the only
 overhangs and both are at 45 degrees, and nothing needs support. Any opaque
-filament does; it is 0.78 cm³, about a gram.
+filament does; it is 0.80 cm³, about a gram.
 
 The one dimension a printer will get wrong is the bore. It is Ø2.92 mm for
 the first 2.00 mm from the facet, which is Bivar's own recommended mounting
@@ -133,6 +149,7 @@ surface. X runs back into the board, Y across it and Z up; the part is
 symmetric about Y = 0, so `adapter.py` gives one cheek, one bore, one pocket,
 one roof slot and one skirt, and the other of each is its mirror image.
 `JACK_FACE_X` and `JACK_CENTRE_Y` put that frame on the Arty A7 of
-[`fpga/boards.py`](../boards.py): the part occupies x -5.07 to 10.46 and
-y 33.79 to 54.21 in board coordinates, overhanging the board's front edge by
-5.07 mm.
+[`fpga/boards.py`](../boards.py): the part occupies x -6.53 to 9.90 and
+y 34.01 to 53.99 in board coordinates, overhanging the board's front edge by
+6.53 mm -- with the ±0.63 above on all of that, because it is the jack's own
+position on the board that is known that well.

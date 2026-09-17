@@ -243,17 +243,25 @@ checker that measures the finished PDFs rather than trusting them.
       pads are 16.104 mm apart, Bel's are 16.13
 - [x] Bore the part for a catalogue light pipe, Bivar `PLP2-4MM`, to Bivar's
       own mounting hole and panel thickness
-- [x] `fpga/light_pipe/verify.py`: 38 checks over the cable, the light path
-      and the fit
+- [x] `fpga/light_pipe/verify.py`: 37 checks over the cable, the light path
+      and the fit, and one figure it reports rather than claims
 - [x] `FPGA-LP-ARTY`, three views at 5:1, bound into
       `fpga-sheets.pdf`
 - [x] STEP solid, `fpga/light_pipe/output/arty-ethernet-light-pipe.step`
-- [ ] Print one and try it: the retention is a calculated interference on the
-      jack's EMI springs and the bore is a printed hole, and neither has been
-      put on a real jack
+- [x] Act on the review: the 7.75 reading, the proud LED window, the skirt
+      clearance against the grip, the section's hatch angle, the tautologies
+      in verify.py, `make clean`, and the file counts
+- [ ] Print one and try it. Two things are calculated and neither has been
+      put on a real jack: the retention, which is 0.33 mm of deflection in
+      the jack's own EMI spring at minimum material and nothing else, and the
+      bore, which is a printed hole holding a press fit
+- [ ] Decide whether 0.33 mm of spring deflection is enough grip in practice.
+      It is what the two tolerances leave after the shield is cleared by
+      0.31; if it turns out not to be, the answer is a barb on the skirt or
+      a screw into the roof, not a smaller clearance
 - [ ] Measure a snagless patch cord's boot against the cheeks. The sheet says
-      a boot standing proud of the plug's own top face within 6 mm of the
-      jack will foul them; that 6 mm is the part's own geometry, and no
+      a boot standing proud of the plug's own top face within 7 mm of the
+      jack will foul them; that 7 mm is the part's own geometry, and no
       published boot drawing was found to check it against
 - [ ] Say which LED is link and which is speed. Bel's schematic gives LED1 as
       yellow on pins 7/8 and LED2 as a bi-colour green/orange on 9/10;
