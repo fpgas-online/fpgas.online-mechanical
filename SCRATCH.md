@@ -1720,3 +1720,61 @@ the two bundles after it. Reading a file that is not a PDF is exactly what
 this check is for, so it is one problem now, quoting the size and what pypdf
 said -- 4096 bytes of a real bundle gives `PdfStreamError: Stream has ended
 unexpectedly`, and an empty file `EmptyFileError`.
+
+## Why the Sheets column read TT-DB- on one line and 01 on the next
+
+A screenshot of the front page's "What is here" table, taken while the sheets
+were still numbered: the middle column broke every sheet number in half,
+`TT-DB-` above and `01`..`06` below.  Nothing in the Markdown asked for it.
+GitHub lays a table out as `width: max-content; max-width: 100%`, and this
+table's natural width is wider than the README column it sits in -- 838 px in
+a 1440 px window, 582 px in a 1024 px one -- so the browser gives each column
+something between its smallest and its natural width.  A hyphen is a break
+opportunity, so the smallest `TT-DB-01` could be was the width of `TT-DB-`,
+and the third column, carrying up to 161 characters of Markdown, 123 of them
+rendered text, was worth more to the auto layout than the middle column's last
+twenty pixels.
+
+Measured rather than guessed: on the published page the `TT-DB-01` code span
+came back 45 px tall, two lines, with the `06` beside it sitting 24 px lower.
+
+Three fixes were rendered through GitHub's own `/markdown` API and each
+swapped into the live README's DOM, so the stylesheet and the column width
+doing the measuring were GitHub's:
+
+- **Shorter descriptions** in the third column.  Cut to about 50 characters
+  each, the identifiers still broke.  It moves the window width at which the
+  squeeze starts; it does not remove the squeeze.
+- **Non-breaking hyphens**, U+2011, inside the code spans.  The character
+  itself survives the pipeline -- it is `&nbsp;` and friends that do not,
+  because entities are not decoded inside backticks -- and the break goes
+  away at both widths.  Rejected anyway: it puts a character in the sheet
+  identifiers that no file name, no title block and no `grep` for one
+  contains, in aid of a rendering problem.
+- **Two columns**, the identifier leading the description.  Every one of them
+  stays on one line at both widths, because it is now at the start of a wide
+  cell and the wrapping lands on the prose after it.
+
+The last is what the README has.
+
+**Measured again once the numbers were names.**  Everything above was measured
+while the column held `TT-DB-01`..`06` and its four neighbours.  It now holds
+a family glob -- `TT-DB-*`, `TT-MP-*`, `RPI-*`, `FPGA-*`, `ACC-*` -- so the
+same three tables were rendered and swapped in a second time rather than
+assuming the squeeze had survived the rename.  It has: the three-column table
+still breaks `TT-DB-*` across two lines at a 567 px README column, and the
+two-column table keeps all five globs whole, one 20 px line each, at 567 px
+and at 838.  A glob leaves as many hyphens to break at as the number it
+replaced, so the fix is needed rather than made redundant, and it is the same
+fix, unchanged apart from what the cells say.
+
+(The README column measures 567 px in a 1024 px window today against the
+582 px recorded above.  Same window, same page; GitHub's own furniture around
+the column has moved in between.)
+
+The family READMEs name their sheets inside the description rather than in a
+column of their own, except the mounting plate's, which keeps a Sheet column
+of four.  Measured the same way, none of them broke a sheet number -- but
+`FPGA-BUTTERSTICK` comes back in two pieces at a 605 px body width and whole
+at 838.  That is this same squeeze turning up somewhere else, on tables this
+branch does not touch; it is noted here rather than fixed here.
