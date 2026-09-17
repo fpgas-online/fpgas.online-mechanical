@@ -8,7 +8,8 @@ jack and user LEDs marked.
 |---|---|
 | `boards.py` | **Generated.** Arty A7, ULX3S, PYNQ-Z2, ButterStick, Icepi Zero, Cynthion, Zybo Z7 and Ultra96-V2 |
 | `extract.py` | Reads each board's own published source and writes `boards.py` |
-| `output/` | `FPGA-ARTY-A7`, `FPGA-ULX3S`, `FPGA-PYNQ-Z2`, `FPGA-BUTTERSTICK`, `FPGA-ICEPI-ZERO`, `FPGA-CYNTHION`, `FPGA-ZYBO-Z7` and `FPGA-ULTRA96-V2`, as SVG and PDF, and `fpga-sheets.pdf`, the eight bound into one document |
+| `output/` | `FPGA-ARTY-A7`, `FPGA-ULX3S`, `FPGA-PYNQ-Z2`, `FPGA-BUTTERSTICK`, `FPGA-ICEPI-ZERO`, `FPGA-CYNTHION`, `FPGA-ZYBO-Z7` and `FPGA-ULTRA96-V2`, as SVG and PDF, and `fpga-sheets.pdf`, the eight and the light pipe below bound into one document |
+| [`light_pipe/`](light_pipe/README.md) | `FPGA-LP-ARTY`: a printed clip that brings the Arty A7's Ethernet LEDs round to a face you can see from above |
 
 ```sh
 tools/fetch_fpga.sh                                   # once, needs network
@@ -163,6 +164,11 @@ and the sheet says which it was.
   only networking on the board is Wi-Fi and Bluetooth. The hole diameter is the
   specification's M2.5, because the plot draws each hole as a solid 5.0 mm
   disc -- the keepout -- and no drill.
+
+One made part lives here rather than with the boards it is drawn from, the
+way the mounting plate lives under `tinytapeout/`: the Ethernet light pipe in
+[`light_pipe/`](light_pipe/README.md), which clips over the Arty A7's RJ45.
+Its sheet binds into `fpga-sheets.pdf` after the eight boards.
 
 The PYNQ-Z1 was looked at and left out: Digilent's 3D model of it has no
 mounting holes and its outline disagrees with their own stated size.

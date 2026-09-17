@@ -233,3 +233,29 @@ checker that measures the finished PDFs rather than trusting them.
       part would settle both
 - [ ] Check the derived socket footprint against a real board: it is the one
       figure here quoted at +/-1 mm rather than +/-0.2
+
+## 17. Arty A7 Ethernet light pipe (issue #8)  -- DONE
+- [x] Name the jack from Digilent's schematic: `J9`, Bel `08B0-1X1T-36-F`
+- [x] Measure its LED windows, plug aperture, latch keyway and EMI springs
+      off Bel's own drawing, scale recovered per axis from the figures it
+      dimensions
+- [x] Cross-check the two drawings against each other: Digilent's board-lock
+      pads are 16.104 mm apart, Bel's are 16.13
+- [x] Bore the part for a catalogue light pipe, Bivar `PLP2-4MM`, to Bivar's
+      own mounting hole and panel thickness
+- [x] `fpga/light_pipe/verify.py`: 38 checks over the cable, the light path
+      and the fit
+- [x] `FPGA-LP-ARTY`, three views at 5:1, bound into
+      `fpga-sheets.pdf`
+- [x] STEP solid, `fpga/light_pipe/output/arty-ethernet-light-pipe.step`
+- [ ] Print one and try it: the retention is a calculated interference on the
+      jack's EMI springs and the bore is a printed hole, and neither has been
+      put on a real jack
+- [ ] Measure a snagless patch cord's boot against the cheeks. The sheet says
+      a boot standing proud of the plug's own top face within 6 mm of the
+      jack will foul them; that 6 mm is the part's own geometry, and no
+      published boot drawing was found to check it against
+- [ ] Say which LED is link and which is speed. Bel's schematic gives LED1 as
+      yellow on pins 7/8 and LED2 as a bi-colour green/orange on 9/10;
+      Digilent's sheet 8 drives two of those four pins through 274 ohm
+      resistors, and which is which was not read off the schematic

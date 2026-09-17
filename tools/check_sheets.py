@@ -302,10 +302,9 @@ def check_drawing_names() -> list[str]:
     165 mm wide whatever a family chooses to call its sheets, and the
     families with no rule are named for stems nobody is keeping short for
     this: ``FPGA-BUTTERSTICK`` is 34.33 mm of lettering at the ISO 3098
-    minimum, the widest of the twenty-one names in the set, and the FPGA
-    sheet waiting on another branch will be ``FPGA-ARTY-ETHERNET-LIGHT-PIPE``
-    at 58.03 mm.  All nineteen names on a sheet with a title block fit the
-    79.30 mm that cell leaves, and clear the 38.05 mm a quarter-width one
+    minimum, the widest name that comes from a stem; the light pipe's sheet,
+    which has a rule of its own, is ``FPGA-LP-ARTY`` at 24.97 mm.  Every
+    name on a sheet with a title block fits the 79.30 mm that cell leaves, and clear the 38.05 mm a quarter-width one
     would have left as well -- the closest by 3.72 mm, where before the
     mounting plate had a rule of its own the closest was 0.49 mm.
     ``Sheet._title_cell``

@@ -2720,3 +2720,195 @@ padding -- the M.2 citation is now the two sections the drawing rests on, the
 SQRL quotation elides the sentence between the two halves that matter -- and
 the notes lost the sentence that said what the phantom schedules contain, now
 that those schedules are headed with the name of the part they belong to.
+
+## The Arty A7's Ethernet LEDs face the wrong way
+
+Issue #8: draw a light pipe adapter that takes the Arty A7's Ethernet LEDs
+and makes them visible from above without blocking the cable. The LEDs are
+not on the board at all -- they are inside the RJ45 and shine forwards out of
+two windows in its front face -- so the first question was which jack it is
+and what its front face looks like, and neither is in anything the repository
+already had. `fpga/boards.py` has the jack as a 26.3 x 18.84 mm rectangle
+read off Digilent's PDF plot, and a rectangle cannot say where a window is.
+
+### The chain, and the cross-check that made it trustworthy
+
+Digilent's schematic names it: sheet 8, ETHERNET, `J9`, `BEL-08B0-1X1T-36-F`.
+Bel publish a drawing of that MagJack whose front view is vector art, so the
+same trick `fpga/extract.py` plays on Digilent's Arty plot works on it --
+recover the plot scale from dimensions the drawing states, then measure
+everything else off the geometry. The scale comes from the `0.642 [16.31]`
+and `0.531 [13.49]` overall figures, per axis; the two axes agree to 0.58 %,
+which is the number the sheet quotes.
+
+What makes the result trustworthy is the cross-check rather than the reading.
+Bel's recommended footprint has two Ø0.062 [1.57] board-lock holes `0.635
+[16.13]` apart; Digilent's DXF has exactly two Ø1.575 mm pads by the jack,
+and they are 16.104 mm apart. 0.025 mm between two independently published
+drawings is not a coincidence, and it is what says the two are of the same
+part. The rest of the numbers followed:
+
+| | from | value |
+|---|---|---|
+| Jack centre plane | DXF pegs, midpoint | y = 44.000 |
+| Front face | plot and Bel, three readings | x = 0.463 |
+| LED window (each) | Bel front view, measured | y 5.04..7.92, z 10.63..13.20 |
+| Plug aperture | Bel front view, measured | \|y\| <= 6.56, z 3.02..10.64 |
+| Latch keyway | Bel front view, measured | \|y\| <= 3.32, z 10.64..13.49 |
+| Side EMI spring | Bel front view, measured | y 9.18, z 7.95..8.80 |
+| Top EMI spring | Bel front view, measured | y 2.92..4.12, up to z 14.52 |
+
+The plot in `fpga/boards.py` and Bel's drawing agree on the jack, too, once
+you know what the plot is drawing: 18.84 mm across is the shield's 16.31 plus
+an EMI spring standing about 1.02 mm proud on each side, and 26.30 deep is
+the 25.53 body plus the 0.64 the side springs wrap round the front. So
+Digilent's rectangle is the jack over its springs, which is the right thing
+for a board drawing and the wrong thing to design a clip against.
+
+### The front face, and the dimension that was read backwards
+
+The first version of this took Bel's `0.305 [7.75]`, which the side view's
+bottom stack measures from the board-lock pegs, as running to the housing's
+front face, and put that face at x = -0.101 -- a tenth of a millimetre proud
+of the board's own edge, which is a suspiciously neat answer. It is wrong by
+0.64 mm, and the plot is what caught it. Read as the jack over its springs,
+the plot says the face is at 0.400 measured from its front edge and 0.527
+from its back; 7.75 read to the face says -0.101, which is 0.5 mm outside the
+plot's own +/-0.3. Read instead to the spring tips, where the drawing's other
+extremity dimension puts them, it says 0.539 and all three agree to 0.14 mm.
+
+The vector geometry settles it: in the side view, the peg's own extension
+line to the LED lead row measures exactly Bel's 16.81, and the same peg is
+7.19 mm behind the housing's front face -- 7.75 less the 0.64 the springs
+wrap forward. `design.py` now takes the mean of the three readings, 0.463,
+and raises if any of them disagrees with another by more than the plot's
++/-0.3. The lesson is the old one in a new place: a dimension on someone
+else's drawing is a number *and* a pair of witness lines, and only one of
+those is written down.
+
+### Reading the drawing by machine, and the three ways it went wrong
+
+The front view is 2,300 straight segments, and every early rule for finding a
+feature in it picked something else.
+
+- Taking the *extent* of a line as its length. Lines come in pieces; the
+  longest line on the view, the one the LED windows sit on, is eight of them.
+  But two short pieces at either end of the view also span twelve
+  millimetres, so a search for "the horizontal line at least twelve long"
+  found a line that draws three millimetres of ink. `_collect` now returns
+  both the extent and the drawn length and the searches use the drawn one.
+- Searching above a height. The keyway's own side line is drawn in pieces
+  that start below the aperture, so "the outermost vertical wholly above the
+  aperture" found the LED window's frame at 4.92 instead of the keyway at
+  3.32. The rule that works asks where a line *ends*: between the aperture's
+  top and the top of the shield.
+- Letting a dimension's extension line into the view. One is drawn up the
+  same X as a side EMI spring and reaches z = 29.6, which made the spring
+  look like it ran the height of the sheet.
+
+Every search is hinted -- identification by hand, measurement by machine --
+and every one raises rather than guesses if the hint finds nothing.
+
+### What was tried and rejected
+
+**A flexible light pipe.** The obvious part for turning light through a right
+angle, and geometrically the worst: a bend is a quarter circle, and a quarter
+circle stands as far in front of the jack as its own bend radius. For a pipe
+thick enough to carry this light that is over a centimetre, straight into the
+path of the cable. Rejected on the drawing, before any datasheet was fetched.
+
+**A vertical bore with the pipe's tip mitred at 45 degrees.** This is what a
+right-angle light pipe is, and it would aim the lens straight up instead of
+up and forward. Rejected because the mitre is a hand operation on a Ø2.8 mm
+polycarbonate rod and its polish decides whether the part works: a saw-cut
+face scatters rather than reflects. A catalogue pipe pressed into a printed
+hole has no such step, and "visible from above" survives a 45 degree lens.
+
+**Printing the pipes in clear filament.** Allowed by the issue and rejected
+for the same reason: a printed clear part is a stack of layer lines, so it
+leaks light everywhere rather than guiding it, and nothing about it can be
+cited. The bore is Bivar's own recommended mounting hole, so anyone who wants
+to try a printed pipe can still print one to Ø2.8 and put it in the same
+hole.
+
+**A roof resting on the jack's top EMI springs.** Tempting, because the
+springs would preload the part. Rejected: they push it *up*, and nothing
+pushes back. The roof clears the shield by 0.86 mm at maximum material and
+has two slots through it so the springs pass rather than press.
+
+**Screws, glue, a board-edge clip.** The Arty has no mounting holes at all,
+so a board-edge clip would have to be sized to a board thickness nobody
+publishes for this board, and reach round to an underside nobody has drawn.
+The jack's own side springs are a documented interference that works across
+both tolerance bands: 0.12 mm of deflection per side at minimum material,
+1.39 at maximum, with the shield never touching the skirt.
+
+### The squeeze, in one paragraph
+
+The LED window's lower edge is *on* the top edge of the opening the plug goes
+through, both at z = 10.63. Everything the part puts in front of the jack has
+to live in the 2.9 mm between that edge and the top of the shield, outside a
+6.64 mm keyway in the middle of it, and still look at a window 2.88 mm wide
+sitting 0.28 mm inside the shield's edge. What fell out is a 3.2 mm bore at
+45 degrees whose tip projects onto the window as a 2.80 x 1.98 mm ellipse,
+0.45 mm above the plug, with a 0.80 mm wall inboard of it and the channel
+over the latch 8.16 mm wide. There was no room to round any of it off, which
+is why the part's dimensions are three-decimal numbers derived from the
+jack's rather than the round figures a hand-drawn part would have.
+
+### The sheet
+
+Three views at 5:1, first angle, and they only fit because the notes were cut
+to what the drawing cannot say. The A3 drawing area is 217 mm wide and the
+three views take 199 of it, so every dimension lives in one of three gutters:
+the nine millimetres right of the front elevation, the sixteen between the
+section and the plan -- shared, because the section is above and the plan
+below -- and the paper under the section, where the bore's callouts stack.
+Two dimensions were moved out of the annotation column after `check_sheets`
+found a line ruled through `NOTES (continued)`, and the front elevation's
+widths went above the view after the same check found them crossing the
+plan's caption.
+
+The section is the view the part exists for: it is the only one where the
+bore, the pipe in it, the air gap to the jack and the LED window are all in
+true shape.
+
+## The light pipe sheet is named with the boards, not apart from them
+
+`fpga/light_pipe/` has an output directory of its own and so a `FAMILY_DIRS`
+row of its own, and `drawing_name` exits on a family that has one of those
+and no `FAMILY_PREFIXES` row, which is how the question of what this
+sub-family's prefix is got asked at all rather than being answered by
+silence.
+
+Three candidates were measured first, with the drafting library's own
+metrics at the ISO 3098 floor, against the 79.30 mm of room the DRAWING NO
+cell has, and every one of them was the file stem behind a prefix:
+
+| prefix | lead | name | width |
+|---|---|---|---|
+| `FPGA-LP` | `arty-ethernet` | `FPGA-LP-LIGHT-PIPE` | 34.90 mm |
+| `FPGA-LP` | -- | `FPGA-LP-ARTY-ETHERNET-LIGHT-PIPE` | 63.48 mm |
+| `FPGA` | -- | `FPGA-ARTY-ETHERNET-LIGHT-PIPE` | 58.03 mm |
+
+All three fit, and the third was taken for saying each thing once: the
+first drops the board, and the second says light pipe twice. Then the owner
+asked for every sheet in the stack to carry a name as short as #30's, which
+put every stem-shaped name out of reach -- a light pipe stem says the board,
+the jack and the part, and a drawing number should say the part and the
+board in four or five characters. So the sub-family has a prefix of its own
+after all, `FPGA-LP`, and a rule, `lp_name`, whose table `LP_NAMES` gives
+`arty-ethernet-light-pipe` the one word ARTY: `FPGA-LP-ARTY`, 24.97 mm.
+Kind first and then which, as `ACC-HAT-PMOD` is, and both earlier
+objections went with the stem: nothing says light pipe twice, and the board
+is said.
+
+The directory is still a filing decision -- a made part has a design script,
+a verifier and a STEP solid, and none of those belong among the extracted
+board data in `fpga/` -- and the *sheet* is still a sheet of the FPGA set:
+it binds into `fpga-sheets.pdf` as its ninth page, after the board it clips
+onto, and the prefix says which set. Two prefixes begin `FPGA` now, which is
+safe for the reason the rule is safe at all: `check_sheets.check_drawing_names`
+tests uniqueness, and that no name is a prefix of another, across the whole
+set rather than family by family, so a collision between the two directories
+is a failed check and not a surprise on paper.

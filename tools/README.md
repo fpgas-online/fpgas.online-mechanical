@@ -35,7 +35,8 @@ Imported, not run.
 The extractors are not here. Each lives with its subject:
 [`tinytapeout/extract.py`](../tinytapeout/README.md),
 [`raspberry_pi/extract.py`](../raspberry_pi/README.md),
-[`fpga/extract.py`](../fpga/README.md), and
+[`fpga/extract.py`](../fpga/README.md),
+[`fpga/light_pipe/design.py`](../fpga/light_pipe/README.md), and
 [`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md).
 
 ## Checks
