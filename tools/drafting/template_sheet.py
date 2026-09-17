@@ -30,6 +30,7 @@ import math
 
 from tinytapeout.mounting_plate.plate import (PLACEMENTS, PMOD_BODY,
                                               PMOD_ROW_Y, PMOD_SLOT_X, PLATE)
+from tools.layout import PLATE_SHEET
 from tools.schema import LABEL_SEP, Outline
 from tinytapeout.boards import BOARDS as TT_BOARDS
 
@@ -259,7 +260,8 @@ def schedule_blocks() -> list[tuple[str, list[list[str]]]]:
 
     Indexed the way someone at a drill press asks the question.  The flat
     table this replaced was indexed by hole and answered "what is this hole
-    for", which is the fabricator's question and is already on TT-MP-01; a
+    for", which is the fabricator's question and is already on the plate
+    fabrication drawing; a
     person holding a v3.3 board wants to be told H9 and H10 and nothing else.
 
     Grouping cannot partition the features, because H1, H9, S1 and S2 each
@@ -330,7 +332,8 @@ COMMON_NOTES = [
 TAIL_NOTES = [
     "Tape it down printed side up, FRONT EDGE along the edge the Pmod bodies "
     "will overhang, and punch every cross.",
-    "With a mill or a DRO, work from the coordinates on TT-MP-01 instead.",
+    f"With a mill or a DRO, work from the coordinates on {PLATE_SHEET} "
+    "instead.",
 ]
 
 def _fixing_span() -> str:
@@ -400,6 +403,26 @@ TITLES = {
 WARNING = "PRINT AT 100 %   -   DO NOT FIT TO PAGE"
 
 
+def _fit_beside(kind: str, text: str, room: float, neighbour: str,
+                face: str = "condensed", bold: bool = False) -> float:
+    """The size *text* is set at beside *neighbour*, or a refusal to draw it.
+
+    ``fit_size`` returns the ISO 3098 floor when nothing on the ladder fits,
+    which would put the two strings through each other rather than say so.
+    The page is A4 and both strings are content, so there is nothing to do
+    automatically: one of them has to get shorter, and a person has to choose
+    which.
+    """
+    size = fit_size(text, room, face=face, bold=bold)
+    width = style.text_width(text, size, face=face, bold=bold)
+    if width > room:
+        raise SystemExit(
+            f"{kind} drill template: the header line holds {room:.1f} mm "
+            f"beside {neighbour!r}, and {text!r} needs {width:.1f} mm at the "
+            "ISO 3098 floor. Shorten one of them.")
+    return size
+
+
 def render_drill_template(kind: str, *, drawing_no: str,
                           version: str) -> TemplatePage:
     if kind not in TITLES:
@@ -413,17 +436,26 @@ def render_drill_template(kind: str, *, drawing_no: str,
     # -- header ------------------------------------------------------------
     title, subtitle = TITLES[kind]
     y = area.y1
-    stamp = f"{drawing_no}    {version}    A4 PORTRAIT    SCALE 1:1"
-    # The stamp is fixed-width and the title is not, so the title is the one
-    # that gives way; setting both at their natural sizes ran one through the
-    # other.
+    # What the sheet is goes on the title line, what it was drawn from on the
+    # the line under it.  All four used to share the first line, which was
+    # affordable while a drawing number was eight characters; a drawing name
+    # is as long as it needs to be to say which sheet this is, and
+    # TT-MP-CHASSIS-DRILL-TEMPLATE beside the version left the title less
+    # than the ISO floor needs.
+    #
+    # Each line's right-hand string is fixed-width and its left-hand one is
+    # not, so the left one gives way; setting both at their natural sizes ran
+    # one through the other.
+    stamp = f"{drawing_no}    A4 PORTRAIT    SCALE 1:1"
     avail = area.w - style.text_width(stamp, style.T_TINY) - 6.0
-    tsize = fit_size(title, avail)
+    tsize = _fit_beside(kind, title, avail, stamp, face="sans", bold=True)
     c.text(area.x, y - tsize, title, size=tsize, face="sans", bold=True)
     c.text(area.x1, y - tsize, stamp, size=style.T_TINY, anchor="end")
     y -= tsize + 2.8
-    ssize = fit_size(subtitle, area.w, face="condensed", bold=False)
+    avail = area.w - style.text_width(version, style.T_TINY) - 6.0
+    ssize = _fit_beside(kind, subtitle, avail, version)
     c.text(area.x, y - ssize, subtitle, size=ssize)
+    c.text(area.x1, y - ssize, version, size=style.T_TINY, anchor="end")
     y -= ssize + 3.6
 
     box_h = 11.0
