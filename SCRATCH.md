@@ -2912,3 +2912,30 @@ safe for the reason the rule is safe at all: `check_sheets.check_drawing_names`
 tests uniqueness, and that no name is a prefix of another, across the whole
 set rather than family by family, so a collision between the two directories
 is a failed check and not a surprise on paper.
+
+## A centre line through text is a defect the check could not see
+
+`check_sheets.py` reports a line ruled through a label, and it never reported
+a centre line, because `CHECKED_STROKES` leaves black out. That exclusion is
+right for what it was written for: table rules and heading underlines are
+black, and they are drawn deliberately close to their own text, so checking
+them would have failed every sheet in the set. Centre lines are black too,
+and went through the same hole.
+
+They are the lines most likely to need it. A centre line is annotation rather
+than geometry: it is run a couple of millimetres past the part by eye, and
+what is a couple of millimetres on the model is ten on a 5:1 sheet, landing
+in whatever the view has below or above it. The light pipe sheet had three of
+them, each about 2.2 mm of line through a label: the front elevation's Y = 0
+line into the `17.18` dimension text under the view, and the plan's X = 0 line
+into the `PLAN` caption above it and the `X0 Y0` datum label below the marker.
+All three are drawing faults nobody had noticed, and none of them is the
+section mark, which is drawn in the dimension colour and was always checked.
+
+A centre line is told from a table rule by its dash pattern rather than by
+where it is: nothing else on a sheet is drawn with `style.D_CENTRE`. So the
+rule is one clause -- black *and* dashed that way -- and the regex grew a
+group for the rest of the tag to read the dash from. Run over all 28 sheets it
+reports exactly those three and nothing else, which is the answer a new rule
+wants: it finds the thing it was written for, and it does not turn the rest of
+the set red.
