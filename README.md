@@ -164,22 +164,22 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate.png" width="270" alt="TT-MP TT Generic Mounting Plate"></a><br>
-<b>TT-MP</b> TT Generic Mounting Plate<br>Accepts every demo board revision, Pmod hosts fixed in place
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate.png" width="270" alt="TT-MP-PLATE TT Generic Mounting Plate"></a><br>
+<b>TT-MP-PLATE</b> TT Generic Mounting Plate<br>Accepts every demo board revision, Pmod hosts fixed in place
 </td>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-FITTING-GUIDE TT Mounting Plate Fitting Guide"></a><br>
-<b>TT-MP-FITTING-GUIDE</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-PLATE-FITTING-GUIDE TT Mounting Plate Fitting Guide"></a><br>
+<b>TT-MP-PLATE-FITTING-GUIDE</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-DRILL-TEMPLATE Drill Template: Mounting Plate"></a><br>
-<b>TT-MP-DRILL-TEMPLATE</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-PLATE-DRILL-TEMPLATE Drill Template: Mounting Plate"></a><br>
+<b>TT-MP-PLATE-DRILL-TEMPLATE</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
 </td>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-CHASSIS-DRILL-TEMPLATE Drill Template: Chassis"></a><br>
-<b>TT-MP-CHASSIS-DRILL-TEMPLATE</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE Drill Template: Chassis"></a><br>
+<b>TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
 </td>
 </tr>
 </table>
