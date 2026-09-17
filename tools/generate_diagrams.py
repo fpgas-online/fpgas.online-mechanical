@@ -65,8 +65,8 @@ RPI_BUNDLE = "raspberry-pi-sheets.pdf"
 FPGA_BUNDLE = "fpga-sheets.pdf"
 
 # Reading order: what a bound copy pages through and what the README grid
-# runs across.  It numbers nothing -- a sheet's drawing name comes from its
-# own file stem, see tools.layout.drawing_name -- so adding a board here
+# runs across.  It numbers nothing -- a sheet's drawing name is derived from
+# the sheet itself, see tools.layout.drawing_name -- so adding a board here
 # cannot renumber the sheets already drawn.
 TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.1", "v1.2.2", "v1.2.3",
             "v2.0.1", "v2.1.0", "v2.1.2", "v3.2", "v3.3"]
@@ -109,9 +109,10 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
     each meant two drawings a reader had to compare to discover they were
     identical, which the sheets themselves then said in a note.  They are
     merged instead, and the sheet names every revision and shuttle it covers.
-    Each returns with the file stem it is written to, which is also where its
-    drawing name comes from; ``layout.tt_stem`` assembles it from the first
-    revision and the last, and the title and notes here carry the rest.
+    Each returns with the file stem it is written to, which is also what its
+    drawing name is worked out from: ``layout.tt_stem`` assembles the stem
+    from the first revision and the last, ``layout.tt_name`` takes the name
+    from the front of it, and the title and notes here carry the rest.
 
     The data keeps every revision: it is a database of what was built, and the
     plate is designed against individual revisions.  Only the drawing set is

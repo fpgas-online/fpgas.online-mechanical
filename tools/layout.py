@@ -18,6 +18,7 @@ answered here too.  See ``drawing_name``.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -38,10 +39,11 @@ TT_STEM_LEAD = "tt-demo-board"
 
 #: Each accessory sheet's file stem, by the key of the part it is drawn from.
 #: Here rather than in the generator because a stem is where a sheet lives,
-#: and because the notes on other sheets cite these by name and must derive
-#: that name from the same string the file is written to.
+#: and because ``ACC_NAMES`` below turns that same stem into the drawing name
+#: the notes on other sheets cite, so the file and the name it is quoted by
+#: are both derived from one string.
 #:
-#: A stem names the sheet, and the sheet's title block already says who makes
+#: A stem names the file, and the sheet's title block already says who makes
 #: the part and what its part number is, so the stem is left to say what the
 #: thing is.  What that drops differs by row, and only two of the four keys
 #: carry a vendor at all:
@@ -64,6 +66,29 @@ ACC_STEMS = {
 
 PMOD_HAT_STEM = ACC_STEMS["pmod-hat-adapter"]
 
+#: What each accessory sheet is called, by the file stem it is written to.
+#: ``acc_name`` reads it, and ``drawing_name`` puts ``ACC-`` in front.
+#:
+#: A table and not a rule, because these stems are words rather than codes and
+#: no mechanical shortening of ``raspmod`` or ``poe-microusb`` leaves four
+#: characters that still say which part it is.  Keyed by the stem rather than
+#: by the part key so that the name can be worked out from a rendered file,
+#: which is what ``drawing_name_for`` and both checks do.
+#:
+#: The first word is the kind and the second is which one of that kind, so two
+#: names quoted in the same note show at a glance which two parts are
+#: alternatives to each other.  HAT is Digilent's own word for the adapter
+#: that sits on the Pi's 40-pin header; the Raspmod is filed under it as the
+#: other way of getting Pmod ports onto a Pi, though it is not a HAT in the
+#: Raspberry Pi specification's sense and reaches the Pi over a ribbon cable
+#: instead -- which is what ``accessories/raspmod-vs-pmod-hat.md`` is about.
+ACC_NAMES = {
+    "pmod-hat": "hat-pmod",      # Digilent's Pmod HAT Adapter
+    "raspmod": "hat-rmod",       # the Raspmod, the other Pi-to-Pmod board
+    "poe-usbc": "poe-usbc",      # Waveshare's splitter, Type-C output
+    "poe-microusb": "poe-musb",  # the generic splitter, micro-USB output
+}
+
 #: The mounting plate's four file stems.
 PLATE_STEM = "tt-generic-mounting-plate"
 FITTING_GUIDE_STEM = f"{PLATE_STEM}-fitting-guide"
@@ -75,7 +100,9 @@ DRILL_TEMPLATE_STEMS = {
 }
 
 #: Each family's drawing-name prefix, and the head of its file stems that the
-#: prefix already says.  Adding a family is one row here beside its row above.
+#: prefix already says.  Adding a family is one row here beside its row above,
+#: and a row in ``FAMILY_NAME_RULES`` as well if what is left of its stems is
+#: longer than a drawing number should be.
 #:
 #: The lead is stripped so a name says each thing once: the demo board stems
 #: all begin ``tt-demo-board``, which ``TT-DB`` is, and every mounting plate
@@ -112,13 +139,19 @@ def tt_stem(keys: list[str]) -> str:
     v1.2.3 give ``tt-demo-board-v1p2p1-v1p2p3``.
 
     It listed every revision it covered, and every board name with it:
-    ``tt-demo-board-tt123-v2p2p5-tt123-v2p2p6``, whose drawing name ran to
-    31 characters and said tt123 twice.  A range says which revisions in the
-    length of two, and the revisions are in order, so the end points are the
-    range.  What the range cannot say -- that the middle revision is on this
-    sheet too, and which shuttles and kits it went out in -- the title, the
-    subtitle and the notes say in full, and they are what a reader of the
-    drawing has in front of them.
+    ``tt-demo-board-tt123-v2p2p5-tt123-v2p2p6``, 39 characters that said
+    tt123 twice.  A range says which revisions in the length of two, and the
+    revisions are in order, so the end points are the range.  What the range
+    cannot say -- that the middle revision is on this sheet too, and which
+    shuttles and kits it went out in -- the title, the subtitle and the notes
+    say in full, and they are what a reader of the drawing has in front of
+    them.
+
+    The range is kept for the file name's own sake, not for the drawing
+    name's: the sheet is called ``TT-DB-TT123`` or ``TT-DB-V121``, by
+    ``tt_name``, which takes the front of this and nothing else.  Somebody
+    choosing between files in a directory listing is the reader this is for,
+    and both end points are worth the characters to them.
     """
     first, last = slug(keys[0]), slug(keys[-1])
     if first == last:
@@ -141,13 +174,96 @@ def acc_stem(key: str) -> str:
             "the vendor the title block already names")
 
 
+#: A stem word that is a board revision: ``v3p3``, ``v2p1p2``, and ``v2`` if
+#: a board is ever cut at a major revision.  The ``p`` is ``slug``'s, standing
+#: in for the dot the revision is written with everywhere else.
+REVISION_RE = re.compile(r"v\d+(?:p\d+)*")
+
+
+def tt_name(rest: str) -> str:
+    """What the demo board sheet whose stem ends in *rest* is called.
+
+    *rest* is the stem with ``tt-demo-board`` taken off: hyphen-separated
+    words, a board name first where the revisions carry one and then the
+    revisions the sheet covers, so ``tt123-v2p2p5-v2p2p6``, ``v1p2p1-v1p2p3``
+    or ``v3p3``.
+
+    A board name is both shorter and more memorable than a revision, so it
+    wins where there is one and ``tt123-v2p2p5-v2p2p6`` is ``TT123``.
+    Otherwise the name is the first revision with the ``p`` separators taken
+    out: ``v1p2p1-v1p2p3`` is ``V121``, ``v2p1p2`` is ``V212`` and ``v3p3`` is
+    ``V33``.
+
+    Naming a sheet after one of the revisions it covers is honest rather than
+    approximate, because a sheet covers exactly one geometry and the first
+    revision to carry that geometry is where it came from: v1.2.2 and v1.2.3
+    are on the ``V121`` sheet because mechanically they are the v1.2.1 board.
+    The stem keeps the range, so the file still says where the sheet stops as
+    well as where it starts, and the sheet's title, subtitle and notes list
+    every revision and every shuttle in full -- which is what a reader with
+    the drawing in front of them actually has.
+    """
+    first = rest.split("-")[0]
+    if not REVISION_RE.fullmatch(first):
+        return first
+    return first.replace("p", "")
+
+
+def acc_name(stem: str) -> str:
+    """What the accessory sheet written to *stem* is called: see ACC_NAMES."""
+    try:
+        return ACC_NAMES[stem]
+    except KeyError:
+        raise SystemExit(
+            f"no drawing name for the accessory sheet {stem!r}; add one to "
+            "ACC_NAMES in tools/layout.py, as the kind of part it is -- HAT "
+            "for a board on the Pi's header, POE for a splitter -- and four "
+            "or five characters saying which one")
+
+
+#: How a family cuts what is left of a stem down to a drawing name, for the
+#: two families that need it.  A separate table rather than a third column of
+#: FAMILY_PREFIXES: several branches are open at once each adding a row to
+#: that table, and changing its shape would conflict with every one of them,
+#: where a new table beside it conflicts with nothing.
+#:
+#: A family with no rule here is named for its stem, which is the ordinary
+#: case and wants no table: RPI-3B, FPGA-ARTY-A7 and TT-MP-PLATE are already
+#: as short as their sheets can honestly be said to be.  The two families here
+#: are the ones where the stem is not: a demo board's carries every revision
+#: the sheet covers, and an accessory's says in words what the part is.  Both
+#: are right for a file name and far too long for a drawing number.
+FAMILY_NAME_RULES = {
+    "tinytapeout": tt_name,
+    "accessories": acc_name,
+}
+
+
 def drawing_name(family: str, stem: str) -> str:
     """What the DRAWING NO cell of *stem*'s title block says.
 
     The name is the sheet's own file stem in capitals, behind its family's
     prefix, with the part of the stem the prefix already says taken off:
     ``fpga/output/arty-a7.svg`` is ``FPGA-ARTY-A7`` and
-    ``tinytapeout/output/tt-demo-board-v3p3.svg`` is ``TT-DB-V3P3``.
+    ``raspberry_pi/output/rpi5.svg`` is ``RPI-5``.
+
+    A family may shorten what is left of its stem instead, by having a rule
+    in ``FAMILY_NAME_RULES``: the demo boards and the accessories do, so
+    ``tinytapeout/output/tt-demo-board-v1p2p1-v1p2p3.svg`` is ``TT-DB-V121``
+    and ``accessories/output/pmod-hat.svg`` is ``ACC-HAT-PMOD``.  The rule is
+    a function of the stem and nothing else, because ``drawing_name_for`` has
+    to answer from a rendered sheet's path alone.
+
+    The two are named for different readers, which is why they are allowed to
+    differ.  A drawing number is read off a title block, quoted in a note on
+    another sheet, written on a purchase order and said out loud across a
+    workshop, so it has to be short enough to take in at a glance and to copy
+    without a slip; the owner's figure is at most four or five characters
+    behind the family's prefix.  A file name is read once from a directory
+    listing by somebody who is choosing between files, and can afford to say
+    more -- which is exactly what the demo board stems and the accessory
+    stems do say.  So the stems are left alone, every link and preview that
+    cites them keeps working, and only the name is cut.
 
     It used to be a sequence position -- ``enumerate()`` over a reading-order
     list -- which meant a sheet's identity depended on what else was in the
@@ -157,10 +273,14 @@ def drawing_name(family: str, stem: str) -> str:
     number.  A name derived from the sheet alone is fixed the moment the sheet
     is created, and nothing else in the set can take it away.
 
-    Two sheets in one family collide only if their stems differ by something
-    ``slug`` and ``upper`` throw away -- ``rpi5``, ``rpi-5`` and ``rpi_5`` all
-    give ``RPI-5`` -- so uniqueness is very nearly the file system's, but not
-    quite, and ``tools/check_sheets.py`` checks it rather than assuming it.
+    Two sheets in a family with no rule collide only if their stems differ by
+    something ``slug`` and ``upper`` throw away -- ``rpi5``, ``rpi-5`` and
+    ``rpi_5`` all give ``RPI-5`` -- so uniqueness is very nearly the file
+    system's, but not quite.  A rule throws away more than that by design: two
+    demo board sheets starting at one revision would both take its name, and
+    two rows of ``ACC_NAMES`` could be given the same value.  Neither is
+    reachable today, and neither is argued about here, because
+    ``tools/check_sheets.py`` checks the whole set rather than assuming it.
 
     A family whose lead is one of its own stems has one sheet the stripping
     leaves nothing of: the mounting plate's fabrication drawing is written to
@@ -193,6 +313,10 @@ def drawing_name(family: str, stem: str) -> str:
     rest = slug(stem)
     if lead and rest.startswith(lead):
         rest = rest[len(lead):] or lead.rsplit("-", 1)[-1]
+    rest = rest.strip("-")
+    rule = FAMILY_NAME_RULES.get(family)
+    if rule is not None and rest:
+        rest = rule(rest)
     rest = rest.strip("-").upper()
     if not rest:
         raise SystemExit(
