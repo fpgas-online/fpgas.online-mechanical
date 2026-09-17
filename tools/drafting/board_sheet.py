@@ -122,6 +122,12 @@ class _Ballooned:
     #: nearest.  Held as an index, not as the rectangle itself: two features
     #: with the same bounding box would otherwise both be exempted.
     own: int | None = None
+    #: The line type the balloon's ring is drawn in.  A board sheet draws
+    #: one part once and leaves these alone; the Raspberry Pi comparison
+    #: sheet superimposes three models, where the ring is the only thing
+    #: that can say which of them a number belongs to.
+    colour: str = style.C_HIGHLIGHT
+    dash: str | None = None
 
     def anchors(self) -> tuple[tuple[float, float], ...]:
         return self.tips or (self.tip,)
@@ -639,7 +645,8 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
             break
 
     for item, tip, pos in zip(items, anchor, placed):
-        dims.balloon(c, tip, pos, item.label, radius=BALLOON_R)
+        dims.balloon(c, tip, pos, item.label, radius=BALLOON_R,
+                     colour=item.colour, dash=item.dash)
 
 
 def _radius_callout(o, board: Rect, sheet: Sheet, view: View
@@ -793,7 +800,14 @@ def draw_legend(sheet: Sheet, entries: list[tuple[str, str]]) -> None:
     c = sheet.canvas
     y = sheet.heading(rect, "LEGEND")
     for kind, label in entries:
-        if kind.startswith("#"):
+        if isinstance(kind, tuple):
+            # A style that belongs to one sheet rather than to the library:
+            # the Raspberry Pi comparison draws one line type per model,
+            # which means nothing anywhere else and so is not in
+            # LEGEND_STYLES.  Given here it still cannot be described in the
+            # legend without being drawn from the same four values.
+            shape, w, colour, dash = kind
+        elif kind.startswith("#"):
             shape, w, colour, dash = "hole", style.W_OUTLINE, kind, None
         else:
             shape, w, colour, dash = LEGEND_STYLES[kind]
