@@ -530,7 +530,11 @@ def render_rpi_comparison(*, drawing_no: str, version: str,
     # reservations for them go in here, at the same point in the obstacle
     # list a board sheet puts them.
     reserve_radius_callout(sheet, view, base, board, obstacles)
-    reserve_overall_dimensions(sheet, view, base, board, obstacles, edge_only)
+    # The three model sheets keep their X chain on the bottom edge (every
+    # Pi votes for it under _x_chain_edge), so this sheet says so rather
+    # than take the default, and lines up with them by construction.
+    reserve_overall_dimensions(sheet, view, base, board, obstacles, edge_only,
+                               chain_edge="bottom")
 
     items: list[_Ballooned] = []
     # Largest first, as on a board sheet: the big boxes have the least
@@ -558,7 +562,7 @@ def render_rpi_comparison(*, drawing_no: str, version: str,
     # outline they are all drawn on is one and the same.  Hole and connector
     # positions are dimensioned there and tabulated here, so this sheet
     # carries the library's outline frame and nothing else.
-    draw_outline_frame(sheet, view, base, board)
+    draw_outline_frame(sheet, view, base, board, chain_edge="bottom")
 
     # --- annotation column --------------------------------------------------
     rows = _feature_rows()
