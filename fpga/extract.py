@@ -39,8 +39,8 @@ from tools.kicad_extract import one  # noqa: E402
 SRC = ROOT / "tmp" / "src"
 WORK = ROOT / "tmp" / "pcb"
 
-#: The number each feature carries on every sheet of the family.  Four boards
-#: with four different sets of connectors share one schedule, so a reader
+#: The number each feature carries on every sheet of the family.  Five boards
+#: with five different sets of connectors share one schedule, so a reader
 #: flipping between them finds the Ethernet jack at 3 whether the board has
 #: one or not.  Pmod hosts are not features: they have their own table, as
 #: on every other family.
