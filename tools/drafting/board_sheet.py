@@ -58,7 +58,7 @@ KIND_LABEL = {
 #
 # Both are floors, not answers.  Thirty millimetres on the chain's edge is
 # roughly what a chain whose labels all fit in one lane needs -- the Arty
-# A7's wants 30.33 -- and fifteen of the twenty board sheets
+# A7's wants 30.33 -- and fifteen of the twenty-two board sheets
 # `render_board` draws stagger a label into a second lane and want up to
 # 42.76.  They get it from the height the sheet has spare, half of which
 # falls on each side of a centred view; every sheet was measured and two came
@@ -967,16 +967,17 @@ def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
     A view is centred in what its margins leave, so half of whatever height
     the sheet has spare already falls on the chain's side of the board and
     pays for most of a staggered ordinate lane.  Every sheet here leans on
-    that: measured against `_chain_room`, seventeen of the twenty board
-    sheets `render_board` draws want more than `VIEW_MARGIN_BOTTOM` -- the
-    ULX3S, the Icepi Zero and the Pmod HAT Adapter, all at 19.83, do not --
-    and all but two are given it by the centring alone.
+    that: measured against `_chain_room`, seventeen of the twenty-two board
+    sheets `render_board` draws want more than `VIEW_MARGIN_BOTTOM` -- the two
+    camera sheets, the ULX3S, the Icepi Zero and the Pmod HAT Adapter, all at
+    19.83, do not -- and all but two are given it by the centring alone.
 
-    The twentieth is the M.2 HAT assembly, the only sheet whose chain depends
-    on `overlay_detail`: the Pi 5's own two values want 30.30 and the phantom
+    The M.2 HAT assembly is the only sheet whose chain depends on
+    `overlay_detail`: the Pi 5's own two values want 30.30 and the phantom
     part's four retention standoffs take it to 32.26, which staggers a label
     into a second lane.  The centring leaves it 34.84, so it is not short --
-    by 2.58 mm, the narrowest margin of any sheet that is not.
+    by 2.58 mm, and only the Ultra96-V2, whose chain wants 30.30 against the
+    32.50 it is left, comes closer.
 
     So nothing moves unless the centring leaves a sheet short.  When it does,
     the board is pushed away from the chain: the chain's margin is raised by
@@ -1691,12 +1692,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         # The corner radius callout is drawn above the board, five millimetres
         # off the top edge, and a chain on that edge puts its spacing
         # dimension six millimetres off the same edge.  The two would print on
-        # top of each other.  Not a hypothetical: fifteen of the twenty
-        # board sheets here have a corner radius -- only the Arty A7, the
-        # ULX3S, the PYNQ-Z2, the Zybo Z7 and the Ultra96-V2 do not -- and the
-        # Pi 5 sits one mounting hole away from a top chain at 4-3.  Loud
-        # rather than silent, because the drawing would still render and the
-        # collision is the sort a reader notices before a check does.
+        # top of each other.  Not a hypothetical: seventeen of the
+        # twenty-two board sheets here have a corner radius -- only the Arty
+        # A7, the ULX3S, the PYNQ-Z2, the Zybo Z7 and the Ultra96-V2 do not --
+        # and the Pi 5 sits one mounting hole away from a top chain at 4-3.
+        # Loud rather than silent, because the drawing would still render and
+        # the collision is the sort a reader notices before a check does.
         raise SystemExit(
             f"{spec.key}: the X ordinate chain wants the top edge, where the "
             f"R{o.corner_radius:.2f} corner callout is drawn, and the two "
