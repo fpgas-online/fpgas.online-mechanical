@@ -38,7 +38,7 @@ read from its KiCad board file, pin map included.
 
 |  | Digilent Pmod HAT Adapter | Raspmod |
 |---|---|---|
-| Drawing | ACC-01 | ACC-04 |
+| Drawing | ACC-DIGILENT-PMOD-HAT-ADAPTER | ACC-RASPMOD |
 | Outline | 65.0 x 56.5 mm, R3 corners | 72.3 x 31.3 mm, R2 corners |
 | Thickness | not stated | 1.6 mm |
 | Mounting holes | 4 x 2.75 mm, the HAT pattern | none |

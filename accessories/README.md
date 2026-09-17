@@ -34,22 +34,22 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/digilent-pmod-hat-adapter.pdf"><img src="output/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-01 Digilent Pmod HAT Adapter"></a><br>
-<b>ACC-01</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
+<a href="output/digilent-pmod-hat-adapter.pdf"><img src="output/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-DIGILENT-PMOD-HAT-ADAPTER Digilent Pmod HAT Adapter"></a><br>
+<b>ACC-DIGILENT-PMOD-HAT-ADAPTER</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/waveshare-poe-usbc.pdf"><img src="output/previews/waveshare-poe-usbc.png" width="270" alt="ACC-02 Waveshare PoE Splitter 25 W, Type-C"></a><br>
-<b>ACC-02</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
+<a href="output/waveshare-poe-usbc.pdf"><img src="output/previews/waveshare-poe-usbc.png" width="270" alt="ACC-WAVESHARE-POE-USBC Waveshare PoE Splitter 25 W, Type-C"></a><br>
+<b>ACC-WAVESHARE-POE-USBC</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/generic-poe-microusb.pdf"><img src="output/previews/generic-poe-microusb.png" width="270" alt="ACC-03 Generic PoE splitter to micro-USB"></a><br>
-<b>ACC-03</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
+<a href="output/generic-poe-microusb.pdf"><img src="output/previews/generic-poe-microusb.png" width="270" alt="ACC-GENERIC-POE-MICROUSB Generic PoE splitter to micro-USB"></a><br>
+<b>ACC-GENERIC-POE-MICROUSB</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/raspmod.pdf"><img src="output/previews/raspmod.png" width="270" alt="ACC-04 Raspmod"></a><br>
-<b>ACC-04</b> Raspmod<br>TT Demoboard To Raspi rev 1.0, silkscreen v1.1: a frontplate for the demoboard's three Pmod hosts
+<a href="output/raspmod.pdf"><img src="output/previews/raspmod.png" width="270" alt="ACC-RASPMOD Raspmod"></a><br>
+<b>ACC-RASPMOD</b> Raspmod<br>TT Demoboard To Raspi rev 1.0, silkscreen v1.1: a frontplate for the demoboard's three Pmod hosts
 </td>
 <td width="33%"></td>
 <td width="33%"></td>
