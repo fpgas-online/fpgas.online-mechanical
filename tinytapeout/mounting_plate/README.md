@@ -18,14 +18,18 @@ while holding the Pmod host headers in a single fixed place.
 | `TT-MP-DRILL-TEMPLATE` | Drill template for the plate, A4 at 1:1 |
 | `TT-MP-CHASSIS-DRILL-TEMPLATE` | Drill template for the chassis it bolts to, A4 at 1:1 |
 
-The drawing name is the file stem in capitals behind the family prefix, and
+This family has no row in `FAMILY_NAME_RULES`, so its drawing names are the
+plain rule: the file stem in capitals behind the family prefix. (The demo
+boards and the accessories do have rows, and are named by a rule instead,
+because their stems say more than a drawing number can carry.)
 `TT-MP` accounts for the whole of the `tt-generic-mounting-plate` all four
 files begin with: this family *is* the plate, so saying PLATE again on the
 three sheets that hang off it added a word and no information. The plate's
 own drawing, whose stem is that lead and nothing else, takes the lead's last
 word and is `TT-MP-PLATE` -- named for what it is, and not the bare `TT-MP`,
 which reads as the family rather than as one sheet of it and is a substring of
-the other three names besides.
+the other three names besides. `check_sheets.py` refuses a name that is a
+prefix of another sheet's outright, so that one cannot come back.
 
 The files keep their full `tt-generic-mounting-plate` stems, and so does the
 DXF cut file, which the fabrication drawing cites by name.

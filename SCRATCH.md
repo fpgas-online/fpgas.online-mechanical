@@ -1309,9 +1309,14 @@ all gave that up:
 **The title block had to grow.** The DRAWING NO cell was a quarter of the
 165 mm title block, 41.25 mm wide with 38.05 mm of room inside it. Measured
 with the drafting library's own font metrics at the ISO 3098 minimum, 2.5 mm
-capitals in DejaVu Sans Condensed Bold, eight of the first 21 names overran
-it: the longest, `TT-DB-TT123-V2P2P5-TT123-V2P2P6`, needed 61.75 mm and
-`ACC-DIGILENT-PMOD-HAT-ADAPTER` 60.84 mm. So the second row of the title block
+capitals in DejaVu Sans Condensed Bold, nine of the first 21 names overran it,
+and seven of those were on the nineteen sheets that have a title block for a
+name to overrun: the longest of the seven, `TT-DB-TT123-V2P2P5-TT123-V2P2P6`,
+needed 61.75 mm and `ACC-DIGILENT-PMOD-HAT-ADAPTER` 60.84 mm. (The two over
+it with no title block were the drill templates, whose
+`TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` was the widest name of all at 68.27 mm
+and had nothing to overrun. "Eight" was recorded here and in the comment on
+`ROW_FRACS`, and is neither figure.) So the second row of the title block
 no longer splits into four quarters: SIZE, SHEET and REV hold a sheet size, a
 page count and a revision letter and never needed a quarter each, and the row
 is now 0.14 / 0.20 / 0.50 / 0.16, which gives DRAWING NO an 82.5 mm cell with
@@ -1393,9 +1398,23 @@ the cell does not say it. Reading the cell rather than searching the file is
 what stops a note citing another drawing from standing in for the title block,
 which is exactly what `TT-MP` did; a sheet doctored to read `FPGA-01` in the
 cell while a note says `FPGA-ARTY-A7` now fails, where a substring test
-passed. With the cell put back to a quarter of the block it reported eight
+passed. With the cell put back to a quarter of the block it reported seven
 sheets over, 38.74 to 61.75 mm of name in 38.05 mm of cell, and three with the
-names shortened.
+names shortened. Seven and not the nine names that were over the quarter,
+because a sheet with no title block has no cell to measure and this check
+passes over it; the range quoted was always the seven's.
+
+It also reports a name that is a *prefix* of another sheet's, which is the
+property `drawing_name`'s docstring argues for and nothing enforced. Two such
+names are distinct strings, so the duplicate test passes them, and nothing
+that quotes the shorter one can be read unambiguously. The hole the bare
+`TT-MP` opened is closed by reading the cell, but the rule is general and
+`tt_name` keeps it reachable: it takes the `p` separators out, so a `v3p2`
+sheet is `V32` and a `v3p2p1` sheet would be `V321`, which begins with it.
+Checked on a synthetic pair rather than argued: two sheets named `TT-MP` and
+`TT-MP-FITTING-GUIDE`, each carrying its own name and neither a duplicate,
+produce exactly one problem, and `TT-DB-V32` beside `TT-DB-V33` produces none.
+
 `check_pdfs.py` had never read a bound copy at all, which the note above on
 reproducing the set on a second machine says outright; it now matches every
 page of every bundle against the committed sheet PDFs by content stream and
@@ -1458,6 +1477,19 @@ revision to carry that geometry is where it came from: v1.2.2 and v1.2.3 are
 on `TT-DB-V121` because mechanically they *are* the v1.2.1 board. The title,
 the subtitle and the notes still list every revision and every shuttle, which
 is what a reader with the drawing in front of them has.
+
+**A revision may be lettered, and the pattern has to say so.** The 4+ sheet's
+own title is "DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c", so a lettered
+revision is not a hypothetical in this data, it is already on a drawing; it
+simply has not been the *first* revision of a sheet yet. A pattern of
+`v\d+(?:p\d+)*` does not match `v1p2p2c`, and the failure would be silent
+rather than loud: an unmatched first word is taken for a board name and passed
+through whole, so the sheet would quietly be called `TT-DB-V1P2P2C` -- a
+stem-shaped name, which is the one thing this rule exists to prevent. The
+pattern takes an optional trailing letter, and keeps it: `V122C`. The number
+and the letter are separate groups so the `p` separators come out of the
+number alone, which costs nothing and means a revision whose letter is `p`
+does not lose it.
 
 **This reverses a decision recorded above, and it is worth saying which.**
 "The first revision only on a merged sheet" is listed there among the

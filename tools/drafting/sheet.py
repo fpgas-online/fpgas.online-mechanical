@@ -81,20 +81,21 @@ class Sheet:
     #: Fractions of the title block width for the row that carries the
     #: drawing name.  Not four equal quarters, because the drawing name is
     #: not a quarter-width field: a quarter of the block is 41.25 mm with
-    #: 38.05 mm of it usable, and while every sheet was named for the whole of
-    #: its file stem eight of the twenty-one overran that, the longest of them
-    #: by 23.70 mm at the ISO 3098 floor.
+    #: 38.05 mm of it usable, and while every sheet was named for the whole
+    #: of its file stem, seven of the nineteen sheets with a title block
+    #: overran that, the longest of them by 23.70 mm at the ISO 3098 floor.
     #: The demo boards and the accessories are named by a rule now and are
-    #: nowhere near it, but the quarter is not restored, because nothing else
-    #: in the set has that much room to spare: ``TT-MP-FITTING-GUIDE`` is
-    #: 37.56 mm, which clears 38.05 by half a millimetre, and the sheets
-    #: waiting on other branches are longer than anything here --
+    #: nowhere near it, but the quarter is not restored, because the widest
+    #: name that still comes from a stem and lands on a sheet with a title
+    #: block has no such room to spare: ``TT-MP-FITTING-GUIDE`` is 37.56 mm,
+    #: which clears 38.05 by half a millimetre.  The sheets waiting on other
+    #: branches are longer than anything here --
     #: ``FPGA-ARTY-ETHERNET-LIGHT-PIPE`` is 58.03 mm.  The three fields this
     #: one shares the row with are a sheet size, a page count and a revision
-    #: letter, none of which ever needed the room they had.  Taken
-    #: sideways rather than by adding a fourth row: the title block's height
-    #: is the notes band's and the view's, and an A3 holds the tallest board
-    #: at 1:1 with nothing to spare.
+    #: letter, none of which ever needed the room they had.  Taken sideways
+    #: rather than by adding a fourth row: the title block's height is the
+    #: notes band's and the view's, and an A3 holds the tallest board at 1:1
+    #: with nothing to spare.
     ROW_FRACS = {"SIZE": 0.14, "SHEET": 0.20, "DRAWING NO": 0.50, "REV": 0.16}
 
     def __init__(self, size: str = "A3", title: TitleBlock | None = None,
