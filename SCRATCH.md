@@ -3005,3 +3005,130 @@ group for the rest of the tag to read the dash from. Run over all 28 sheets it
 reports exactly those three and nothing else, which is the answer a new rule
 wants: it finds the thing it was written for, and it does not turn the rest of
 the set red.
+
+## The camera boards, and two drawings that disagree with themselves
+
+Asked for mechanical diagrams of the Raspberry Pi camera boards. They are a
+new family, `raspberry_pi_camera/`, on the repository's own rule that a new
+board is a new directory: a 25 x 23.862 mm camera shares nothing with an
+85 x 56 mm Pi but the company that made it. Putting them in `raspberry_pi/`
+would have meant one `FEATURE_ORDER` covering both, so every Pi sheet would
+carry two permanently unused numbers and every camera sheet five; the Pi
+sheets are all drawn with the Pmod HAT Adapter overlaid in one shared view
+frame, which a 25 mm board would be lost in. The cameras are `RPICAM-2` and
+`RPICAM-3`.
+
+**What the family is called.** A sheet's name comes from its own file stem, so
+a new family is one row in `FAMILY_PREFIXES` beside the row in `FAMILY_DIRS`
+it already needs: `("RPICAM", "cm")`. The stems are the module numbers, `cm2`
+and `cm3`, and the prefix already says what kind of module, so the lead comes
+off exactly as the Pi family strips `rpi` from `rpi5` to get `RPI-5`;
+`RPICAM-CM2` would have said camera twice. `drawing_name` refuses by name when
+the row is missing -- it says which family and which file to add it to --
+rather than inventing a prefix, so a family registered in one place and
+forgotten in the other cannot render. What that leaves for a later sheet in
+this family is worth writing down: a stem that does not begin `cm` keeps all
+of itself, so an HQ Camera sheet written to `hq.svg` is `RPICAM-HQ` with no
+further decision to make.
+
+**What Raspberry Pi actually publish.** Three PDFs and nothing else. The
+Camera Module 2 drawing is `RPI-CAM-V2_1`, dated 12/11/2015, drawn by Mike
+Stimson and approved by James Adams; the Camera Module 3 standard and wide
+drawings are `RP-008153-DS-1` and `RP-008155-DS-1`, on the Product Information
+Portal under Camera Module 3 design files. No DXF for any of them. A STEP
+model exists for the Camera Module 3 and was not used: the drawing is a true
+1:1 plot with a live text layer and already gives everything, and a 10 MB
+assembly would only be a second opinion about the same numbers.
+
+**Neither plot is 1:1 and one of them is not close.** The scale is recovered
+from the mounting hole rectangle -- 21 mm across, 12.5 mm up, the lower pair
+2 mm in from two edges -- the same way `tools/dump_rpi_pdf.py` recovers a Pi's
+from its 58 x 49 pattern, and then checked against the two overall dimensions
+the drawing prints. Camera Module 3 comes back at **1.0000:1** with the
+outline within 0.004 mm. Camera Module 2 comes back at **1.5055:1**: it is
+plotted half again bigger than the part, and a sheet that trusted the page
+would have drawn a 37.6 x 35.9 mm camera. The Camera Module 2 drawing is also
+a quarter turn round, with the 25 mm width running up the page; recovering the
+frame from the hole rectangle fixes the rotation as well as the scale, and the
+transform is a rotation rather than an axis swap, which would have mirrored a
+board whose hole pattern is symmetric enough to hide it.
+
+**Half the Camera Module 2 drawing cannot be read at all.** `page.chars` is
+empty: every digit on it is a filled path, so not one printed figure can be
+quoted back from the file. Its geometry is machine-read exactly as the other's
+is, and the sheet says in a note that its printed dimensions were transcribed
+by eye. The Camera Module 3 drawings do carry text, so every figure quoted
+from them -- `25`, `23.862`, `12.5`, `14.5`, `14.4`, `10.8`, `8.9`, `ø2.2`,
+`ø4.75`, `ø5.75`, `1.12`, `2.75`, `5.71`, `19.61`, `11.3`, `6.98`, `66`, `41`
+-- is checked against the file, and a transcription error fails the
+extraction.
+
+**Finding a circle drawn as four arcs.** The Camera Module 3 plot emits a
+closed path per circle; the Camera Module 2 plot emits four quarter arcs.
+Merging arc bounding boxes by proximity does not work, because a hole 2 mm in
+from two edges of a board with a 2 mm corner radius is *concentric with the
+corner arc*: merged, the two give one blob half again the size of either. A
+quarter arc's bounding box is a square with the circle's centre at one of its
+corners, so the four quarters of a circle all name that centre and nothing
+else names it more than twice. Told apart by radius, the hole and the corner
+are two circles, which is what they are.
+
+**The connector is on the underside**, so the Camera Module 3 plan view does
+not draw it. It is built instead from the two elevations: the front elevation
+gives 19.61 across, the side elevation 5.71 down the board, and both give its
+2.75 height, which is required to agree before either is used. The Camera
+Module 2 plan does draw it, as two boxes -- the body and the wider latch ears
+that reach the board edge -- and the sheet takes the envelope of both, 20.88 x
+5.50, matching the 20.8 and 5.5 printed beside them. Both boards' bodies
+measure 19.61 across, so it is the same part.
+
+**Raspberry Pi's claim, checked.** Their documentation says board dimensions
+and mounting-hole positions for Camera Module 3 are identical to Camera Module
+2. Each drawing is read on its own and the two patterns compared: they agree
+to **0.025 mm**, which is the plot noise of the 1.5:1 source, so the sheets
+may repeat the claim. The same documentation says the sensor module changed in
+size *and position*; it changed in size, from 8.5 to 10.8 mm square, but the
+optical axis is at (12.50, 14.40) on one drawing and (12.49, 14.40) on the
+other, which is the same place.
+
+**Where the drawings disagree with themselves.** The Camera Module 3
+elevations are 1:1 for the board section (1.120 drawn against 1.12 printed)
+and for the connector (2.750 against 2.75), but the lens stack is drawn short:
+11.3 printed scales 10.08, 6.98 scales 5.81, and the wide drawing's 12 scales
+10.93. The High Quality Camera drawing does it too, `ø30.75` scaling 30.42 and
+`ø22.4` scaling 22.25 while its ø2.5 mounting holes scale 2.500 exactly. The
+printed figures are the specification and the sheets quote them as printed;
+the sheets carry no height dimension, because there is no view on them to hang
+one from and the source's own geometry would contradict it.
+
+**Two drafting changes.** A `lens` feature kind, because none of the existing
+ones fits a lens and sensor module and the sheets needed one; it draws like any
+other component body but also gets a centre mark, since the optical axis is
+the point of a camera board and halving two schedule extents is not a way to
+find it. And `_pcb_material` no longer calls a thickness a "KiCad stackup sum":
+the Camera Module 3's 1.12 is a finished thickness dimensioned on a drawing,
+and it is the first board here to reach that branch at all -- every other
+thickness in the repository is within 0.05 mm of nominal 1.6.
+
+**Notes cut to buy a scale.** Both sheets started at 2:1, which puts a 25 mm
+board in the corner of an A3 sheet. 5:1 wants 119.4 mm of view height and the
+notes band was leaving 119.0. The cuts were all of prose that explained the
+extraction rather than the board -- field-of-view angles, a note repeating what
+the legend already says about hidden detail, the descriptive tail on each
+source line -- and the two sheets are now drawn at 5:1 on the same frame, so
+flipping between them shows the lens module growing and the board standing
+still.
+
+**Left out, and said so on the sheet's behalf in the family README.** There is
+no official mechanical drawing for the OV5647 Camera Module 1 and there never
+was: no Product Information Portal category, nothing ever served under
+`datasheets.raspberrypi.com/camera/`, and the archived
+`raspberrypi.org/documentation/hardware/camera/mechanical/` directory held the
+v2 camera and the HQ camera only. "Around 25 × 24 × 9 mm" in a product table
+is not a drawing. The High Quality Camera's drawing does exist,
+`RP-008200-DS-1`, and was read -- 38 x 38 outline, four ø2.5 holes 4.04 in from
+each corner, the 8.5 sensor square on the board centre, a knurled ø36 C/CS
+mount over an ø22.4 aperture, a tripod boss 13.86 across reaching 11.35 below
+the lower edge -- but it has no sheet: `render_board` draws every feature as a
+rectangle and a ø36 knurled ring drawn square is a worse drawing than none,
+and the drawing never locates the FFC connector in plan at all.
