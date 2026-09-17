@@ -199,6 +199,7 @@ FAMILY_READMES = {
     "raspberry-pi": ROOT / "raspberry_pi" / "README.md",
     "raspberry-pi-camera": ROOT / "raspberry_pi_camera" / "README.md",
     "fpga": ROOT / "fpga" / "README.md",
+    "light-pipe": ROOT / "fpga" / "light_pipe" / "README.md",
     "accessories": ROOT / "accessories" / "README.md",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "README.md",
     "camera-holder": ROOT / "tinytapeout" / "camera_holder" / "README.md",
