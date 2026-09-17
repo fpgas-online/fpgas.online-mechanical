@@ -132,7 +132,7 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] Ultra96-V2 from Avnet's Altium "Mechanical and Drill" plot, scale
       recovered from the outline and checked against the 96Boards CE
       specification; no Pmod, no Ethernet
-- [x] `fpga-sheets.pdf`, the eight bound into one document
+- [x] `fpga-sheets.pdf`, the eight boards, bound with the light pipe
 - [ ] PYNQ-Z2 LED positions, by photogrammetry from TUL's product photo if
       no vector source turns up
 - [x] `dims.ordinate_reach` and `_view_margins`: a view whose ordinate chain

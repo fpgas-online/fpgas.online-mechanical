@@ -29,6 +29,7 @@ FAMILY_DIRS = {
     "tinytapeout": ROOT / "tinytapeout" / "output",
     "raspberry-pi": ROOT / "raspberry_pi" / "output",
     "fpga": ROOT / "fpga" / "output",
+    "light-pipe": ROOT / "fpga" / "light_pipe" / "output",
     "accessories": ROOT / "accessories" / "output",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "output",
 }
@@ -154,10 +155,20 @@ PLATE_NAMES = {
 #: the four names says nothing the prefix has not.  The sheet whose stem is
 #: exactly the lead is left the lead's last word by ``drawing_name``, and
 #: ``PLATE_NAMES`` keeps that word, so it is ``TT-MP-PLATE``.
+#:
+#: The light pipe is a made part for one of the boards above it, filed in a
+#: directory of its own so its design, its checks and its STEP solid do not
+#: sit among the extracted board data, and bound into the FPGA set because
+#: that is where it is read.  Its prefix says both: ``FPGA-LP``, the set and
+#: the kind of thing, and ``LP_NAMES`` says which board in one word, so the
+#: sheet is ``FPGA-LP-ARTY``.  Two prefixes beginning ``FPGA`` are safe for
+#: the reason the rule is safe at all: ``check_sheets.py`` tests every name
+#: against every other across the whole set, not family by family.
 FAMILY_PREFIXES = {
     "tinytapeout": ("TT-DB", TT_STEM_LEAD),
     "raspberry-pi": ("RPI", "rpi"),
     "fpga": ("FPGA", ""),
+    "light-pipe": ("FPGA-LP", ""),
     "accessories": ("ACC", ""),
     "mounting-plate": ("TT-MP", PLATE_STEM),
 }
@@ -358,25 +369,46 @@ def rpi_name(rest: str) -> str:
             "five characters saying what it is")
 
 
+#: The light pipes, by file stem.  A stem says the board, the jack and the
+#: part -- ``arty-ethernet-light-pipe`` -- where the prefix has already said
+#: the part, so the name is the board alone.
+LP_NAMES = {
+    "arty-ethernet-light-pipe": "arty",  # the Arty A7's Ethernet LEDs
+}
+
+
+def lp_name(stem: str) -> str:
+    """What the light pipe sheet written to *stem* is called: see LP_NAMES."""
+    try:
+        return LP_NAMES[stem]
+    except KeyError:
+        raise SystemExit(
+            f"no drawing name for the light pipe sheet {stem!r}; add one to "
+            "LP_NAMES in tools/layout.py, as four or five characters saying "
+            "which board it clips onto")
+
+
 #: How a family cuts what is left of a stem down to a drawing name, for the
-#: four families that need it.  A separate table rather than a third column
+#: five families that need it.  A separate table rather than a third column
 #: of FAMILY_PREFIXES: several branches are open at once each adding a row to
 #: that table, and changing its shape would conflict with every one of them,
 #: where a new table beside it conflicts with nothing.
 #:
 #: A family with no rule here is named for its stem, which is the ordinary
 #: case and wants no table: FPGA-ARTY-A7 is already as short as its sheet can
-#: honestly be said to be.  The four families here are the ones where a stem
+#: honestly be said to be.  The five families here are the ones where a stem
 #: is not: a demo board's carries every revision the sheet covers, an
 #: accessory's says in words what the part is, a mounting plate sheet's says
 #: its title -- ``chassis-drill-template`` -- and the Pi family has one sheet
-#: that is no model's own and whose stem says what it shows.  All are right
-#: for a file name and too long for a drawing number.
+#: that is no model's own and whose stem says what it shows, and a light
+#: pipe's says the board, the jack and the part.  All are right for a file
+#: name and too long for a drawing number.
 FAMILY_NAME_RULES = {
     "tinytapeout": tt_name,
     "raspberry-pi": rpi_name,
     "accessories": acc_name,
     "mounting-plate": plate_name,
+    "light-pipe": lp_name,
 }
 
 
