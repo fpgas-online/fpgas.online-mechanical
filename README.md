@@ -19,7 +19,7 @@ it, so a new board is a new directory and does not disturb the others.
 |-----------|------------------------------|
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
-| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
+| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid, and the three of them on the one outline they share |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- Digilent Arty A7, ULX3S, TUL PYNQ-Z2 and ButterStick, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
@@ -32,7 +32,7 @@ prefix: `fpga/output/arty-a7.pdf` is **`FPGA-ARTY-A7`** and
 already says is dropped: the mounting plate's four stems all begin
 `tt-generic-mounting-plate`, which is what `TT-MP` says.
 
-Three families are named by a rule instead, because their file stems say more
+Four families are named by a rule instead, because their file stems say more
 than a drawing number can carry. A file name is read once from a directory
 listing by somebody choosing between files, and can afford to say what a sheet
 covers; a drawing number is read off a title block, quoted in a note on another
@@ -60,6 +60,9 @@ are, and only the name is cut:
   left of these stems once `TT-MP` has said `tt-generic-mounting-plate` is the
   sheet's title (`chassis-drill-template`), which the sheet already carries in
   full, so that one is a table as well, `PLATE_NAMES`.
+- a Raspberry Pi sheet is named for its model, `RPI-5`, and the one sheet
+  that is no model's own, the three models superimposed, is `RPI-ALL`: a
+  one-row table, `RPI_NAMES`, since `models-compared` is a title too.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
@@ -114,7 +117,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </tr>
 </table>
 
-### Raspberry Pi, with a Digilent Pmod HAT Adapter overlaid
+### Raspberry Pi
 
 <table>
 <tr>
@@ -130,6 +133,14 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="raspberry_pi/output/rpi5.pdf"><img src="raspberry_pi/output/previews/rpi5.png" width="270" alt="RPI-5 Raspberry Pi 5"></a><br>
 <b>RPI-5</b> Raspberry Pi 5<br>85 x 56 mm
 </td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi/output/rpi-models-compared.pdf"><img src="raspberry_pi/output/previews/rpi-models-compared.png" width="270" alt="RPI-ALL Raspberry Pi 3B/3B+, 4B and 5 compared"></a><br>
+<b>RPI-ALL</b> Raspberry Pi 3B/3B+, 4B and 5 compared<br>One 85 x 56 outline: what is shared and what moves
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
 </tr>
 </table>
 
