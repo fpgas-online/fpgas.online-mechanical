@@ -80,34 +80,45 @@ def ellipse(c: Canvas, cx: float, cy: float, rx: float, ry: float, **kw) -> None
     c.polyline(pts + [pts[0]], **kw)
 
 
-def hatch(c: Canvas, polygon, spacing: float = 2.2, **kw) -> None:
-    """Section hatching: parallel lines at 45 degrees, clipped to *polygon*.
+#: Angle of the section hatching, degrees from the horizontal.  Not the usual
+#: 45: the bore runs up at 45 degrees and the facet across it at 45 the other
+#: way, so either 45 degree hatch is parallel to one of the two lines the
+#: section is drawn to show, which is the one thing ISO 128 says hatching may
+#: not be.
+HATCH_ANGLE = 60.0
+HATCH_SPACING = 2.0
 
-    Lines run down to the right, against the bore, which runs up to the
-    right: hatching parallel to the feature it is cutting through is the one
-    direction ISO 128 rules out.
+
+def hatch(c: Canvas, polygon, angle: float = HATCH_ANGLE,
+          spacing: float = HATCH_SPACING, **kw) -> None:
+    """Section hatching: parallel lines at *angle*, clipped to *polygon*.
+
+    Each line is the set of points whose distance along the hatch normal is
+    the same, so the spacing is a true perpendicular spacing whatever the
+    angle; a line is clipped by taking its crossings with every edge in turn,
+    sorting them along the line and filling the alternate spans.
     """
-    xs = [p[0] for p in polygon]
-    ys = [p[1] for p in polygon]
-    lo = min(xs) + min(ys)
-    hi = max(xs) + max(ys)
-    k = lo
-    while k <= hi:
-        # The line x + y = k, clipped against every edge in turn.
+    th = math.radians(angle)
+    nx, ny = -math.sin(th), math.cos(th)
+    ds = [nx * x + ny * y for x, y in polygon]
+    k = min(ds)
+    while k <= max(ds):
         hits = []
         for (x0, y0), (x1, y1) in zip(polygon, polygon[1:] + polygon[:1]):
-            d0 = x0 + y0 - k
-            d1 = x1 + y1 - k
+            d0 = nx * x0 + ny * y0 - k
+            d1 = nx * x1 + ny * y1 - k
             if d0 == 0 and d1 == 0:
                 continue
             if (d0 <= 0 <= d1) or (d1 <= 0 <= d0):
                 f = d0 / (d0 - d1) if d0 != d1 else 0.0
                 hits.append((x0 + f * (x1 - x0), y0 + f * (y1 - y0)))
-        hits.sort()
+        # Sorted along the hatch line, not along X: at 60 degrees two
+        # crossings can share an X and the pairing comes out inside out.
+        hits.sort(key=lambda p: p[0] * math.cos(th) + p[1] * math.sin(th))
         for a, b in zip(hits[0::2], hits[1::2]):
             if math.dist(a, b) > 0.2:
                 c.line(a[0], a[1], b[0], b[1], w=style.W_THIN, **kw)
-        k += spacing * math.sqrt(2)
+        k += spacing
 
 
 # ---------------------------------------------------------------------------
