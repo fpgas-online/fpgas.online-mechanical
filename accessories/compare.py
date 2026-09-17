@@ -209,14 +209,31 @@ def demoboard_table() -> list[str]:
 
 
 def clkrst_residual() -> str | None:
-    """Re-measure J9 against the demoboard SIL header, if the files are here."""
+    """Re-measure J9 against the demoboard SIL header, if the files are here.
+
+    None when they are not, which is the ordinary case: the board files are
+    upstream checkouts under ``tmp/``, they are not committed, and this page
+    has to regenerate from a clone that has never run ``make fetch``.  The
+    caller prints that it left the figure as written.
+
+    Every file it needs is looked for before any of them is opened.  The
+    Raspmod's own board file was opened first and unguarded, so a missing
+    ``tmp/pcb`` raised FileNotFoundError out of ``make diagrams`` instead of
+    taking this path -- the guard covered the two demoboard revisions and not
+    the third file in the same directory.
+    """
     try:
         from tools import kicad_extract, kicad_pcb
         from tools.kicad_extract import one
     except ImportError:
         return None
     files = {"v2.1.2": ("J3", "J17"), "v3.3": ("J11", "J9")}
-    board = kicad_pcb.load(str(ROOT / "tmp" / "pcb" / "raspmod.kicad_pcb"))
+    pcb = ROOT / "tmp" / "pcb"
+    needed = [pcb / "raspmod.kicad_pcb"]
+    needed += [pcb / f"{rev}.kicad_pcb" for rev in files]
+    if not all(path.exists() for path in needed):
+        return None
+    board = kicad_pcb.load(str(needed[0]))
     to_xy, _, _ = kicad_extract.frame(board)
     plug = one(board.footprints, "J2")
     j9 = one(board.footprints, "J9")
@@ -225,10 +242,7 @@ def clkrst_residual() -> str | None:
     j9_pins = {p.number: to_xy(p.x, p.y) for p in j9.pads}
     worst = 0.0
     for rev, (host_ref, sil_ref) in files.items():
-        path = ROOT / "tmp" / "pcb" / f"{rev}.kicad_pcb"
-        if not path.exists():
-            return None
-        db = kicad_pcb.load(str(path))
+        db = kicad_pcb.load(str(pcb / f"{rev}.kicad_pcb"))
         dxy, _, _ = kicad_extract.frame(db)
         hp = [dxy(p.x, p.y) for p in one(db.footprints, host_ref).pads]
         hc = (sum(p[0] for p in hp) / 12, sum(p[1] for p in hp) / 12)
