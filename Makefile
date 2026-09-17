@@ -57,10 +57,12 @@ check: diagrams
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
 
 # Every output/ directory is build product: `make clean && make diagrams`
-# restores all 85 files, every one of them byte for byte, since
+# restores all 89 files, every one of them byte for byte, since
 # tools/reproducible.py pins the clocks and tool version strings the formats
 # would otherwise stamp in.  So remove them outright rather than picking off
-# extensions one at a time.
+# extensions one at a time -- and remove all of them: a directory left off
+# this list is a family whose output `make clean` quietly keeps.
 clean:
 	rm -rf accessories/output raspberry_pi/output fpga/output \
+	       fpga/light_pipe/output \
 	       tinytapeout/output tinytapeout/mounting_plate/output
