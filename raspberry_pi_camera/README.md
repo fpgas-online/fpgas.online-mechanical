@@ -48,15 +48,17 @@ Three PDFs, all Raspberry Pi Ltd's, all vector, none of them a DXF:
 | `RPICAM-3` | [`camera-module-3-standard-mechanical-drawing.pdf`](https://datasheets.raspberrypi.com/camera/camera-module-3-standard-mechanical-drawing.pdf), `RP-008153-DS-1` | on the Product Information Portal, [Camera Module 3 design files](https://pip.raspberrypi.com/categories/1207-design-files) |
 | `RPICAM-3` | [`camera-module-3-wide-mechanical-drawing.pdf`](https://datasheets.raspberrypi.com/camera/camera-module-3-wide-mechanical-drawing.pdf), `RP-008155-DS-1` | the same place |
 
-## Neither plot is 1:1, and that is measured
+## Neither plot is assumed to be 1:1
 
 A PDF is CAD data only once you know what scale it was plotted at, so the
 scale is *recovered* rather than assumed, the way `raspberry_pi/extract.py`
-recovers the Pi 5's. The invariant here is the mounting hole rectangle: 21 mm
-apart across the board, 12.5 mm apart up it, the lower pair 2 mm in from two
-edges. Finding it fixes the origin, the orientation and the scale at once, and
-the two overall dimensions the drawing prints are then required to come back
-out of it.
+recovers the Pi 5's. Camera Module 3 turns out to be a true 1:1 plot; Camera
+Module 2 turns out to be plotted at 1.5055.
+
+The invariant is the mounting hole rectangle: 21 mm apart across the board,
+12.5 mm apart up it, the lower pair 2 mm in from two edges. Finding it fixes
+the origin, the orientation and the scale at once, and the two overall
+dimensions the drawing prints are then required to come back out of it.
 
 | | Recovered plot scale | Outline came back within |
 |---|---|---|
@@ -70,11 +72,15 @@ took the page at face value would get a 37.6 x 35.9 mm camera.
 
 The two drawings are not equally readable, and the sheets say so.
 
-- **Camera Module 3** carries its dimension text *as text*. Every figure this
-  repository quotes from it -- `25`, `23.862`, `12.5`, `14.5`, `14.4`, `10.8`,
-  `ø2.2`, `ø4.75`, `ø5.75`, `1.12`, `2.75`, `5.71`, `19.61`, `11.3`, `6.98`,
-  `66`, `41` -- is checked against the file, so a transcription error fails the
-  extraction rather than reaching a sheet.
+- **Camera Module 3** carries its dimension text *as text*, and both
+  drawings are checked, each against its own figures. Thirteen are on both --
+  `25`, `23.862`, `12.5`, `14.5`, `14.4`, `10.8`, `8.9`, `ø2.2`, `ø4.75`,
+  `1.12`, `2.75`, `5.71`, `19.61` -- the standard adds `ø5.75`, `11.3`,
+  `6.98`, `66` and `41`, and the wide adds `ø6.95`, `12`, `8.3`, `102` and
+  `67`. The comparison is against whole words, not a substring of the page:
+  `12` is a figure the wide drawing prints on its own *and* the first half of
+  the `12.5` both of them print. A transcription error fails the extraction
+  rather than reaching a sheet.
 - **Camera Module 2** carries none. `page.chars` is empty: every digit on it
   is a filled path. Its geometry is machine-read exactly as the other's is,
   but its printed dimensions are transcribed by eye, and the sheet carries a
@@ -89,7 +95,7 @@ lens side):
 | Outline | 25 x 23.862, R2.0 corners | the same |
 | Mounting holes | ø2.2 at (2.00, 2.00), (22.98, 2.00), (2.00, 14.52), (22.98, 14.52) | ø2.2 with a ø4.75 land, at (2.00, 2.00), (23.00, 2.00), (2.00, 14.50), (23.00, 14.50) |
 | Lens and sensor module | 8.45 x 8.49, centre (12.49, 14.40) | 10.80 x 10.80, centre (12.50, 14.40) |
-| Clear aperture | not dimensioned | ø5.75 standard, ø6.95 wide |
+| Clear aperture | not dimensioned | printed ø5.75 standard, ø6.95 wide; **drawn 5.750 and 7.000** |
 | FFC connector, underside | 20.88 x 5.52, from the plan view | 19.61 x 5.71, from the two elevations |
 | Board thickness | not stated | 1.12 |
 | Height | **not stated anywhere on the drawing** | 11.3 standard, 12 wide, printed |
@@ -103,7 +109,7 @@ patterns compared. **They agree to 0.025 mm**, which is the plot noise of the
 two boards differ, and by the figures above it grew from 8.5 to 10.8 mm square
 without its optical axis moving: 0.01 mm apart on two independent drawings.
 
-## The Camera Module 3's height dimensions do not match its own elevations
+## Where these drawings disagree with themselves
 
 Worth knowing before designing to them. The Camera Module 3 drawing's side and
 front elevations are 1:1 for the board section (1.120 drawn against 1.12
@@ -112,12 +118,18 @@ drawn short: the printed 11.3 mm overall scales 10.08, and 6.98 above the
 board scales 5.81. The wide drawing does the same, 12 printed against 10.93
 drawn.
 
+It is not only the heights. The **wide drawing's clear aperture is printed
+`ø6.95` and drawn 7.000**, while the standard's `ø5.75` is drawn 5.750
+exactly; the extractor measures the aperture on each drawing rather than
+transcribing it, requires the two to stay within 0.2 mm, and prints both, and
+`RPICAM-3` says both numbers. The High Quality Camera drawing does the same
+thing again, `ø30.75` scaling 30.42 and `ø22.4` scaling 22.25 while its ø2.5
+mounting holes scale 2.500 exactly.
+
 The printed figures are the specification and the sheets quote them as
 printed; the sheets do not dimension the height, because there is no view on
 them to dimension it on and the source's own geometry would disagree with the
-number. The same thing shows on the High Quality Camera drawing below, where
-`ø30.75` scales 30.42 and `ø22.4` scales 22.25 while the ø2.5 mounting holes
-scale 2.500 exactly.
+number.
 
 ## What is not here, and why
 
@@ -140,8 +152,13 @@ a 2.34618:1 plot on A4 landscape, with a live text layer. Machine-read from
 it: a 38 x 38 mm outline; four ø2.5 holes 4.04 mm in from each corner, 29.94
 apart; the 8.5 mm sensor square on the board centre; the C/CS lens mount as
 `ø30.75` over an `ø22.4` aperture inside a knurled `ø36` ring drawn scalloped
-between 35.38 and 38.00; and a tripod boss 13.86 mm across, centred, reaching
-11.35 mm below the lower edge, tapped 1/4-20 UNC. It has no sheet here for two
+between 35.38 and 38.00; and a tripod boss centred on the lower edge and
+reaching 11.35 mm below it, printed `13.97` across where the drawing draws
+13.86. The thread is *not* on that drawing: `1/4–20 UNC` appears in the
+separate CS/M12 mount document,
+[`RP-008201-DS-1`](https://pip.raspberrypi.com/documents/RP-008201-DS),
+published February 2025, whose physical-specification page redraws both
+mounts at a reduced scale. The camera has no sheet here for two
 reasons, both about the source and the renderer rather than about the camera:
 `board_sheet.render_board` draws every scheduled feature as a rectangle, and a
 ø36 knurled ring drawn as a square is a worse drawing than none; and the
