@@ -49,10 +49,6 @@ def build():
         return cq.Solid.makeBox(x1 - x0, y1 - y0, z1 - z0,
                                 cq.Vector(x0, y0, z0))
 
-    def mirrored(make):
-        """The part is symmetric about Y = 0: one of each, and its mirror."""
-        return [make(+1), make(-1)]
-
     def span(y0, y1, side):
         return (min(side * y0, side * y1), max(side * y0, side * y1))
 
@@ -71,15 +67,14 @@ def build():
     for s in solids[1:]:
         part = part.fuse(s)
 
-    # The facet: everything above the plane z - x = FACET_K comes off.  A box
+    # The facet: everything above the plane z - x = FACET_K comes off.  One
+    # cut for both cheeks, because it is one plane and it crosses both.  A box
     # whose own underside is that plane does it -- rotate it about Y until its
     # underside's normal is the plane's, then lift it to the plane.
-    for side in (+1, -1):
-        cutter = cq.Solid.makeBox(60, 60, 60, cq.Vector(-30, -30, 0))
-        cutter = cutter.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 1, 0), -45)
-        cutter = cutter.translate(cq.Vector(0, 0, A.FACET_K))
-        part = part.cut(cutter)
-        break       # one plane, and it crosses both cheeks
+    cutter = cq.Solid.makeBox(60, 60, 60, cq.Vector(-30, -30, 0))
+    cutter = cutter.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 1, 0), -45)
+    cutter = cutter.translate(cq.Vector(0, 0, A.FACET_K))
+    part = part.cut(cutter)
 
     cuts = []
     for side in (+1, -1):
