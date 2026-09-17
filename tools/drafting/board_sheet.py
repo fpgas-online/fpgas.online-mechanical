@@ -2,9 +2,12 @@
 
 Layout rules that keep these sheets readable:
 
-* Dimensions live below and to the left of the view; balloons live above and to
-  the right.  Keeping the two annotation families on opposite sides is the
-  single biggest thing that stops them colliding.
+* Dimensions live on one horizontal edge of the view and on its left; balloons
+  live on the other horizontal edge and to the right.  Keeping the two
+  annotation families on opposite sides is the single biggest thing that stops
+  them colliding.  Which horizontal edge the dimensions take is decided per
+  board, by where the features the X chain locates actually sit: see
+  :func:`_x_chain_edge`.
 * Hole and feature positions are dimensioned by ordinate chains from one datum
   at the board's lower-left corner, rather than by chained linear dimensions.
   Ordinates never overlap each other and never accumulate tolerance.
@@ -42,13 +45,18 @@ KIND_LABEL = {
     "connector": "Connector",
 }
 
-#: Room reserved above and below a view.  Dimensions stack below and to the
-#: left; only balloons need space above.
-# Room the view wants around the part.  The bottom carries the Pmod spacing
-# dimension, the ordinate chain and the overall dimension; the top carries
-# balloons only.  Both were set generously and then measured: on the fullest
-# sheet the deepest dimension still cleared the notes band by ten millimetres,
-# which is space the notes need more than the view does.
+#: Room reserved above and below a view.  Dimensions stack on one horizontal
+#: edge and to the left; only balloons need space on the other.
+# Room the view wants around the part.  The dimensioned edge carries the Pmod
+# spacing dimension, the ordinate chain and the overall dimension; the other
+# carries balloons only.  Both were set generously and then measured: on the
+# fullest sheet the deepest dimension still cleared the notes band by ten
+# millimetres, which is space the notes need more than the view does.
+#
+# Named for the edge they usually land on, which is the chain below.  A sheet
+# whose X chain goes on the top edge swaps the two, so the deep margin always
+# follows the chain.  Their SUM does not change, which is why the notes band
+# and therefore the scale are the same either way.
 VIEW_MARGIN_SIDE = 46.0
 VIEW_MARGIN_TOP = 20.0
 VIEW_MARGIN_BOTTOM = 30.0
@@ -61,8 +69,9 @@ VIEW_MARGIN_BOTTOM = 30.0
 VIEW_MARGIN_RIGHT_MIN = 24.0
 
 #: How far the overall width and height dimensions sit off the board edge.
-#: They are the only things on the top and right edges, so they can be
-#: close -- but not so close that nothing fits between them and the board.
+#: They are the only things on the edges the ordinate chains do not take, so
+#: they can be close -- but not so close that nothing fits between them and
+#: the board.
 #: At 9 mm the lane between the outline and the dimension line could not
 #: take a balloon at all, and a feature crowded against the edge with its
 #: neighbours' balloons round it had nowhere to go but 34 mm up through the
@@ -437,6 +446,52 @@ def _ordinate_values(spec: BoardSpec, overlay: BoardSpec | None
     return xvals, yvals
 
 
+def _x_chain_edge(spec: BoardSpec, overlay: BoardSpec | None) -> str:
+    """Which horizontal edge of the view the X ordinate chain belongs on.
+
+    A witness line runs from the feature it locates out to the chain, so a
+    chain on the far edge from its features costs every one of those lines the
+    whole height of the board.  On the Arty A7 that was the whole sheet's worth
+    of ink: its four Pmod hosts are 11.75 mm from the top edge, it has no
+    mounting holes at all, and each host's witness line was drawn 90.88 mm
+    down the board and past it to reach a chain underneath.  It is 27.38 mm
+    now.
+
+    So the chain goes on the edge its own features are nearest.  Every feature
+    that puts a value into the chain votes -- each mounting hole, and each host
+    on a horizontal edge, counted individually rather than once per distinct X
+    -- and the majority wins.  Counting them individually is what keeps a board
+    with holes at both edges where it is: the ULX3S and the PYNQ-Z2 tie 2-2 on
+    four holes and the ButterStick 4-4 on eight, and a tie keeps the chain
+    below, which is where a drafter puts it absent a reason.  The Raspberry Pi
+    3B and 4B are 3-2 below, counting the phantom HAT's host JC with the two
+    lower mounting holes, and the Pi 5, which has six holes rather than four,
+    is 4-3.  Of every sheet drawn here only the Arty moves, and it moves four
+    votes to none.
+
+    Only the horizontal chain is decided this way.  The vertical one has the
+    same question to answer and nobody has asked it; deciding both at once
+    would move the PYNQ-Z2's chain across the sheet for a complaint nobody has
+    made.
+
+    One thing this rule does not reach: which feature on a given X a witness
+    line is anchored at is still ``_ordinate_values``' business, and its
+    front_edge tie-break is unchanged.  A future board with the chain on top
+    and two features sharing an X -- holes at both edges, say -- and
+    ``front_edge`` anything but "top" would anchor at the lower of the pair and
+    get back the full-height witness line this rule was written to remove.  No
+    board here is in that position; the tie-break is the next thing to fix if
+    one arrives.
+    """
+    height = spec.outline.height
+    ys = [h.y for h in spec.holes]
+    for p in list(spec.pmods) + list(overlay.pmods if overlay else ()):
+        if p.role == "host" and p.edge in ("bottom", "top"):
+            ys.append(p.cy)
+    return "top" if sum(1 for y in ys if y > height / 2) * 2 > len(ys) \
+        else "bottom"
+
+
 def _feature_anchors(view: View, f) -> tuple[tuple[float, float], ...]:
     """Where a leader may touch feature *f*, best first.
 
@@ -614,7 +669,13 @@ def _radius_callout(o, board: Rect, sheet: Sheet, view: View
 
 def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None,
                         view_bbox=None) -> float:
-    """Vertical room the view and its dimensions want, in sheet millimetres."""
+    """Vertical room the view and its dimensions want, in sheet millimetres.
+
+    The two margins are added, so which of them the ordinate chain takes makes
+    no difference here: a sheet whose chain is on the top edge wants exactly as
+    much of the page as one whose chain is below, and gets the same notes band
+    and the same scale.
+    """
     if view_bbox is not None:
         return view_bbox[3] - view_bbox[1] + VIEW_MARGIN_TOP + VIEW_MARGIN_BOTTOM
     ys = [0.0, spec.outline.height]
@@ -1040,6 +1101,11 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     every sheet and the set can be flipped through without it moving.
     """
     o = spec.outline
+    # Which horizontal edge the dimensions take has to be settled before the
+    # view is fitted, because it decides which margin is the deep one.  +1
+    # means everything the chain brings with it stacks upwards.
+    chain_edge = _x_chain_edge(spec, overlay)
+    x_out = 1.0 if chain_edge == "top" else -1.0
 
     # The notes are known before anything is drawn, and their height decides
     # how much of the sheet is left for the view, so they are built first and
@@ -1110,10 +1176,13 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                 f"({bbox[2]:.2f}, {bbox[3]:.2f})")
         bbox = view_bbox
 
-    # Dimensions stack below and left; only balloons need room above.
+    # Dimensions stack on the chain's edge and on the left; only balloons need
+    # room on the other horizontal edge.  The deep margin follows the chain.
+    m_top = VIEW_MARGIN_BOTTOM if chain_edge == "top" else VIEW_MARGIN_TOP
+    m_bottom = VIEW_MARGIN_TOP if chain_edge == "top" else VIEW_MARGIN_BOTTOM
     view = View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
-                    margin_top=VIEW_MARGIN_TOP,
-                    margin_bottom=VIEW_MARGIN_BOTTOM, force_scale=force_scale)
+                    margin_top=m_top,
+                    margin_bottom=m_bottom, force_scale=force_scale)
     if force_scale is None:
         # A board that misses a standard scale by a few millimetres of width
         # gets the narrower right margin before it gets the smaller scale.
@@ -1121,8 +1190,8 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         # Raspmod at 72.3 mm missed 2:1 by 1.6 mm and was drawn at 1:1 on a
         # sheet that was three-quarters empty.
         narrow = View.fit(sheet.area, bbox, margin=VIEW_MARGIN_SIDE,
-                          margin_top=VIEW_MARGIN_TOP,
-                          margin_bottom=VIEW_MARGIN_BOTTOM,
+                          margin_top=m_top,
+                          margin_bottom=m_bottom,
                           margin_right=VIEW_MARGIN_RIGHT_MIN)
         if narrow.scale > view.scale:
             view = narrow
@@ -1144,14 +1213,22 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # Where the dimension bands will go, computed before the balloons so they
     # can be kept out of it.  A balloon sitting on an ordinate witness line
     # reads as though it belongs to the dimension.
-    dim_bottom = min([board.y] + [view.y(p.body_y0) for p in spec.pmods
-                                  if p.body_y1 > p.body_y0]
-                     + [view.y(f.y0) for f in spec.features])
+    # Where the X dimension band starts: outside everything drawn on the edge
+    # the chain has taken, so nothing it carries lands on a connector body
+    # hanging off the board.
+    if chain_edge == "top":
+        dim_x_edge = max([board.y1] + [view.y(p.body_y1) for p in spec.pmods
+                                       if p.body_y1 > p.body_y0]
+                         + [view.y(f.y1) for f in spec.features])
+    else:
+        dim_x_edge = min([board.y] + [view.y(p.body_y0) for p in spec.pmods
+                                      if p.body_y1 > p.body_y0]
+                         + [view.y(f.y0) for f in spec.features])
     dim_left = min([board.x] + [view.x(f.x0) for f in spec.features])
 
-    # How far the dimensions will reach below and to the left, worked out
+    # How far the dimensions will reach outwards and to the left, worked out
     # before anything is placed.  A Pmod spacing dimension goes in first, then
-    # the ordinate chain nine millimetres below that.
+    # the ordinate chain nine millimetres beyond that.
     # Headers grouped by the edge they face and by role, because a spacing
     # dimension between a host and the plug 0.05 mm from it means nothing,
     # and a depth dimension for a mixed group would put its centre line
@@ -1163,7 +1240,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     horiz_edges = len([e for e in spaced if e in ("bottom", "top")])
     vert_edges = len([e for e in spaced if e in ("left", "right")])
     step = 6.0 + style.T_DIM + 2.0
-    chain_y = dim_bottom - horiz_edges * step - 9.0
+    chain_y = dim_x_edge + x_out * (horiz_edges * step + 9.0)
     chain_x = dim_left - vert_edges * step - 9.0
 
     # Balloons may use the strip between the view and the ordinate chain.
@@ -1171,9 +1248,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # a board like the Raspberry Pi 5, whose micro-HDMI connectors sit under
     # the Pmod HAT's host JC, that strip is the only clear space a leader from
     # those connectors can reach without being ruled across the host.
-    balloon_bounds = Rect(chain_x + 4.0, chain_y + 4.0,
-                          sheet.area.x1 - chain_x - 4.0,
-                          sheet.area.y1 - chain_y - 4.0)
+    # The chain is a floor or a ceiling depending on which edge it took; the
+    # rest of the sheet, out to the frame, is the balloons' to use.
+    b_lo = sheet.area.y if chain_edge == "top" else chain_y + 4.0
+    b_hi = chain_y - 4.0 if chain_edge == "top" else sheet.area.y1
+    balloon_bounds = Rect(chain_x + 4.0, b_lo,
+                          sheet.area.x1 - chain_x - 4.0, b_hi - b_lo)
 
     obstacles = Obstacles()
     feature_rect: dict[int, int] = {}
@@ -1244,19 +1324,27 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         edge_only.add_segment(*view.pt(edge[0], edge[1]),
                               *view.pt(edge[2], edge[3]), weight=HARD)
 
-    # The overall dimensions are drawn after the balloons, along the top and
-    # right edges, so they are reserved now.  The value is hard -- a leader
-    # ruled through "56.00" is as unreadable as a balloon parked on it -- but
-    # the line either side of it is position only.  Reserving the whole band
-    # against leaders as well boxed the balloons into the board's interior,
-    # because a leader from a part near the top or right had to cross a band
-    # to reach any space at all.
+    # The overall dimensions are drawn after the balloons, along the right edge
+    # and along whichever horizontal edge the chain left free, so they are
+    # reserved now, at the place the drawing code below puts them.  The value
+    # is hard -- a leader ruled through "56.00" is as unreadable as a balloon
+    # parked on it -- but the line either side of it is position only.
+    # Reserving the whole band against leaders as well boxed the balloons into
+    # the board's interior, because a leader from a part near one of those two
+    # edges had to cross a band to reach any space at all.
     band = style.T_DIM + style.descender(style.T_DIM) + style.DIM_TEXT_GAP
+    # The width goes on the horizontal edge the chain did not take.  One
+    # definition of where that is, shared with the drawing code below, because
+    # reserving one place and drawing in another is the recurring bug here.
+    # Its text sits above its own line either way: that is what dims.linear
+    # draws, whichever side of the board the line is on.
+    overall_edge_y = board.y if chain_edge == "top" else board.y1
+    overall_y = overall_edge_y + x_out * -OVERALL_GAP
     for value, horizontal in ((o.width, True), (o.height, False)):
         half = style.text_width(f"{value:.2f}", style.T_DIM) / 2
         if horizontal:
             mid = (board.x + board.x1) / 2
-            lo, hi = board.y1 + OVERALL_GAP - 1.0, board.y1 + OVERALL_GAP + band
+            lo, hi = overall_y - 1.0, overall_y + band
             edge_only.add_rect(board.x, lo, board.x1, hi, pad=1.2, weight=HARD)
             obstacles.add_rect(mid - half, lo, mid + half, hi,
                                pad=1.2, weight=HARD)
@@ -1277,9 +1365,11 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # feature costs to sit on, and on the Pi 3A+ a balloon chose to cover a
     # neighbouring connector rather than cross the witness line beside it.
     xvals, yvals = _ordinate_values(spec, overlay)
+    witness_end = (balloon_bounds.y1 if chain_edge == "top"
+                   else balloon_bounds.y)
     for v, f in xvals.items():
         edge_only.add_segment(view.x(v), view.y(f), view.x(v),
-                              balloon_bounds.y, weight=HARD)
+                              witness_end, weight=HARD)
     for v, f in yvals.items():
         edge_only.add_segment(view.x(f), view.y(v), balloon_bounds.x,
                               view.y(v), weight=HARD)
@@ -1290,7 +1380,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # On a board with its hosts on a vertical edge the spacing runs up the
     # LEFT of the view, across the whole board from the hosts, straight
     # through the space the PYNQ-Z2's micro-USB balloon wanted.
-    plan_low, plan_left = dim_bottom, dim_left
+    plan_out, plan_left = dim_x_edge, dim_left
     for (edge, _), group in by_edge.items():
         if len(group) < 2:
             continue
@@ -1300,11 +1390,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         if getattr(p1, along) - getattr(p0, along) < 0.01:
             continue
         if along == "cx":
-            line_y = plan_low - 6.0
+            # On the chain's own edge, inboard of it, whichever edge that is.
+            line_y = plan_out + x_out * 6.0
             obstacles.add_rect(view.x(p0.cx) - 4.0, line_y - band - 1.2,
                                view.x(p1.cx) + 4.0, line_y + band + 1.2,
                                weight=HARD)
-            plan_low -= 6.0 + style.T_DIM + 2.0
+            plan_out += x_out * (6.0 + style.T_DIM + 2.0)
         else:
             line_x = plan_left - 6.0
             obstacles.add_rect(line_x - band - 1.2, view.y(p0.cy) - 4.0,
@@ -1342,7 +1433,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                    position_only=edge_only)
 
     # --- dimensions ---------------------------------------------------------
-    lowest, leftmost = dim_bottom, dim_left
+    outermost, leftmost = dim_x_edge, dim_left
 
     # Pmod host spacing is dimensioned per board edge, between the first two
     # hosts on that edge.  Taking the first two hosts overall instead gives a
@@ -1360,9 +1451,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         label = f"{spacing:.2f} TYP" if len(group) > 2 else f"{spacing:.2f}"
         if along == "cx":
             dims.linear(c, view.pt(p0.cx, p0.cy), view.pt(p1.cx, p1.cy),
-                        lowest - 6.0 - view.y(p0.cy), horizontal=True,
-                        text=label)
-            lowest -= 6.0 + style.T_DIM + 2.0
+                        outermost + x_out * 6.0 - view.y(p0.cy),
+                        horizontal=True, text=label)
+            outermost += x_out * (6.0 + style.T_DIM + 2.0)
         else:
             dims.linear(c, view.pt(p0.cx, p0.cy), view.pt(p1.cx, p1.cy),
                         leftmost - 6.0 - view.x(p0.cx), horizontal=False,
@@ -1392,8 +1483,10 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # on the Pmod HAT Adapter.  The span is three or four millimetres and the
     # value three times that, so the value cannot sit between the arrows; it
     # is written along the lane on the inboard side, where the lane is clear
-    # by construction.  Outboard is where the host spacing dimension and the
-    # ordinate chain already are.
+    # by construction.  Outboard is the host's own edge of the sheet, which
+    # carries either the ordinate chain and the host spacing dimension or the
+    # overall width; the side is decided by the host's edge, so it stays
+    # inboard whichever of those the chain rule put there.
     for (edge, _), group in by_edge.items():
         along = "cx" if edge in ("bottom", "top") else "cy"
         outer = max(group, key=lambda p: getattr(p, along))
@@ -1430,24 +1523,30 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                         horizontal=True, value=o.width - outer.cx,
                         text_side="low")
 
+    # The zero ordinate starts from the same edge the rest of the chain does:
+    # X=0 is the whole left edge of the board, so any point on it will do, and
+    # the corner nearest the chain is the one that does not rule a line the
+    # height of the board to get there.
+    x_base = board.y1 if chain_edge == "top" else board.y
     x_extent = dims.ordinate_chain(
         c, [(view.x(v), f"{v:.2f}", view.y(f)) for v, f in xvals.items()],
-        board.y, lowest - 9.0, horizontal=True,
-        zero_pos=board.x, zero_from=board.y, blockers=blockers)
+        x_base, outermost + x_out * 9.0, horizontal=True,
+        zero_pos=board.x, zero_from=x_base, blockers=blockers)
     y_extent = dims.ordinate_chain(
         c, [(view.y(v), f"{v:.2f}", view.x(f)) for v, f in yvals.items()],
         board.x, leftmost - 9.0, horizontal=False,
         zero_pos=board.y, zero_from=board.x, blockers=blockers)
 
     # The overall dimensions go on the edges the ordinate chains do not use:
-    # width across the top, height up the right.  Stacked outside the chains
-    # below and left, they had to clear the chain, its labels and the Pmod
-    # spacing dimension, which put the overall size of the board thirty
-    # millimetres away from the board.  On these edges they sit close in, with
-    # short extension lines, which is where a reader looks for them.
+    # the height up the right, and the width across whichever horizontal edge
+    # the X chain left free.  Stacked outside the chains instead, they had to
+    # clear the chain, its labels and the Pmod spacing dimension, which put the
+    # overall size of the board thirty millimetres away from the board.  On a
+    # free edge they sit close in, with short extension lines, which is where a
+    # reader looks for them.
     del x_extent, y_extent
-    dims.linear(c, (board.x, board.y1), (board.x1, board.y1), OVERALL_GAP,
-                horizontal=True, value=o.width)
+    dims.linear(c, (board.x, overall_edge_y), (board.x1, overall_edge_y),
+                x_out * -OVERALL_GAP, horizontal=True, value=o.width)
     dims.linear(c, (board.x1, board.y), (board.x1, board.y1), OVERALL_GAP,
                 horizontal=False, value=o.height)
     # The datum sits in the busiest corner of the sheet, so its label goes out
