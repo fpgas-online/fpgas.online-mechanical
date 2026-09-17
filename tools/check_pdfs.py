@@ -123,7 +123,13 @@ def check(svg_path: str) -> list[str]:
 
 
 def content_stream(page) -> bytes:
-    """The page's drawing instructions, with the file's furniture left out."""
+    """The page's drawing instructions, with the file's furniture left out.
+
+    Empty for a page with no content at all, which is a thing to report and
+    never a thing to match on: an empty stream on both sides of a comparison
+    is two files agreeing about nothing.  So it is never indexed, and a bundle
+    page that yields one is a problem in its own right.
+    """
     contents = page.get_contents()
     return contents.get_data() if contents is not None else b""
 
@@ -145,7 +151,12 @@ def check_bundle(path: str, by_stream: dict[bytes, tuple[str, str]]) -> list[str
     bad: list[str] = []
     pages: list[tuple[str, str] | None] = []
     for i, page in enumerate(reader.pages, 1):
-        hit = by_stream.get(content_stream(page))
+        stream = content_stream(page)
+        if not stream:
+            bad.append(f"page {i} has no content stream to compare")
+            pages.append(None)
+            continue
+        hit = by_stream.get(stream)
         if hit is None:
             bad.append(f"page {i} is not any sheet in the index; it was not "
                        "bound from the committed PDFs")
@@ -196,7 +207,9 @@ def main() -> int:
             continue
         name = drawing_name_for(ROOT / svg)
         for page in PdfReader(io.BytesIO(data)).pages:
-            by_stream[content_stream(page)] = (svg, name)
+            stream = content_stream(page)
+            if stream:
+                by_stream[stream] = (svg, name)
 
     bound = [rel(b) for b in bundles()]
     for path in bound:
