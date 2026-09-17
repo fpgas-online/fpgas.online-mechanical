@@ -174,10 +174,15 @@ def acc_stem(key: str) -> str:
             "the vendor the title block already names")
 
 
-#: A stem word that is a board revision: ``v3p3``, ``v2p1p2``, and ``v2`` if
-#: a board is ever cut at a major revision.  The ``p`` is ``slug``'s, standing
-#: in for the dot the revision is written with everywhere else.
-REVISION_RE = re.compile(r"v\d+(?:p\d+)*")
+#: A stem word that is a board revision: ``v3p3``, ``v2p1p2``, ``v2`` if a
+#: board is ever cut at a major revision, and ``v1p2p2c`` for a lettered one.
+#: The ``p`` is ``slug``'s, standing in for the dot the revision is written
+#: with everywhere else.
+#:
+#: The number and the letter are separate groups so that ``tt_name`` can take
+#: the ``p``s out of the number without touching the letter, which matters for
+#: the one revision whose letter would be a ``p``.
+REVISION_RE = re.compile(r"(v\d+(?:p\d+)*)([a-z]?)")
 
 
 def tt_name(rest: str) -> str:
@@ -194,6 +199,16 @@ def tt_name(rest: str) -> str:
     out: ``v1p2p1-v1p2p3`` is ``V121``, ``v2p1p2`` is ``V212`` and ``v3p3`` is
     ``V33``.
 
+    A revision may end in a letter, and the letter is kept: ``v1p2p2c`` is
+    ``V122C``.  The data already has lettered revisions -- the sheet covering
+    v1.2.1 to v1.2.3 is titled "DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c"
+    -- so the day one of them is keyed that way and heads a sheet is a day
+    this has to be right.  A pattern that did not match the letter would not
+    fail: the word would be taken for a board name and passed through whole,
+    and the sheet would quietly be called ``TT-DB-V1P2P2C``, which is the
+    stem-shaped name this rule exists to stop.  The ``p`` separators come out
+    of the number alone, so a revision lettered ``p`` keeps its letter.
+
     Naming a sheet after one of the revisions it covers is honest rather than
     approximate, because a sheet covers exactly one geometry and the first
     revision to carry that geometry is where it came from: v1.2.2 and v1.2.3
@@ -204,9 +219,11 @@ def tt_name(rest: str) -> str:
     the drawing in front of them actually has.
     """
     first = rest.split("-")[0]
-    if not REVISION_RE.fullmatch(first):
+    match = REVISION_RE.fullmatch(first)
+    if not match:
         return first
-    return first.replace("p", "")
+    number, letter = match.groups()
+    return number.replace("p", "") + letter
 
 
 def acc_name(stem: str) -> str:
