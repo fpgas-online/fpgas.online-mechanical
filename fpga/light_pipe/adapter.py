@@ -23,7 +23,7 @@ from tools.schema import BoardSpec, Outline, Source
 #: The jack the adapter clips onto, and where it is.
 JACK_PART = '08B0-1X1T-36-F'
 JACK_DESIGNATOR = 'J9'
-JACK_ON_SHEET = 'sheet 8 of 12, ETHERNET: J9 is 08B0-1X1T-36-F'
+JACK_ON_SHEET = 'sheet 8 of 12 (ETHERNET): J9 is 08B0-1X1T-36-F'
 SHIELD_W = 16.31
 SHIELD_H = 13.49
 BODY_D = 25.53
@@ -60,7 +60,9 @@ TOP_SPRING_Y0, TOP_SPRING_Y1, TOP_SPRING_Z = 2.92, 4.12, 14.519
 #: front face of the frame above, in board coordinates.
 BOARD_KEY = 'arty-a7'
 JACK_CENTRE_Y = 44.0
-JACK_FACE_X = -0.101
+JACK_FACE_X = 0.463
+JACK_FACE_FROM_PLOT = 0.4, 0.527
+JACK_FACE_FROM_PEG = 0.539
 PEG_X = 7.649
 PEG_SPACING_DXF = 16.104
 PEG_SPACING_BEL = 16.13
@@ -147,23 +149,21 @@ ADAPTER = BoardSpec(
     sources=(
         Source(label="Board schematic",
                ref="https://digilent.com/reference/_media/reference/programmable-logic/arty-a7/arty_a7_sch.pdf",
-               note="Digilent, Arty A7 rev E.0, 2018-01-09: sheet 8 of 12, ETHERNET: J9 is 08B0-1X1T-36-F."),
+               note="Digilent, Arty A7 rev E.0, sheet 8 of 12 (ETHERNET): J9 is 08B0-1X1T-36-F."),
         Source(label="Jack drawing",
                ref="https://www.belfuse.com/media/drawings/products/magjack%20ICMs/dr-mag-08b0-1x1t-36-f.pdf",
-               note="Bel MagJack 08B0-1X1T-36-F, drawing 08B01X1T36-F rev E, 2018-03-18. Stated dimensions are its own; the LED windows, the plug aperture, the latch keyway and the EMI springs are measured off its front view, whose plot scale is recovered per axis from the 0.642 [16.31] and 0.531 [13.49] it dimensions (the axes agree to 0.58 %)."),
+               note="Bel 08B01X1T36-F rev E. STATED figures are its own, +/-0.254 mm; MEASURED ones are scaled off its front view, per axis from the 16.31 and 13.49 it states, and good to +/-0.20 mm."),
         Source(label="Board drawing",
                ref="https://digilent.com/reference/_media/reference/programmable-logic/arty-a7/arty_a7.zip",
-               note="Digilent, Arty_A7_DXF.DXF: the two Ø1.575 mm board-lock pads at x = 7.649 put the jack's centre line at y = 44.0. They are 16.104 mm apart, against Bel's 0.635 [16.13], so the two drawings are of the same jack; Bel's 0.305 [7.75] from the pegs to the front face puts that face at x = -0.101."),
+               note="Digilent, Arty_A7_DXF.DXF and its PDF plot: board locks 16.104 mm apart against Bel's 16.13, so the centre plane is y = 44.0; front face x = 0.463, the mean of three readings agreeing to 0.14 mm (0.4 / 0.527 / 0.539)."),
         Source(label="Light pipe drawing",
                ref="https://www.bivar.com/parts_content/Datasheets/PLP2-XXX.pdf",
-               note="Bivar PLP2-XXX rev Y, 2018-07-06, press-fit panel mount front mount light pipe: PLP2-4MM is on the offering list; material polycarbonate, 94V-0, clear. The bore is built from its Ø0.115 +0.003/-0.002 recommended mounting hole and its 0.047-0.093 in panel thickness."),
+               note="Bivar PLP2-XXX rev Y: Ø2.8 pipe on Ø3.1 ribs, Ø3.3 flange, Ø0.115 in mounting hole, 0.047-0.093 in panel; PLP2-4MM is on the offering list; material polycarbonate, 94V-0, clear."),
     ),
     notes=(
-        "The adapter slides onto the front of J9 and stops against its front face. Nothing fixes it but the jack's own side EMI springs, which stand 1.40 +/-0.51 mm proud of the shield and bear on the skirts: over that whole band the springs are deflected and the shield itself never touches.",
-        "Print it upside down, on the top face. Every other face then rises from the plate, the two 45 degree facets and the two bores are the only overhangs, and neither needs support.",
-        "Bore diameters are for a printed hole. A printer that comes out undersize will not take the pipe: ream the press-fit length to Bivar's Ø2.92 +0.08/-0.05 and test the fit on a scrap before printing the part.",
-        "The pipe's tip is 0.30 mm in front of the jack's front face and its light crosses that gap in air. Nothing of the adapter touches the LED windows: the pocket clears both of them.",
-        "A plug and a plain boot pass under the cheeks. A snagless boot whose hood stands above the plug's own top face within 6 mm of the jack will foul them; the note on the cheek gives the height that is clear.",
-        "MEASURED figures come off Bel's front view and are good to about +/-0.20 mm. Figures Bel dimensions carry its own +/-0.254 mm (.XXX +/-0.010 in). Both are wider than the printed part's tolerance, and the clearances are sized for them.",
+        "Nothing fixes the adapter but J9's own side EMI springs, 1.40 +/-0.51 mm proud of the shield, bearing on the skirts: deflected over that whole band, while the shield never touches.",
+        "Print upside down, on the top face: the facets and the bores are then 45 degree overhangs and nothing needs support.",
+        "Ream the press fit to Bivar's Ø2.92 +0.08/-0.05 if the printed hole comes out undersize.",
+        "A plug and a plain boot pass under the cheeks; a snagless boot standing proud of the plug's own top face within 6 mm of the jack will foul them.",
     ),
 )
