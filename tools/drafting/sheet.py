@@ -81,9 +81,9 @@ class Sheet:
     #: Fractions of the title block width for the row that carries the
     #: drawing name.  Not four equal quarters, because the drawing name is
     #: not a quarter-width field: a quarter of the block is 41.25 mm with
-    #: 38.05 mm of it usable, and while sheets were named for the whole of
-    #: their file stems eight of the twenty-one overran it, the longest
-    #: -- ``TT-DB-TT123-V2P2P5-V2P2P6`` -- by 12 mm at the ISO 3098 floor.
+    #: 38.05 mm of it usable, and while every sheet was named for the whole of
+    #: its file stem eight of the twenty-one overran that, the longest of them
+    #: by 23.70 mm at the ISO 3098 floor.
     #: The demo boards and the accessories are named by a rule now and are
     #: nowhere near it, but the quarter is not restored, because nothing else
     #: in the set has that much room to spare: ``TT-MP-FITTING-GUIDE`` is

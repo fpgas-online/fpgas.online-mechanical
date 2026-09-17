@@ -43,8 +43,12 @@ The general tolerance lives in the title block, where a real drawing puts it
 and where it cannot be the note that gets dropped for space.
 
 DRAWING NO carries a name, not a number, and it is given half the title block
-because a name is as long as it has to be to say which sheet this is. The
-name itself is [`tools/layout.py`](../layout.py)'s. Any title block value that
+rather than the quarter the other fields in its row share. Half is more than
+anything in this set needs now that the two families with the longest stems
+are named by a rule, but the widest name that is still its sheet's stem clears
+a quarter by half a millimetre, and a sheet on another branch is half as long
+again; the field is sized for the names it will be given, not the ones it has.
+The name itself is [`tools/layout.py`](../layout.py)'s. Any title block value that
 will not fit its cell at the ISO 3098 minimum stops the render rather than
 overprinting its neighbour, and `check_sheets.py` measures every name in the
 set against the cell the sheet was actually drawn with, found on the page by
