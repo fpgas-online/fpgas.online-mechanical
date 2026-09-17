@@ -312,6 +312,38 @@ def main() -> None:
     args = ap.parse_args()
 
     made: list[Path] = []
+    drawn: dict[Path, str] = {}
+
+    def save(sheet, path: Path, what: str) -> Path:
+        """Write one sheet, refusing to write two sheets to one file.
+
+        Stems are unique by construction and ``check_drawing_names`` proves
+        the names derived from them are, but that check walks the output
+        directory: two sheets writing to one path leave one file, and it is
+        the surviving one the check reads.  The collision would show up as a
+        sheet quietly missing from a set nobody counts.
+
+        It is reachable.  ``tt_stem`` is not injective -- revisions ``a-b``
+        and ``a-c`` on one sheet give ``tt-demo-board-a-b-c``, and so does a
+        single revision named ``a-b-c`` -- so the guard is here rather than
+        in an argument that it cannot happen.
+
+        *what* says which sheet, for the message.  The drawing name alone
+        would not: it is derived from the stem, so two sheets that collide on
+        a stem have the same name as well, and a message naming both would
+        print one string twice.  What tells them apart is what they are of,
+        so a board sheet passes its title too.
+        """
+        if path in drawn:
+            raise SystemExit(
+                f"{rel(path)} would be written twice, first for {drawn[path]} "
+                f"and then for {what}. Two sheets have been given the same "
+                "file stem; see tools/layout.py.")
+        drawn[path] = what
+        sheet.canvas.save(str(path))
+        made.append(path)
+        return path
+
     #: The A3 Tiny Tapeout sheets for the bound copy, in two runs: the plate
     #: sheets are rendered after the demo boards but bound in front of them.
     board_set: list[tuple[Path, str]] = []
@@ -334,9 +366,7 @@ def main() -> None:
         sheet = render_board(spec, drawing_no=name, version=VERSION,
                              extra_notes=TT_NOTES, family_numbers=TT_NUMBERS,
                              view_bbox=frames[stem], band_height=band)
-        path = tt_dir / f"{stem}.svg"
-        sheet.canvas.save(str(path))
-        made.append(path)
+        path = save(sheet, tt_dir / f"{stem}.svg", f"{name} ({spec.title})")
         board_set.append((path.with_suffix(".pdf"),
                           f"{name}  {spec.title}  -  {spec.subtitle}"))
 
@@ -357,9 +387,7 @@ def main() -> None:
                              overlay=PMOD_HAT, extra_notes=RPI_NOTES,
                              family_numbers=RPI_NUMBERS, view_bbox=rpi_frame,
                              band_height=rpi_band)
-        path = rpi_dir / f"{stem}.svg"
-        sheet.canvas.save(str(path))
-        made.append(path)
+        path = save(sheet, rpi_dir / f"{stem}.svg", f"{name} ({spec.title})")
         rpi_set.append((path.with_suffix(".pdf"),
                         f"{name}  {spec.title}  -  {spec.subtitle}"))
 
@@ -372,51 +400,39 @@ def main() -> None:
         name = drawing_name("fpga", stem)
         sheet = render_board(spec, drawing_no=name, version=VERSION,
                              family_numbers=FPGA_NUMBERS)
-        path = fpga_dir / f"{stem}.svg"
-        sheet.canvas.save(str(path))
-        made.append(path)
+        path = save(sheet, fpga_dir / f"{stem}.svg", f"{name} ({spec.title})")
         fpga_set.append((path.with_suffix(".pdf"),
                          f"{name}  {spec.title}  -  {spec.subtitle}"))
 
     acc_dir = FAMILY_DIRS["accessories"]
     acc_dir.mkdir(parents=True, exist_ok=True)
     sheet = render_board(PMOD_HAT, drawing_no=PMOD_HAT_SHEET, version=VERSION)
-    path = acc_dir / f"{PMOD_HAT_STEM}.svg"
-    sheet.canvas.save(str(path))
-    made.append(path)
+    save(sheet, acc_dir / f"{PMOD_HAT_STEM}.svg", PMOD_HAT_SHEET)
 
     for spec in [WAVESHARE_POE, GENERIC_POE]:
         stem = acc_stem(spec.key)
-        sheet = render_enclosure(
-            spec, drawing_no=drawing_name("accessories", stem),
-            version=VERSION)
-        path = acc_dir / f"{stem}.svg"
-        sheet.canvas.save(str(path))
-        made.append(path)
+        name = drawing_name("accessories", stem)
+        sheet = render_enclosure(spec, drawing_no=name, version=VERSION)
+        save(sheet, acc_dir / f"{stem}.svg", name)
 
     # The Raspmod: the other way of putting Pmods on a Raspberry Pi, drawn
     # beside the Digilent adapter it is compared with.
     raspmod_stem = acc_stem(RASPMOD.key)
-    sheet = render_board(RASPMOD, version=VERSION,
-                         drawing_no=drawing_name("accessories", raspmod_stem))
-    path = acc_dir / f"{raspmod_stem}.svg"
-    sheet.canvas.save(str(path))
-    made.append(path)
+    raspmod_name = drawing_name("accessories", raspmod_stem)
+    sheet = render_board(RASPMOD, version=VERSION, drawing_no=raspmod_name)
+    save(sheet, acc_dir / f"{raspmod_stem}.svg", raspmod_name)
 
     plate_dir = FAMILY_DIRS["mounting-plate"]
     plate_dir.mkdir(parents=True, exist_ok=True)
     sheet = render_plate(drawing_no=PLATE_SHEET, version=VERSION)
-    path = plate_dir / f"{PLATE_STEM}.svg"
-    sheet.canvas.save(str(path))
-    made.append(path)
+    path = save(sheet, plate_dir / f"{PLATE_STEM}.svg", PLATE_SHEET)
     plate_set.append((path.with_suffix(".pdf"),
                       f"{PLATE_SHEET}  {PLATE.title}  -  {PLATE.subtitle}"))
 
     sheet = render_fitting_guide(drawing_no=FITTING_GUIDE_SHEET,
                                  version=VERSION)
-    path = plate_dir / f"{FITTING_GUIDE_STEM}.svg"
-    sheet.canvas.save(str(path))
-    made.append(path)
+    path = save(sheet, plate_dir / f"{FITTING_GUIDE_STEM}.svg",
+                FITTING_GUIDE_SHEET)
     plate_set.append((path.with_suffix(".pdf"),
                       f"{FITTING_GUIDE_SHEET}  TT Mounting Plate Fitting "
                       "Guide  -  Which holes each demo board revision uses"))
@@ -425,12 +441,9 @@ def main() -> None:
     # but they are still sheets of the mounting plate and live with it: a
     # directory of their own split the plate's four sheets across two places.
     for kind, stem in DRILL_TEMPLATE_STEMS.items():
-        sheet = render_drill_template(
-            kind, drawing_no=drawing_name("mounting-plate", stem),
-            version=VERSION)
-        path = plate_dir / f"{stem}.svg"
-        sheet.canvas.save(str(path))
-        made.append(path)
+        name = drawing_name("mounting-plate", stem)
+        sheet = render_drill_template(kind, drawing_no=name, version=VERSION)
+        save(sheet, plate_dir / f"{stem}.svg", name)
 
     for path in made:
         print(f"  {rel(path)}")
