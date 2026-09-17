@@ -199,22 +199,68 @@ def check_readme_previews() -> list[str]:
     return problems
 
 
-def check_drawing_names() -> list[str]:
-    """Every sheet's drawing name is unique and fits the DRAWING NO cell.
+#: How far below its label a title block value sits, at most.  The label is
+#: drawn at the top of the cell and the value at the bottom, so the two are
+#: less than a row apart; the next row's label is a whole row further down.
+CELL_LABEL_DROP = 8.0
 
-    The name is derived from the sheet's own file stem, so two sheets cannot
-    share one and nothing else in the set can take it away.  What derivation
-    does not guarantee is that the result fits: a sheet covering four board
-    revisions makes a long name, and the title block is a fixed 165 mm wide.
 
-    ``Sheet._title_cell`` refuses to draw a value that overruns its cell, so
-    this cannot reach paper -- but that refusal happens one sheet at a time,
-    partway through a render, with the rest of the set unbuilt.  Measured here
-    the whole set is answered at once, against the same font metrics the
-    layout uses, and the sheet is checked to actually carry the name derived
-    for it, which is what catches a renderer that was passed something else.
+def drawing_no_cell(items, rules) -> tuple[str, float] | None:
+    """The DRAWING NO cell's value and its room, read off the sheet itself.
+
+    Found by the cell's own label rather than by position, and measured
+    between the rules that were actually drawn rather than from the layout
+    constants, so this cannot agree with a title block it is not looking at.
+    That is the same rule the drafting library learned the hard way: reserve
+    from the drawn geometry, not from a second calculation of it.
+
+    None for a sheet with no title block at all -- the A4 drill templates,
+    which carry their name in a header line instead.
     """
-    room = Sheet.drawing_no_room()
+    labels = [b for b in items if b[4] == "DRAWING NO"]
+    if not labels:
+        return None
+    label = labels[0]
+    below = [b for b in items if abs(b[0] - label[0]) < 0.2
+             and 0 < b[1] - label[1] < CELL_LABEL_DROP]
+    if not below:
+        return None
+    value = min(below, key=lambda b: b[1])
+    # The cell is bounded by the nearest vertical rule each side that spans
+    # both the label and the value, which is to say the rules of its own row.
+    spanning = [x for x, y0, y1 in rules if y0 <= label[1] and y1 >= value[3]]
+    left = [x for x in spanning if x <= label[0]]
+    right = [x for x in spanning if x >= value[2]]
+    if not left or not right:
+        return None
+    return value[4], min(right) - max(left) - Sheet.CELL_PAD
+
+
+def check_drawing_names() -> list[str]:
+    """Every sheet's name is unique, fits its cell, and is on the sheet.
+
+    The name is derived from the sheet's own file stem, which very nearly
+    makes a collision impossible -- but ``slug`` is not injective, since
+    ``rpi5``, ``rpi-5`` and ``rpi_5`` all give ``RPI-5``, so uniqueness is
+    checked rather than assumed.
+
+    Nor does derivation say the result fits: a sheet covering four board
+    revisions makes a long name and the title block is a fixed 165 mm wide.
+    ``Sheet._title_cell`` refuses to draw a value that overruns its cell, so
+    an overflow cannot reach paper -- but that refusal happens one sheet at a
+    time, partway through a render, with the rest of the set unbuilt.  Here
+    the whole set is answered at once, against the room the cell was actually
+    drawn with.
+
+    The three properties are independent and each is reported on its own: a
+    name that does not fit is a different defect from one the sheet does not
+    carry, and a sheet can have both.
+
+    The two A4 drill templates have no title block and so no cell to overrun.
+    Their name goes in a header line whose width ``_fit_beside`` checks as it
+    draws, and a title running into it would show up here anyway, in the
+    overlap and word-gap tests every text element on every sheet goes through.
+    """
     problems = []
     seen: dict[str, Path] = {}
     for svg in sheets():
@@ -223,15 +269,28 @@ def check_drawing_names() -> list[str]:
             problems.append(f"{name} names two sheets, {rel(seen[name])} and "
                             f"{rel(svg)}")
         seen[name] = svg
+
+        text = svg.read_text()
+        items = boxes(text)
+        cell = drawing_no_cell(items, vertical_rules(all_lines(text)))
+        if cell is None:
+            # No title block: the name is in the header line, as its own word.
+            if not any(b[4] == name or b[4].startswith(f"{name} ")
+                       for b in items):
+                problems.append(f"{rel(svg)} has no title block and no header "
+                                f"text carrying its drawing name, {name}")
+            continue
+
+        value, room = cell
         width = style.text_width(name, style.T_MIN, bold=True)
         if width > room:
             problems.append(
                 f"{rel(svg)}: the drawing name {name} needs {width:.2f} mm of "
                 f"the {room:.2f} mm in the DRAWING NO cell, at the ISO 3098 "
                 "minimum lettering size")
-        elif name not in svg.read_text():
-            problems.append(f"{rel(svg)} does not carry its own drawing name, "
-                            f"{name}")
+        if value != name:
+            problems.append(f"{rel(svg)}: the DRAWING NO cell reads {value!r}, "
+                            f"not the sheet's own name, {name}")
     return problems
 
 

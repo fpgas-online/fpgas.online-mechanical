@@ -192,19 +192,6 @@ class Sheet:
                        size=style.T_TINY, anchor="middle", baseline="middle",
                        colour="#666666")
 
-    @classmethod
-    def drawing_no_room(cls, column_width: float | None = None) -> float:
-        """Millimetres a drawing name has inside the DRAWING NO cell.
-
-        Published so that ``tools/check_sheets.py`` can measure every name in
-        the set against it before anything is rendered.  ``_title_cell``
-        refuses to draw a value that will not fit, which is the guarantee, but
-        it refuses one sheet at a time, halfway through a build, and says
-        nothing about the sheet nobody has rendered yet.
-        """
-        cw = cls.COLUMN_WIDTH if column_width is None else column_width
-        return cw * cls.ROW_FRACS["DRAWING NO"] - cls.CELL_PAD
-
     def draw_title_block(self) -> None:
         c, r, t = self.canvas, self.title_rect, self.title
         c.rect(r.x, r.y, r.w, r.h, weight=style.W_FRAME)
