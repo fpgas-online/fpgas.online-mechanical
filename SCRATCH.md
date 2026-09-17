@@ -1661,3 +1661,39 @@ it was the thing that actually went wrong. One problem, naming the page, the
 sheet it should have been and both hashes. Binding that same stale page and
 then dropping the Pi 5 sheet gives three: the page count, the stale page, and
 a bookmark list two entries long for three pages.
+
+**Where this met the naming change.** #30 landed under this branch and had
+written a bound-copy check of its own: the same gap, found from the other
+side. The two are one check now, taking the stronger half of each. The page
+list is this branch's, `generate_diagrams.bundles()`, so a page is compared
+against the sheet that *belongs* in that position rather than against any
+sheet in the index, and with it come the MediaBox, the bookmark labels in
+order, the page each bookmark opens and the Info key set. From #30 comes
+`content_stream()`, which hands back `b""` for a page with nothing on it and
+never matches on it: pypdf's `ContentStream` is a dict subclass and an empty
+one is falsy, so a comparison written the obvious way would find two empty
+streams equal and pass having compared nothing. #30's other rule, that a
+bookmark opens with its page's drawing name, is inside the labels already,
+because the generator builds every label from that name.
+
+#30's `tools.layout.bundles()` is kept, doing the one thing the generator's
+list cannot: it finds the bound copies the way a bundle is defined, a PDF in
+an output directory with no SVG beside it, so a bundle that is committed and
+that the generator does not bind is reported rather than never looked at.
+
+The proof was run again on the check as it now stands, against the committed
+set:
+
+- bound correctly from the committed sheet PDFs: 0 problems. All three
+  bundles rebuilt that way are byte for byte the committed ones, at 3035895,
+  1302973 and 1544306 bytes, which is the refactor's own receipt as well.
+- page 1's content stream lengthened by nine bytes: 1 problem, naming the
+  page, the sheet it should have been, both lengths and both hashes.
+- bookmark 1 left reading `FPGA-01  Digilent Arty A7  -  A7-35T and
+  A7-100T`: 1 problem, quoting what it reads and what it should.
+- the ButterStick page dropped: 2 problems, the page count and a bookmark
+  list three entries long for four pages.
+- page 1 replaced by a blank page: 1 problem, page 1 has no content stream
+  to compare against `fpga/output/arty-a7.pdf`. That is #30's guard, on this
+  branch's comparison, catching the case neither branch's check would have
+  reported as anything worse than agreement.
