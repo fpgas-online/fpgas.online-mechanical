@@ -8,7 +8,7 @@ jack and user LEDs marked.
 |---|---|
 | `boards.py` | **Generated.** Arty A7, ULX3S, PYNQ-Z2 and ButterStick |
 | `extract.py` | Reads each board's own published source and writes `boards.py` |
-| `output/` | `FPGA-01` to `FPGA-04`, as SVG and PDF, and `fpga-sheets.pdf`, the four bound into one document |
+| `output/` | `FPGA-ARTY-A7`, `FPGA-ULX3S`, `FPGA-PYNQ-Z2` and `FPGA-BUTTERSTICK`, as SVG and PDF, and `fpga-sheets.pdf`, the four bound into one document |
 
 ```sh
 tools/fetch_fpga.sh                                   # once, needs network

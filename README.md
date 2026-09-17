@@ -17,12 +17,31 @@ it, so a new board is a new directory and does not disturb the others.
 
 | Directory | Sheets | |
 |-----------|--------|--|
-| [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-01`..`06` | Tiny Tapeout demo boards, one sheet per distinct geometry |
-| [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-01`..`04` | The plate every demo board revision bolts onto, and its drill templates |
-| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-01`..`03` | Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
-| [`fpga/`](fpga/README.md) | `FPGA-01`..`04` | Digilent Arty A7, ULX3S, TUL PYNQ-Z2 and ButterStick, with Pmod, USB, Ethernet and LEDs marked |
-| [`accessories/`](accessories/README.md) | `ACC-01`..`04` | Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
+| [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` | Tiny Tapeout demo boards, one sheet per distinct geometry |
+| [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP`, `TT-MP-*` | The plate every demo board revision bolts onto, and its drill templates |
+| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` | Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
+| [`fpga/`](fpga/README.md) | `FPGA-*` | Digilent Arty A7, ULX3S, TUL PYNQ-Z2 and ButterStick, with Pmod, USB, Ethernet and LEDs marked |
+| [`accessories/`](accessories/README.md) | `ACC-*` | Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | -- | The [drafting library](tools/drafting/README.md), the generator and the checks |
+
+## What a sheet is called
+
+A sheet's drawing name is its own file, in capitals, behind its family's
+prefix: `fpga/output/arty-a7.pdf` is **`FPGA-ARTY-A7`** and
+`tinytapeout/output/tt-demo-board-v3p3.pdf` is **`TT-DB-V3P3`**. The part of
+the stem the prefix already says is dropped, so `rpi5.pdf` is `RPI-5` and the
+mounting plate's own fabrication drawing, having nothing left after the strip,
+is `TT-MP` -- the family's principal sheet, with `TT-MP-FITTING-GUIDE` and the
+two drill templates hanging off it.
+
+Nothing is numbered. A number is a position in a list, so it depends on what
+else is in the list: two branches each adding a board sheet gave it the same
+next number, and whichever merged second had to renumber, re-render, rebind
+and revisit every reference written against the old number. A name derived
+from the sheet alone is fixed when the sheet is created, and no two sheets can
+take the same one because no two sheets can share a file.
+[`tools/layout.py`](tools/README.md) derives every name; nothing anywhere
+writes one out by hand.
 
 Each sheet is written as SVG and PDF, plus a small preview beside it.
 **The PDFs are committed**, so cloning this is enough to print from: no

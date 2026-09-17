@@ -42,6 +42,13 @@ once a part has more than a handful of holes.
 The general tolerance lives in the title block, where a real drawing puts it
 and where it cannot be the note that gets dropped for space.
 
+DRAWING NO carries a name, not a number, and it is given half the title block
+because a name is as long as it has to be to say which sheet this is. The
+name itself is [`tools/layout.py`](../README.md)'s; the cell publishes how
+much room it has, so a whole set of names can be measured before any of them
+is drawn. Any title block value that will not fit its cell at the ISO 3098
+minimum stops the render rather than overprinting its neighbour.
+
 Only three broken line types appear, each carrying exactly one meaning:
 long-dash dotted for centre lines and axes, long-dash double-dotted for the
 outlines of adjacent parts and keep-out envelopes, dashed for hidden detail

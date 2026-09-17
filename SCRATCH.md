@@ -1135,3 +1135,123 @@ committed sheet PDFs gives `raspberry-pi-sheets.pdf` back byte for byte.
 The Inkscape 1.4.3 AppImage was tried first and is worse: it bundles cairo
 1.16.0, so its `/Producer` differs instead. Debian's package is the one that
 draws the same bytes.
+
+## Sheets are named, not numbered
+
+Every sheet carried a family prefix and a sequence position -- `TT-DB-01` to
+`TT-DB-06`, `RPI-01` to `RPI-03`, `FPGA-01` to `FPGA-04`, `ACC-01` to
+`ACC-04`, `TT-MP-01` to `TT-MP-04` -- produced by `enumerate()` over a reading
+order list in the generator, repeated by the same `enumerate()` in the README
+builder, and quoted by hand in four notes, two comments, `compare.py` and
+every README. A sheet's identity therefore depended on what else was in the
+set. With several pull requests open at once that each add a sheet, it
+collides: four of them each called their FPGA sheet `FPGA-05`, and whichever
+merged second had to renumber, re-render, rebind, and go back over every cross
+reference written against the old number.
+
+**The rule.** A sheet's drawing name is its own file stem in capitals, behind
+its family's prefix, with the head of the stem that the prefix already says
+taken off. One function, `tools.layout.drawing_name(family, stem)`, and one
+table beside it giving each family its prefix and that lead:
+
+| family | prefix | lead dropped |
+|---|---|---|
+| `tinytapeout` | `TT-DB` | `tt-demo-board` |
+| `raspberry-pi` | `RPI` | `rpi` |
+| `fpga` | `FPGA` | -- |
+| `accessories` | `ACC` | -- |
+| `mounting-plate` | `TT-MP` | `tt-generic-mounting-plate` |
+
+Dots become `p` and underscores hyphens on the way into a file stem, which is
+`slug()` and is how the stems were already written, so `v2.2.5` is `V2P2P5`.
+An empty remainder is not a special case: the name is the non-empty parts
+joined by a hyphen, so the mounting plate's own fabrication drawing, whose
+whole stem is the lead, comes out `TT-MP` -- the family's principal sheet,
+with the three detail sheets hanging off it.
+
+The whole set, 21 sheets:
+
+| old | new | file |
+|---|---|---|
+| `TT-DB-01` | `TT-DB-TT123-V2P2P5-TT123-V2P2P6` | `tinytapeout/output/tt-demo-board-tt123-v2p2p5-tt123-v2p2p6` |
+| `TT-DB-02` | `TT-DB-V1P2P1-V1P2P2-V1P2P3` | `tinytapeout/output/tt-demo-board-v1p2p1-v1p2p2-v1p2p3` |
+| `TT-DB-03` | `TT-DB-V2P0P1-V2P1P0` | `tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0` |
+| `TT-DB-04` | `TT-DB-V2P1P2` | `tinytapeout/output/tt-demo-board-v2p1p2` |
+| `TT-DB-05` | `TT-DB-V3P2` | `tinytapeout/output/tt-demo-board-v3p2` |
+| `TT-DB-06` | `TT-DB-V3P3` | `tinytapeout/output/tt-demo-board-v3p3` |
+| `RPI-01` | `RPI-3B` | `raspberry_pi/output/rpi3b` |
+| `RPI-02` | `RPI-4B` | `raspberry_pi/output/rpi4b` |
+| `RPI-03` | `RPI-5` | `raspberry_pi/output/rpi5` |
+| `FPGA-01` | `FPGA-ARTY-A7` | `fpga/output/arty-a7` |
+| `FPGA-02` | `FPGA-ULX3S` | `fpga/output/ulx3s` |
+| `FPGA-03` | `FPGA-PYNQ-Z2` | `fpga/output/pynq-z2` |
+| `FPGA-04` | `FPGA-BUTTERSTICK` | `fpga/output/butterstick` |
+| `ACC-01` | `ACC-DIGILENT-PMOD-HAT-ADAPTER` | `accessories/output/digilent-pmod-hat-adapter` |
+| `ACC-02` | `ACC-WAVESHARE-POE-USBC` | `accessories/output/waveshare-poe-usbc` |
+| `ACC-03` | `ACC-GENERIC-POE-MICROUSB` | `accessories/output/generic-poe-microusb` |
+| `ACC-04` | `ACC-RASPMOD` | `accessories/output/raspmod` |
+| `TT-MP-01` | `TT-MP` | `tinytapeout/mounting_plate/output/tt-generic-mounting-plate` |
+| `TT-MP-02` | `TT-MP-FITTING-GUIDE` | `…/tt-generic-mounting-plate-fitting-guide` |
+| `TT-MP-03` | `TT-MP-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-drill-template` |
+| `TT-MP-04` | `TT-MP-CHASSIS-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-chassis-drill-template` |
+
+**Why the file stem and not something shorter.** The argument for it is not
+brevity, it is that uniqueness stops being a rule anyone has to remember. Two
+sheets cannot share a name because two sheets cannot share a file, and the
+name and the path convert into each other by hand, so a reference to
+`FPGA-PYNQ-Z2` tells a reader where to find it. The alternatives all gave that
+up:
+
+- **A per-sheet name declared in the data**, beside the title. Collision-free
+  in the same way, but it is a second string to keep in step with the file
+  name, and nothing would notice the two disagreeing.
+- **The board's title, slugged** -- `TT-DB-DB-ETR-V3P3` from "DB ETR v3.3".
+  The titles carry spaces, slashes and, on the merged sheets, the whole list
+  of revisions joined by " / ". Slugging them is a second naming rule.
+- **The first revision only on a merged sheet** -- `TT-DB-V1P2P1` for the
+  sheet covering v1.2.1, v1.2.2 and v1.2.3. Shorter, and it survives another
+  revision joining the group, which the full list does not. Rejected because
+  the name no longer says what the sheet covers and no longer matches the
+  file, which is the property being bought. A revision joining a group renames
+  one sheet; that is a real drawing change, it changes the sheet's title too,
+  and one rename on a branch that is already re-rendering that sheet is not
+  the problem this is fixing.
+- **Restoring the dots** -- `TT-DB-V2.2.5`. Not reversible: `p` for a dot can
+  be undone only where no literal `p` occurs, and `pynq-z2` has two.
+
+**The title block had to grow.** The DRAWING NO cell was a quarter of the
+165 mm title block, 41.25 mm wide with 38.05 mm of room inside it. Measured
+with the drafting library's own font metrics at the ISO 3098 minimum, 2.5 mm
+capitals in DejaVu Sans Condensed Bold, eight of the 21 names overrun it: the
+longest, `TT-DB-TT123-V2P2P5-TT123-V2P2P6`, needs 61.75 mm, and
+`ACC-DIGILENT-PMOD-HAT-ADAPTER` 60.84 mm. So the second row of the title block
+no longer splits into four quarters: SIZE, SHEET and REV hold a sheet size, a
+page count and a revision letter and never needed a quarter each, and the row
+is now 0.14 / 0.20 / 0.50 / 0.16, which gives DRAWING NO an 82.5 mm cell with
+79.3 mm of room. Sideways rather than by adding a row: the title block's
+height comes out of the notes band and the view, and an A3 holds the tallest
+demo board at 1:1 with nothing to spare. VERSION keeps its quarter and its
+38.05 mm, which is the figure `reproducible.py`'s one-character dirty mark is
+sized against.
+
+The drill templates have no title block. Their header line carried the drawing
+number, the version, the page size and the scale, right-aligned, beside a
+title that shrank to fit whatever was left; `TT-MP-DRILL-TEMPLATE` beside the
+version left 69.2 mm for a title needing 70.2 mm at the floor. The line is
+split instead -- what the sheet is, with the page size and scale, on the title
+line; what it was drawn from under it -- which costs no height and takes the
+plate template's title from 2.5 mm up to 3.5 mm.
+
+**What now catches this.** `check_sheets.py` derives every sheet's name,
+requires the sheet to carry it, and measures it against
+`Sheet.drawing_no_room()`; with the cell put back to a quarter it reports
+those same eight sheets, 38.74 to 61.75 mm of name in 38.05 mm of cell.
+`check_pdfs.py` had never read a bound copy at all, which the note above on
+reproducing the set on a second machine says outright; it now matches every
+page of every bundle against the committed sheet PDFs by content stream and
+requires the bookmark to open with that page's drawing name.
+
+**The entries above this one keep the numbers the sheets carried when they
+were written.** They are a log of what happened on a date, not references to
+resolve, and rewriting them would make the record say something that was not
+true at the time.

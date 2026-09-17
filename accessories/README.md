@@ -11,7 +11,7 @@ up in the same assemblies.
 | `extract.py` | Reads the Raspmod's KiCad board file and writes `raspmod.py` |
 | `compare.py` | Rewrites the tables in `raspmod-vs-pmod-hat.md` from the two data modules |
 | [`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md) | The two ways of putting Pmods on a Raspberry Pi, compared: pin maps and mechanics |
-| `output/` | `ACC-01` to `ACC-04`, as SVG and PDF |
+| `output/` | Four `ACC-…` sheets, as SVG and PDF |
 
 `parts.py` is hand-curated because its sources are not machine-readable: a
 product photo, a dimensioned marketing image, and a pinout table on a web
@@ -58,7 +58,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 
 <!-- sheets:end -->
 
-## Digilent Pmod HAT Adapter (ACC-01)
+## Digilent Pmod HAT Adapter (`ACC-DIGILENT-PMOD-HAT-ADAPTER`)
 
 Digilent publish no mechanical drawing, DXF, STEP or board file for this part.
 The three Pmod host positions were measured photogrammetrically from
@@ -75,7 +75,7 @@ uv run --no-project --with pillow --with numpy python \
     accessories/measure_pmod_hat.py tmp/digilent/hat.png
 ```
 
-## Raspmod (ACC-04)
+## Raspmod (`ACC-RASPMOD`)
 
 Pat Deegan's "TT Demoboard To Raspi": not a HAT but a frontplate. Three
 2x6 pin headers on its underside go into a Tiny Tapeout demoboard's three
@@ -90,7 +90,7 @@ KiCad writes each pad's net into it. Which demoboard it fits, and how it
 differs from the Digilent adapter, is in
 [`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md).
 
-## PoE splitters (ACC-02, ACC-03)
+## PoE splitters (`ACC-WAVESHARE-POE-USBC`, `ACC-GENERIC-POE-MICROUSB`)
 
 Drawn as three-view envelope drawings, which is what they are useful as: they
 go inside a box and what matters is the space they need and where the cable

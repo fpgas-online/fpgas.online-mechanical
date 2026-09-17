@@ -9,14 +9,18 @@ while holding the Pmod host headers in a single fixed place.
 | `design.py` | Derives the hole pattern from every revision and writes `plate.py` |
 | `verify.py` | Proves the finished plate really does accept every revision |
 | `export_dxf.py` | Writes the four-layer DXF cut file |
-| `output/` | `TT-MP-01` to `TT-MP-04`, plus the DXF |
+| `output/` | Four sheets, `TT-MP` and three `TT-MP-…`, plus the DXF |
 
 | Sheet | |
 |-------|--|
-| `TT-MP-01` | Fabrication drawing: every hole and slot, tabulated |
-| `TT-MP-02` | Fitting guide: which holes each revision uses |
-| `TT-MP-03` | Drill template for the plate, A4 at 1:1 |
-| `TT-MP-04` | Drill template for the chassis it bolts to, A4 at 1:1 |
+| `TT-MP` | Fabrication drawing: every hole and slot, tabulated |
+| `TT-MP-FITTING-GUIDE` | Fitting guide: which holes each revision uses |
+| `TT-MP-DRILL-TEMPLATE` | Drill template for the plate, A4 at 1:1 |
+| `TT-MP-CHASSIS-DRILL-TEMPLATE` | Drill template for the chassis it bolts to, A4 at 1:1 |
+
+The plate's own fabrication drawing is `TT-MP` with nothing after it: the
+drawing name is the file stem behind the family prefix, and this family's
+prefix *is* the plate. The other three hang off it.
 
 ## The sheets
 
@@ -73,7 +77,8 @@ position, no board overhangs, and the connector faces clear the front edge.
 
 ## Printing the drill templates
 
-`TT-MP-03` and `TT-MP-04` are not drawings to read, they are gauges to use:
+`TT-MP-DRILL-TEMPLATE` and `TT-MP-CHASSIS-DRILL-TEMPLATE` are not drawings
+to read, they are gauges to use:
 print, tape to the work, punch every cross, drill through. That only works if
 the page leaves the printer at exactly 1:1, and no print dialog does that by
 default. A CUPS queue will tell you what it intends:
