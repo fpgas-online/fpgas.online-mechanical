@@ -3,13 +3,12 @@
 Two boards put Digilent-style Pmod ports on a Raspberry Pi, and they do it in
 opposite ways. The [Digilent Pmod HAT Adapter](output/pmod-hat.pdf)
 (`ACC-PMOD-HAT`) is a HAT: it sits on the Pi's 40-pin header, and its three
-hosts take whatever Pmod peripheral you plug into them. Pat
-Deegan's [Raspmod](output/raspmod.pdf) (`ACC-RASPMOD`, "TT Demoboard To
-Raspi") is a frontplate for a Tiny Tapeout demoboard: it plugs into the
-demoboard's three Pmod hosts, passes them through to three hosts of its own,
-and hands every signal to the Pi over a ribbon cable. One makes the Pi a Pmod
-host; the other makes the Pi the thing on the far end of a Tiny Tapeout
-chip's ports.
+hosts take whatever Pmod peripheral you plug into them. Pat Deegan's
+[Raspmod](output/raspmod.pdf) (`ACC-RASPMOD`, "TT Demoboard To Raspi") is a
+frontplate for a Tiny Tapeout demoboard: it plugs into the demoboard's three
+Pmod hosts, passes them through to three hosts of its own, and hands every
+signal to the Pi over a ribbon cable. One makes the Pi a Pmod host; the other
+makes the Pi the thing on the far end of a Tiny Tapeout chip's ports.
 
 <table>
 <tr>

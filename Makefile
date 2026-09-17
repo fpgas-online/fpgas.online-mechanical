@@ -53,9 +53,10 @@ check: diagrams
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
 
 # Every output/ directory is build product: `make clean && make diagrams`
-# restores all 65 files, 48 of them byte-identical and the rest differing only
-# in the creation timestamp their format embeds.  So remove them outright
-# rather than picking off extensions one at a time.
+# restores all 67 files, every one of them byte for byte, since
+# tools/reproducible.py pins the clocks and tool version strings the formats
+# would otherwise stamp in.  So remove them outright rather than picking off
+# extensions one at a time.
 clean:
 	rm -rf accessories/output raspberry_pi/output fpga/output \
 	       tinytapeout/output tinytapeout/mounting_plate/output
