@@ -158,6 +158,7 @@ FAMILY_READMES = {
     "tinytapeout": ROOT / "tinytapeout" / "README.md",
     "raspberry-pi": ROOT / "raspberry_pi" / "README.md",
     "fpga": ROOT / "fpga" / "README.md",
+    "light-pipe": ROOT / "fpga" / "light_pipe" / "README.md",
     "accessories": ROOT / "accessories" / "README.md",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "README.md",
 }

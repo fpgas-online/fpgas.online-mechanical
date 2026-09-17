@@ -87,10 +87,9 @@ class Sheet:
     #: The demo boards, the accessories and the mounting plate are named by a
     #: rule now, and no sheet overruns the quarter: the widest is
     #: ``FPGA-BUTTERSTICK`` at 34.33 mm, 3.72 mm clear of 38.05 mm.  The
-    #: quarter is not restored all the same.  The sheets waiting on other
-    #: branches are longer than anything here --
-    #: ``FPGA-ARTY-ETHERNET-LIGHT-PIPE`` is 58.03 mm, which a quarter would
-    #: refuse outright and the half holds with 21.27 mm to spare.  And the
+    #: quarter is not restored all the same.  The light pipe's sheet was
+    #: going to carry ``FPGA-ARTY-ETHERNET-LIGHT-PIPE``, 58.03 mm, which a
+    #: quarter would refuse outright; it is ``FPGA-LP-ARTY`` now, and the
     #: clearance a quarter leaves has been of the half-millimetre class within
     #: this branch: ``TT-MP-FITTING-GUIDE``, the name ``TT-MP-FIT`` replaced,
     #: cleared 38.05 mm by 0.49 mm, so one sheet renamed or one board added

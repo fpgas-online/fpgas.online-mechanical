@@ -36,6 +36,7 @@ The extractors are not here. Each lives with its subject:
 
 - [`accessories/extract.py`](../accessories/README.md)
 - [`fpga/extract.py`](../fpga/README.md)
+- [`fpga/light_pipe/design.py`](../fpga/light_pipe/README.md)
 - [`raspberry_pi/extract.py`](../raspberry_pi/README.md)
 - [`tinytapeout/extract.py`](../tinytapeout/README.md)
 - [`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md)
