@@ -61,8 +61,8 @@ BOARDS['cm2'] = BoardSpec(
                note='Drawing note, quoted: 4x 2.2mm diameter holes. No land or keep-out is shown.'),
     ),
     notes=(
-        "Hole IDs are this drawing's, the same hole on every camera sheet here.",
-        'Optical axis at X 12.49, Y 14.40 from the datum, the centre of feature 1. Feature 1 is dimensioned 8.5 square on the drawing. Its lower body, stepped, reaches to 2.76 from the lower edge across 6.72 to 16.14.',
+        "Hole IDs are this drawing's, the same hole on every camera sheet. The two drawings are read separately and their hole patterns agree to 0.025, which is why one sheet prints 22.98 where the other prints 23.00.",
+        'Optical axis at X 12.49, Y 14.40, the centre of feature 1. Feature 1 is dimensioned 8.5 square. Its lower body, stepped, reaches to 2.76 from the lower edge across 6.72 to 16.14.',
         'The source drawing is a plan view only and gives no height.',
         'Source read as a 1.5055:1 plot: scale from the 21.0 x 12.5 hole rectangle, overall dimensions then back within 0.031.',
         'Every figure printed on the source is an outlined path, not text: its geometry is machine-read, its printed dimensions are transcribed by eye.',
@@ -100,10 +100,10 @@ BOARDS['cm3'] = BoardSpec(
                note='o2.2, with an o4.75 land round each one.'),
     ),
     notes=(
-        "Hole IDs are this drawing's, the same hole on every camera sheet here.",
-        "Optical axis at X 12.50, Y 14.40 from the datum, the centre of feature 1. Clear aperture o5.75 standard, o6.95 wide. Feature 1's lower body, 8.9 across, reaches to 1.70 from the lower edge.",
-        "Overall thickness printed 11.3 standard, 12 wide, lens tip to connector back; lens assembly 6.98 and 8.3 above the board. The source's elevations scale 1.2 short of those, so no height is drawn here.",
+        "Hole IDs are this drawing's, the same hole on every camera sheet. The two drawings are read separately and their hole patterns agree to 0.025, which is why one sheet prints 22.98 where the other prints 23.00.",
+        "Optical axis at X 12.50, Y 14.40, the centre of feature 1. Clear aperture printed o5.75 standard, o6.95 wide; the wide drawing draws o7.00. Feature 1's lower body, 8.9 across, reaches to 1.70 from the lower edge.",
+        "Overall thickness printed 11.3 standard, 12 wide, lens tip to connector back; lens assembly 6.98 and 8.3 above the board. The source's own elevations scale 1.2 short, so no height is drawn here.",
         'Source read as a true 1:1 plot: scale from the 21.0 x 12.5 hole rectangle, overall dimensions then back within 0.004.',
-        'The standard and Camera Module 3 Wide drawings agree on the outline, holes and lens module within 0.05, so one sheet covers both.',
+        'The standard and wide drawings agree on the outline, holes and lens module within 0.05, so one sheet covers both.',
     ),
 )
