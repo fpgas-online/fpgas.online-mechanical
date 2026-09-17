@@ -62,11 +62,12 @@ KIND_LABEL = {
 # `render_board` draws stagger a label into a second lane and want up to
 # 42.76.  They get it from the height the sheet has spare, half of which
 # falls on each side of a centred view; every sheet was measured and two came
-# up short, the Zybo Z7 by 9.17 mm and the Cynthion by 3.33, which are the
-# two sheets a centred view leaves the least room under.  `_view_margins` is
-# where a short sheet is given what the centring did not, out of the spare
-# height and, if need be, out of the free edge's margin as far as
-# `_view_room_free_edge`.
+# up short, the Zybo Z7 by 9.17 mm and the Cynthion by 3.33, the two whose
+# chains ask for more than the centring gives them (the Pmod HAT Adapter is
+# left less room than the Cynthion, and is not short only because its chain
+# wants 19.83).  `_view_margins` is where a short sheet is given what the
+# centring did not, out of the spare height and, if need be, out of the free
+# edge's margin as far as `_view_room_free_edge`.
 VIEW_MARGIN_SIDE = 46.0
 VIEW_MARGIN_TOP = 20.0
 VIEW_MARGIN_BOTTOM = 30.0

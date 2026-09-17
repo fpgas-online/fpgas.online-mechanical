@@ -2326,7 +2326,7 @@ two values crowd each other by comparing their gap with the height of a
 label, and a label's height is a sheet figure that does not grow with the
 view, so the gap has to be a sheet figure too.  Feeding it model millimetres
 reads a 2:1 sheet as crowded when it is not: the Pmod HAT Adapter and the
-Icepi Zero, the two sheets drawn at 2:1 with a chain, were each asking for
+Icepi Zero, two of the three sheets drawn at 2:1, were each asking for
 30.30 mm of margin for a chain that wants 19.83.  `_chain_room` takes the
 view's scale and multiplies the positions by it.  Neither sheet was short at
 either figure, so nothing moved; it was wrong by 10.47 mm in the direction
