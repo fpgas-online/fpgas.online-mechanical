@@ -56,16 +56,18 @@ DRILL_TEMPLATE_STEMS = {
 #:
 #: The lead is stripped so a name says each thing once: the demo board stems
 #: all begin ``tt-demo-board``, which ``TT-DB`` is, and every mounting plate
-#: stem begins with the plate's own name, which ``TT-MP`` is.  Strip it and
-#: the plate's own fabrication drawing has nothing left, so it is called
-#: ``TT-MP`` flat: the family's principal sheet, with the detail sheets
-#: hanging off it.
+#: stem begins ``tt-generic-mounting``, which ``TT-MP`` is.  The lead stops
+#: there rather than taking the whole of ``tt-generic-mounting-plate``: that
+#: left the plate's own fabrication drawing with nothing but the prefix, and a
+#: bare ``TT-MP`` reads as the family rather than as one sheet of it -- "work
+#: from the coordinates on TT-MP" is a note pointing at four drawings.  Every
+#: name in this family says PLATE, and the plate's own is ``TT-MP-PLATE``.
 FAMILY_PREFIXES = {
     "tinytapeout": ("TT-DB", TT_STEM_LEAD),
     "raspberry-pi": ("RPI", "rpi"),
     "fpga": ("FPGA", ""),
     "accessories": ("ACC", ""),
-    "mounting-plate": ("TT-MP", PLATE_STEM),
+    "mounting-plate": ("TT-MP", "tt-generic-mounting"),
 }
 
 
@@ -92,9 +94,12 @@ def drawing_name(family: str, stem: str) -> str:
     called it ``FPGA-05``; whichever landed second had to renumber, re-render,
     rebind, and go back over every cross reference written against the old
     number.  A name derived from the sheet alone is fixed the moment the sheet
-    is created and no other sheet can take it, because no two sheets can share
-    a file.  That last point is the whole argument: uniqueness is not a rule
-    anyone has to remember, it is the file system's.
+    is created, and nothing else in the set can take it away.
+
+    Two sheets in one family collide only if their stems differ by something
+    ``slug`` and ``upper`` throw away -- ``rpi5``, ``rpi-5`` and ``rpi_5`` all
+    give ``RPI-5`` -- so uniqueness is very nearly the file system's, but not
+    quite, and ``tools/check_sheets.py`` checks it rather than assuming it.
 
     The reading-order lists stay.  The bound copies and the README grid still
     need an order; they just no longer number anything.
@@ -109,7 +114,12 @@ def drawing_name(family: str, stem: str) -> str:
     if lead and rest.startswith(lead):
         rest = rest[len(lead):]
     rest = rest.strip("-").upper()
-    return "-".join(part for part in (prefix, rest) if part)
+    if not rest:
+        raise SystemExit(
+            f"the sheet {stem!r} is nothing but its family's stem lead, so "
+            f"{family!r} would name it {prefix!r}, which is the family and "
+            "not a sheet of it. Shorten the lead in FAMILY_PREFIXES.")
+    return f"{prefix}-{rest}"
 
 
 def family_of(svg: Path) -> str:
