@@ -632,7 +632,9 @@ sixteen PDFs and the DXF whether or not a drawing had changed, so `git status`
 after a rebuild had to be inspected by hand and discarded. Twice I did exactly
 that. `tools/reproducible.py` pins what varies.
 
-- **The PDF carries one varying field and it is not where you would look.**
+- **The PDF carries one field that varies between runs, and it is not where
+  you would look.** (One more varied between machines, and a second is
+  pinned alongside it; see the note on reproducing across machines, below.)
   Two renders of one SVG differ by *four bytes*, and grepping the file for
   `/CreationDate`, `/Producer` or `/ID` finds nothing: cairo puts the Info
   dictionary inside a compressed object stream, so those four bytes are
@@ -658,7 +660,8 @@ that. `tools/reproducible.py` pins what varies.
 
   The general lesson: **two runs is not a determinism test.** Anything
   hash-seed dependent passes it half the time. The check is now three full
-  `make clean && make diagrams` cycles compared across all 65 files.
+  `make clean && make diagrams` cycles compared across every output file,
+  67 of them at the time of writing.
 - **`check_pdfs.py` compares bytes now**, not page content streams. The
   content-stream comparison only existed because the bytes could never match.
 
@@ -1100,3 +1103,35 @@ The KiCad geometry helpers moved out of `tinytapeout/extract.py` into
 the demo board data regenerates byte for byte.  `tools/dump_rpi_pdf.py` had
 its second rectangle pass emitting every box transposed; fixed, and the Pi 5
 USB-C box moved by 0.04 mm as a result.
+
+## Reproducing the set on a second machine
+
+The first rebuild on another computer dirtied every PDF in the repository
+while changing no drawing. The committed set was drawn with Inkscape 1.4.3 on
+cairo 1.18.4; this machine has Debian's Inkscape 1.4 (e7c3feb100, 2024-10-09)
+on the same cairo. Rendering TT-DB-06's committed SVG on both gives content
+streams that are byte-identical, 1,143,124 bytes with the same SHA-256, and
+Info dictionaries that differ in one field: `/Creator` reads `Inkscape 1.4`
+on one and `Inkscape 1.4.3` on the other. `/Producer` was `cairo 1.18.4` on
+both. So "reproducible" had quietly meant "on one machine", by the width of a
+point release's name.
+
+`normalise_pdf` now pins `/Creator` and `/Producer` beside the date, for the
+same reason the date is pinned: the version of the tool that drew a sheet is
+not a property of the drawing, and the byte comparison in `check_pdfs.py` is
+what says the drawing came out the same. Pinning both, not just the one that
+moved, so that the next cairo release cannot repeat this. The price is that
+the artefact no longer records which toolchain built it, which is why the
+versions compared are written down here.
+
+Two things the first attempt at this got wrong, both caught in review. The
+three bound copies are pypdf's work, not cairo's, and pypdf already writes
+its name without a version; stamping them as Inkscape on cairo overwrote a
+true string with a false one, so a bound copy is pinned as `pypdf` with no
+`/Creator`. And `check_pdfs.py` does not walk the bound copies at all, so the
+only evidence they reproduce is a manual rebuild: `combine_pdfs` over the
+committed sheet PDFs gives `raspberry-pi-sheets.pdf` back byte for byte.
+
+The Inkscape 1.4.3 AppImage was tried first and is worse: it bundles cairo
+1.16.0, so its `/Producer` differs instead. Debian's package is the one that
+draws the same bytes.
