@@ -1339,17 +1339,23 @@ So the line is split -- what the sheet is, with the page size and scale, on
 the title line; what it was drawn from under it -- which costs no height and
 leaves both titles at a proper size rather than the floor.
 
-The shorter names would very nearly fit on one line again:
-`TT-MP-DRILL-TEMPLATE` with the version, the page size and the scale leaves
-**70.34 mm** for a title needing **70.25 mm**. That is not a fit, it is
-0.09 mm, and the
-version is what takes it away -- 1.96 mm when the commit count reaches four
-digits, 2.59 mm for the dirty mark on an uncommitted render -- so the header
-would be right in the repository and wrong on the next render. It is the same
-shape as the "69.2 against 70.2" that was quoted here before and came from a
-dirty tree, and it is the reason the line stays split. The split title line
-carries no version, so its room does not move with the branch: **104.80 mm**
-beside `TT-MP-DRILL-TEMPLATE` and **90.32 mm** beside
+The shorter names would very nearly fit on one line again -- and "very nearly"
+is as precise as that can be put, because the figure is not a constant. The
+version on that line is `git describe`, whose abbreviated hash is as long as
+it has to be to stay unique and whose characters are not all the same width,
+so the room left for the plate template's **70.25 mm** title moves from commit
+to commit. Across the 29 version strings this branch's sheets have carried it
+runs from **70.41 mm** to **72.24 mm**: a margin of **0.16 mm** at worst,
+2.00 mm at best, and 0.98 mm on the version these sheets went out with.
+
+Nothing that thin survives. The commit count reaching four digits costs
+**1.96 mm** by itself, more than the margin for every one of those strings but
+the most fortunate hash, where it leaves 0.03 mm; the dirty mark on an
+uncommitted render costs 2.59 mm and takes all of them. The header would be
+right in the repository and wrong on the next commit, which is the shape of
+the "69.2 against 70.2" quoted here before and withdrawn. So the line stays
+split. The split title line carries no version, so its room does not move:
+**104.80 mm** beside `TT-MP-DRILL-TEMPLATE` and **90.32 mm** beside
 `TT-MP-CHASSIS-DRILL-TEMPLATE`, and both titles are set at 3.5 mm where one
 line would put both at the 2.5 mm floor. The plate template's title is a
 millimetre taller than it was, which is the visible part of the change.

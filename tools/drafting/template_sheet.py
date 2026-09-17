@@ -449,13 +449,24 @@ def render_drill_template(kind: str, *, drawing_no: str,
     # 70.25 mm title -- 10 mm short.
     #
     # The names are shorter again now, TT-MP-DRILL-TEMPLATE and
-    # TT-MP-CHASSIS-DRILL-TEMPLATE, and one line would just hold them: it
-    # leaves 70.34 mm for the plate's 70.25 mm title, a margin of 0.09 mm that
-    # the version's next character takes away -- 1.96 mm for the commit count
-    # going to four figures, 2.59 mm for the dirty mark on an uncommitted
-    # render.  It stays split.  The split line carries
-    # no version, so its room does not move: 104.80 mm beside the plate's name
-    # and 90.32 mm beside the chassis's.
+    # TT-MP-CHASSIS-DRILL-TEMPLATE, and one line would just hold them -- but
+    # only just, and by an amount that is not a constant.  The version on that
+    # line is `git describe`, whose abbreviated hash is as long as it has to
+    # be to stay unique and whose glyphs are not all one width, so the room
+    # left for the plate's 70.25 mm title moves with the commit: across the
+    # 29 versions this branch's sheets have carried it runs from 70.41 mm to
+    # 72.24 mm, a margin of 0.16 mm at worst and 2.00 mm at best.
+    #
+    # Nothing that thin survives: the commit count reaching four digits costs
+    # 1.96 mm on its own, which is more than the margin for every version
+    # string in that range but the most fortunate hash, where it leaves
+    # 0.03 mm.  The dirty mark on an uncommitted render costs 2.59 mm and
+    # takes every one of them.  So the header would come out right in the
+    # repository and wrong on the next commit, which is the shape of the
+    # figure quoted here before and withdrawn.
+    #
+    # It stays split.  The split title line carries no version, so its room is
+    # fixed: 104.80 mm beside the plate's name, 90.32 mm beside the chassis's.
     #
     # Each line's right-hand string is fixed-width and its left-hand one is
     # not, so the left one gives way.  With that much room both titles are set
