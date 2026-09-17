@@ -28,8 +28,11 @@ positions are ordinate dimensions from that single datum, so they neither
 accumulate tolerance nor overlap on the sheet, and each witness line starts at
 the feature it dimensions.
 
-Sheet layout: the view sits top-left with its dimensions below and to the left;
-schedules go in the right-hand column; notes and sources flow into a band
+Sheet layout: the view sits top-left with its Y dimensions to the left and its
+X dimensions on whichever horizontal edge its features are nearest, decided
+per board by `_x_chain_edge` in `board_sheet.py` (the bottom unless a majority
+of the dimensioned features sit on the top edge, as the Arty A7's Pmod hosts
+do); schedules go in the right-hand column; notes and sources flow into a band
 across the bottom, plus whatever is left at the foot of the column. Balloons
 are placed inside the view against an obstacle list, so a leader is never
 routed through a neighbouring feature.
