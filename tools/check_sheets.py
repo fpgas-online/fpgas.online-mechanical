@@ -235,7 +235,7 @@ def drawing_no_cell(items, rules) -> tuple[str, float] | None:
 
 
 def check_drawing_names() -> list[str]:
-    """Every sheet's name is unique, fits its cell, and is on the sheet.
+    """Every sheet's name is its own, fits its cell, and is on the sheet.
 
     The name is derived from the sheet's own file stem, which very nearly
     makes a collision impossible -- but ``slug`` is not injective, since
@@ -248,19 +248,36 @@ def check_drawing_names() -> list[str]:
     be given the same value.  The set is small enough to answer outright, so
     it is answered rather than reasoned about.
 
+    A name that is a *prefix* of another sheet's is reported the same way.
+    Two such names are distinct strings, so the test above passes them, but
+    nothing that quotes the shorter one can be read unambiguously: "work from
+    the coordinates on TT-MP" points at a family rather than at a drawing
+    when ``TT-MP-FITTING-GUIDE`` is one of its sheets, and searching a set of
+    documents for the shorter name returns every mention of the longer.  It
+    was worse than ambiguous while the carry test below was a substring
+    search: handing the bare family prefix back was ``drawing_name``'s first
+    answer for the mounting plate, and deleting the title block from the
+    plate's SVG left the check passing on the plate's *note* citing the
+    fitting guide.  That hole is closed -- the cell is found by its label and
+    compared exactly -- but the rule it taught is general, and the next name
+    of that shape will not arrive from a bare prefix: ``tt_name`` strips the
+    ``p`` separators, so a ``v3p2`` sheet is ``V32`` and a future ``v3p2p1``
+    sheet would be ``V321``, which begins with it.  ``drawing_name``'s
+    docstring makes producing no such name a rule; this is where the rule is
+    enforced rather than asserted.
+
     Nor does derivation say the result fits.  The title block is a fixed
     165 mm wide whatever a family chooses to call its sheets, and the
     families with no rule are named for stems nobody is keeping short for
     this: ``FPGA-BUTTERSTICK`` is 34.33 mm of lettering at the ISO 3098
-    minimum and ``TT-MP-FITTING-GUIDE`` 37.56 mm.
-    ``Sheet._title_cell`` refuses to draw a value that overruns its cell, so
-    an overflow cannot reach paper -- but that refusal happens one sheet at a
-    time, partway through a render, with the rest of the set unbuilt.  Here
-    the whole set is answered at once, against the room the cell was actually
-    drawn with.
+    minimum and ``TT-MP-FITTING-GUIDE`` 37.56 mm.  ``Sheet._title_cell``
+    refuses to draw a value that overruns its cell, so an overflow cannot
+    reach paper -- but that refusal happens one sheet at a time, partway
+    through a render, with the rest of the set unbuilt.  Here the whole set
+    is answered at once, against the room the cell was actually drawn with.
 
-    The three properties are independent and each is reported on its own: a
-    name that does not fit is a different defect from one the sheet does not
+    The properties are independent and each is reported on its own: a name
+    that does not fit is a different defect from one the sheet does not
     carry, and a sheet can have both.
 
     The two A4 drill templates have no title block and so no cell to overrun.
@@ -275,6 +292,16 @@ def check_drawing_names() -> list[str]:
         if name in seen:
             problems.append(f"{name} names two sheets, {rel(seen[name])} and "
                             f"{rel(svg)}")
+        for other, other_svg in seen.items():
+            if other == name or not (other.startswith(name)
+                                     or name.startswith(other)):
+                continue
+            short, long = sorted((name, other), key=len)
+            paths = {name: svg, other: other_svg}
+            problems.append(
+                f"{short} names {rel(paths[short])} and is a prefix of "
+                f"{long}, which names {rel(paths[long])}, so no test that "
+                "reads a sheet can tell the two names apart")
         seen[name] = svg
 
         text = svg.read_text()
