@@ -26,11 +26,11 @@ from .view import View
 
 H = math.sqrt(0.5)
 
-GAP = 16.0              # between views, for the dimensions that go there
+GAP = 14.0              # between views, for the dimensions that go there
 #: Room above the view block for a caption and the overall width dimension,
 #: and below it for the stack of dimensions under the plan.
-TOP_ROOM = 24.0
-BOTTOM_ROOM = 19.0
+TOP_ROOM = 18.0
+BOTTOM_ROOM = 14.0
 SCALE = 5.0
 
 #: Room in front of the cheek for the light pipe's flange, which stands
@@ -40,7 +40,7 @@ SECT_NOSE = 1.4
 #: How much of the jack each view draws.  The jack is 25.5 mm deep and the
 #: adapter reaches 10 mm of it; drawing the rest would halve the scale to say
 #: nothing, so the views stop at the back of the roof plus a little.
-JACK_BACK = 10.6
+JACK_BACK = 10.1
 
 #: The colour the jack is drawn in.  It is an adjacent part, not a feature of
 #: this drawing, so it is phantom and grey wherever it appears.
@@ -171,7 +171,13 @@ def draw_front(c: Canvas, v: View) -> None:
     c.line(*v.pt(v.model_x0, 0.0), *v.pt(v.model_x1, 0.0), w=style.W_PHANTOM,
            colour=JACK, dash=style.D_PHANTOM)
 
-    # The part, filled so that it reads as being in front of the jack.
+    # The part, filled so that it reads as being in front of the jack.  The
+    # skirts first: they are the retention, they are the only part of it
+    # below the cheeks, and the cheeks' fill is what hides the length of them
+    # that is behind.
+    for side in (1, -1):
+        _box(c, v, side * A.SKIRT_Y0, side * A.SKIRT_Y1, A.SKIRT_Z0,
+             A.SKIRT_Z1, weight=style.W_OUTLINE, fill="#ffffff")
     _box(c, v, -A.ROOF_Y1, A.ROOF_Y1, A.ROOF_Z0, A.ROOF_Z1,
          weight=style.W_OUTLINE, fill="#ffffff")
     for side in (1, -1):
@@ -191,17 +197,18 @@ def draw_front(c: Canvas, v: View) -> None:
         _box(c, v, side * A.WINDOW_Y0, side * A.WINDOW_Y1, A.WINDOW_Z0,
              A.WINDOW_Z1, weight=style.W_COMPONENT,
              colour=style.C_HIGHLIGHT, dash=style.D_HIDDEN)
-        # The flange seat, seen end on: a circle at 45 degrees.
+        # The bore's mouth on the facet, seen end on: a circle at 45
+        # degrees, which is where the flange seats.
         cx, cy = v.pt(side * A.BORE_Y, A.FACET_Z)
         ellipse(c, cx, cy, v.d(A.PRESS_DIA / 2), v.d(A.PRESS_DIA / 2 * H),
                 w=style.W_OUTLINE)
         c.line(*v.pt(side * A.BORE_Y, A.CHEEK_Z0 - 1.0),
-               *v.pt(side * A.BORE_Y, A.CHEEK_Z1 + 1.2),
+               *v.pt(side * A.BORE_Y, A.CHEEK_Z1 + 0.5),
                w=style.W_CENTRE, colour=style.C_LINE, dash=style.D_CENTRE)
-    # Short of the dimension stack below the view: a centre line run
-    # the usual couple of millimetres past the part is ruled through
-    # the first dimension's text.
-    c.line(*v.pt(0, -0.2), *v.pt(0, A.CHEEK_Z1 + 1.2), w=style.W_CENTRE,
+    # Short at both ends: the usual couple of millimetres past the part
+    # reaches the caption above the view, and is ruled through the first
+    # dimension's text below it.
+    c.line(*v.pt(0, -0.2), *v.pt(0, A.CHEEK_Z1 + 0.5), w=style.W_CENTRE,
            colour=style.C_LINE, dash=style.D_CENTRE)
 
 
@@ -314,10 +321,11 @@ def _text() -> tuple[list[str], list[str]]:
     notes = [
         "First angle; SECTION A-A is on the right-hand bore's axis. Origin "
         "on the jack's centre plane, in its front face, at the board's top "
-        "surface: X back, Y across, Z up. The part is symmetric about "
-        "Y = 0.",
-        f"Two light pipes, Bivar {A.PIPE_PART} in {A.PIPE_MATERIAL}, pressed "
-        "in from the facet until the flange seats.",
+        "surface: X back, Y across, Z up. Symmetric about Y = 0.",
+        f"Two Bivar {A.PIPE_PART} pipes in clear polycarbonate, pressed in "
+        "from the facet until the flange seats. Each lens looks up and "
+        "forward at 45 degrees, so a camera looking straight down sees it "
+        "obliquely.",
     ]
     notes += list(A.ADAPTER.notes)
     src = [f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
@@ -326,28 +334,38 @@ def _text() -> tuple[list[str], list[str]]:
 
 
 def _bore_rows() -> list[list[str]]:
-    rows = []
-    for name, side in (("B1", +1), ("B2", -1)):
-        rows.append([
-            name,
-            f"{side * A.BORE_Y:+.2f}",
-            f"{A.BORE_X:.2f} / {A.BORE_Z:.2f}",
-            f"{A.BORE_DIA:.2f}",
-            f"{A.PRESS_DIA:.2f}",
-            f"{A.PRESS_LEN:.2f}",
-            f"{A.BORE_ANGLE:g}",
-        ])
-    return rows
+    """Both bores in one row: they are mirror images about Y = 0.
+
+    Two rows differing only in the sign of one column is a table that says
+    nothing the note about symmetry does not, and the column this sheet has
+    is four millimetres short of holding it.
+    """
+    return [[
+        "B1, B2",
+        f"+/-{A.BORE_Y:.2f}",
+        f"{A.BORE_X:.2f} / {A.BORE_Z:.2f}",
+        f"{A.BORE_DIA:.2f}",
+        f"{A.PRESS_DIA:.2f}",
+        f"{A.PRESS_LEN:.2f}",
+        f"{A.BORE_ANGLE:g}",
+    ]]
 
 
 def _jack_rows() -> list[list[str]]:
-    """What the adapter is built to, and where each figure comes from."""
+    """What the adapter is built to, and where each figure comes from.
+
+    One provenance per row, which is why the keyway's height stops at the top
+    of its widest part rather than at the top of the shield: the shield's
+    height is Bel's own figure and the keyway's is read off the drawing, and
+    a cell that mixes the two can only be labelled with the weaker of them.
+    """
     return [
-        ["LED window", f"{A.WINDOW_Y0:.2f}..{A.WINDOW_Y1:.2f}",
+        [f"LED window, {A.WINDOW_PROUD:.2f} proud",
+         f"{A.WINDOW_Y0:.2f}..{A.WINDOW_Y1:.2f}",
          f"{A.WINDOW_Z0:.2f}..{A.WINDOW_Z1:.2f}", "MEASURED"],
         ["Plug aperture", f"+/-{A.APERTURE_Y:.2f}",
          f"{A.APERTURE_Z0:.2f}..{A.APERTURE_Z1:.2f}", "MEASURED"],
-        ["Latch keyway", f"+/-{A.KEYWAY_Y:.2f}",
+        ["Latch keyway, widest", f"+/-{A.KEYWAY_Y:.2f}",
          f"{A.KEYWAY_Z0:.2f}..{A.KEYWAY_Z1:.2f}", "MEASURED"],
         ["Shield", f"+/-{A.SHIELD_W / 2:.2f}", f"0..{A.SHIELD_H:.2f}",
          "STATED"],
@@ -355,7 +373,7 @@ def _jack_rows() -> list[list[str]]:
          f"{A.SIDE_SPRING_Z0:.2f}..{A.SIDE_SPRING_Z1:.2f}", "MEASURED"],
         ["EMI spring, top",
          f"+/-{A.TOP_SPRING_Y0:.2f}..{A.TOP_SPRING_Y1:.2f}",
-         f"{A.SHIELD_H:.2f}..{A.TOP_SPRING_Z:.2f}", "MEASURED"],
+         f"to {A.TOP_SPRING_Z:.2f}", "MEASURED"],
     ]
 
 
@@ -376,10 +394,10 @@ def render_light_pipe(*, drawing_no: str, version: str,
     block_w = sect_w + GAP + front_w
     block_h = view_h + GAP + plan_h
 
+    max_band = (style.SHEET_SIZES[sheet_size][1] - 2 * style.FRAME_MARGIN
+                - block_h - TOP_ROOM - BOTTOM_ROOM)
     band_h, band_cols = Sheet.plan_notes_band(
-        sheet_size, note_blocks(notes, src),
-        max_height=style.SHEET_SIZES[sheet_size][1]
-        - 2 * style.FRAME_MARGIN - block_h - TOP_ROOM - BOTTOM_ROOM)
+        sheet_size, note_blocks(notes, src), max_height=max_band)
     sheet = Sheet(sheet_size, TitleBlock(
         title=spec.title.upper(), subtitle=spec.subtitle,
         drawing_no=drawing_no, rev="A", version=version, drawn_by="generated",
@@ -423,8 +441,9 @@ def render_light_pipe(*, drawing_no: str, version: str,
     _section_marks(c, front_v, plan_v)
 
     rows = _bore_rows()
-    block = sheet.column_block(sheet.table_height("BORE SCHEDULE", len(rows)))
-    sheet.table(block, "BORE SCHEDULE",
+    block = sheet.column_block(
+        sheet.table_height("BORE SCHEDULE, DERIVED", len(rows)))
+    sheet.table(block, "BORE SCHEDULE, DERIVED",
                 ["ID", "Y mm", "TIP X / Z mm", "DIA mm", "PRESS mm",
                  "PRESS LEN", "DEG"],
                 rows, ["start", "end", "end", "end", "end", "end", "end"])
@@ -432,7 +451,7 @@ def render_light_pipe(*, drawing_no: str, version: str,
     rows = _jack_rows()
     title = f"THE JACK, {A.JACK_DESIGNATOR} {A.JACK_PART}"
     block = sheet.column_block(sheet.table_height(title, len(rows)))
-    sheet.table(block, title, ["FEATURE", "Y mm", "Z mm", "READ FROM"], rows,
+    sheet.table(block, title, ["FEATURE", "Y mm", "Z mm", "READ AS"], rows,
                 ["start", "end", "end", "start"])
 
     spill = notes_spill_needed(sheet, notes, src, band_cols)
@@ -467,15 +486,22 @@ def _dimension_front(c: Canvas, v: View, r: Rect) -> None:
     # All three widths above the view.  Below it there is room for the
     # plan's caption and nothing else: the two views are sixteen millimetres
     # apart and a dimension line put there crosses that caption.
-    dims.linear(c, v.pt(-A.SKIRT_Y0, A.CHEEK_Z1), v.pt(A.SKIRT_Y0, A.CHEEK_Z1),
-                13.0, horizontal=True, value=2 * A.SKIRT_Y0,
-                ext_start=r.y1 + 2.0)
     dims.linear(c, v.pt(-A.CHEEK_Y0, A.CHEEK_Z1), v.pt(A.CHEEK_Y0, A.CHEEK_Z1),
-                19.0, horizontal=True, value=2 * A.CHEEK_Y0,
+                13.0, horizontal=True, value=2 * A.CHEEK_Y0,
                 ext_start=r.y1 + 2.0)
+    # The skirts' own span goes below the view: three dimensions above it
+    # want thirty millimetres of paper that the notes band needs more.  Five
+    # millimetres down clears the plan's caption, which sits three and a half
+    # above the plan.
+    dims.linear(c, v.pt(-A.SKIRT_Y0, A.SKIRT_Z0), v.pt(A.SKIRT_Y0, A.SKIRT_Z0),
+                r.y - 5.0 - v.y(A.SKIRT_Z0), horizontal=True,
+                value=2 * A.SKIRT_Y0, ext_start=r.y - 1.5)
     dims.linear(c, v.pt(A.ROOF_Y1, A.SKIRT_Z0), v.pt(A.ROOF_Y1, A.CHEEK_Z1),
                 7.0, horizontal=False, value=A.CHEEK_Z1 - A.SKIRT_Z0)
-    dims.datum_marker(c, *v.pt(0, 0.0), label="Y0 Z0", label_dy=-5.2)
+    # Beside the marker, not under it: under it is where the skirts' span is
+    # dimensioned now.
+    dims.datum_marker(c, *v.pt(0, 0.0), label="Y0 Z0", label_dx=-6.0,
+                      label_dy=3.2)
 
 
 def _dimension_plan(c: Canvas, v: View, r: Rect) -> None:
@@ -517,11 +543,15 @@ CALLOUT_STEP = 7.0
 
 def _dimension_section(c: Canvas, v: View, r: Rect) -> None:
     """The bore, the pocket and the clearances, all in true shape here."""
-    # The two heights from the board's top surface, in the gutter this view
-    # shares with the plan below it.
-    dims.linear(c, v.pt(JACK_BACK, 0.0), v.pt(JACK_BACK, A.CHEEK_Z0), 5.0,
-                horizontal=False, value=A.CHEEK_Z0)
-    dims.linear(c, v.pt(JACK_BACK, 0.0), v.pt(JACK_BACK, A.ROOF_Z0), 13.0,
+    # The heights from the board's top surface, in the gutter this view
+    # shares with the plan below it: the skirt's bottom edge, the cheeks'
+    # underside and the roof, which between them tie every part of it to the
+    # board.
+    dims.linear(c, v.pt(JACK_BACK, 0.0), v.pt(JACK_BACK, A.SKIRT_Z0), 5.0,
+                horizontal=False, value=A.SKIRT_Z0)
+    dims.linear(c, v.pt(JACK_BACK, 0.0), v.pt(JACK_BACK, A.CHEEK_Z0), 12.0,
+                horizontal=False, value=A.CHEEK_Z0, ext_start=r.x1 + 2.0)
+    dims.linear(c, v.pt(JACK_BACK, 0.0), v.pt(JACK_BACK, A.ROOF_Z0), 19.0,
                 horizontal=False, value=A.ROOF_Z0, ext_start=r.x1 + 2.0)
 
     below = r.y - 20.0
@@ -537,16 +567,19 @@ def _dimension_section(c: Canvas, v: View, r: Rect) -> None:
     nearest = A.BORE_X + A.PIPE_DIA / 2 * H
     dims.leader(c, v.pt(nearest / 2, A.BORE_Z),
                 (r.x + CALLOUT_X, below - 3 * CALLOUT_STEP),
-                f"{-nearest:.2f} air gap to J9")
+                f"{A.WINDOW_FACE_X - nearest:.2f} to the window")
     dims.leader(c, v.pt(0.0, A.APERTURE_Z1),
                 (r.x + CALLOUT_X, below - 4 * CALLOUT_STEP),
                 f"{A.CHEEK_Z0 - A.APERTURE_Z1:.2f} clear of the plug")
     dims.leader(c, v.pt(0.5, A.SHIELD_H),
                 (r.x + CALLOUT_X, below - 5 * CALLOUT_STEP),
                 f"{A.ROOF_Z0 - A.SHIELD_H:.2f} clear of the shield")
-    dims.leader(c, v.pt(0.3, (A.WINDOW_Z0 + A.WINDOW_Z1) / 2),
+    dims.leader(c, v.pt(A.ROOF_X1 * 0.35, A.ROOF_Z1),
                 (r.x + CALLOUT_X, below - 6 * CALLOUT_STEP),
-                f"LED window, {A.WINDOW_Z1 - A.WINDOW_Z0:.2f} high",
+                f"roof {A.ROOF_Z1 - A.ROOF_Z0:.2f} thick")
+    dims.leader(c, v.pt(0.3, (A.WINDOW_Z0 + A.WINDOW_Z1) / 2),
+                (r.x + CALLOUT_X, below - 7 * CALLOUT_STEP),
+                f"LED window in {A.JACK_DESIGNATOR}",
                 colour=style.C_HIGHLIGHT)
     dims.datum_marker(c, *v.pt(0.0, 0.0), label="X0 Z0", label_dx=-7.5,
                       label_dy=-5.2)
@@ -558,11 +591,14 @@ def _section_marks(c: Canvas, front: View, plan: View) -> None:
                      front.pt(A.BORE_Y, A.CHEEK_Z1)),
                     (plan, plan.pt(A.BORE_Y, -JACK_BACK),
                      plan.pt(A.BORE_Y, -A.CHEEK_X0))):
-        c.line(a[0], a[1] - 4.0, b[0], b[1] + 4.0, w=style.W_CENTRE,
+        # Inside the view at the top end: above it is the stack of width
+        # dimensions, and the arrow and its letter landed on the first of
+        # them.
+        c.line(a[0], a[1] - 4.0, b[0], b[1] - 1.0, w=style.W_CENTRE,
                colour=style.C_DIM, dash=style.D_CENTRE)
         c.arrow(a[0], a[1] - 4.0, 90, colour=style.C_DIM)
-        c.arrow(b[0], b[1] + 4.0, -90, colour=style.C_DIM)
+        c.arrow(b[0], b[1] - 1.0, -90, colour=style.C_DIM)
         c.text(a[0] + 2.2, a[1] - 5.6, "A", size=style.T_LABEL,
                colour=style.C_DIM, bold=True)
-        c.text(b[0] + 2.2, b[1] + 4.6, "A", size=style.T_LABEL,
+        c.text(b[0] + 2.2, b[1] - 5.0, "A", size=style.T_LABEL,
                colour=style.C_DIM, bold=True)
