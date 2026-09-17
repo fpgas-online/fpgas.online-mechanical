@@ -31,6 +31,7 @@ from tools.drafting.board_sheet import (planned_band_height,  # noqa: E402
                                         render_board)
 from tools.drafting.enclosure_sheet import render_enclosure  # noqa: E402
 from tools.drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
+from tools.drafting import rpi_compare_sheet  # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
@@ -58,7 +59,9 @@ VERSION = reproducible.source_version()
 #: own.
 TT_BUNDLE = "tinytapeout-sheets.pdf"
 
-#: The three Raspberry Pi sheets bound the same way, for the same reasons.
+#: The Raspberry Pi sheets bound the same way, for the same reasons: the
+#: three models, then the comparison sheet, which draws them on top of one
+#: another.
 RPI_BUNDLE = "raspberry-pi-sheets.pdf"
 
 #: And the FPGA development boards.
@@ -358,6 +361,28 @@ def rpi_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
             for key in RPI_ORDER]
 
 
+def rpi_compare() -> tuple[str, Path, str]:
+    """The comparison sheet: drawing name, path, outline entry.
+
+    Beside ``rpi_sheets`` rather than in it, and carrying a written label the
+    way ``plate_sheets`` does.  The three model sheets are one board each,
+    rendered by ``render_board`` from that board's spec; this one draws all
+    three and is rendered by a module of its own, so there is no single spec
+    for ``_label`` to take a title and a subtitle from.
+
+    Its name is derived like every other sheet's, from the file stem it is
+    written to.  It is the one Raspberry Pi sheet with no board key behind it
+    -- the others are named from a key in ``RPI_ORDER`` by way of ``slug`` --
+    and ``drawing_name`` does not need one, which is the point of naming a
+    sheet after itself.
+    """
+    stem = rpi_compare_sheet.STEM
+    name = drawing_name("raspberry-pi", stem)
+    return (name, FAMILY_DIRS["raspberry-pi"] / f"{stem}.svg",
+            f"{name}  {rpi_compare_sheet.TITLE}  -  "
+            f"{rpi_compare_sheet.SUBTITLE}")
+
+
 def fpga_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
     """The FPGA development board sheets: drawing name, path, spec."""
     fpga_dir = FAMILY_DIRS["fpga"]
@@ -400,13 +425,17 @@ def bundles() -> list[Bundle]:
                 for _, path, label in plate_sheets()]
     tt_pages += [(path.with_suffix(".pdf"), _label(name, spec))
                  for name, _, path, spec in tt_board_sheets()]
+    # The three models in the order they were made, then the sheet that draws
+    # all three at once, which is the order they are read in.
+    rpi_pages = [(path.with_suffix(".pdf"), _label(name, spec))
+                 for name, path, spec in rpi_sheets()]
+    _, compare_path, compare_label = rpi_compare()
+    rpi_pages.append((compare_path.with_suffix(".pdf"), compare_label))
     return [
         Bundle(FAMILY_DIRS["tinytapeout"] / TT_BUNDLE,
                "Tiny Tapeout - mechanical drawings", tuple(tt_pages)),
         Bundle(FAMILY_DIRS["raspberry-pi"] / RPI_BUNDLE,
-               "Raspberry Pi - mechanical drawings",
-               tuple((path.with_suffix(".pdf"), _label(name, spec))
-                     for name, path, spec in rpi_sheets())),
+               "Raspberry Pi - mechanical drawings", tuple(rpi_pages)),
         Bundle(FAMILY_DIRS["fpga"] / FPGA_BUNDLE,
                "FPGA development boards - mechanical drawings",
                tuple((path.with_suffix(".pdf"), _label(name, spec))
@@ -484,6 +513,18 @@ def main() -> None:
                              family_numbers=RPI_NUMBERS, view_bbox=rpi_frame,
                              band_height=rpi_band)
         save(sheet, path, f"{name} ({spec.title})")
+
+    # The comparison sheet: the three models on the one outline they share.
+    # Given the same frame and the same notes band as the three sheets before
+    # it, so the board lands on the same point of the page and the bound copy
+    # can be flipped through; its own band is not folded into rpi_band above,
+    # because a taller one there would move the three sheets it is meant to
+    # line up with.
+    compare_name, compare_path, _ = rpi_compare()
+    sheet = rpi_compare_sheet.render_rpi_comparison(
+        drawing_no=compare_name, version=VERSION,
+        view_bbox=rpi_frame, band_height=rpi_band)
+    save(sheet, compare_path, f"{compare_name} ({rpi_compare_sheet.TITLE})")
 
     fpga_dir = FAMILY_DIRS["fpga"]
     fpga_dir.mkdir(parents=True, exist_ok=True)
