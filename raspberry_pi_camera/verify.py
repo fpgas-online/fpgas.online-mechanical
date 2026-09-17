@@ -8,9 +8,13 @@ Four things, from the data modules rather than from the drawings:
 * the pinhole model reproduces Raspberry Pi's own declared field of view from
   their own focal length and sensor size, which is what makes it the right
   model rather than a convenient one;
+* every lens's declared pair is tested against the sensor's own shape, so
+  that ``Lens.consistent`` means what the sheets say it means;
 * every frame is the smallest rectangle of the sensor's aspect ratio holding
   its target plus the stated margin, and the camera sits over its centre at a
   height where both declared angles reach it;
+* every target whose plane is not the subject's own top face says so, because
+  a height set at the wrong plane covers less at the right one;
 * every height is compared against the lens's published near limit, and the
   answer the sheet prints is the answer the arithmetic gives.
 
@@ -19,13 +23,12 @@ stock Camera Module OV5647 is fixed at "Approx 1 m to infinity" and every
 board here wants the camera a tenth of that away.  What is being checked is
 that the sheet says so, not that the problem has gone away.
 
-Run: uv run --no-project --with pillow python raspberry_pi_camera/verify.py
+Run: uv run --no-project python raspberry_pi_camera/verify.py
 """
 
 from __future__ import annotations
 
 import html
-import math
 import re
 import sys
 from pathlib import Path
@@ -34,9 +37,10 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from raspberry_pi_camera import optics  # noqa: E402
-from raspberry_pi_camera.optics import (ASPECT, FOV_CHECK,  # noqa: E402
-                                        FOV_CHECK_TOL, FRAME_MARGIN, LENSES,
-                                        place, subjects)
+from raspberry_pi_camera.optics import (ASPECT, CONSISTENCY_TOL,  # noqa: E402
+                                        FOV_CHECK, FOV_CHECK_TOL,
+                                        FRAME_MARGIN, LENSES,
+                                        coincident_edges, place, subjects)
 
 #: Where the fetch script leaves the pages the optics module quotes.
 CACHE = ROOT / "tmp" / "src" / "rpi-camera-optics"
@@ -55,13 +59,11 @@ QUOTES = {
         "3.60 mm +/- 0.01",
         "53.50 +/- 0.13 degrees",
         "41.41 +/- 0.11 degrees",
-        "F2.9",
         "Focus Fixed Adjustable Motorized Motorized",
         "Depth of field Approx 1 m to ∞ Approx 10 cm to ∞",
         "Approx 5 cm to ∞",
     ],
     "arducam-5mp-ov5647.html": [
-        "Field of View(H x V) Focus Type",
         "Stock Lens 54° (H) x 41° (V) Fixed Focus",
         "B0176 15/Bottom Mini Size 54°(H)x44° (V) Auto Focus",
         "B006604 120°(H) x 90°(V)",
@@ -69,10 +71,28 @@ QUOTES = {
     "arducam-motorized-focus-camera.html": [
         "you can understand it the same as autofocus",
     ],
+    # The OV5647 guide the AUTOFOCUS note sends a reader to.  The sheets no
+    # longer print these two strings -- they are what the words look like
+    # after the spacing in the rendered page is flattened, and anyone
+    # copying them would get a config.txt that does nothing -- but the note
+    # still says that guide adds a voice-coil device tree line and a close
+    # focus range, and this is the page that has to go on saying it.
     "arducam-ov5647-motorized-focus-camera.html": [
         "dtoverlay = ov5647 , vcm",
         "autofocus - range macro",
     ],
+}
+
+#: The two quotes on the sheets that are not in a page this family's own
+#: fetch script caches: the M.2 specification is a PDF another family
+#: downloads, and SQRL's page is cited from the Internet Archive through the
+#: branch that draws the assembly.  Listed so that nothing a sheet prints
+#: between quotation marks is silently unaccounted for, and named with the
+#: source that carries it.
+UNCHECKED = {
+    'SQRL Acorn CLE-215+, Internet Archive 2020':
+        "it is one millimeter wider than the official specifications",
+    'Waveshare PoE M.2 HAT+ (B) dimension drawing': "Unit: mm",
 }
 
 #: How far a frame edge may sit inside where the margin puts it.  Floating
@@ -114,8 +134,33 @@ def check_quotes() -> tuple[int, int]:
             bad += not ok
             print(f"   {'ok  ' if ok else 'FAIL'} {name[:34]:<36} "
                   f"{quote!r}")
-    print(f"quotes: {total - bad} of {total} found in the cached pages\n")
+    for who, quote in UNCHECKED.items():
+        print(f"   --   {who[:34]:<36} {quote!r} (not fetched here)")
+    print(f"quotes: {total - bad} of {total} found in the cached pages, "
+          f"{len(UNCHECKED)} cited from elsewhere\n")
     return bad, total
+
+
+def check_lenses() -> int:
+    """Each lens's declared pair, against the shape of the sensor behind it.
+
+    ``Lens.consistent`` is what the sheets branch on when they decide whether
+    to warn that the picture runs over the rectangle drawn, so the rule it
+    encodes is checked here rather than trusted: on a 4:3 sensor a
+    rectilinear lens has tan(V/2) = tan(H/2) x 3/4.
+    """
+    bad = 0
+    for lens in list(LENSES.values()) + [optics.AUTOFOCUS]:
+        off = abs(lens.consistent_v - lens.fov_v)
+        agrees = off <= CONSISTENCY_TOL
+        ok = agrees == lens.consistent
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {lens.name:<22} declared "
+              f"{lens.fov_h:6.2f} x {lens.fov_v:5.2f}; {lens.fov_h:.2f} on a "
+              f"4:3 sensor implies {lens.consistent_v:6.2f}, off by {off:5.2f}"
+              f" -> {'consistent' if lens.consistent else 'INCONSISTENT'}")
+    print()
+    return bad
 
 
 def check_model() -> int:
@@ -185,21 +230,36 @@ def check_frames() -> int:
                   f"{frame.long_axis}, and touches the target on "
                   f"{'one' if tight else 'NEITHER'} axis")
 
+            # 3. Z is quoted above the target's own plane, and where that is
+            #    not the subject's face the sheet has to say so: a height set
+            #    at the subject's face covers (Z - h) / Z of the frame at the
+            #    target's, and nothing on the drawing would show it.
+            said = (t.plane_above_subject == 0.0
+                    or (t.plane_name and t.plane_note))
+            bad += not said
+            print(f"   {'ok  ' if said else 'FAIL'} frame {letter} is set "
+                  f"from {t.plane_name}"
+                  + ("" if t.plane_above_subject == 0.0
+                     else ", and says where that is"))
+
             for lens in LENSES.values():
                 p = place(frame, lens)
-                # 3. The camera is over the frame's centre.
+                # 4. The camera is over the frame's centre.
                 centred = (abs(p.x - frame.cx) < EPS
                            and abs(p.y - frame.cy) < EPS)
-                # 4. At that height both declared angles reach the frame.
+                # 5. At that height both declared angles reach the frame.
                 reaches = (p.covers_x >= frame.width - 1e-6
                            and p.covers_y >= frame.height - 1e-6)
                 bad += not (centred and reaches)
+                dx, dy = p.excess
                 print(f"   {'ok  ' if centred and reaches else 'FAIL'} "
                       f"  {lens.key:>3} deg: X {p.x:7.2f} Y {p.y:6.2f} "
-                      f"Z {p.z:6.1f}  covers {p.covers_x:7.2f} x "
-                      f"{p.covers_y:6.2f}")
+                      f"Z {p.z:6.1f} (H wants {p.z_from_h:6.1f}, V "
+                      f"{p.z_from_v:6.1f}, {p.governed_by} governs); covers "
+                      f"{p.covers_x:7.2f} x {p.covers_y:6.2f}, over by "
+                      f"{dx:5.2f} x {dy:5.2f}")
 
-                # 5. The focus verdict the sheet prints is the arithmetic.
+                # 6. The focus verdict the sheet prints is the arithmetic.
                 if lens.min_object_distance is None:
                     print(f"        -- {lens.key:>3} deg: no near limit is "
                           "published, so the sheet prints UNKNOWN")
@@ -212,6 +272,26 @@ def check_frames() -> int:
                       f"  {lens.key:>3} deg: Z {p.z:.1f} against a near "
                       f"limit of {lens.min_object_distance:.0f} -> {mark} "
                       f"({p.z / lens.min_object_distance:.2f} x the limit)")
+        # 7. Frame edges too close together to be drawn as two lines.  Not
+        #    a failure -- the frames are what the targets make them -- but
+        #    the sheet has to point at each one, so they are listed here and
+        #    the drawing carries a leader for every one of them.
+        for axis, ia, ib, pos, lo, hi, gap in coincident_edges(
+                subject.frames()):
+            print(f"   --   frames {'AB'[ia]} and {'AB'[ib]} have {axis} "
+                  f"edges {gap:.2f} mm apart over {hi - lo:.1f} mm; the "
+                  "sheet calls it out")
+
+        # 8. What stands above the plane the first frame was set from, and
+        #    how far it may stand before it leaves the picture.  Reported
+        #    rather than asserted: there is no figure to fail against, and
+        #    the number is what the sheet's own note prints.
+        for label, box in subject.standing:
+            for lens in LENSES.values():
+                p = place(subject.frames()[0], lens)
+                print(f"   --   {label} stays in frame A up to "
+                      f"{p.headroom(box):5.1f} mm above the plate at "
+                      f"{lens.key} deg")
         print()
     return bad
 
@@ -221,6 +301,7 @@ def main() -> None:
     bad, _ = check_quotes()
     problems += bad
     problems += check_model()
+    problems += check_lenses()
     problems += check_frames()
 
     close = sum(1 for s in subjects().values() for f in s.frames()

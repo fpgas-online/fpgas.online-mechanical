@@ -89,6 +89,7 @@ FOV_CHECK = (
     ("Diagonal, from the active array",
      full_angle(math.hypot(ARRAY_WIDTH, ARRAY_HEIGHT)), None),
     ("Horizontal, from the image area", full_angle(IMAGE_AREA[0]), 53.50),
+    ("Vertical, from the image area", full_angle(IMAGE_AREA[1]), 41.41),
     ("Diagonal, from the image area",
      full_angle(math.hypot(*IMAGE_AREA)), None),
 )
@@ -98,33 +99,45 @@ FOV_CHECK = (
 #: figures are printed to.
 FOV_CHECK_TOL = 0.01
 
+#: The stock lens's diagonal field of view, which is the figure it is sold
+#: under and which no vendor prints.  Two of them, because the two rectangles
+#: Raspberry Pi publish do not agree: the image area gives the 65 the module
+#: is named for, the active array -- the one that reproduces the declared H
+#: and V -- gives a degree and a third less.
+DIAGONAL_FROM_IMAGE_AREA = full_angle(math.hypot(*IMAGE_AREA))
+DIAGONAL_FROM_ARRAY = full_angle(math.hypot(ARRAY_WIDTH, ARRAY_HEIGHT))
+
+#: How far a declared vertical may sit from what the declared horizontal
+#: implies on a 4:3 sensor before the pair is called inconsistent.  A tenth of
+#: a degree: the stock lens comes in at 0.006 and the wide one at 14.82, so
+#: nothing here is near the line.
+CONSISTENCY_TOL = 0.1
+
 RPI_DOC = Source(
     label="Raspberry Pi camera documentation",
     ref="https://web.archive.org/web/20241230011811/"
         "https://www.raspberrypi.com/documentation/accessories/camera.html",
-    note='Camera Module 1 column, quoted: "OmniVision OV5647", "2592 x '
-         '1944 pixels", "3.76 x 2.74 mm", "1.4 um x 1.4 um", "3.60 mm +/- '
-         '0.01", "53.50 +/- 0.13 degrees", "41.41 +/- 0.11 degrees", "F2.9", '
-         'focus "Fixed", "Approx 1 m to infinity". Internet Archive snapshot: '
-         "raspberrypi.com answers a plain request 403.",
+    note='Camera Module 1 column: the "OmniVision OV5647", its "2592 x 1944 '
+         'pixels" at "1.4 um x 1.4 um", "3.76 x 2.74 mm", "3.60 mm +/- '
+         '0.01", "53.50 +/- 0.13 degrees", "41.41 +/- 0.11 degrees", focus '
+         '"Fixed", "Approx 1 m to infinity".',
 )
 
 ARDUCAM_DOC = Source(
     label="Arducam 5MP OV5647 documentation",
     ref="https://docs.arducam.com/Raspberry-Pi-Camera/Native-camera/"
         "5MP-OV5647/",
-    note='Product catalogue, "Field of View(H x V) Focus Type", quoted: '
-         'B0033 "Stock Lens 54 (H) x 41 (V) Fixed Focus"; B006604 "120 (H) x '
-         '90 (V)", M6 lens, fixed; B0176 "54(H)x44 (V) Auto Focus".',
+    note='Product catalogue: B0033 "Stock Lens 54 (H) x 41 (V) Fixed '
+         'Focus", B006604 "120 (H) x 90 (V)", B0176 "54(H)x44 (V) Auto '
+         'Focus".',
 )
 
 ARDUCAM_AF = Source(
     label="Arducam motorized focus camera",
     ref="https://docs.arducam.com/Raspberry-Pi-Camera/Motorized-Focus-Camera/"
         "Motorized-Focus-Camera/",
-    note='Quoted: "Generally, you can understand it the same as '
-         'autofocus." The OV5647 quick start adds "dtoverlay = ov5647 , vcm" '
-         'and a close-focus "autofocus - range macro".',
+    note='Quoted: "you can understand it the same as autofocus"; its OV5647 '
+         "guide adds a voice-coil device tree line and a close-focus range.",
 )
 
 # ---------------------------------------------------------------------------
@@ -157,7 +170,6 @@ class Lens:
     min_object_distance: float | None
     mod_note: str
     sources: tuple[Source, ...]
-    notes: tuple[str, ...] = ()
 
     @property
     def consistent_v(self) -> float:
@@ -171,6 +183,11 @@ class Lens:
         return 2 * math.degrees(
             math.atan(math.tan(math.radians(self.fov_h / 2)) / ASPECT))
 
+    @property
+    def consistent(self) -> bool:
+        """Whether the declared pair agrees with the sensor's own shape."""
+        return abs(self.consistent_v - self.fov_v) <= CONSISTENCY_TOL
+
 
 LENS_65 = Lens(
     key="65",
@@ -183,14 +200,6 @@ LENS_65 = Lens(
     mod_note='Raspberry Pi give the depth of field as "Approx 1 m to '
              'infinity", so 1000 mm is the nearest this lens focuses.',
     sources=(RPI_DOC, ARDUCAM_DOC),
-    notes=(
-        'The "65 degrees" this lens is sold under is its DIAGONAL, and it is '
-        "not a figure either vendor prints. DERIVED from Raspberry Pi's own "
-        "image area and focal length: 2 x atan(sqrt(3.76^2 + 2.74^2) / 2 / "
-        "3.60) = 65.74 deg. From the active pixel array instead it is 64.42 "
-        "deg. What both vendors do print is the pair used here, 53.50 x "
-        "41.41 deg (Arducam, independently, 54 x 41).",
-    ),
 )
 
 LENS_120 = Lens(
@@ -204,14 +213,6 @@ LENS_120 = Lens(
     mod_note="Arducam publish no focus distance for this lens, so no height "
              "on this sheet can be checked against one.",
     sources=(ARDUCAM_DOC,),
-    notes=(
-        "Raspberry Pi never made a wide OV5647, so the declared figures are "
-        "Arducam's, for the M6 lens on their B006604: 120 x 90 deg.",
-        "Those two cannot both be right. DERIVED: 120 deg across a 4:3 "
-        "sensor implies 104.82 deg down it, not 90. The height is taken as "
-        "the greater of the two the pair asks for, which is the vertical, so "
-        "the real frame is wider across than the rectangle drawn.",
-    ),
 )
 
 LENSES = {LENS_65.key: LENS_65, LENS_120.key: LENS_120}
@@ -259,7 +260,23 @@ FRAME_MARGIN = 5.0
 
 @dataclass(frozen=True)
 class Target:
-    """A rectangle on the subject that has to end up inside the picture."""
+    """A rectangle on the subject that has to end up inside the picture.
+
+    The rectangle is in the subject's own plan frame, but it need not lie in
+    the subject's own top face, and on two of these sheets it does not: the
+    demo boards' indicators are on a board standing on standoffs above the
+    mounting plate, and the Acorn is a card seated in a HAT above a Pi.  A
+    camera height measured to the wrong plane covers less at the right one --
+    the picture at ``h`` above the frame plane is ``(Z - h) / Z`` of what is
+    drawn -- so ``Z`` on these sheets is always quoted above the TARGET's
+    plane, and ``plane_name`` says which plane that is.
+
+    ``plane_above_subject`` is how far that plane sits above the subject's own
+    top face, where anyone publishes it, and None where nobody does.  It is
+    never used to compute Z; it is there so the sheet can say what has to be
+    added to get from the subject's face to the plane the stand is set from,
+    or say that the figure does not exist.
+    """
 
     key: str
     label: str
@@ -268,6 +285,9 @@ class Target:
     x1: float
     y1: float
     note: str = ""
+    plane_name: str = "the subject's own top face"
+    plane_above_subject: float | None = 0.0
+    plane_note: str = ""
 
     @property
     def width(self) -> float:
@@ -333,6 +353,55 @@ def frame_for(target: Target, margin: float = FRAME_MARGIN) -> Frame:
                  cx + w / 2, cy + h / 2)
 
 
+#: Two frame edges closer together than this cannot be drawn as two lines:
+#: at A3 two 0.25 mm chain-double-dot lines that close read as one.  Where it
+#: happens the sheet points at them and says so, rather than leaving a reader
+#: to wonder which rectangle they are looking at.  On
+#: RPICAM-OVER-ARTY the two lower edges are 0.43 mm apart.
+COINCIDENT = 1.5
+
+
+def _frame_edges(frames) -> list[tuple[str, int, float, float, float]]:
+    """Every frame edge, as (axis, frame index, position, span lo, span hi).
+
+    ``axis`` is the axis the edge is PERPENDICULAR to, so two edges with the
+    same axis and a close position are two lines lying nearly on top of each
+    other.
+    """
+    out = []
+    for i, f in enumerate(frames):
+        out.append(("Y", i, f.y0, f.x0, f.x1))
+        out.append(("Y", i, f.y1, f.x0, f.x1))
+        out.append(("X", i, f.x0, f.y0, f.y1))
+        out.append(("X", i, f.x1, f.y0, f.y1))
+    return out
+
+
+def coincident_edges(frames, tol: float = COINCIDENT):
+    """Pairs of frame edges too close together to be drawn as two lines.
+
+    Two frames on one sheet are not nested and need not be: on
+    RPICAM-OVER-ARTY frame B's lower edge is 0.43 mm below frame A's, and
+    on RPICAM-OVER-ACORN neither frame contains the other at
+    all.  Where two edges land within a chain line's own width of each other,
+    the drawing cannot show two, so the sheet says which they are instead of
+    leaving the reader to guess.
+
+    Yields ``(axis, i, j, position, overlap lo, overlap hi, gap)``.
+    """
+    edges = _frame_edges(frames)
+    for a in range(len(edges)):
+        axis_a, ia, pa, lo_a, hi_a = edges[a]
+        for b in range(a + 1, len(edges)):
+            axis_b, ib, pb, lo_b, hi_b = edges[b]
+            if axis_a != axis_b or ia == ib or abs(pa - pb) > tol:
+                continue
+            lo, hi = max(lo_a, lo_b), min(hi_a, hi_b)
+            if hi - lo <= 0:
+                continue
+            yield (axis_a, ia, ib, (pa + pb) / 2, lo, hi, abs(pa - pb))
+
+
 @dataclass(frozen=True)
 class Placement:
     """Where the camera goes for one frame and one lens."""
@@ -353,6 +422,37 @@ class Placement:
         if self.lens.min_object_distance is None:
             return None
         return self.z < self.lens.min_object_distance
+
+    @property
+    def governed_by(self) -> str:
+        """Which declared angle set the height: "H" or "V"."""
+        return "H" if self.z_from_h >= self.z_from_v else "V"
+
+    @property
+    def excess(self) -> tuple[float, float]:
+        """How much wider than the rectangle drawn the picture really is.
+
+        Zero on the axis that governed the height and positive on the other.
+        A lens whose declared pair agrees with the sensor gives zero on both;
+        the wide lens's does not, and the sheet has to say on WHICH axis the
+        picture runs over, which depends on how the camera is turned.
+        """
+        return (self.covers_x - self.frame.width,
+                self.covers_y - self.frame.height)
+
+    def headroom(self, box: tuple[float, float, float, float]) -> float:
+        """How far above the frame plane *box* may rise and stay in shot.
+
+        For a thing that is inside the frame in plan but stands above the
+        plane the height was set from: a demo board on standoffs over the
+        mounting plate is inside the plate's own frame, and still leaves the
+        picture if it stands high enough.
+        """
+        x0, y0, x1, y1 = box
+        need_x = 2 * max(abs(x0 - self.x), abs(x1 - self.x))
+        need_y = 2 * max(abs(y0 - self.y), abs(y1 - self.y))
+        return min(self.z * (1 - need_x / self.covers_x),
+                   self.z * (1 - need_y / self.covers_y))
 
 
 def place(frame: Frame, lens: Lens) -> Placement:
@@ -395,6 +495,11 @@ class Subject:
     subtitle: str
     spec: BoardSpec
     targets: tuple[Target, ...]
+    #: A thing that lies inside the first frame in plan but stands above the
+    #: plane that frame's height is set from, as (label, box).
+    #: The sheet turns it into a headroom note: how high it may stand before
+    #: it leaves the picture.  Only the mounting plate has one.
+    standing: tuple[tuple[str, tuple[float, float, float, float]], ...] = ()
     sources: tuple[Source, ...] = ()
     notes: tuple[str, ...] = ()
     #: What the title block's SUBJECT field says.  Short: it is a title block
@@ -451,6 +556,23 @@ def _plate_subject() -> Subject:
                 designator=f.designator)
         for name, f, box in boxes)
     lx0, ly0, lx1, ly1 = _union([(f.x0, f.y0, f.x1, f.y1) for f in features])
+    # Every revision's board outline in plate coordinates.  Not a target --
+    # nobody frames the board edge -- but it is what stands above the plate
+    # face frame A's height is set from, so it is what the headroom note is
+    # about.
+    boards = _union([(pl["dx"], pl["dy"],
+                      pl["dx"] + TT[pl["revision"]].outline.width,
+                      pl["dy"] + TT[pl["revision"]].outline.height)
+                     for pl in PLACEMENTS.values()])
+    # The thickness every revision's own board file gives, as a range: the
+    # standoff height is the builder's and is written down nowhere here, so
+    # this is the only part of the plate-to-board offset this repository
+    # knows.
+    thicks = sorted({TT[rev].outline.thickness
+                     for pl in PLACEMENTS.values() for rev in pl["revisions"]
+                     if TT[rev].outline.thickness})
+    thick = (f"{thicks[0]:.2f} mm" if len(thicks) == 1
+             else f"{thicks[0]:.2f} to {thicks[-1]:.2f} mm")
     o = PLATE.outline
     return Subject(
         key="tt-mounting-plate",
@@ -460,27 +582,33 @@ def _plate_subject() -> Subject:
         subject_field="TT Mounting Plate",
         targets=(
             Target("plate", "Whole plate", 0.0, 0.0, o.width, o.height,
-                   note=f"The plate outline, {PLATE_SHEET}. Every demo "
-                        "board revision sits inside it."),
+                   plane_name="the plate's own top face",
+                   plane_above_subject=0.0),
             Target("leds", "Every LED and 7-seg", lx0, ly0, lx1, ly1,
-                   note="The union over all five revision families, in plate "
-                        "coordinates: no one revision needs all of it, but a "
-                        "fixed rig does."),
+                   plane_name="the DEMO BOARD's top face, not the plate's",
+                   plane_above_subject=None,
+                   plane_note="the standoff height plus the board "
+                              f"thickness, {thick}, above the plate. The "
+                              "standoff height is the builder's and is "
+                              "specified nowhere here, so measure the "
+                              "stack"),
         ),
+        standing=(("The demo board itself, any revision", boards),),
         sources=(
             Source(label="Plate geometry",
                    ref="tinytapeout/mounting_plate/plate.py",
-                   note="Outline and board placements; see TT-MP-01."),
+                   note=f"Outline and placements; see {PLATE_SHEET}."),
             Source(label="Indicator positions", ref="tinytapeout/boards.py",
-                   note="LED and 7-segment footprints from the upstream "
-                        "KiCad files, moved into plate coordinates."),
+                   note="LED and 7-segment footprints, in plate "
+                        "coordinates."),
         ),
         tolerance="plate +/-0.20   LEDs +/-0.10   Z DERIVED",
         notes=(
-            "The indicators are not clustered. Across the five revision "
-            f"families they span {lx1 - lx0:.2f} x {ly1 - ly0:.2f} mm of a "
-            f"{o.width:.0f} x {o.height:.0f} mm plate, so framing the "
-            "indicators alone buys little over framing the plate.",
+            "Frame B is the union of every LED and 7-segment over all five "
+            "revision families; no one revision needs all of it. They are "
+            f"not clustered -- {lx1 - lx0:.2f} x {ly1 - ly0:.2f} of a "
+            f"{o.width:.0f} x {o.height:.0f} plate -- so frame B buys little "
+            "over frame A.",
         ),
     )
 
@@ -521,8 +649,8 @@ def _arty_subjects() -> tuple[Subject, Subject]:
     arty_sheet = drawing_name("fpga", slug(spec.key))
     t = _arty_targets(spec)
     src = (Source(label="Board geometry", ref="fpga/boards.py",
-                  note="Outline, Pmod hosts, connectors and LED rows from "
-                       f"Digilent's DXF and PDF plot; see {arty_sheet}."),)
+                  note="Outline, Pmod hosts, connectors and LED rows; see "
+                       f"{arty_sheet}."),)
     main = Subject(
         key="arty-a7",
         title="Camera over the Arty A7",
@@ -582,6 +710,22 @@ def _arty_subjects() -> tuple[Subject, Subject]:
 # what the assembly sheet is drawn from too: the card on this sheet and the
 # card on that one are one rectangle in one place, so they cannot drift
 # apart.
+#
+# What that module does not carry is a height for anything, because nobody
+# publishes one.
+
+#: The plane both Acorn frames are set from, and why it is the card's and
+#: not the Pi's.  The highest plane either target reaches: frame A's target
+#: is the assembly's plan envelope, most of which is the Pi, but the card
+#: stands above it, and a height set at the Pi's face covers less at the
+#: card's.  Set from the card, everything below it is covered by more than
+#: the frame, which is the safe direction.
+CARD_PLANE = "the ACORN CARD's top face, not the Pi's"
+CARD_PLANE_NOTE = (
+    "nobody publishes how far the card stands above the Pi, so measure the "
+    "stack. Set from the Pi's face the camera sits too low, and the picture "
+    "at the card loses the ends of it"
+)
 
 
 def _hat_sheet() -> str:
@@ -622,12 +766,16 @@ def _acorn_subject() -> Subject:
         subject_field="Acorn CLE-215+, Pi 5",
         targets=(
             Target("assembly", "Whole assembly", ex0, ey0, ex1, ey1,
-                   note="Raspberry Pi 5 with a Waveshare PoE M.2 HAT+ (B) "
-                        "and the Acorn seated in it; the HAT is the Pi's own "
-                        "85 x 56 mm, and its 2280 standoff reaches 88.00."),
+                   note="Pi 5 with a Waveshare PoE M.2 HAT+ (B) and the "
+                        "Acorn seated in it; the HAT is the Pi's own 85 x 56 "
+                        "mm and its 2280 standoff reaches 88.00.",
+                   plane_name=CARD_PLANE, plane_above_subject=None,
+                   plane_note=CARD_PLANE_NOTE),
             Target("card", "Acorn card", card.x0, card.y0, card.x1, card.y1,
                    note="23 x 80 mm: the M.2 specification's Type 2280 "
-                        "outline with SQRL's own extra millimetre of width."),
+                        "outline with SQRL's own extra millimetre of width.",
+                   plane_name=CARD_PLANE, plane_above_subject=None,
+                   plane_note=CARD_PLANE_NOTE),
         ),
         sources=(
             Source(label="Board geometry", ref="raspberry_pi/boards.py",
@@ -646,16 +794,16 @@ def _acorn_subject() -> Subject:
                    ref="https://www.waveshare.com/w/upload/d/d9/"
                        "PoE-M.2-HAT-Plus-B-details-size.jpg",
                    note='Annotated 85.00, 56.00 and 3.00, "Unit: mm": the '
-                        "3.00 is the 2280 standoff past the board edge."),
+                        "3.00 is the standoff past the board edge. It "
+                        "dimensions no height."),
         ),
         tolerance="Pi 5 +/-0.20   card +/-0.20 DERIVED   Z DERIVED",
         notes=(
             "The Acorn's own LED positions are not published: SQRL issued "
-            "no mechanical drawing and their site is gone. Frame B is "
-            "therefore the card, not its indicators. Nor is its heatsink "
-            "published, so Z is measured to the Pi's own top face.",
-            "The seated card position and the assembly's far edge are "
-            f"accessories/parts.py's, which {hat_sheet} is drawn from too.",
+            "no mechanical drawing and their site is gone, so frame B is the "
+            "card, not its indicators. Its seated position and the "
+            "assembly's far edge are accessories/parts.py's, which "
+            f"{hat_sheet} is drawn from too.",
         ),
     )
 

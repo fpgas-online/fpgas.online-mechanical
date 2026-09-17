@@ -52,7 +52,7 @@ diagrams:
 check: diagrams
 	$(DRAW) python tools/check_sheets.py
 	$(UV) python tinytapeout/mounting_plate/verify.py
-	$(UV) --with pillow python raspberry_pi_camera/verify.py
+	$(UV) python raspberry_pi_camera/verify.py
 	$(UV) python fpga/light_pipe/verify.py
 	$(DRAW) python tools/check_balloons.py
 	$(UV) --with pillow python tools/check_leader_arrows.py

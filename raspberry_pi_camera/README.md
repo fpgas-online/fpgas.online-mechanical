@@ -268,7 +268,7 @@ board data's own tolerance.
 | `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 × 75.69 | 100.1 | 37.8 |
 | `RPICAM-OVER-ARTY` | The whole Arty | 129.33 × 97.00 | 128.3 | 48.5 |
 | `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 × 24.51 | 32.4 | 12.3 |
-| `RPICAM-OVER-ARTY-ETHERNET` | LD0-LD7 and the RJ45 | 45.15 × 60.21 | 59.7 | 22.6 |
+| `RPICAM-OVER-ETH` | LD0-LD7 and the RJ45 | 45.15 × 60.21 | 59.7 | 22.6 |
 | `RPICAM-OVER-ACORN` | The whole assembly | 98.00 × 73.50 | 97.2 | 36.8 |
 | `RPICAM-OVER-ACORN` | The Acorn card | 90.00 × 67.50 | 89.3 | 33.8 |
 
