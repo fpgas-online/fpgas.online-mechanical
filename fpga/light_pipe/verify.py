@@ -110,12 +110,16 @@ def light_path() -> None:
           f"at y {A.WINDOW_Y0}..{A.WINDOW_Y1}, z {A.WINDOW_Z0}..{A.WINDOW_Z1}")
 
     # The tip is a disc at 45 degrees, so it reaches PIPE_DIA / 2 * cos 45
-    # either side of its centre along X; the nearest point to the jack is
-    # what has to clear the front face.
+    # either side of its centre along X.  The window stands proud of the face
+    # the cheeks land on, so its nearest point has to clear the window rather
+    # than the face, and at maximum material: the 0.025 that dimensions it
+    # carries Bel's +/-0.254.
     nearest = A.BORE_X + A.PIPE_DIA / 2 * H
-    clearance(-nearest, A.CLEARANCES["pipe tip to jack face"],
-              "the pipe stands off the jack's front face",
-              "nearest point of the tip to the face")
+    clearance(A.WINDOW_FACE_X - nearest,
+              A.CLEARANCES["pipe tip to the LED window at maximum material"],
+              "the pipe stands off the LED window",
+              f"nearest point of the tip at x {nearest:.3f}, window face at "
+              f"{A.WINDOW_FACE_X:.3f} at maximum material")
 
     # The pocket has to clear both the window and the bore's mouth, and it
     # must not shrink onto either.
