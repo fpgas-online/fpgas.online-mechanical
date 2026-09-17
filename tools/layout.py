@@ -73,7 +73,8 @@ PMOD_HAT_STEM = ACC_STEMS["pmod-hat-adapter"]
 #: no mechanical shortening of ``raspmod`` or ``poe-microusb`` leaves four
 #: characters that still say which part it is.  Keyed by the stem rather than
 #: by the part key so that the name can be worked out from a rendered file,
-#: which is what ``drawing_name_for`` and both checks do.
+#: which is what ``drawing_name_for`` does and how ``check_sheets.py`` reads
+#: the name it expects in a title block off the sheet's path alone.
 #:
 #: The first word is the kind and the second is which one of that kind, so two
 #: names quoted in the same note show at a glance which two parts are
