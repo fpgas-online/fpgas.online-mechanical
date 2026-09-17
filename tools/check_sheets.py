@@ -173,20 +173,18 @@ def vertical_rules(svg_lines) -> list[tuple[float, float, float]]:
 
 
 def check_readme_previews() -> list[str]:
-    """Every sheet shown in the README, and every reference resolving.
+    """Every generated preview is shown in the root README's grid.
 
-    The preview grid names each sheet by hand, so adding or renaming one
-    silently leaves the README showing the wrong set or a broken image.
+    The grid is written by ``tools/update_readme.py``, so a sheet added or
+    renamed without rerunning it leaves the README showing the wrong set.
+    Whether the paths in it resolve is ``check_doc_links``'s question, asked
+    of every document rather than only this one.
     """
-    import re
     readme = ROOT / "README.md"
     if not readme.exists():
         return ["README.md is missing"]
-    text = readme.read_text()
-    refs = set(re.findall(r'src="([^"]+)"', text)
-               + re.findall(r'href="([^"]+)"', text))
-    problems = [f"README refers to {r}, which does not exist"
-                for r in sorted(refs) if not (ROOT / r).exists()]
+    refs = {target for _, target in doc_links(readme)}
+    problems: list[str] = []
     previews = set()
     for svg in sheets():
         preview = preview_for(svg)
@@ -294,29 +292,70 @@ def check_drawing_names() -> list[str]:
     return problems
 
 
-#: A Markdown link to something in the repository: ``[text](path)`` where the
-#: path is not a URL.  The anchor, if any, is not checked.
-DOC_LINK_RE = re.compile(r"\]\((?!https?://|#)([^)\s]+)\)")
+#: Not ours to resolve: an absolute URL, a mail address, a bare anchor into
+#: the page itself.
+FOREIGN = r"(?!https?://|mailto:|data:|//|#)"
+
+#: A link to something in the repository, in both of the forms these
+#: documents use: a Markdown ``[text](path)``, and the ``src=`` and ``href=``
+#: of an HTML tag.  The preview grids are HTML tables -- Markdown gives no way
+#: to set a column width -- so every path in every grid is of the second kind,
+#: and a check that read only Markdown links read none of them.  The anchor,
+#: if any, is not checked.
+DOC_LINK_RE = re.compile(
+    rf"\]\({FOREIGN}([^)\s]+)\)"
+    rf'|(?:src|href)="{FOREIGN}([^"]+)"')
+
+
+def doc_links(doc: Path) -> list[tuple[str, str]]:
+    """Every in-repository link in *doc*, as (how it is written, its target).
+
+    The target is repository-relative, since a link is written relative to
+    the file it sits in and the two differ for every document but the root
+    README.
+    """
+    out = []
+    for markdown, html in DOC_LINK_RE.findall(doc.read_text()):
+        written = markdown or html
+        target = written.split("#", 1)[0]
+        if not target:
+            continue
+        resolved = (doc.parent / target).resolve()
+        try:
+            out.append((written, str(resolved.relative_to(ROOT))))
+        except ValueError:
+            # A link that climbs out of the repository resolves on this
+            # machine and nowhere else, so it is returned absolute and the
+            # caller reports it rather than testing whether it happens to
+            # exist here.
+            out.append((written, str(resolved)))
+    return out
 
 
 def check_doc_links() -> list[str]:
-    """Every relative link in every README resolves.
+    """Every relative link in every document resolves.
 
-    The documentation is split one README per directory, so the READMEs link
-    to each other constantly and a link is written relative to the file it
-    sits in.  Moving a directory then breaks links in files that were not
-    touched, which nothing else here would notice.
+    The documentation is split one README per directory, so the documents
+    link to each other constantly and each link is written relative to the
+    file it sits in.  Moving a directory then breaks links in files that were
+    not touched, which nothing else here would notice.
+
+    Every ``*.md`` in the tree, and both kinds of link in each: this read only
+    the root README's HTML and only Markdown links elsewhere, which left the
+    preview grid in every family README and the two thumbnails on the adapter
+    comparison page -- all of them HTML, all of them paths to files the build
+    writes and renames -- checked by nothing at all.
     """
     problems = []
     for doc in sorted(ROOT.rglob("*.md")):
         if ".git" in doc.parts or "tmp" in doc.parts:
             continue
-        for target in DOC_LINK_RE.findall(doc.read_text()):
-            target = target.split("#", 1)[0]
-            if not target:
-                continue
-            if not (doc.parent / target).resolve().exists():
-                problems.append(f"{doc.relative_to(ROOT)} links to {target}, "
+        for written, target in doc_links(doc):
+            if Path(target).is_absolute():
+                problems.append(f"{doc.relative_to(ROOT)} links to {written}, "
+                                "which is outside the repository")
+            elif not (ROOT / target).exists():
+                problems.append(f"{doc.relative_to(ROOT)} links to {written}, "
                                 "which does not exist")
     return problems
 
