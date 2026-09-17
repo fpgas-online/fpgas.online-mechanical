@@ -674,6 +674,166 @@ def _radius_callout(o, board: Rect, sheet: Sheet, view: View
     return label, elbow, end - 1.2 - tw, end - 1.2
 
 
+# Everything a sheet puts round the outside of its outline -- the overall
+# width and height, the datum and the corner radius callout -- is drawn after
+# the balloons and so has to be reserved against them before they are placed.
+# The three functions below are that reservation and that drawing, and they
+# exist as functions because a reservation worked out one way and a line drawn
+# another is the recurring bug in this library: see "Reserve, then draw" in
+# the README.  They are split in three rather than two so that each
+# reservation can stay at the exact point in the obstacle list it was written
+# at; the drawing is one function because nothing comes between its parts.
+
+
+def dim_text_band() -> float:
+    """How far a dimension's value reaches off its own line.
+
+    Named because two separate reservations want it -- the overall dimensions
+    and the Pmod host spacing -- and they were two copies of the same sum.
+    """
+    return style.T_DIM + style.descender(style.T_DIM) + style.DIM_TEXT_GAP
+
+
+def overall_width_line(board: Rect, chain_edge: str) -> tuple[float, float]:
+    """The edge the overall width dimension runs from, and its offset.
+
+    It goes on the horizontal edge the X ordinate chain did not take, so both
+    values follow from *chain_edge*.  One definition, asked for by the
+    reservation and by the drawing, because reserving one place and drawing
+    in another is the recurring bug in this file.  The value sits above its
+    own line either way: that is what ``dims.linear`` draws, whichever side
+    of the board the line is on.
+    """
+    x_out = 1.0 if chain_edge == "top" else -1.0
+    edge_y = board.y if chain_edge == "top" else board.y1
+    return edge_y, x_out * -OVERALL_GAP
+
+
+def reserve_radius_callout(sheet: Sheet, view: View, spec: BoardSpec,
+                           board: Rect, obstacles: "Obstacles") -> None:
+    """Hold the corner radius callout's space against the balloon placer.
+
+    Hard: a balloon on the callout hides a dimension, and there is always
+    somewhere else for a balloon to go.
+    """
+    o = spec.outline
+    if not o.corner_radius:
+        return
+    _, relbow, rx0, rx1 = _radius_callout(o, board, sheet, view)
+    obstacles.add_rect(min(relbow, rx0), board.y1 + 2.0,
+                       max(relbow, rx1), board.y1 + 9.0,
+                       pad=1.2, weight=HARD)
+    obstacles.add_segment(*view.pt(o.width - o.corner_radius * 0.3,
+                                   o.height - o.corner_radius * 0.3),
+                          relbow, board.y1 + 5.0, weight=HARD)
+
+
+def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
+                               board: Rect, obstacles: "Obstacles",
+                               edge_only: "Obstacles",
+                               chain_edge: str = "bottom") -> None:
+    """Hold the board outline and the two overall dimensions.
+
+    The board outline first.  A balloon straddling it breaks the one line on
+    the sheet a reader traces first, so it is hard; but a leader crossing it
+    is how a balloon in the margin points at a part on the board, so it is
+    not charged for at all, which is what *edge_only* is.
+
+    Then the overall dimensions, along the right edge and along whichever
+    horizontal edge the X ordinate chain left free -- *chain_edge* says which
+    edge the chain took.  The value is hard -- a leader ruled through "56.00"
+    is as unreadable as a balloon parked on it -- but the line either side of
+    it is position only.  Reserving the whole band against leaders as well
+    boxed the balloons into the board's interior, because a leader from a part
+    near one of those two edges had to cross a band to reach any space at all.
+    """
+    o = spec.outline
+    for edge in ((0, 0, o.width, 0), (o.width, 0, o.width, o.height),
+                 (o.width, o.height, 0, o.height), (0, o.height, 0, 0)):
+        edge_only.add_segment(*view.pt(edge[0], edge[1]),
+                              *view.pt(edge[2], edge[3]), weight=HARD)
+
+    band = dim_text_band()
+    edge_y, offset = overall_width_line(board, chain_edge)
+    overall_y = edge_y + offset
+    for value, horizontal in ((o.width, True), (o.height, False)):
+        half = style.text_width(f"{value:.2f}", style.T_DIM) / 2
+        if horizontal:
+            mid = (board.x + board.x1) / 2
+            lo, hi = overall_y - 1.0, overall_y + band
+            edge_only.add_rect(board.x, lo, board.x1, hi, pad=1.2, weight=HARD)
+            obstacles.add_rect(mid - half, lo, mid + half, hi,
+                               pad=1.2, weight=HARD)
+        else:
+            mid = (board.y + board.y1) / 2
+            lo, hi = board.x1 + OVERALL_GAP - band, board.x1 + OVERALL_GAP + 1.0
+            edge_only.add_rect(lo, board.y, hi, board.y1, pad=1.2, weight=HARD)
+            obstacles.add_rect(lo, mid - half, hi, mid + half,
+                               pad=1.2, weight=HARD)
+
+
+def draw_outline_frame(sheet: Sheet, view: View, spec: BoardSpec,
+                       board: Rect, chain_edge: str = "bottom") -> None:
+    """Draw what the two ``reserve_`` functions above held space for.
+
+    The overall dimensions go on the edges the ordinate chains do not use:
+    the height up the right, and the width across whichever horizontal edge
+    the X chain left free, which *chain_edge* says.  Stacked outside the
+    chains instead, they had to clear the chain, its labels and the Pmod
+    spacing dimension, which put the overall size of the board thirty
+    millimetres away from the board.  On a free edge they sit close in, with
+    short extension lines, which is where a reader looks for them.
+
+    The datum sits in the busiest corner of the sheet, so its label goes out
+    on a leader into the empty wedge below and left of the ordinate chains
+    rather than next to the marker.
+
+    The radius callout always names its subject.  On the Pi 3A+ the phantom
+    Pmod HAT Adapter outline runs within half a millimetre of the board's
+    own, so the callout has to say which it means; naming it only there left
+    the same callout worded two ways across the package.
+    """
+    c = sheet.canvas
+    o = spec.outline
+    edge_y, offset = overall_width_line(board, chain_edge)
+    dims.linear(c, (board.x, edge_y), (board.x1, edge_y), offset,
+                horizontal=True, value=o.width)
+    dims.linear(c, (board.x1, board.y), (board.x1, board.y1), OVERALL_GAP,
+                horizontal=False, value=o.height)
+    dims.datum_marker(c, board.x, board.y, label="")
+    if o.corner_radius:
+        r = o.corner_radius
+        tip = view.pt(o.width - r * 0.3, o.height - r * 0.3)
+        label, elbow_x, _, _ = _radius_callout(o, board, sheet, view)
+        dims.leader(c, tip, (elbow_x, board.y1 + 5.0), label)
+
+
+def place_legend_and_notes(sheet: Sheet, entries, notes: list[str],
+                           sources: list[str], columns: int,
+                           name: str) -> None:
+    """Put the legend under the tables and the notes' tail below it.
+
+    Both are measured before either is placed, so that neither can take space
+    the other needs, and the sheet is refused rather than silently trimmed
+    when the column cannot hold both.  *name* is what the refusal calls the
+    sheet.
+
+    Notes carry facts about the part, not an explanation of how to read a
+    drawing.  The column is finite, and losing a provenance note to make room
+    for a description of ordinate dimensioning is a bad trade.
+    """
+    spill = notes_spill_needed(sheet, notes, sources, columns)
+    want = legend_height(len(entries)) + (spill + 4.0 if spill else 0.0)
+    if sheet.column_remaining < want:
+        raise SystemExit(
+            f"{name}: the annotation column cannot hold both the legend "
+            f"and the notes' tail ({want:.0f} mm wanted, "
+            f"{sheet.column_remaining:.0f} mm left); shorten the notes")
+    draw_legend(sheet, entries)
+    _place_notes_and_sources(sheet, notes, sources, columns=columns,
+                             spill=spill)
+
+
 def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None,
                         view_bbox=None) -> float:
     """Vertical room the view and its dimensions want, in sheet millimetres.
@@ -787,8 +947,14 @@ def legend_height(rows: int) -> float:
     return Sheet.HEADING_HEIGHT + rows * LEGEND_ROW + 0.5
 
 
-def draw_legend(sheet: Sheet, entries: list[tuple[str, str]]) -> None:
+def draw_legend(sheet: Sheet,
+                entries: list[tuple[str | tuple, str]]) -> None:
     """A key to the line styles, in the annotation column.
+
+    Each entry is a style and its label.  The style is the name of one of
+    LEGEND_STYLES, or a "#rrggbb" for a hole, or the four values
+    (shape, weight, colour, dash) themselves for a line type that belongs to
+    a single sheet rather than to this library.
 
     Without one, the only thing telling a reader that a grey chain-double-dot
     rectangle is an adjacent part and a red one is a component is the colour,
@@ -1290,18 +1456,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     for i, f in enumerate(spec.features):
         obstacles.add_rect(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1), pad=0.8)
         feature_rect[i] = len(obstacles.rects) - 1
-    # The radius callout is drawn after the balloons but occupies its space
-    # regardless, so reserve it now, at exactly the place it will be drawn.
-    if o.corner_radius:
-        _, relbow, rx0, rx1 = _radius_callout(o, board, sheet, view)
-        # Hard: a balloon on the callout hides a dimension, and there is
-        # always somewhere else for a balloon to go.
-        obstacles.add_rect(min(relbow, rx0), board.y1 + 2.0,
-                           max(relbow, rx1), board.y1 + 9.0,
-                           pad=1.2, weight=HARD)
-        obstacles.add_segment(*view.pt(o.width - o.corner_radius * 0.3,
-                                       o.height - o.corner_radius * 0.3),
-                              relbow, board.y1 + 5.0, weight=HARD)
+    reserve_radius_callout(sheet, view, spec, board, obstacles)
 
     if overlay is not None:
         # The phantom part is drawn on this view, so a balloon must keep off it
@@ -1344,46 +1499,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         if p.body_x1 > p.body_x0:
             obstacles.add_rect(*view.pt(p.body_x0, p.body_y0),
                                *view.pt(p.body_x1, p.body_y1), pad=0.8)
-    # The board outline.  A balloon straddling it breaks the one line on the
-    # sheet a reader traces first, so it is hard; but a leader crossing it is
-    # how a balloon in the margin points at a part on the board, so it is not
-    # charged for at all.
     edge_only = Obstacles()
-    for edge in ((0, 0, o.width, 0), (o.width, 0, o.width, o.height),
-                 (o.width, o.height, 0, o.height), (0, o.height, 0, 0)):
-        edge_only.add_segment(*view.pt(edge[0], edge[1]),
-                              *view.pt(edge[2], edge[3]), weight=HARD)
-
-    # The overall dimensions are drawn after the balloons, along the right edge
-    # and along whichever horizontal edge the chain left free, so they are
-    # reserved now, at the place the drawing code below puts them.  The value
-    # is hard -- a leader ruled through "56.00" is as unreadable as a balloon
-    # parked on it -- but the line either side of it is position only.
-    # Reserving the whole band against leaders as well boxed the balloons into
-    # the board's interior, because a leader from a part near one of those two
-    # edges had to cross a band to reach any space at all.
-    band = style.T_DIM + style.descender(style.T_DIM) + style.DIM_TEXT_GAP
-    # The width goes on the horizontal edge the chain did not take.  One
-    # definition of where that is, shared with the drawing code below, because
-    # reserving one place and drawing in another is the recurring bug here.
-    # Its text sits above its own line either way: that is what dims.linear
-    # draws, whichever side of the board the line is on.
-    overall_edge_y = board.y if chain_edge == "top" else board.y1
-    overall_y = overall_edge_y + x_out * -OVERALL_GAP
-    for value, horizontal in ((o.width, True), (o.height, False)):
-        half = style.text_width(f"{value:.2f}", style.T_DIM) / 2
-        if horizontal:
-            mid = (board.x + board.x1) / 2
-            lo, hi = overall_y - 1.0, overall_y + band
-            edge_only.add_rect(board.x, lo, board.x1, hi, pad=1.2, weight=HARD)
-            obstacles.add_rect(mid - half, lo, mid + half, hi,
-                               pad=1.2, weight=HARD)
-        else:
-            mid = (board.y + board.y1) / 2
-            lo, hi = board.x1 + OVERALL_GAP - band, board.x1 + OVERALL_GAP + 1.0
-            edge_only.add_rect(lo, board.y, hi, board.y1, pad=1.2, weight=HARD)
-            obstacles.add_rect(lo, mid - half, hi, mid + half,
-                               pad=1.2, weight=HARD)
+    reserve_overall_dimensions(sheet, view, spec, board, obstacles,
+                               edge_only, chain_edge)
 
     # The ordinate witness lines are drawn after the balloons but stand in
     # their way all the same: a balloon sitting on one reads as though it
@@ -1411,6 +1529,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # LEFT of the view, across the whole board from the hosts, straight
     # through the space the PYNQ-Z2's micro-USB balloon wanted.
     plan_out, plan_left = dim_x_edge, dim_left
+    band = dim_text_band()
     for (edge, _), group in by_edge.items():
         if len(group) < 2:
             continue
@@ -1567,32 +1686,8 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         board.x, leftmost - 9.0, horizontal=False,
         zero_pos=board.y, zero_from=board.x, blockers=blockers)
 
-    # The overall dimensions go on the edges the ordinate chains do not use:
-    # the height up the right, and the width across whichever horizontal edge
-    # the X chain left free.  Stacked outside the chains instead, they had to
-    # clear the chain, its labels and the Pmod spacing dimension, which put the
-    # overall size of the board thirty millimetres away from the board.  On a
-    # free edge they sit close in, with short extension lines, which is where a
-    # reader looks for them.
     del x_extent, y_extent
-    dims.linear(c, (board.x, overall_edge_y), (board.x1, overall_edge_y),
-                x_out * -OVERALL_GAP, horizontal=True, value=o.width)
-    dims.linear(c, (board.x1, board.y), (board.x1, board.y1), OVERALL_GAP,
-                horizontal=False, value=o.height)
-    # The datum sits in the busiest corner of the sheet, so its label goes out
-    # on a leader into the empty wedge below and left of the ordinate chains
-    # rather than next to the marker.
-    dims.datum_marker(c, board.x, board.y, label="")
-
-    if o.corner_radius:
-        r = o.corner_radius
-        tip = view.pt(o.width - r * 0.3, o.height - r * 0.3)
-        # Always names its subject.  On the Pi 3A+ the phantom Pmod HAT
-        # Adapter outline runs within half a millimetre of the board's own, so
-        # the callout has to say which it means; naming it only there left the
-        # same callout worded two ways across the package.
-        label, elbow_x, _, _ = _radius_callout(o, board, sheet, view)
-        dims.leader(c, tip, (elbow_x, board.y1 + 5.0), label)
+    draw_outline_frame(sheet, view, spec, board, chain_edge)
 
     # --- annotation column --------------------------------------------------
     if spec.holes:
@@ -1652,24 +1747,8 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                      "PIN1 Y mm"], rows,
                     ["start", "start", "end", "end", "end", "end"])
 
-    # The legend goes directly under the tables and the notes' tail below it,
-    # at the foot of the column.  Both are measured first so that neither can
-    # take space the other needs.
-    #
-    # Notes carry facts about this board, not an explanation of how to read a
-    # drawing.  The column is finite, and losing a provenance note to make room
-    # for a description of ordinate dimensioning is a bad trade.
-    entries = _legend_entries(spec, overlay)
-    spill = notes_spill_needed(sheet, notes, src_lines, band_cols)
-    want = legend_height(len(entries)) + (spill + 4.0 if spill else 0.0)
-    if sheet.column_remaining < want:
-        raise SystemExit(
-            f"{spec.key}: the annotation column cannot hold both the legend "
-            f"and the notes' tail ({want:.0f} mm wanted, "
-            f"{sheet.column_remaining:.0f} mm left); shorten the notes")
-    draw_legend(sheet, entries)
-    _place_notes_and_sources(sheet, notes, src_lines, columns=band_cols,
-                             spill=spill)
+    place_legend_and_notes(sheet, _legend_entries(spec, overlay), notes,
+                           src_lines, band_cols, spec.key)
 
     sheet.draw_title_block()
     return sheet
