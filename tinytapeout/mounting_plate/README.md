@@ -9,18 +9,20 @@ while holding the Pmod host headers in a single fixed place.
 | `design.py` | Derives the hole pattern from every revision and writes `plate.py` |
 | `verify.py` | Proves the finished plate really does accept every revision |
 | `export_dxf.py` | Writes the four-layer DXF cut file |
-| `output/` | Four sheets, `TT-MP` and three `TT-MP-…`, plus the DXF |
+| `output/` | Four `TT-MP-PLATE-…` sheets, plus the DXF |
 
 | Sheet | |
 |-------|--|
-| `TT-MP` | Fabrication drawing: every hole and slot, tabulated |
-| `TT-MP-FITTING-GUIDE` | Fitting guide: which holes each revision uses |
-| `TT-MP-DRILL-TEMPLATE` | Drill template for the plate, A4 at 1:1 |
-| `TT-MP-CHASSIS-DRILL-TEMPLATE` | Drill template for the chassis it bolts to, A4 at 1:1 |
+| `TT-MP-PLATE` | Fabrication drawing: every hole and slot, tabulated |
+| `TT-MP-PLATE-FITTING-GUIDE` | Fitting guide: which holes each revision uses |
+| `TT-MP-PLATE-DRILL-TEMPLATE` | Drill template for the plate, A4 at 1:1 |
+| `TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` | Drill template for the chassis it bolts to, A4 at 1:1 |
 
-The plate's own fabrication drawing is `TT-MP` with nothing after it: the
-drawing name is the file stem behind the family prefix, and this family's
-prefix *is* the plate. The other three hang off it.
+Every name here says PLATE because every file stem does: the drawing name is
+the file stem in capitals behind the family prefix, and `TT-MP` accounts for
+the `tt-generic-mounting` all four begin with, no more. Stopping the prefix
+one word later would have left the plate's own drawing called `TT-MP`, which
+reads as the family rather than as one sheet of it.
 
 ## The sheets
 
@@ -77,8 +79,8 @@ position, no board overhangs, and the connector faces clear the front edge.
 
 ## Printing the drill templates
 
-`TT-MP-DRILL-TEMPLATE` and `TT-MP-CHASSIS-DRILL-TEMPLATE` are not drawings
-to read, they are gauges to use:
+`TT-MP-PLATE-DRILL-TEMPLATE` and `TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` are
+not drawings to read, they are gauges to use:
 print, tape to the work, punch every cross, drill through. That only works if
 the page leaves the printer at exactly 1:1, and no print dialog does that by
 default. A CUPS queue will tell you what it intends:

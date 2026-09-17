@@ -48,8 +48,11 @@ and lives with it.
   bounding box from the same font metrics the layout used, and reports text
   that collides, has a line running through it, falls outside the frame, or
   drops below the 2.5 mm ISO 3098 floor. It also derives every sheet's drawing
-  name, checks the sheet carries it and measures it against the room in the
-  DRAWING NO cell at that floor, and checks that every sheet appears in the
+  name and reads the sheet back for it: the DRAWING NO cell is found by its
+  own label and measured between its own rules, so a name that does not fit
+  and a cell that says something else are two separate reports and neither can
+  be satisfied by a note elsewhere on the sheet citing another drawing. And it
+  checks that every sheet appears in the
   preview grid and that every reference in it resolves, so adding a sheet
   cannot silently leave the grid showing the wrong set. It found the notes
   block printing over the sources heading on four Raspberry Pi sheets, a datum

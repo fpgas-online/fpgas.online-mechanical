@@ -86,9 +86,9 @@ checker that measures the finished PDFs rather than trusting them.
 
 ## 7. Drill templates  -- DONE
 - [x] A4 portrait 1:1 template for the mounting plate itself
-      (`TT-MP-DRILL-TEMPLATE`)
+      (`TT-MP-PLATE-DRILL-TEMPLATE`)
 - [x] A4 portrait 1:1 template for the chassis the plate bolts to
-      (`TT-MP-CHASSIS-DRILL-TEMPLATE`)
+      (`TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE`)
 - [x] Printed scale bar per axis, so a scaled print is caught before drilling
 - [x] `tools/check_drill_template.py`: measures the PDFs back and proves
       every hole lands where the plate data puts it
@@ -101,7 +101,8 @@ checker that measures the finished PDFs rather than trusting them.
       references and `accessories/compare.py` all ask for it; no drawing name
       is written out by hand anywhere
 - [x] DRAWING NO widened to half the title block, measured against the longest
-      name at the ISO 3098 floor; `check_sheets.py` fails on an overflow
+      name at the ISO 3098 floor; `check_sheets.py` reads the cell back and
+      fails on an overflow or on a sheet not carrying its own name
 - [x] `check_pdfs.py` reads the bound copies: every page is a committed sheet
       and every bookmark opens with that sheet's name
 - [ ] The open pull requests each rename their own sheets on top of this

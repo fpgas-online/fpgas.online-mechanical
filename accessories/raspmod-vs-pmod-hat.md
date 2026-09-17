@@ -5,11 +5,11 @@ opposite ways. The [Digilent Pmod HAT Adapter](output/digilent-pmod-hat-adapter.
 (`ACC-DIGILENT-PMOD-HAT-ADAPTER`) is a HAT: it sits on the Pi's 40-pin header,
 and its three hosts take whatever Pmod peripheral you plug into them. Pat
 Deegan's [Raspmod](output/raspmod.pdf) (`ACC-RASPMOD`, "TT Demoboard To
-Raspi") is a
-frontplate for a Tiny Tapeout demoboard: it plugs into the demoboard's three
-Pmod hosts, passes them through to three hosts of its own, and hands every
-signal to the Pi over a ribbon cable. One makes the Pi a Pmod host; the other
-makes the Pi the thing on the far end of a Tiny Tapeout chip's ports.
+Raspi") is a frontplate for a Tiny Tapeout demoboard: it plugs into the
+demoboard's three Pmod hosts, passes them through to three hosts of its own,
+and hands every signal to the Pi over a ribbon cable. One makes the Pi a Pmod
+host; the other makes the Pi the thing on the far end of a Tiny Tapeout
+chip's ports.
 
 <table>
 <tr>
@@ -27,9 +27,10 @@ makes the Pi the thing on the far end of a Tiny Tapeout chip's ports.
 The tables on this page are written by `compare.py` from the same data the
 two sheets are drawn from, `parts.py` and `raspmod.py`, so they cannot
 disagree with the drawings. The Digilent figures are the ones the adapter's
-own sheet carries: the HAT outline and holes from the Raspberry Pi HAT specification, the host
-positions measured from Digilent's product photo to about +/-0.75 mm, and the
-pin map transcribed from Digilent's reference manual. The Raspmod figures are
+own sheet carries: the HAT outline and holes from the Raspberry Pi HAT
+specification, the host positions measured from Digilent's product photo to
+about +/-0.75 mm, and the pin map transcribed from Digilent's reference
+manual. The Raspmod figures are
 read from its KiCad board file, pin map included.
 
 ## Mechanics

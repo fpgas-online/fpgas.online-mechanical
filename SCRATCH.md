@@ -1160,14 +1160,37 @@ table beside it giving each family its prefix and that lead:
 | `raspberry-pi` | `RPI` | `rpi` |
 | `fpga` | `FPGA` | -- |
 | `accessories` | `ACC` | -- |
-| `mounting-plate` | `TT-MP` | `tt-generic-mounting-plate` |
+| `mounting-plate` | `TT-MP` | `tt-generic-mounting` |
 
 Dots become `p` and underscores hyphens on the way into a file stem, which is
 `slug()` and is how the stems were already written, so `v2.2.5` is `V2P2P5`.
-An empty remainder is not a special case: the name is the non-empty parts
-joined by a hyphen, so the mounting plate's own fabrication drawing, whose
-whole stem is the lead, comes out `TT-MP` -- the family's principal sheet,
-with the three detail sheets hanging off it.
+
+**Where the mounting plate's lead stops.** The first attempt took the whole of
+`tt-generic-mounting-plate`, which left the plate's own fabrication drawing
+with nothing but the prefix and called it `TT-MP`. Three things were wrong
+with that, all of them found in review:
+
+- `TT-MP` is a substring of `TT-MP-FITTING-GUIDE`, so a check asking "does
+  this sheet carry its own name" could be satisfied by the sheet's *note*
+  citing the fitting guide. Deleting the title block's text element from the
+  plate SVG and re-running the check proved it: the check still passed.
+- "Work from the coordinates on TT-MP" reads as a pointer at the family, which
+  is four drawings, not at the one that governs every dimension.
+- The issue's own worked example was `TT-MP-PLATE`.
+
+So the lead is `tt-generic-mounting`, one word shorter. Every stem keeps its
+`plate`, the four sheets are `TT-MP-PLATE`, `TT-MP-PLATE-FITTING-GUIDE`,
+`TT-MP-PLATE-DRILL-TEMPLATE` and `TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE`, and no
+sheet's name is only its prefix. That is a change to the one table, not a case
+in the rule: a stem that is entirely its family's lead now refuses to be named
+at all, which says what to do about it -- shorten the lead -- instead of
+quietly handing back the prefix.
+
+`TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` is then the longest name in the set at
+**68.27 mm**, ahead of `TT-DB-TT123-V2P2P5-TT123-V2P2P6` at 61.75 mm, and it
+fits the 79.30 mm cell with 11 mm to spare. It fits the drill templates' split
+header line too, leaving the chassis title at 3.5 mm and the plate title at
+2.5 mm, which are the sizes both had before any of this.
 
 The whole set, 21 sheets:
 
@@ -1190,17 +1213,20 @@ The whole set, 21 sheets:
 | `ACC-02` | `ACC-WAVESHARE-POE-USBC` | `accessories/output/waveshare-poe-usbc` |
 | `ACC-03` | `ACC-GENERIC-POE-MICROUSB` | `accessories/output/generic-poe-microusb` |
 | `ACC-04` | `ACC-RASPMOD` | `accessories/output/raspmod` |
-| `TT-MP-01` | `TT-MP` | `tinytapeout/mounting_plate/output/tt-generic-mounting-plate` |
-| `TT-MP-02` | `TT-MP-FITTING-GUIDE` | `…/tt-generic-mounting-plate-fitting-guide` |
-| `TT-MP-03` | `TT-MP-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-drill-template` |
-| `TT-MP-04` | `TT-MP-CHASSIS-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-chassis-drill-template` |
+| `TT-MP-01` | `TT-MP-PLATE` | `tinytapeout/mounting_plate/output/tt-generic-mounting-plate` |
+| `TT-MP-02` | `TT-MP-PLATE-FITTING-GUIDE` | `…/tt-generic-mounting-plate-fitting-guide` |
+| `TT-MP-03` | `TT-MP-PLATE-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-drill-template` |
+| `TT-MP-04` | `TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-chassis-drill-template` |
 
 **Why the file stem and not something shorter.** The argument for it is not
-brevity, it is that uniqueness stops being a rule anyone has to remember. Two
-sheets cannot share a name because two sheets cannot share a file, and the
-name and the path convert into each other by hand, so a reference to
-`FPGA-PYNQ-Z2` tells a reader where to find it. The alternatives all gave that
-up:
+brevity, it is that a collision needs nobody's attention. Two sheets in a
+family can only collide if their stems differ by something `slug()` and
+`upper()` throw away -- `rpi5`, `rpi-5` and `rpi_5` all give `RPI-5` -- so it
+is very nearly the file system's guarantee but not quite, which is why
+`check_sheets.py` checks for duplicates rather than assuming there can be
+none. The name and the path also convert into each other by hand, so a
+reference to `FPGA-PYNQ-Z2` tells a reader where to find it. The alternatives
+all gave that up:
 
 - **A per-sheet name declared in the data**, beside the title. Collision-free
   in the same way, but it is a second string to keep in step with the file
@@ -1236,16 +1262,47 @@ sized against.
 
 The drill templates have no title block. Their header line carried the drawing
 number, the version, the page size and the scale, right-aligned, beside a
-title that shrank to fit whatever was left; `TT-MP-DRILL-TEMPLATE` beside the
-version left 69.2 mm for a title needing 70.2 mm at the floor. The line is
-split instead -- what the sheet is, with the page size and scale, on the title
-line; what it was drawn from under it -- which costs no height and takes the
-plate template's title from 2.5 mm up to 3.5 mm.
+title that shrank to fit whatever was left. While the number was eight
+characters that line was not tight at all: `TT-MP-03` with the version left
+**91.93 mm** for the plate template's title, which needs 70.25 mm at the ISO
+floor, and the same for the chassis title's 52.57 mm. The names are what broke
+it. `TT-MP-PLATE-DRILL-TEMPLATE` on that line leaves **59.97 mm** for that
+70.25 mm title, and the chassis 45.49 mm for 52.57 mm: both short, the plate
+by more.
 
-**What now catches this.** `check_sheets.py` derives every sheet's name,
-requires the sheet to carry it, and measures it against
-`Sheet.drawing_no_room()`; with the cell put back to a quarter it reports
-those same eight sheets, 38.74 to 61.75 mm of name in 38.05 mm of cell.
+So the line is split -- what the sheet is, with the page size and scale, on
+the title line; what it was drawn from under it -- which costs no height and
+leaves both titles at the size they already had, 2.5 mm for the plate and
+3.5 mm for the chassis.
+
+Two things were said about this before and were wrong. The figure quoted was
+"69.2 mm for a title needing 70.2 mm", which is only reachable from a render
+with uncommitted source, where the version carries its `+`; no committed sheet
+ever had it. And the sheet named as the tight one was the chassis, when it is
+the plate: the plate template has the long title.
+
+The defect worth recording is the one that would have shipped in silence.
+`fit_size` returns the ISO floor when nothing on its ladder fits, so the old
+line would have drawn the title straight through the stamp rather than
+refusing. `_fit_beside` refuses. It is *not* a face mismatch -- `fit_size`
+defaults to sans bold and the title is drawn sans bold -- but the two faces
+are far enough apart that measuring in the wrong one would be invisible until
+it printed: "DRILL TEMPLATE - MOUNTING PLATE" at the 2.5 mm floor is 70.25 mm
+in sans bold and 56.21 mm in condensed regular, so `_fit_beside` passes the
+face and weight through to both calls instead of leaving them to two different
+sets of defaults.
+
+**What now catches this.** `check_sheets.py` derives every sheet's name and
+then reads the sheet back: it finds the DRAWING NO cell by its own label,
+measures the cell between the rules that were actually drawn -- 79.30 mm on
+all nineteen sheets that have one, so a family overriding the column width
+could not slip past -- and reports separately if the name does not fit and if
+the cell does not say it. Reading the cell rather than searching the file is
+what stops a note citing another drawing from standing in for the title block,
+which is exactly what `TT-MP` did; a sheet doctored to read `FPGA-01` in the
+cell while a note says `FPGA-ARTY-A7` now fails, where a substring test
+passed. With the cell put back to a quarter of the block it reports eight
+sheets over, 38.74 to 61.75 mm of name in 38.05 mm of cell.
 `check_pdfs.py` had never read a bound copy at all, which the note above on
 reproducing the set on a second machine says outright; it now matches every
 page of every bundle against the committed sheet PDFs by content stream and
