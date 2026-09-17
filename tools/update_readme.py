@@ -25,6 +25,7 @@ from accessories.parts import GENERIC_POE, PMOD_HAT, WAVESHARE_POE  # noqa: E402
 from accessories.raspmod import RASPMOD                       # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE                              # noqa: E402
 from fpga.boards import BOARDS as FPGA                        # noqa: E402
+from fpga.light_pipe.adapter import ADAPTER as LIGHT_PIPE     # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
 from tools.generate_diagrams import FPGA_ORDER, RPI_ORDER, tt_sheets  # noqa: E402
@@ -71,6 +72,9 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
         ("FPGA development boards", "fpga", COLUMNS,
          named("fpga", [(slug(k), FPGA[k].title, FPGA[k].subtitle)
                         for k in FPGA_ORDER])),
+        ("Arty A7 Ethernet light pipe", "light-pipe", COLUMNS,
+         named("light-pipe", [(LIGHT_PIPE.key, LIGHT_PIPE.title,
+                               LIGHT_PIPE.subtitle)])),
         ("Accessories", "accessories", COLUMNS,
          named("accessories",
                [(PMOD_HAT_STEM, PMOD_HAT.title, PMOD_HAT.subtitle),

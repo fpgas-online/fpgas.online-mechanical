@@ -36,11 +36,13 @@ data:
 	$(EXTRACT) --with cadquery python fpga/extract.py
 	$(UV) python accessories/extract.py
 	$(UV) python tinytapeout/mounting_plate/design.py
+	$(EXTRACT) python fpga/light_pipe/design.py
 
-## diagrams: render every sheet as SVG, PDF and PNG, plus the plate cut file
+## diagrams: render every sheet as SVG, PDF and PNG, plus the cut files
 diagrams:
 	$(DRAW) python tools/generate_diagrams.py
 	$(UV) --with ezdxf python tinytapeout/mounting_plate/export_dxf.py
+	$(UV) --with cadquery python fpga/light_pipe/export_step.py
 	$(DRAW) python tools/update_readme.py
 	$(UV) python accessories/compare.py
 
@@ -48,6 +50,7 @@ diagrams:
 check: diagrams
 	$(DRAW) python tools/check_sheets.py
 	$(UV) python tinytapeout/mounting_plate/verify.py
+	$(UV) python fpga/light_pipe/verify.py
 	$(DRAW) python tools/check_balloons.py
 	$(UV) --with pdfplumber --with pillow python tools/check_drill_template.py
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
