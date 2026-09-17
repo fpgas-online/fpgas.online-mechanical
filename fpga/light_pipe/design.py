@@ -47,6 +47,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
+from fpga.boards import BOARDS  # noqa: E402
 from tools.dump_rpi_pdf import rectangles  # noqa: E402
 
 SRC = ROOT / "tmp" / "src"
@@ -83,9 +84,20 @@ SPRING_PROUD = 1.40         # 0.055 +/-0.020, EMI spring height above a face
 SPRING_PROUD_TOL = 0.51
 SPRING_FRONT = 0.64         # 0.025, how far the side springs wrap forward
 SPRING_TOP_LEN = 6.35       # 0.250, how far back the top springs run
-FACE_TO_PEG = 7.75          # 0.305, front face to the board-lock pegs
+#: 0.305, from the jack's frontmost point to the board-lock pegs.  The side
+#: view's bottom stack is dimensioned from those pegs, and this one runs
+#: forward to the tip of the side EMI spring where it wraps round the front
+#: corner -- not to the housing's front face, which is SPRING_FRONT behind it.
+#: Read that way it agrees with Digilent's own plot of the jack to 0.08 mm;
+#: read to the front face it disagrees by 0.6.
+FACE_TO_PEG = 7.75
 PEG_SPACING_BEL = 16.13     # 0.635, between the two Ø1.57 peg holes
 PEG_DIA_BEL = 1.57          # Ø0.062, 2 places
+
+#: How far two readings of the jack's front face may differ before one of
+#: them is being misread.  Digilent's plot bodies are good to about
+#: +/-0.3 mm, which fpga/extract.py says on the Arty sheet.
+PLOT_TOL = 0.3
 
 #: Bel's title block: ``.XXX  +/-0.010`` inch on a three-decimal inch
 #: dimension.  Every figure above is a three-decimal inch dimension, so this
@@ -159,7 +171,7 @@ def read_schematic() -> str:
                 continue
             flat = text.replace("\n", " ")
             if JACK_PART in flat and JACK_DESIGNATOR in flat:
-                return (f"sheet {n} of {len(pdf.pages)}, ETHERNET: "
+                return (f"sheet {n} of {len(pdf.pages)} (ETHERNET): "
                         f"{JACK_DESIGNATOR} is {JACK_PART}")
     raise SystemExit(
         f"{ARTY_SCH}: no sheet carries both {JACK_DESIGNATOR} and "
@@ -464,6 +476,18 @@ def read_pipe() -> str:
 # ---------------------------------------------------------------------------
 
 def read_board() -> dict:
+    """Where the jack sits on the Arty A7.
+
+    Two independent readings, because neither is good enough alone.  The
+    DXF's board-lock pads give the centre plane exactly and identify the part
+    -- their spacing has to be Bel's 0.635 [16.13] -- but say nothing about
+    where the front face is.  Digilent's plot of the jack does: read against
+    Bel's body depth it is the jack over its EMI springs, so the face is
+    SPRING_FRONT behind the plot's front edge and BODY_D in front of its back
+    one, and those two readings of the same face have to agree.  Bel's 7.75
+    from the pegs is then a third opinion, and it is only worth having
+    because it comes from neither of the first two.
+    """
     import ezdxf
 
     if not ARTY_DXF.exists():
@@ -492,9 +516,26 @@ def read_board() -> dict:
         raise SystemExit(
             f"the board's board-lock pads are {spacing} mm apart and Bel's "
             f"drawing says {PEG_SPACING_BEL}; these are not the same jack")
+
+    jack = next(f for f in BOARDS["arty-a7"].features if f.key == "ethernet")
+    from_front = jack.x0 + SPRING_FRONT
+    from_back = jack.x1 - BODY_D
+    if abs(from_front - from_back) > PLOT_TOL:
+        raise SystemExit(
+            f"Digilent's plot puts the jack's front face at {from_front:.3f} "
+            f"read from its front and {from_back:.3f} from its back; the plot "
+            "is not the jack over its EMI springs after all")
+    face_x = round((from_front + from_back) / 2, 3)
+    from_peg = round(px0 - (FACE_TO_PEG - SPRING_FRONT), 3)
+    if abs(from_peg - face_x) > PLOT_TOL:
+        raise SystemExit(
+            f"Bel's 7.75 from the board locks puts the front face at "
+            f"{from_peg}, Digilent's plot at {face_x}")
     return dict(peg_x=px0, centre_y=round((py0 + py1) / 2, 3),
-                spacing=spacing,
-                face_x=round(px0 - FACE_TO_PEG, 3))
+                spacing=spacing, face_x=face_x,
+                face_from_front=round(from_front, 3),
+                face_from_back=round(from_back, 3),
+                face_from_peg=from_peg)
 
 
 # ---------------------------------------------------------------------------
@@ -678,6 +719,8 @@ def emit(jack, board, adapter, provenance) -> str:
         f"BOARD_KEY = 'arty-a7'",
         f"JACK_CENTRE_Y = {board['centre_y']}",
         f"JACK_FACE_X = {board['face_x']}",
+        f"JACK_FACE_FROM_PLOT = {board['face_from_front']}, {board['face_from_back']}",
+        f"JACK_FACE_FROM_PEG = {board['face_from_peg']}",
         f"PEG_X = {board['peg_x']}",
         f"PEG_SPACING_DXF = {board['spacing']}",
         f"PEG_SPACING_BEL = {PEG_SPACING_BEL}",
@@ -760,6 +803,8 @@ def emit(jack, board, adapter, provenance) -> str:
         schematic=provenance["schematic"], pipe=provenance["pipe"],
         aniso=f"{abs(provenance['aniso'] - 1) * 100:.2f}",
         spacing=board["spacing"], face_x=board["face_x"],
+        face_front=board["face_from_front"], face_back=board["face_from_back"],
+        face_peg=board["face_from_peg"],
         centre_y=board["centre_y"], peg_x=board["peg_x"],
     ))
     return "\n".join(out)
@@ -781,24 +826,22 @@ ADAPTER = BoardSpec(
     sources=(
         Source(label="Board schematic",
                ref="{arty_sch_url}",
-               note="Digilent, Arty A7 rev E.0, 2018-01-09: {schematic}."),
+               note="Digilent, Arty A7 rev E.0, {schematic}."),
         Source(label="Jack drawing",
                ref="{bel_url}",
-               note="Bel MagJack 08B0-1X1T-36-F, drawing 08B01X1T36-F rev E, 2018-03-18. Stated dimensions are its own; the LED windows, the plug aperture, the latch keyway and the EMI springs are measured off its front view, whose plot scale is recovered per axis from the 0.642 [16.31] and 0.531 [13.49] it dimensions (the axes agree to {aniso} %)."),
+               note="Bel 08B01X1T36-F rev E. STATED figures are its own, +/-0.254 mm; MEASURED ones are scaled off its front view, per axis from the 16.31 and 13.49 it states, and good to +/-0.20 mm."),
         Source(label="Board drawing",
                ref="{arty_zip}",
-               note="Digilent, Arty_A7_DXF.DXF: the two Ø1.575 mm board-lock pads at x = {peg_x} put the jack's centre line at y = {centre_y}. They are {spacing} mm apart, against Bel's 0.635 [16.13], so the two drawings are of the same jack; Bel's 0.305 [7.75] from the pegs to the front face puts that face at x = {face_x}."),
+               note="Digilent, Arty_A7_DXF.DXF and its PDF plot: board locks {spacing} mm apart against Bel's 16.13, so the centre plane is y = {centre_y}; front face x = {face_x}, the mean of three readings agreeing to 0.14 mm ({face_front} / {face_back} / {face_peg})."),
         Source(label="Light pipe drawing",
                ref="{bivar_url}",
-               note="Bivar PLP2-XXX rev Y, 2018-07-06, press-fit panel mount front mount light pipe: {pipe}. The bore is built from its Ø0.115 +0.003/-0.002 recommended mounting hole and its 0.047-0.093 in panel thickness."),
+               note="Bivar PLP2-XXX rev Y: Ø2.8 pipe on Ø3.1 ribs, Ø3.3 flange, Ø0.115 in mounting hole, 0.047-0.093 in panel; {pipe}."),
     ),
     notes=(
-        "The adapter slides onto the front of J9 and stops against its front face. Nothing fixes it but the jack's own side EMI springs, which stand 1.40 +/-0.51 mm proud of the shield and bear on the skirts: over that whole band the springs are deflected and the shield itself never touches.",
-        "Print it upside down, on the top face. Every other face then rises from the plate, the two 45 degree facets and the two bores are the only overhangs, and neither needs support.",
-        "Bore diameters are for a printed hole. A printer that comes out undersize will not take the pipe: ream the press-fit length to Bivar's Ø2.92 +0.08/-0.05 and test the fit on a scrap before printing the part.",
-        "The pipe's tip is 0.30 mm in front of the jack's front face and its light crosses that gap in air. Nothing of the adapter touches the LED windows: the pocket clears both of them.",
-        "A plug and a plain boot pass under the cheeks. A snagless boot whose hood stands above the plug's own top face within 6 mm of the jack will foul them; the note on the cheek gives the height that is clear.",
-        "MEASURED figures come off Bel's front view and are good to about +/-0.20 mm. Figures Bel dimensions carry its own +/-0.254 mm (.XXX +/-0.010 in). Both are wider than the printed part's tolerance, and the clearances are sized for them.",
+        "Nothing fixes the adapter but J9's own side EMI springs, 1.40 +/-0.51 mm proud of the shield, bearing on the skirts: deflected over that whole band, while the shield never touches.",
+        "Print upside down, on the top face: the facets and the bores are then 45 degree overhangs and nothing needs support.",
+        "Ream the press fit to Bivar's Ø2.92 +0.08/-0.05 if the printed hole comes out undersize.",
+        "A plug and a plain boot pass under the cheeks; a snagless boot standing proud of the plug's own top face within 6 mm of the jack will foul them.",
     ),
 )
 '''
@@ -819,8 +862,10 @@ def main() -> None:
           f"|y| <= {jack['aperture'][0]}, z <= {jack['aperture'][2]}; keyway "
           f"|y| <= {jack['keyway'][0]}")
     print(f"board     : pegs {board['spacing']} mm apart (Bel "
-          f"{PEG_SPACING_BEL}), centre line y = {board['centre_y']}, front "
-          f"face x = {board['face_x']}")
+          f"{PEG_SPACING_BEL}), centre line y = {board['centre_y']}")
+    print(f"front face: x = {board['face_x']} (plot "
+          f"{board['face_from_front']} / {board['face_from_back']}, Bel's "
+          f"7.75 from the pegs {board['face_from_peg']})")
     print(f"adapter   : bore at y = {adapter['bore']['y']}, tip at "
           f"({adapter['bore']['x']}, {adapter['bore']['z']}), "
           f"Ø{adapter['bore']['dia']} at {BORE_ANGLE:g} degrees")
