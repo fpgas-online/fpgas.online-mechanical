@@ -210,6 +210,14 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
         f"deg from the image area, {optics.DIAGONAL_FROM_ARRAY:.2f} from the "
         "pixel array.")
 
+    # The sheets are lettered in ASCII, and the pages they quote are not.
+    # Nothing here is a character-for-character quote, so say so once rather
+    # than let a reader take "1.4 um x 1.4 um" for what the page prints.
+    notes.append(
+        "Quotes here are transliterated to ASCII: x for the multiplication "
+        "sign, um for micro, infinity for its symbol. The cached pages carry "
+        "them as printed.")
+
     for letter, fr in zip(FRAME_LETTERS, frames):
         if fr.target.note:
             notes.append(f"Frame {letter}, {fr.target.label}: "
