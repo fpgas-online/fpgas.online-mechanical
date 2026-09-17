@@ -41,6 +41,7 @@ whether a constant has a reader, not whether its derivation is elegant.
 from __future__ import annotations
 
 import datetime
+import re
 import subprocess
 from collections import OrderedDict
 from pathlib import Path
@@ -136,6 +137,50 @@ def normalise_dxf(doc) -> None:
     """
     doc.classes.add_required_classes(doc.dxfversion)
     doc.classes.classes = OrderedDict(sorted(doc.classes.classes.items()))
+
+
+#: The export counter in OpenCascade's own product name; see
+#: ``normalise_step``.
+STEP_PRODUCT_N = re.compile(r"(Open CASCADE STEP translator [\d.]+) \d+")
+
+
+def normalise_step(path: Path, *, name: str) -> Path:
+    """Pin the header of a STEP file written by OpenCascade, in place.
+
+    Its FILE_NAME entry carries the moment of the export and the absolute
+    path the exporter was handed, neither of which is a property of the
+    solid.  The path also leaks whichever working copy the file was written
+    from, so a second clone could not reproduce it even on the same day.
+    Both are replaced: the name by the file's own stem, the timestamp by
+    EPOCH, in the ISO 8601 form STEP uses.
+
+    The rest of the header -- the schema, the preprocessor's version string
+    -- is left alone.  It does not move between runs, and unlike a clock it
+    says something about the file: which exporter's interpretation of AP214
+    a reader is being handed.
+
+    One thing outside the header moves too, and is pinned with it: the
+    PRODUCT entity OpenCascade writes is named "Open CASCADE STEP translator
+    <version> <n>", where n counts the exports made by this *process*.  One
+    export per process makes it 1 and that is what the committed file
+    carries, but that is a property of how the exporter is called rather than
+    of the solid, and a second export in one process would renumber a file
+    whose geometry had not changed.
+    """
+    stamp = EPOCH.strftime("%Y-%m-%dT%H:%M:%S")
+    out, done = [], False
+    for line in path.read_text().splitlines(keepends=True):
+        if not done and line.startswith("FILE_NAME("):
+            head, _, tail = line.partition("',")
+            _, _, rest = tail.partition("',")
+            out.append(f"FILE_NAME('{name}','{stamp}',{rest}")
+            done = True
+        else:
+            out.append(line)
+    if not done:
+        raise SystemExit(f"{path}: no FILE_NAME line to pin")
+    path.write_text(STEP_PRODUCT_N.sub(r"\1 1", "".join(out)))
+    return path
 
 
 # -- what version of the source a sheet was drawn from ----------------------
