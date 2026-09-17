@@ -24,30 +24,30 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-tt123-v2p2p5-v2p2p6.pdf"><img src="output/previews/tt-demo-board-tt123-v2p2p5-v2p2p6.png" width="270" alt="TT-DB-TT123-V2P2P5-V2P2P6 DB mpw v2.2.5 / DB mpw v2.2.6"></a><br>
-<b>TT-DB-TT123-V2P2P5-V2P2P6</b> DB mpw v2.2.5 / DB mpw v2.2.6<br>mpw-mb1 rev 2.2.5 and 2.2.6
+<a href="output/tt-demo-board-tt123-v2p2p5-v2p2p6.pdf"><img src="output/previews/tt-demo-board-tt123-v2p2p5-v2p2p6.png" width="270" alt="TT-DB-TT123 DB mpw v2.2.5 / DB mpw v2.2.6"></a><br>
+<b>TT-DB-TT123</b> DB mpw v2.2.5 / DB mpw v2.2.6<br>mpw-mb1 rev 2.2.5 and 2.2.6
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-v1p2p1-v1p2p3.pdf"><img src="output/previews/tt-demo-board-v1p2p1-v1p2p3.png" width="270" alt="TT-DB-V1P2P1-V1P2P3 DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
-<b>TT-DB-V1P2P1-V1P2P3</b> DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.1, 1.2.2 and 1.2.3
+<a href="output/tt-demo-board-v1p2p1-v1p2p3.pdf"><img src="output/previews/tt-demo-board-v1p2p1-v1p2p3.png" width="270" alt="TT-DB-V121 DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
+<b>TT-DB-V121</b> DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.1, 1.2.2 and 1.2.3
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-V2P0P1-V2P1P0 DB 06+ v2.0.1 / DB 06+ v2.1.0"></a><br>
-<b>TT-DB-V2P0P1-V2P1P0</b> DB 06+ v2.0.1 / DB 06+ v2.1.0<br>tinytapeout-demo rev 2.0.1 and 2.1.0
+<a href="output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-V201 DB 06+ v2.0.1 / DB 06+ v2.1.0"></a><br>
+<b>TT-DB-V201</b> DB 06+ v2.0.1 / DB 06+ v2.1.0<br>tinytapeout-demo rev 2.0.1 and 2.1.0
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-v2p1p2.pdf"><img src="output/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-V2P1P2 DB 06+ v2.1.2"></a><br>
-<b>TT-DB-V2P1P2</b> DB 06+ v2.1.2<br>tinytapeout-demo rev 2.1.2
+<a href="output/tt-demo-board-v2p1p2.pdf"><img src="output/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-V212 DB 06+ v2.1.2"></a><br>
+<b>TT-DB-V212</b> DB 06+ v2.1.2<br>tinytapeout-demo rev 2.1.2
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-v3p2.pdf"><img src="output/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-V3P2 DB ETR v3.2"></a><br>
-<b>TT-DB-V3P2</b> DB ETR v3.2<br>tinytapeout-demo rev 3.2
+<a href="output/tt-demo-board-v3p2.pdf"><img src="output/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-V32 DB ETR v3.2"></a><br>
+<b>TT-DB-V32</b> DB ETR v3.2<br>tinytapeout-demo rev 3.2
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-v3p3.pdf"><img src="output/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-V3P3 DB ETR v3.3"></a><br>
-<b>TT-DB-V3P3</b> DB ETR v3.3<br>tinytapeout-demo rev 3.3
+<a href="output/tt-demo-board-v3p3.pdf"><img src="output/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-V33 DB ETR v3.3"></a><br>
+<b>TT-DB-V33</b> DB ETR v3.3<br>tinytapeout-demo rev 3.3
 </td>
 </tr>
 </table>
