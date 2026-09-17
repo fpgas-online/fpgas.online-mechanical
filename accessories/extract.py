@@ -12,7 +12,8 @@ exists for them.
 
 The pin map comes from the same file as the geometry: KiCad writes each pad's
 net name into the board, so the table in ``raspmod-vs-pmod-hat.md`` and the
-positions on ACC-04 cannot disagree about which header is which.
+positions on the Raspmod sheet cannot disagree about which header is
+which.
 
 The source is expected under ``tmp/src``; ``make fetch`` clones it.
 

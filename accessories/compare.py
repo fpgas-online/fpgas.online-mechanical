@@ -2,8 +2,10 @@
 """Rewrite the tables in ``raspmod-vs-pmod-hat.md`` from the data modules.
 
 The page compares the two ways of putting Pmod ports on a Raspberry Pi: the
-Digilent Pmod HAT Adapter (ACC-01, hand-curated in ``parts.py``) and Pat
-Deegan's Raspmod (ACC-04, generated from its board file into ``raspmod.py``).
+Digilent Pmod HAT Adapter (hand-curated in ``parts.py``) and Pat Deegan's
+Raspmod (generated from its board file into ``raspmod.py``).  Each drawing is
+named by ``tools.layout``, so the table's Drawing row cannot drift from the
+title blocks.
 Its prose is written by hand; its tables are not, because a pin map copied
 into a document by hand is a pin map that drifts from the data the drawings
 are made from.  Everything between a pair of ``<!-- name:begin -->`` and
@@ -31,6 +33,7 @@ sys.path.insert(0, str(ROOT))
 from accessories.parts import PMOD_HAT, PMOD_HAT_PINS  # noqa: E402
 from accessories.raspmod import PI_HEADER, PORT_PINS, RASPMOD  # noqa: E402
 from tinytapeout.boards import BOARDS as TT  # noqa: E402
+from tools.layout import PMOD_HAT_SHEET, drawing_name  # noqa: E402
 
 PAGE = ROOT / "accessories" / "raspmod-vs-pmod-hat.md"
 
@@ -153,7 +156,7 @@ def mechanics_table() -> list[str]:
         return "; ".join(f"{p.label} ({p.cx:.2f}, {p.cy:.2f})" for p in ps)
 
     rows = [
-        ["Drawing", "ACC-01", "ACC-04"],
+        ["Drawing", PMOD_HAT_SHEET, drawing_name("accessories", rm.key)],
         ["Outline", f"{hat.outline.width:.1f} x {hat.outline.height:.1f} mm, "
                     f"R{hat.outline.corner_radius:.0f} corners",
          f"{rm.outline.width:.1f} x {rm.outline.height:.1f} mm, "
