@@ -42,8 +42,10 @@ The extractors are not here. Each lives with its subject:
 ## Checks
 
 Each has caught a real defect. `make check` runs all but `crosscheck_gerber.py`,
-which needs network. A seventh, `verify.py`, is specific to the mounting plate
-and lives with it.
+which needs network. Two more are specific to a made part and live with it, a
+`verify.py` each: the mounting plate's, and the Ethernet light pipe's, which
+proves the cable still fits, the pipes see the LED windows and the jack's own
+springs hold the part on.
 
 - **`check_sheets.py`** re-reads the generated SVGs, recomputes every text
   bounding box from the same font metrics the layout used, and reports text

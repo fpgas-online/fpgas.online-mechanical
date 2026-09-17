@@ -308,7 +308,7 @@ never answered the question a reader actually has, which is which version of
 the data the drawing was made from. A `+` on the end means it was rendered
 with uncommitted changes.
 
-Seven checks run over the output and each has caught a real defect, from text
+Eight checks run over the output and each has caught a real defect, from text
 colliding on a sheet to a mounting hole no M3 screw actually fits.
 [`tools/README.md`](tools/README.md) says what each one does and what it
 found.
