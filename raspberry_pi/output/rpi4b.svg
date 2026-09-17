@@ -316,7 +316,7 @@
 <text x="28.542" y="263.5012" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the HDMI shell. HDMI connectors are not drawn.</text>
 <text x="24" y="269.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
 <text x="28.542" y="269.028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pmod HAT Adapter host positions are DERIVED, good to about</text>
-<text x="28.542" y="273.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">+/-0.75 mm; drawing ACC-PMOD-HAT has the derivation.</text>
+<text x="28.542" y="273.5547" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">+/-0.75 mm; drawing ACC-HAT-PMOD has the derivation.</text>
 <text x="133.5" y="184.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
 <line x1="133.5" y1="185.9" x2="235" y2="185.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="133.5" y="190.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">8.</text>
@@ -339,7 +339,7 @@
 <text x="244.6" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">generated</text>
 <line x1="284.25" y1="263" x2="284.25" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="285.85" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">VERSION</text>
-<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-171-g3d6831c</text>
+<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-175-g40b2741</text>
 <line x1="325.5" y1="263" x2="325.5" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="327.1" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">UNITS</text>
 <text x="327.1" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">mm</text>
