@@ -219,7 +219,18 @@ def check_bundle(bundle: Bundle, data: bytes | None = None) -> list[str]:
             return [f"no {bundle.path.name} staged; the generator binds one"]
 
     bad: list[str] = []
-    reader = PdfReader(io.BytesIO(data))
+    # A bundle truncated, emptied or half-written is exactly the kind of
+    # thing this check exists to find, and pypdf answers it by raising --
+    # EmptyFileError, PdfStreamError, PdfReadError, and whatever it adds
+    # next.  Caught as one problem, because a run that stack-traces reports
+    # nothing about the other bundles and counts nothing at the foot.
+    try:
+        reader = PdfReader(io.BytesIO(data))
+    except Exception as exc:
+        return [f"{bundle.path.name} is {len(data)} bytes that pypdf "
+                f"cannot read as a PDF ({type(exc).__name__}: {exc}); it is "
+                "not a bound copy at all -- rebind with make diagrams and "
+                "stage it"]
 
     if len(reader.pages) != len(bundle.pages):
         bad.append(f"{len(reader.pages)} pages, but the generator binds "
@@ -249,10 +260,11 @@ def check_bundle(bundle: Bundle, data: bytes | None = None) -> list[str]:
         # The drawing can come through intact on a page of the wrong size,
         # which is the same lie as a sheet PDF that does not print 1:1 --
         # checked above for the sheets, and binding is another chance at it.
-        if box(bound) != box(want_page):
-            bad.append(f"page {n} has MediaBox {box(bound)} mm and "
-                       f"{rel(pdf)} has {box(want_page)} mm, so the bound "
-                       "page would not print at the size the sheet does")
+        got_box, want_box = box(bound), box(want_page)
+        if got_box != want_box:
+            bad.append(f"page {n} has MediaBox {got_box} mm and "
+                       f"{rel(pdf)} has {want_box} mm, so the bound page "
+                       "would not print at the size the sheet does")
 
     entries = outline_items(reader.outline)
     titles = [str(item.title) for item in entries]
@@ -290,7 +302,8 @@ def check_bundle(bundle: Bundle, data: bytes | None = None) -> list[str]:
     # that will not reproduce, and naming only the keys expected here is how
     # a new one gets noticed instead of ignored.
     want_keys = {"/Producer", "/Title", "/CreationDate"}
-    extra, missing = sorted(set(meta) - want_keys), sorted(want_keys - set(meta))
+    extra = sorted(set(meta) - want_keys)
+    missing = sorted(want_keys - set(meta))
     if extra or missing:
         said = ([f"carries {', '.join(extra)}"] if extra else []) + \
                ([f"is missing {', '.join(missing)}"] if missing else [])
@@ -299,30 +312,46 @@ def check_bundle(bundle: Bundle, data: bytes | None = None) -> list[str]:
             f"has {', '.join(sorted(want_keys))} and nothing else -- no "
             "/Creator, because no drawing tool made it, and no /ModDate: "
             "see tools/reproducible.py")
-    if meta.get("/Producer") != BUNDLE_PRODUCER:
-        bad.append(f"/Producer is {meta.get('/Producer')!r}, not "
+    # Each of these asks whether what is there is right, and only that.
+    # A key that is missing altogether has already been reported by the line
+    # above, and ``meta.get`` would report it a second time as a value of
+    # None -- one defect, two problems, which is the counting this check was
+    # written to stop doing.
+    if "/Producer" in meta and meta["/Producer"] != BUNDLE_PRODUCER:
+        bad.append(f"/Producer is {meta['/Producer']!r}, not "
                    f"{BUNDLE_PRODUCER!r}: see tools/reproducible.py")
-    if meta.get("/CreationDate") != PDF_CREATION_DATE:
-        bad.append(f"/CreationDate is {meta.get('/CreationDate')!r}, not the "
+    if "/CreationDate" in meta and meta["/CreationDate"] != PDF_CREATION_DATE:
+        bad.append(f"/CreationDate is {meta['/CreationDate']!r}, not the "
                    f"pinned {PDF_CREATION_DATE!r}, so it will not reproduce")
-    if meta.get("/Title") != bundle.title:
-        bad.append(f"/Title is {meta.get('/Title')!r}, not {bundle.title!r}")
+    if "/Title" in meta and meta["/Title"] != bundle.title:
+        bad.append(f"/Title is {meta['/Title']!r}, not {bundle.title!r}")
     return bad
 
 
 def unbound_copies(declared: set[Path]) -> list[str]:
-    """Bound copies on disk that the generator does not bind.
+    """Staged bound copies that the generator does not bind.
 
-    ``tools.layout.bundles`` finds them the way a bundle is defined -- a PDF
-    in an output directory with no SVG beside it -- and the generator says
-    which ones it writes.  The per-bundle check above walks the generator's
-    list, so without this a bundle left behind by a family that was renamed
-    or dropped would be committed and never read by anything.
+    Two questions, and this is the one the generator cannot answer about
+    itself.  ``tools.layout.bundles`` asks the file system which bound copies
+    exist -- found the way a bundle is defined, a PDF in an output directory
+    with no SVG beside it -- and ``generate_diagrams.bundles`` says which
+    ones it writes.  The per-bundle check above walks only the second list,
+    so a bundle left behind by a family that was renamed or dropped is bound
+    by nothing, read by nothing, and would sit in the repository unnoticed.
+
+    Staged, not merely present.  Everything else in this file reads the
+    index, and it has to here as well: ``tools.layout.bundles`` globs the
+    working tree, where a PDF may be nothing but litter that `make clean`
+    takes away, and reporting that as something the repository carries would
+    be false in the one line a reader acts on.  What neither list holds is a
+    bundle deleted from the working tree but still in the index; `git status`
+    is where that one shows up.
     """
-    return [f"{rel(path)}: a bound copy in an output directory that "
-            "tools.generate_diagrams.bundles() does not bind; it is "
-            "committed and nothing rebuilds or checks it"
-            for path in bundle_files() if path not in declared]
+    return [f"{rel(path)}: a bound copy staged in an output directory that "
+            "tools.generate_diagrams.bundles() does not bind; nothing "
+            "rebuilds it and nothing else reads it"
+            for path in bundle_files()
+            if path not in declared and blob(rel(path)) is not None]
 
 
 def main() -> int:

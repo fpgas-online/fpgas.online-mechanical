@@ -1697,3 +1697,26 @@ set:
   to compare against `fpga/output/arty-a7.pdf`. That is #30's guard, on this
   branch's comparison, catching the case neither branch's check would have
   reported as anything worse than agreement.
+
+**Three things the review found.** A missing Info key was counted twice: once
+by the key-set line and again by the value comparison beneath it, reading
+`/Title is None, not ...`. That is the one-line-per-defect rule broken by the
+check that wrote it, and `meta.get` is how -- an absent key and a wrong value
+look the same through it. The value comparisons ask only whether what is
+*there* is right; an absent one is the key-set line's to report, and a bundle
+with no `/Title` is 1 problem where it was 2.
+
+`unbound_copies` called a stray it had found on disk "committed", but
+`tools.layout.bundles()` globs the working tree, where a PDF may be nothing
+but litter the next `make clean` takes away. It reports only what is in the
+index as well now, like every other line in the file, so an untracked stray
+is silent and a staged one is named. The gap that leaves -- a bundle deleted
+from the working tree but still staged -- is in neither list and is what `git
+status` is for; that is said in the docstring rather than left to be found.
+
+And a truncated or empty bundle raised out of `PdfReader` before any of this
+ran, so `make check` stack-traced: no problem count, and nothing said about
+the two bundles after it. Reading a file that is not a PDF is exactly what
+this check is for, so it is one problem now, quoting the size and what pypdf
+said -- 4096 bytes of a real bundle gives `PdfStreamError: Stream has ended
+unexpectedly`, and an empty file `EmptyFileError`.
