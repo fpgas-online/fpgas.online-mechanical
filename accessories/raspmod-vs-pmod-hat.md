@@ -1,9 +1,9 @@
 # Raspmod and the Digilent Pmod HAT Adapter
 
 Two boards put Digilent-style Pmod ports on a Raspberry Pi, and they do it in
-opposite ways. The [Digilent Pmod HAT Adapter](output/digilent-pmod-hat-adapter.pdf)
-(`ACC-DIGILENT-PMOD-HAT-ADAPTER`) is a HAT: it sits on the Pi's 40-pin header,
-and its three hosts take whatever Pmod peripheral you plug into them. Pat
+opposite ways. The [Digilent Pmod HAT Adapter](output/pmod-hat.pdf)
+(`ACC-PMOD-HAT`) is a HAT: it sits on the Pi's 40-pin header, and its three
+hosts take whatever Pmod peripheral you plug into them. Pat
 Deegan's [Raspmod](output/raspmod.pdf) (`ACC-RASPMOD`, "TT Demoboard To
 Raspi") is a frontplate for a Tiny Tapeout demoboard: it plugs into the
 demoboard's three Pmod hosts, passes them through to three hosts of its own,
@@ -14,8 +14,8 @@ chip's ports.
 <table>
 <tr>
 <td width="50%" valign="top" align="center">
-<a href="output/digilent-pmod-hat-adapter.pdf"><img src="output/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-DIGILENT-PMOD-HAT-ADAPTER Digilent Pmod HAT Adapter"></a><br>
-<b>ACC-DIGILENT-PMOD-HAT-ADAPTER</b> Digilent Pmod HAT Adapter
+<a href="output/pmod-hat.pdf"><img src="output/previews/pmod-hat.png" width="270" alt="ACC-PMOD-HAT Digilent Pmod HAT Adapter"></a><br>
+<b>ACC-PMOD-HAT</b> Digilent Pmod HAT Adapter
 </td>
 <td width="50%" valign="top" align="center">
 <a href="output/raspmod.pdf"><img src="output/previews/raspmod.png" width="270" alt="ACC-RASPMOD Raspmod"></a><br>
@@ -39,7 +39,7 @@ read from its KiCad board file, pin map included.
 
 |  | Digilent Pmod HAT Adapter | Raspmod |
 |---|---|---|
-| Drawing | ACC-DIGILENT-PMOD-HAT-ADAPTER | ACC-RASPMOD |
+| Drawing | ACC-PMOD-HAT | ACC-RASPMOD |
 | Outline | 65.0 x 56.5 mm, R3 corners | 72.3 x 31.3 mm, R2 corners |
 | Thickness | not stated | 1.6 mm |
 | Mounting holes | 4 x 2.75 mm, the HAT pattern | none |
@@ -234,7 +234,7 @@ Raspmod it is the `+3V3` net, which J11 connects to the Pi's 3V3.
 - Digilent, *Pmod HAT Adapter Reference Manual*, Appendix: Pinout Tables, and
   the statement that the manual applies to Revision B:
   <https://digilent.com/reference/add-ons/pmod-hat/reference-manual>. Its
-  mechanical figures are those of drawing `ACC-DIGILENT-PMOD-HAT-ADAPTER`,
+  mechanical figures are those of drawing `ACC-PMOD-HAT`,
   whose sources are on the sheet.
 - Pat Deegan, *TT Demoboard To Raspi* rev 1.0, `TTDB_2_Raspi.kicad_pcb` at
   commit `2c2e3db`, and the README:

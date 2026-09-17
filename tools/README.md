@@ -16,7 +16,7 @@ Imported, not run.
 |---|---|
 | [`drafting/`](drafting/README.md) | The 2D drawing library: turns a `BoardSpec` into an ISO-style sheet |
 | `schema.py` | `BoardSpec`, `Outline`, `Hole`, `Slot`, `Pmod`, `Feature`, `Source` |
-| `layout.py` | Where the sheets are and what each is called. One answer, so the generator, the READMEs and the checks cannot disagree about the set or about a drawing name |
+| `layout.py` | Where the sheets are, what file each is written to, and what each is called. One answer, so the generator, the READMEs and the checks cannot disagree about the set, about a file stem or about a drawing name. A name is the stem in capitals behind the family prefix, so the stems are kept short here: a demo board sheet is its first revision and its last (`tt-demo-board-v1p2p1-v1p2p3`), an accessory drops the vendor its title block names (`poe-usbc`), and the sheet whose stem is its family's lead takes the lead's last word (`TT-MP-PLATE`) |
 | `kicad_pcb.py` | Minimal reader for KiCad `.kicad_pcb` s-expression files |
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |

@@ -18,7 +18,7 @@ it, so a new board is a new directory and does not disturb the others.
 | Directory | Sheets | |
 |-----------|--------|--|
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` | Tiny Tapeout demo boards, one sheet per distinct geometry |
-| [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-PLATE-*` | The plate every demo board revision bolts onto, and its drill templates |
+| [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` | The plate every demo board revision bolts onto, and its drill templates |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` | Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
 | [`fpga/`](fpga/README.md) | `FPGA-*` | Digilent Arty A7, ULX3S, TUL PYNQ-Z2 and ButterStick, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` | Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
@@ -29,9 +29,17 @@ it, so a new board is a new directory and does not disturb the others.
 A sheet's drawing name is its own file stem, in capitals, behind its family's
 prefix: `fpga/output/arty-a7.pdf` is **`FPGA-ARTY-A7`** and
 `tinytapeout/output/tt-demo-board-v3p3.pdf` is **`TT-DB-V3P3`**. The part of
-the stem the prefix already says is dropped, so `rpi5.pdf` is `RPI-5` and the
-mounting plate's four, which all begin `tt-generic-mounting`, are
-`TT-MP-PLATE` and three sheets hanging off it.
+the stem the prefix already says is dropped, so `rpi5.pdf` is `RPI-5`, and the
+mounting plate's four all begin `tt-generic-mounting-plate`, which `TT-MP` is:
+the plate's own sheet is `TT-MP-PLATE`, and the three hanging off it are
+`TT-MP-FITTING-GUIDE`, `TT-MP-DRILL-TEMPLATE` and
+`TT-MP-CHASSIS-DRILL-TEMPLATE`.
+
+So the stems are kept short, because a name is only as short as the file it is
+read off. A sheet covering several board revisions is named for the first and
+the last -- `tt-demo-board-v1p2p1-v1p2p3` covers v1.2.2 as well, and its title
+and notes list every revision it covers -- and an accessory sheet leaves out
+the vendor its title block already names: `poe-usbc.pdf` is `ACC-POE-USBC`.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
@@ -58,12 +66,12 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-tt123-v2p2p5-tt123-v2p2p6.pdf"><img src="tinytapeout/output/previews/tt-demo-board-tt123-v2p2p5-tt123-v2p2p6.png" width="270" alt="TT-DB-TT123-V2P2P5-TT123-V2P2P6 DB mpw v2.2.5 / DB mpw v2.2.6"></a><br>
-<b>TT-DB-TT123-V2P2P5-TT123-V2P2P6</b> DB mpw v2.2.5 / DB mpw v2.2.6<br>mpw-mb1 rev 2.2.5 and 2.2.6
+<a href="tinytapeout/output/tt-demo-board-tt123-v2p2p5-v2p2p6.pdf"><img src="tinytapeout/output/previews/tt-demo-board-tt123-v2p2p5-v2p2p6.png" width="270" alt="TT-DB-TT123-V2P2P5-V2P2P6 DB mpw v2.2.5 / DB mpw v2.2.6"></a><br>
+<b>TT-DB-TT123-V2P2P5-V2P2P6</b> DB mpw v2.2.5 / DB mpw v2.2.6<br>mpw-mb1 rev 2.2.5 and 2.2.6
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v1p2p1-v1p2p2-v1p2p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v1p2p1-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-V1P2P1-V1P2P2-V1P2P3 DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
-<b>TT-DB-V1P2P1-V1P2P2-V1P2P3</b> DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.1, 1.2.2 and 1.2.3
+<a href="tinytapeout/output/tt-demo-board-v1p2p1-v1p2p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v1p2p1-v1p2p3.png" width="270" alt="TT-DB-V1P2P1-V1P2P3 DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
+<b>TT-DB-V1P2P1-V1P2P3</b> DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.1, 1.2.2 and 1.2.3
 </td>
 <td width="33%" valign="top" align="center">
 <a href="tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-V2P0P1-V2P1P0 DB 06+ v2.0.1 / DB 06+ v2.1.0"></a><br>
@@ -137,16 +145,16 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="accessories/output/digilent-pmod-hat-adapter.pdf"><img src="accessories/output/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-DIGILENT-PMOD-HAT-ADAPTER Digilent Pmod HAT Adapter"></a><br>
-<b>ACC-DIGILENT-PMOD-HAT-ADAPTER</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
+<a href="accessories/output/pmod-hat.pdf"><img src="accessories/output/previews/pmod-hat.png" width="270" alt="ACC-PMOD-HAT Digilent Pmod HAT Adapter"></a><br>
+<b>ACC-PMOD-HAT</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
 </td>
 <td width="33%" valign="top" align="center">
-<a href="accessories/output/waveshare-poe-usbc.pdf"><img src="accessories/output/previews/waveshare-poe-usbc.png" width="270" alt="ACC-WAVESHARE-POE-USBC Waveshare PoE Splitter 25 W, Type-C"></a><br>
-<b>ACC-WAVESHARE-POE-USBC</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
+<a href="accessories/output/poe-usbc.pdf"><img src="accessories/output/previews/poe-usbc.png" width="270" alt="ACC-POE-USBC Waveshare PoE Splitter 25 W, Type-C"></a><br>
+<b>ACC-POE-USBC</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
 </td>
 <td width="33%" valign="top" align="center">
-<a href="accessories/output/generic-poe-microusb.pdf"><img src="accessories/output/previews/generic-poe-microusb.png" width="270" alt="ACC-GENERIC-POE-MICROUSB Generic PoE splitter to micro-USB"></a><br>
-<b>ACC-GENERIC-POE-MICROUSB</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
+<a href="accessories/output/poe-microusb.pdf"><img src="accessories/output/previews/poe-microusb.png" width="270" alt="ACC-POE-MICROUSB Generic PoE splitter to micro-USB"></a><br>
+<b>ACC-POE-MICROUSB</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
 </td>
 </tr>
 <tr>
@@ -168,18 +176,18 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>TT-MP-PLATE</b> TT Generic Mounting Plate<br>Accepts every demo board revision, Pmod hosts fixed in place
 </td>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-PLATE-FITTING-GUIDE TT Mounting Plate Fitting Guide"></a><br>
-<b>TT-MP-PLATE-FITTING-GUIDE</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-FITTING-GUIDE TT Mounting Plate Fitting Guide"></a><br>
+<b>TT-MP-FITTING-GUIDE</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-PLATE-DRILL-TEMPLATE Drill Template: Mounting Plate"></a><br>
-<b>TT-MP-PLATE-DRILL-TEMPLATE</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-DRILL-TEMPLATE Drill Template: Mounting Plate"></a><br>
+<b>TT-MP-DRILL-TEMPLATE</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
 </td>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE Drill Template: Chassis"></a><br>
-<b>TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-CHASSIS-DRILL-TEMPLATE Drill Template: Chassis"></a><br>
+<b>TT-MP-CHASSIS-DRILL-TEMPLATE</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
 </td>
 </tr>
 </table>

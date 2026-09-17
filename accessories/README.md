@@ -25,6 +25,14 @@ uv run --no-project python accessories/extract.py      # needs tmp/src, see make
 uv run --no-project python accessories/compare.py
 ```
 
+A part's key in `parts.py` names the thing to buy, vendor and all --
+`waveshare-poe-usbc` -- and its sheet's file is named for what the part is:
+`output/poe-usbc.pdf`, drawing `ACC-POE-USBC`. The vendor is on the sheet, in
+the title block, where a reader of the drawing needs it; repeating it in the
+drawing name made the name longer than anything it labels.
+`ACC_STEMS` in [`tools/layout.py`](../tools/layout.py) maps the one to the
+other.
+
 ## The sheets
 
 <!-- sheets:begin -->
@@ -34,16 +42,16 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/digilent-pmod-hat-adapter.pdf"><img src="output/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-DIGILENT-PMOD-HAT-ADAPTER Digilent Pmod HAT Adapter"></a><br>
-<b>ACC-DIGILENT-PMOD-HAT-ADAPTER</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
+<a href="output/pmod-hat.pdf"><img src="output/previews/pmod-hat.png" width="270" alt="ACC-PMOD-HAT Digilent Pmod HAT Adapter"></a><br>
+<b>ACC-PMOD-HAT</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/waveshare-poe-usbc.pdf"><img src="output/previews/waveshare-poe-usbc.png" width="270" alt="ACC-WAVESHARE-POE-USBC Waveshare PoE Splitter 25 W, Type-C"></a><br>
-<b>ACC-WAVESHARE-POE-USBC</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
+<a href="output/poe-usbc.pdf"><img src="output/previews/poe-usbc.png" width="270" alt="ACC-POE-USBC Waveshare PoE Splitter 25 W, Type-C"></a><br>
+<b>ACC-POE-USBC</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/generic-poe-microusb.pdf"><img src="output/previews/generic-poe-microusb.png" width="270" alt="ACC-GENERIC-POE-MICROUSB Generic PoE splitter to micro-USB"></a><br>
-<b>ACC-GENERIC-POE-MICROUSB</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
+<a href="output/poe-microusb.pdf"><img src="output/previews/poe-microusb.png" width="270" alt="ACC-POE-MICROUSB Generic PoE splitter to micro-USB"></a><br>
+<b>ACC-POE-MICROUSB</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
 </td>
 </tr>
 <tr>
@@ -58,7 +66,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 
 <!-- sheets:end -->
 
-## Digilent Pmod HAT Adapter (`ACC-DIGILENT-PMOD-HAT-ADAPTER`)
+## Digilent Pmod HAT Adapter (`ACC-PMOD-HAT`)
 
 Digilent publish no mechanical drawing, DXF, STEP or board file for this part.
 The three Pmod host positions were measured photogrammetrically from
@@ -90,7 +98,7 @@ KiCad writes each pad's net into it. Which demoboard it fits, and how it
 differs from the Digilent adapter, is in
 [`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md).
 
-## PoE splitters (`ACC-WAVESHARE-POE-USBC`, `ACC-GENERIC-POE-MICROUSB`)
+## PoE splitters (`ACC-POE-USBC`, `ACC-POE-MICROUSB`)
 
 Drawn as three-view envelope drawings, which is what they are useful as: they
 go inside a box and what matters is the space they need and where the cable

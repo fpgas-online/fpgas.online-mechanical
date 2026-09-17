@@ -9,20 +9,26 @@ while holding the Pmod host headers in a single fixed place.
 | `design.py` | Derives the hole pattern from every revision and writes `plate.py` |
 | `verify.py` | Proves the finished plate really does accept every revision |
 | `export_dxf.py` | Writes the four-layer DXF cut file |
-| `output/` | Four `TT-MP-PLATE-…` sheets, plus the DXF |
+| `output/` | Four `TT-MP-…` sheets, plus the DXF |
 
 | Sheet | |
 |-------|--|
 | `TT-MP-PLATE` | Fabrication drawing: every hole and slot, tabulated |
-| `TT-MP-PLATE-FITTING-GUIDE` | Fitting guide: which holes each revision uses |
-| `TT-MP-PLATE-DRILL-TEMPLATE` | Drill template for the plate, A4 at 1:1 |
-| `TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` | Drill template for the chassis it bolts to, A4 at 1:1 |
+| `TT-MP-FITTING-GUIDE` | Fitting guide: which holes each revision uses |
+| `TT-MP-DRILL-TEMPLATE` | Drill template for the plate, A4 at 1:1 |
+| `TT-MP-CHASSIS-DRILL-TEMPLATE` | Drill template for the chassis it bolts to, A4 at 1:1 |
 
-Every name here says PLATE because every file stem does: the drawing name is
-the file stem in capitals behind the family prefix, and `TT-MP` accounts for
-the `tt-generic-mounting` all four begin with, no more. Stopping the prefix
-one word later would have left the plate's own drawing called `TT-MP`, which
-reads as the family rather than as one sheet of it.
+The drawing name is the file stem in capitals behind the family prefix, and
+`TT-MP` accounts for the whole of the `tt-generic-mounting-plate` all four
+files begin with: this family *is* the plate, so saying PLATE again on the
+three sheets that hang off it added a word and no information. The plate's
+own drawing, whose stem is that lead and nothing else, takes the lead's last
+word and is `TT-MP-PLATE` -- named for what it is, and not the bare `TT-MP`,
+which reads as the family rather than as one sheet of it and is a substring of
+the other three names besides.
+
+The files keep their full `tt-generic-mounting-plate` stems, and so does the
+DXF cut file, which the fabrication drawing cites by name.
 
 ## The sheets
 
@@ -37,18 +43,18 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>TT-MP-PLATE</b> TT Generic Mounting Plate<br>Accepts every demo board revision, Pmod hosts fixed in place
 </td>
 <td width="50%" valign="top" align="center">
-<a href="output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-PLATE-FITTING-GUIDE TT Mounting Plate Fitting Guide"></a><br>
-<b>TT-MP-PLATE-FITTING-GUIDE</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
+<a href="output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-FITTING-GUIDE TT Mounting Plate Fitting Guide"></a><br>
+<b>TT-MP-FITTING-GUIDE</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top" align="center">
-<a href="output/tt-generic-mounting-plate-drill-template.pdf"><img src="output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-PLATE-DRILL-TEMPLATE Drill Template: Mounting Plate"></a><br>
-<b>TT-MP-PLATE-DRILL-TEMPLATE</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
+<a href="output/tt-generic-mounting-plate-drill-template.pdf"><img src="output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-DRILL-TEMPLATE Drill Template: Mounting Plate"></a><br>
+<b>TT-MP-DRILL-TEMPLATE</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
 </td>
 <td width="50%" valign="top" align="center">
-<a href="output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE Drill Template: Chassis"></a><br>
-<b>TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
+<a href="output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-CHASSIS-DRILL-TEMPLATE Drill Template: Chassis"></a><br>
+<b>TT-MP-CHASSIS-DRILL-TEMPLATE</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
 </td>
 </tr>
 </table>
@@ -79,11 +85,11 @@ position, no board overhangs, and the connector faces clear the front edge.
 
 ## Printing the drill templates
 
-`TT-MP-PLATE-DRILL-TEMPLATE` and `TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` are
-not drawings to read, they are gauges to use:
-print, tape to the work, punch every cross, drill through. That only works if
-the page leaves the printer at exactly 1:1, and no print dialog does that by
-default. A CUPS queue will tell you what it intends:
+`TT-MP-DRILL-TEMPLATE` and `TT-MP-CHASSIS-DRILL-TEMPLATE` are not drawings to
+read, they are gauges to use: print, tape to the work, punch every cross,
+drill through. That only works if the page leaves the printer at exactly 1:1,
+and no print dialog does that by default. A CUPS queue will tell you what it
+intends:
 
 ```console
 $ lpoptions -p WellandColor -l | grep print-scaling

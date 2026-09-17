@@ -86,9 +86,9 @@ checker that measures the finished PDFs rather than trusting them.
 
 ## 7. Drill templates  -- DONE
 - [x] A4 portrait 1:1 template for the mounting plate itself
-      (`TT-MP-PLATE-DRILL-TEMPLATE`)
+      (`TT-MP-DRILL-TEMPLATE`)
 - [x] A4 portrait 1:1 template for the chassis the plate bolts to
-      (`TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE`)
+      (`TT-MP-CHASSIS-DRILL-TEMPLATE`)
 - [x] Printed scale bar per axis, so a scaled print is caught before drilling
 - [x] `tools/check_drill_template.py`: measures the PDFs back and proves
       every hole lands where the plate data puts it
@@ -105,6 +105,10 @@ checker that measures the finished PDFs rather than trusting them.
       fails on an overflow or on a sheet not carrying its own name
 - [x] `check_pdfs.py` reads the bound copies: every page is a committed sheet
       and every bookmark opens with that sheet's name
+- [x] Stems short enough to read as labels: a demo board sheet is its first
+      revision and its last, an accessory drops the vendor its title block
+      names, and the mounting plate's three satellites drop the PLATE the
+      family prefix already says
 - [ ] The open pull requests each rename their own sheets on top of this
 
 ## 9. FPGA development boards  -- DONE
