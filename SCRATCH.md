@@ -3040,10 +3040,10 @@ model exists for the Camera Module 3 and was not used: the drawing is a true
 1:1 plot with a live text layer and already gives everything, and a 10 MB
 assembly would only be a second opinion about the same numbers.
 
-**Neither plot is 1:1 and one of them is not close.** The scale is recovered
-from the mounting hole rectangle -- 21 mm across, 12.5 mm up, the lower pair
-2 mm in from two edges -- the same way `tools/dump_rpi_pdf.py` recovers a Pi's
-from its 58 x 49 pattern, and then checked against the two overall dimensions
+**Neither plot is assumed 1:1, and one of them is nowhere near.** The scale is
+recovered from the mounting hole rectangle -- 21 mm across, 12.5 mm up, the
+lower pair 2 mm in from two edges -- the same way `tools/dump_rpi_pdf.py`
+recovers a Pi's from its 58 x 49 pattern, then checked against the dimensions
 the drawing prints. Camera Module 3 comes back at **1.0000:1** with the
 outline within 0.004 mm. Camera Module 2 comes back at **1.5055:1**: it is
 plotted half again bigger than the part, and a sheet that trusted the page
@@ -3079,7 +3079,7 @@ gives 19.61 across, the side elevation 5.71 down the board, and both give its
 2.75 height, which is required to agree before either is used. The Camera
 Module 2 plan does draw it, as two boxes -- the body and the wider latch ears
 that reach the board edge -- and the sheet takes the envelope of both, 20.88 x
-5.50, matching the 20.8 and 5.5 printed beside them. Both boards' bodies
+5.52, against the 20.8 and 5.5 printed beside them. Both boards' bodies
 measure 19.61 across, so it is the same part.
 
 **Raspberry Pi's claim, checked.** Their documentation says board dimensions
