@@ -91,7 +91,7 @@ def boxes(svg: str) -> list[tuple[float, float, float, float, str, float]]:
 
 LINE_RE = re.compile(
     r'<line x1="([-\d.]+)" y1="([-\d.]+)" x2="([-\d.]+)" y2="([-\d.]+)" '
-    r'stroke="([#\w]+)"')
+    r'stroke="([#\w]+)"([^>]*)>')
 
 #: Lines a label must not sit on.  Table rules and heading underlines are drawn
 #: deliberately close to their text, so only annotation and geometry lines are
@@ -99,11 +99,20 @@ LINE_RE = re.compile(
 CHECKED_STROKES = {style.C_DIM, style.C_HIGHLIGHT, style.C_PHANTOM,
                    style.C_COMPONENT}
 
+#: A centre line, which is the one black line this checks.  Black was left out
+#: above for the table rules, and that let every centre line through as well --
+#: which is wrong, because a centre line is annotation and is run past the part
+#: by eye, so it is exactly the kind of line that ends up ruled through a
+#: caption or a dimension's text.  It is told from a rule by its dash pattern:
+#: nothing else on a sheet is drawn with D_CENTRE.
+CENTRE_DASH = f'stroke-dasharray="{style.D_CENTRE}"'
+
 
 def lines(svg: str):
     for m in LINE_RE.finditer(svg):
         x1, y1, x2, y2 = (float(v) for v in m.groups()[:4])
-        if m.group(5) in CHECKED_STROKES:
+        if (m.group(5) in CHECKED_STROKES
+                or (m.group(5) == style.C_LINE and CENTRE_DASH in m.group(6))):
             yield x1, y1, x2, y2
 
 
