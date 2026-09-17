@@ -2920,6 +2920,16 @@ tenth taken from the grip. It is split 0.31/0.33 now, and the sheet says both
 figures, with the 0.59 mm the spring is deflected at the figures Bel actually
 draws beside them. It has still never been tried on a jack.
 
+One thing the review asked to have written down rather than changed. This
+branch commits one new sheet and its bound copy, and nothing else under
+`output/`: rebuilding the other twenty-seven here moves every one of them by
+its `VERSION` stamp and by nothing else, which is a change worth making on
+its own and not as a side effect of adding a drawing. So `fpga-sheets.pdf`
+carries more than one stamp -- the eight board pages the ones they were
+committed at, the new page this one -- and the README's "git status is silent
+after a rebuild" does not hold on this branch until that restamp is made
+after merge. The Ultra96 branch left the same note, for the same reason.
+
 Two smaller ones worth recording. `verify.py` advertised 38 checks of which
 about half were arithmetic restatements of how `design.py` had built the
 number -- that the bore is as long as the pipe it was cut for, that the
