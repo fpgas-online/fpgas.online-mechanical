@@ -1242,36 +1242,40 @@ fabrication drawing cites by name and something outside this repository may
 link to.
 
 `TT-MP-CHASSIS-DRILL-TEMPLATE` is then the longest name in the set at
-**56.43 mm**, ahead of `TT-DB-TT123-V2P2P5-V2P2P6` at 50.25 mm, and it fits
+**56.43 mm**, ahead of `TT-DB-TT123-V2P2P5-V2P2P6` at 50.25 mm -- the longest
+name the demo boards ever carried, and superseded below -- and it fits
 the 79.30 mm cell with 23 mm to spare. It fits the drill templates' split
 header line too, which now leaves both titles at 3.5 mm.
 
 The whole set, 21 sheets, against the numbers they carried before this branch
-and the names they carried earlier on it:
+and each set of names they have carried on it. The `now` column is the rule
+in the section below this one, which is where the demo boards and the
+accessories stopped being named for their stems at all; the file column has
+not moved since the stems were shortened, and does not move again.
 
-| numbered | first named | now | file |
-|---|---|---|---|
-| `TT-DB-01` | `TT-DB-TT123-V2P2P5-TT123-V2P2P6` | `TT-DB-TT123-V2P2P5-V2P2P6` | `tinytapeout/output/tt-demo-board-tt123-v2p2p5-v2p2p6` |
-| `TT-DB-02` | `TT-DB-V1P2P1-V1P2P2-V1P2P3` | `TT-DB-V1P2P1-V1P2P3` | `tinytapeout/output/tt-demo-board-v1p2p1-v1p2p3` |
-| `TT-DB-03` | `TT-DB-V2P0P1-V2P1P0` | `TT-DB-V2P0P1-V2P1P0` | `tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0` |
-| `TT-DB-04` | `TT-DB-V2P1P2` | `TT-DB-V2P1P2` | `tinytapeout/output/tt-demo-board-v2p1p2` |
-| `TT-DB-05` | `TT-DB-V3P2` | `TT-DB-V3P2` | `tinytapeout/output/tt-demo-board-v3p2` |
-| `TT-DB-06` | `TT-DB-V3P3` | `TT-DB-V3P3` | `tinytapeout/output/tt-demo-board-v3p3` |
-| `RPI-01` | `RPI-3B` | `RPI-3B` | `raspberry_pi/output/rpi3b` |
-| `RPI-02` | `RPI-4B` | `RPI-4B` | `raspberry_pi/output/rpi4b` |
-| `RPI-03` | `RPI-5` | `RPI-5` | `raspberry_pi/output/rpi5` |
-| `FPGA-01` | `FPGA-ARTY-A7` | `FPGA-ARTY-A7` | `fpga/output/arty-a7` |
-| `FPGA-02` | `FPGA-ULX3S` | `FPGA-ULX3S` | `fpga/output/ulx3s` |
-| `FPGA-03` | `FPGA-PYNQ-Z2` | `FPGA-PYNQ-Z2` | `fpga/output/pynq-z2` |
-| `FPGA-04` | `FPGA-BUTTERSTICK` | `FPGA-BUTTERSTICK` | `fpga/output/butterstick` |
-| `ACC-01` | `ACC-DIGILENT-PMOD-HAT-ADAPTER` | `ACC-PMOD-HAT` | `accessories/output/pmod-hat` |
-| `ACC-02` | `ACC-WAVESHARE-POE-USBC` | `ACC-POE-USBC` | `accessories/output/poe-usbc` |
-| `ACC-03` | `ACC-GENERIC-POE-MICROUSB` | `ACC-POE-MICROUSB` | `accessories/output/poe-microusb` |
-| `ACC-04` | `ACC-RASPMOD` | `ACC-RASPMOD` | `accessories/output/raspmod` |
-| `TT-MP-01` | `TT-MP-PLATE` | `TT-MP-PLATE` | `tinytapeout/mounting_plate/output/tt-generic-mounting-plate` |
-| `TT-MP-02` | `TT-MP-PLATE-FITTING-GUIDE` | `TT-MP-FITTING-GUIDE` | `…/tt-generic-mounting-plate-fitting-guide` |
-| `TT-MP-03` | `TT-MP-PLATE-DRILL-TEMPLATE` | `TT-MP-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-drill-template` |
-| `TT-MP-04` | `TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` | `TT-MP-CHASSIS-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-chassis-drill-template` |
+| numbered | named for the stem | stem shortened | now | file |
+|---|---|---|---|---|
+| `TT-DB-01` | `TT-DB-TT123-V2P2P5-TT123-V2P2P6` | `TT-DB-TT123-V2P2P5-V2P2P6` | `TT-DB-TT123` | `tinytapeout/output/tt-demo-board-tt123-v2p2p5-v2p2p6` |
+| `TT-DB-02` | `TT-DB-V1P2P1-V1P2P2-V1P2P3` | `TT-DB-V1P2P1-V1P2P3` | `TT-DB-V121` | `tinytapeout/output/tt-demo-board-v1p2p1-v1p2p3` |
+| `TT-DB-03` | `TT-DB-V2P0P1-V2P1P0` | `TT-DB-V2P0P1-V2P1P0` | `TT-DB-V201` | `tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0` |
+| `TT-DB-04` | `TT-DB-V2P1P2` | `TT-DB-V2P1P2` | `TT-DB-V212` | `tinytapeout/output/tt-demo-board-v2p1p2` |
+| `TT-DB-05` | `TT-DB-V3P2` | `TT-DB-V3P2` | `TT-DB-V32` | `tinytapeout/output/tt-demo-board-v3p2` |
+| `TT-DB-06` | `TT-DB-V3P3` | `TT-DB-V3P3` | `TT-DB-V33` | `tinytapeout/output/tt-demo-board-v3p3` |
+| `RPI-01` | `RPI-3B` | `RPI-3B` | `RPI-3B` | `raspberry_pi/output/rpi3b` |
+| `RPI-02` | `RPI-4B` | `RPI-4B` | `RPI-4B` | `raspberry_pi/output/rpi4b` |
+| `RPI-03` | `RPI-5` | `RPI-5` | `RPI-5` | `raspberry_pi/output/rpi5` |
+| `FPGA-01` | `FPGA-ARTY-A7` | `FPGA-ARTY-A7` | `FPGA-ARTY-A7` | `fpga/output/arty-a7` |
+| `FPGA-02` | `FPGA-ULX3S` | `FPGA-ULX3S` | `FPGA-ULX3S` | `fpga/output/ulx3s` |
+| `FPGA-03` | `FPGA-PYNQ-Z2` | `FPGA-PYNQ-Z2` | `FPGA-PYNQ-Z2` | `fpga/output/pynq-z2` |
+| `FPGA-04` | `FPGA-BUTTERSTICK` | `FPGA-BUTTERSTICK` | `FPGA-BUTTERSTICK` | `fpga/output/butterstick` |
+| `ACC-01` | `ACC-DIGILENT-PMOD-HAT-ADAPTER` | `ACC-PMOD-HAT` | `ACC-HAT-PMOD` | `accessories/output/pmod-hat` |
+| `ACC-02` | `ACC-WAVESHARE-POE-USBC` | `ACC-POE-USBC` | `ACC-POE-USBC` | `accessories/output/poe-usbc` |
+| `ACC-03` | `ACC-GENERIC-POE-MICROUSB` | `ACC-POE-MICROUSB` | `ACC-POE-MUSB` | `accessories/output/poe-microusb` |
+| `ACC-04` | `ACC-RASPMOD` | `ACC-RASPMOD` | `ACC-HAT-RMOD` | `accessories/output/raspmod` |
+| `TT-MP-01` | `TT-MP-PLATE` | `TT-MP-PLATE` | `TT-MP-PLATE` | `tinytapeout/mounting_plate/output/tt-generic-mounting-plate` |
+| `TT-MP-02` | `TT-MP-PLATE-FITTING-GUIDE` | `TT-MP-FITTING-GUIDE` | `TT-MP-FITTING-GUIDE` | `…/tt-generic-mounting-plate-fitting-guide` |
+| `TT-MP-03` | `TT-MP-PLATE-DRILL-TEMPLATE` | `TT-MP-DRILL-TEMPLATE` | `TT-MP-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-drill-template` |
+| `TT-MP-04` | `TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` | `TT-MP-CHASSIS-DRILL-TEMPLATE` | `TT-MP-CHASSIS-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-chassis-drill-template` |
 
 **Why the file stem and not something shorter.** The argument for it is not
 brevity, it is that a collision needs nobody's attention. Two sheets in a
@@ -1317,13 +1321,16 @@ demo board at 1:1 with nothing to spare. VERSION keeps its quarter and its
 38.05 mm, which is the figure `reproducible.py`'s one-character dirty mark is
 sized against.
 
-The row stays that way now the names are shorter. Three of the 19 sheets that
-have a title block still overrun the old quarter -- `TT-DB-TT123-V2P2P5-V2P2P6`
-at 50.25 mm, and the two `V1P2P1-V1P2P3` and `V2P0P1-V2P1P0` demo boards at
-38.74 mm each against 38.05 -- and the sheets waiting on other branches are
-longer again: `FPGA-ARTY-ETHERNET-LIGHT-PIPE` is 58.03 mm. The widest name in
-this set is `TT-MP-CHASSIS-DRILL-TEMPLATE` at 56.43 mm, on a drill template,
-which has no title block to overrun.
+The row stayed that way when the stems were shortened, because three of the 19
+sheets with a title block still overran the old quarter, and it stays that way
+now that nothing does. The widest name on a sheet that has a title block is
+`TT-MP-FITTING-GUIDE` at 37.56 mm, which clears 38.05 mm by half a
+millimetre, and half a millimetre is not a margin: the mounting plate and the
+FPGA sheets are named for their file stems, which nobody is keeping short for
+this, and `FPGA-ARTY-ETHERNET-LIGHT-PIPE`, waiting on another branch, is
+58.03 mm. The widest name in this set is `TT-MP-CHASSIS-DRILL-TEMPLATE` at
+56.43 mm, on a drill template, which has no title block to overrun. Restoring
+the quarter would also re-render all 19 sheets to buy a field nothing wants.
 
 The drill templates have no title block. Their header line carried the drawing
 number, the version, the page size and the scale, right-aligned, beside a
@@ -1393,6 +1400,106 @@ names shortened.
 reproducing the set on a second machine says outright; it now matches every
 page of every bundle against the committed sheet PDFs by content stream and
 requires the bookmark to open with that page's drawing name.
+
+## A drawing number is not a file name
+
+The owner read the shortened names and said they were still far too long:
+"They should be at most TT-DB-<4-5 characters> and ACC-{HAT,POE}-<4-5
+characters>." Everything above this heading answered "the names are too long"
+by shortening the stems, because the name *was* the stem in capitals. There
+was nothing left to take out of the stems, and that was the wrong place to
+look anyway.
+
+**The two are read by different people for different reasons.** A file name is
+read once, from a directory listing, by somebody choosing between files: both
+end points of a revision range are worth the characters there, and so is
+`poe-microusb` rather than a code. A drawing number is read off a title block,
+quoted in a note on another sheet, written on an order, typed into a
+spreadsheet and said out loud across a workshop; it has to be taken in at a
+glance and copied without a slip, and four or five characters behind the
+prefix is what that costs. So this time the stems do not move at all. Every
+README link, every preview `<img>`, every bound copy's page order and every
+other branch that cites a file keeps working, and the only thing that changes
+is the string in the DRAWING NO cell.
+
+**The rule.** `drawing_name` strips the family's lead as before, and then, if
+the family has a row in a new `FAMILY_NAME_RULES` table, replaces what is left
+with what that rule makes of it. A separate table and not a third column of
+`FAMILY_PREFIXES`: several branches are open at once, each adding a row to
+that table, and changing its shape would conflict with every one of them,
+where a new table beside it conflicts with nothing. A rule takes the stem and
+nothing else, because `drawing_name_for` has to answer from a rendered
+sheet's path alone -- the checks and the bundle bookmarks all go through it.
+
+Three families have no rule and are untouched: `RPI-3B`, `FPGA-ARTY-A7`,
+`TT-MP-PLATE` and the rest are already as short as those sheets can honestly
+be said to be, and a table of names for them would be a second string to keep
+in step with the files.
+
+**`tt_name`.** The rest of a demo board stem is words: a board name first if
+the revisions carry one, then the revisions. If the first word is not a
+revision it is the name -- `tt123-v2p2p5-v2p2p6` gives `TT123` -- and
+otherwise the name is the first revision with its `p` separators taken out.
+The six sheets:
+
+| file | name |
+|---|---|
+| `tt-demo-board-tt123-v2p2p5-v2p2p6` | `TT-DB-TT123` |
+| `tt-demo-board-v1p2p1-v1p2p3` | `TT-DB-V121` |
+| `tt-demo-board-v2p0p1-v2p1p0` | `TT-DB-V201` |
+| `tt-demo-board-v2p1p2` | `TT-DB-V212` |
+| `tt-demo-board-v3p2` | `TT-DB-V32` |
+| `tt-demo-board-v3p3` | `TT-DB-V33` |
+
+Naming a sheet after one of the revisions on it is exact rather than
+approximate. A sheet covers one geometry -- the generator compares outline,
+holes, hosts and every feature before it merges two revisions -- and the first
+revision to carry that geometry is where it came from: v1.2.2 and v1.2.3 are
+on `TT-DB-V121` because mechanically they *are* the v1.2.1 board. The title,
+the subtitle and the notes still list every revision and every shuttle, which
+is what a reader with the drawing in front of them has.
+
+**This reverses a decision recorded above, and it is worth saying which.**
+"The first revision only on a merged sheet" is listed there among the
+alternatives rejected, because it says where a sheet starts and nothing about
+where it stops. That is a file name's job and the reason still holds for the
+file name, which keeps the range. It was never an argument about the drawing
+number, and as a drawing number the objection does not apply: two sheets
+cannot start at one revision, because a revision is on exactly one sheet, and
+the number is not what anybody browses a directory with.
+
+**`ACC_NAMES`.** A table, because the accessory stems are words and not codes
+and no mechanical shortening of `raspmod` leaves four characters that still
+say which board it is. Keyed by the stem rather than the part key, so it
+answers from a rendered file the way `tt_name` does, and a stem with no row is
+a `SystemExit` naming the table, as `acc_stem` already was for a part with no
+stem.
+
+| file | name | |
+|---|---|---|
+| `pmod-hat` | `ACC-HAT-PMOD` | Digilent's Pmod HAT Adapter |
+| `raspmod` | `ACC-HAT-RMOD` | the Raspmod |
+| `poe-usbc` | `ACC-POE-USBC` | Waveshare's splitter, Type-C out |
+| `poe-microusb` | `ACC-POE-MUSB` | the generic splitter, micro-USB out |
+
+The first word is the kind and the second which one of it, so two names quoted
+in one note show which two parts are alternatives to each other. `HAT` is
+Digilent's own word for the adapter that sits on the Pi's 40-pin header. The
+Raspmod is filed under it as the other way of getting Pmod ports onto a Pi and
+is *not* a HAT: it does not sit on the header, it uses the ID EEPROM pins for
+a switch and a clock, and `raspmod-vs-pmod-hat.md` is largely about the
+difference. The name says what shelf the drawing is on, not what the part
+conforms to, and all three documents that carry the name say so outright
+rather than leaving a reader to find the contradiction.
+
+**Nothing else had to move.** The names are between 9 and 12 characters and
+between 17.69 mm (`TT-DB-V32`, `TT-DB-V33`) and 26.70 mm (`ACC-POE-MUSB`) at
+the ISO 3098 floor, against the 79.30 mm the DRAWING NO cell has, so no cell,
+no header line and no title block proportion changes. No new name is a prefix
+of a sibling's, which is the property `drawing_name`'s docstring explains and
+`TT-MP` once broke; `TT-DB-V32` and `TT-DB-V33` are the closest pair in the
+set and neither contains the other. The widest name with a title block is now
+`TT-MP-FITTING-GUIDE` at 37.56 mm, from a family with no rule.
 
 **The entries above this one keep the numbers the sheets carried when they
 were written.** They are a log of what happened on a date, not references to

@@ -30,11 +30,23 @@ makes it and what its part number is. `ACC_STEMS` in
 [`tools/layout.py`](../tools/layout.py) maps each part key to its stem, and
 what that drops differs by part: the two PoE splitters' keys name their
 vendor, because that is what you buy -- `waveshare-poe-usbc` becomes
-`output/poe-usbc.pdf`, drawing `ACC-POE-USBC`. The adapter's key never did:
-it is `pmod-hat-adapter`, and `digilent-` was put in front of it by hand when
-the file name was written, which is where the old
-`ACC-DIGILENT-PMOD-HAT-ADAPTER` came from. The Raspmod's key is already what
-the thing is called.
+`output/poe-usbc.pdf`. The adapter's key never did: it is `pmod-hat-adapter`,
+and `digilent-` was put in front of it by hand when the file name was written,
+which is where the old `ACC-DIGILENT-PMOD-HAT-ADAPTER` came from. The
+Raspmod's key is already what the thing is called.
+
+The drawing name is not that stem in capitals. A drawing number is quoted in
+notes, on orders and out loud, so `ACC_NAMES`, beside `ACC_STEMS`, gives each
+stem a name of two short words: the kind of part, then which one of that kind.
+`pmod-hat` is `ACC-HAT-PMOD` and `raspmod` is `ACC-HAT-RMOD`, the two ways of
+putting Pmod ports on a Raspberry Pi; `poe-usbc` is `ACC-POE-USBC` and
+`poe-microusb` is `ACC-POE-MUSB`, the two splitters. A table rather than a
+rule, because these stems are words and not codes and nothing mechanical
+shortens `raspmod` to four characters that still say which board it is. HAT is
+Digilent's own word for its adapter; the Raspmod is filed under it as the
+other way of doing the same job, though it is
+[not a HAT](raspmod-vs-pmod-hat.md) in the specification's sense and reaches
+the Pi over a ribbon cable.
 
 ## The sheets
 
@@ -69,7 +81,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 
 <!-- sheets:end -->
 
-## Digilent Pmod HAT Adapter (`ACC-PMOD-HAT`)
+## Digilent Pmod HAT Adapter (`ACC-HAT-PMOD`)
 
 Digilent publish no mechanical drawing, DXF, STEP or board file for this part.
 The three Pmod host positions were measured photogrammetrically from
@@ -86,9 +98,11 @@ uv run --no-project --with pillow --with numpy python \
     accessories/measure_pmod_hat.py tmp/digilent/hat.png
 ```
 
-## Raspmod (`ACC-RASPMOD`)
+## Raspmod (`ACC-HAT-RMOD`)
 
-Pat Deegan's "TT Demoboard To Raspi": not a HAT but a frontplate. Three
+Pat Deegan's "TT Demoboard To Raspi": not a HAT but a frontplate, whatever its
+drawing number says -- the `HAT` there files it with the Digilent adapter it
+is an alternative to, not with the specification. Three
 2x6 pin headers on its underside go into a Tiny Tapeout demoboard's three
 Pmod hosts, three sockets on its front take external Pmods in their place,
 and a 2x20 box header carries every signal to a Raspberry Pi over a ribbon
@@ -101,7 +115,7 @@ KiCad writes each pad's net into it. Which demoboard it fits, and how it
 differs from the Digilent adapter, is in
 [`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md).
 
-## PoE splitters (`ACC-POE-USBC`, `ACC-POE-MICROUSB`)
+## PoE splitters (`ACC-POE-USBC`, `ACC-POE-MUSB`)
 
 Drawn as three-view envelope drawings, which is what they are useful as: they
 go inside a box and what matters is the space they need and where the cable

@@ -109,6 +109,13 @@ checker that measures the finished PDFs rather than trusting them.
       revision and its last, an accessory drops the vendor its title block
       names, and the mounting plate's three satellites drop the PLATE the
       family prefix already says
+- [x] Names short enough to quote: at most four or five characters behind the
+      prefix, which the stems cannot give and do not have to. A family may
+      have a rule in `FAMILY_NAME_RULES` that cuts its stem down to a name --
+      a demo board is named for the first revision it covers (`TT-DB-V121`,
+      `TT-DB-TT123`) and an accessory by a table, the kind of part and which
+      one (`ACC-HAT-PMOD`, `ACC-POE-MUSB`). No file moves, so every link,
+      preview and branch that cites a stem keeps working
 - [ ] The open pull requests each rename their own sheets on top of this
 
 ## 9. FPGA development boards  -- DONE

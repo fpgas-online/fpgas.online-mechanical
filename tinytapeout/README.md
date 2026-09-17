@@ -87,6 +87,14 @@ board mechanically, as are v1.2.2 and v1.2.3, and v2.0.1 and v2.1.0, so nine
 revisions make six sheets, and each sheet names every revision and shuttle it
 covers.
 
+A sheet is called after the first revision on it, with the `p` separators
+taken out, so `TT-DB-V121` is the sheet covering v1.2.1, v1.2.2 and v1.2.3;
+or after the board name where the revisions carry one, so the two mpw-mb1
+revisions are `TT-DB-TT123`. The file keeps the whole range --
+`tt-demo-board-v1p2p1-v1p2p3` -- because a file name is read from a directory
+listing, where both end points are worth the characters, and a drawing number
+is read off a title block and quoted in notes, where they are not.
+
 `boards.py` still carries all nine: it is a database of what was built, and
 the mounting plate is designed against individual revisions. Only the drawing
 set is merged, and the generator compares outline, holes, Pmod hosts and every
