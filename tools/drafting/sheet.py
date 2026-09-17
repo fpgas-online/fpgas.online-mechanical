@@ -80,15 +80,18 @@ class Sheet:
 
     #: Fractions of the title block width for the row that carries the
     #: drawing name.  Not four equal quarters, because the drawing name is
-    #: not a quarter-width field: since sheets are named rather than
-    #: numbered, ``TT-DB-TT123-V2P2P5-V2P2P6`` is 50.25 mm of lettering at
-    #: the ISO 3098 floor and a quarter of the block is 41.25 mm, 38.05 mm of
-    #: it usable.  Shortening the stems brought the longest name down from
-    #: 61.75 mm but not under that quarter, and the sheets waiting on other
-    #: branches are longer again: ``FPGA-ARTY-ETHERNET-LIGHT-PIPE`` is
-    #: 58.03 mm.  The three fields this one shares the row with are a sheet
-    #: size, a page count and a revision letter, none of which ever needed
-    #: the room they had.  Taken
+    #: not a quarter-width field: a quarter of the block is 41.25 mm with
+    #: 38.05 mm of it usable, and while sheets were named for the whole of
+    #: their file stems eight of the twenty-one overran it, the longest
+    #: -- ``TT-DB-TT123-V2P2P5-V2P2P6`` -- by 12 mm at the ISO 3098 floor.
+    #: The demo boards and the accessories are named by a rule now and are
+    #: nowhere near it, but the quarter is not restored, because nothing else
+    #: in the set has that much room to spare: ``TT-MP-FITTING-GUIDE`` is
+    #: 37.56 mm, which clears 38.05 by half a millimetre, and the sheets
+    #: waiting on other branches are longer than anything here --
+    #: ``FPGA-ARTY-ETHERNET-LIGHT-PIPE`` is 58.03 mm.  The three fields this
+    #: one shares the row with are a sheet size, a page count and a revision
+    #: letter, none of which ever needed the room they had.  Taken
     #: sideways rather than by adding a fourth row: the title block's height
     #: is the notes band's and the view's, and an A3 holds the tallest board
     #: at 1:1 with nothing to spare.

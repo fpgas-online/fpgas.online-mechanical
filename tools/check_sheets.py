@@ -240,10 +240,19 @@ def check_drawing_names() -> list[str]:
     The name is derived from the sheet's own file stem, which very nearly
     makes a collision impossible -- but ``slug`` is not injective, since
     ``rpi5``, ``rpi-5`` and ``rpi_5`` all give ``RPI-5``, so uniqueness is
-    checked rather than assumed.
+    checked rather than assumed.  It is checked harder than that now that a
+    family may have a name rule in ``FAMILY_NAME_RULES``, because a rule
+    throws away more of the stem than ``slug`` does on purpose: a demo board
+    sheet is named for the first revision it covers, so two sheets starting
+    at one revision would take one name, and two rows of ``ACC_NAMES`` could
+    be given the same value.  The set is small enough to answer outright, so
+    it is answered rather than reasoned about.
 
-    Nor does derivation say the result fits: a sheet covering four board
-    revisions makes a long name and the title block is a fixed 165 mm wide.
+    Nor does derivation say the result fits.  The title block is a fixed
+    165 mm wide whatever a family chooses to call its sheets, and the
+    families with no rule are named for stems nobody is keeping short for
+    this: ``FPGA-BUTTERSTICK`` is 34.33 mm of lettering at the ISO 3098
+    minimum and ``TT-MP-FITTING-GUIDE`` 37.56 mm.
     ``Sheet._title_cell`` refuses to draw a value that overruns its cell, so
     an overflow cannot reach paper -- but that refusal happens one sheet at a
     time, partway through a render, with the rest of the set unbuilt.  Here
