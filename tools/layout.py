@@ -448,12 +448,19 @@ def sheets() -> list[Path]:
 
 
 def bundles() -> list[Path]:
-    """Every bound copy: a PDF in an output directory with no SVG beside it.
+    """Every bound copy on disk: a PDF in an output directory with no SVG.
 
     Found rather than listed, and findable because of what a bundle is: it is
     bound from finished sheets and is not rendered from a drawing of its own,
     so it is the only kind of file in an output directory with no SVG next to
-    it.  A list here would be a second place to forget a new family.
+    it.
+
+    What each bundle *holds* is the generator's answer, not this one --
+    ``generate_diagrams.bundles()`` names the pages and the bookmarks, and the
+    check reads a bound copy against that.  This is the other half of the
+    question, and the only one a file system can answer: which bound copies
+    are actually there.  A bundle nobody binds any more would be committed
+    and unread without it.
     """
     out: list[Path] = []
     for directory in FAMILY_DIRS.values():
