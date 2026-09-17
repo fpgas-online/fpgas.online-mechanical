@@ -20,7 +20,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
 | [`tinytapeout/camera_holder/`](tinytapeout/camera_holder/README.md) | `TT-MP-CAM65`, `TT-MP-CAM120` -- A printed stand on the plate that holds a Camera Module v1.3 over whichever board is on it, one per lens, with STEP solids and a DXF |
-| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, each with a Digilent Pmod HAT Adapter overlaid |
+| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, each with a Digilent Pmod HAT Adapter overlaid, and all of them on the one outline they share |
 | [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; the OV5647's stock, autofocus and 120 degree lenses, every figure declared and derived, and their focus; then where to put an OV5647 camera over a board to frame it: how high, in two elevations drawing both lenses' fields of view, whether it is in focus there, and where |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Parts that are none of the boards above but turn up in the same assemblies, such as Pi-to-Pmod adapters and PoE splitters, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
@@ -73,6 +73,9 @@ are, and only the name is cut:
   the plate's prefix, since they bolt through the plate's own fixings, and
   CAM and the lens's angle from `HOLDER_NAMES`: `TT-MP-CAM65` and
   `TT-MP-CAM120`.
+- a Raspberry Pi sheet is named for its model, `RPI-5`, and the one sheet
+  that is no model's own, the three models superimposed, is `RPI-ALL`: a
+  one-row table, `RPI_NAMES`, since `models-compared` is a title too.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
@@ -127,7 +130,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </tr>
 </table>
 
-### Raspberry Pi, with a Digilent Pmod HAT Adapter overlaid
+### Raspberry Pi
 
 <table>
 <tr>
@@ -143,6 +146,14 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="raspberry_pi/output/rpi5.pdf"><img src="raspberry_pi/output/previews/rpi5.png" width="270" alt="RPI-5 Raspberry Pi 5"></a><br>
 <b>RPI-5</b> Raspberry Pi 5<br>85 x 56 mm
 </td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi/output/rpi-models-compared.pdf"><img src="raspberry_pi/output/previews/rpi-models-compared.png" width="270" alt="RPI-ALL Raspberry Pi 3B/3B+, 4B and 5 compared"></a><br>
+<b>RPI-ALL</b> Raspberry Pi 3B/3B+, 4B and 5 compared<br>One 85 x 56 outline: what is shared and what moves
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
 </tr>
 </table>
 
