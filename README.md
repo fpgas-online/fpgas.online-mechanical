@@ -272,7 +272,7 @@ make check     # render every sheet, refresh the grids, then run the checks
 ```
 
 Rebuilding is deterministic, and that is checked rather than hoped for: three
-full `make clean && make diagrams` cycles produce all 82 output files
+full `make clean && make diagrams` cycles produce all 85 output files
 byte-identical, so `git status` is silent after a rebuild unless a drawing
 actually changed. Cairo, pypdf and ezdxf all stamp a clock, cairo, Inkscape
 and pypdf their names and versions, and ezdxf two random GUIDs into what
