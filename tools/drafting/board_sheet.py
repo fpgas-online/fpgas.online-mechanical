@@ -1106,6 +1106,22 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # means everything the chain brings with it stacks upwards.
     chain_edge = _x_chain_edge(spec, overlay)
     x_out = 1.0 if chain_edge == "top" else -1.0
+    if o.corner_radius and chain_edge == "top":
+        # The corner radius callout is drawn above the board, five millimetres
+        # off the top edge, and a chain on that edge puts its spacing
+        # dimension six millimetres off the same edge.  The two would print on
+        # top of each other.  Not a hypothetical: twelve of the fifteen board
+        # sheets here have a corner radius, and the Raspberry Pi 5 sits one
+        # mounting hole away from a top chain at 4-3.  Loud rather than silent,
+        # because the drawing would still render and the collision is the sort
+        # a reader notices before a check does.
+        raise SystemExit(
+            f"{spec.key}: the X ordinate chain wants the top edge, where the "
+            f"R{o.corner_radius:.2f} corner callout is drawn, and the two "
+            "would overprint. Give the callout an edge of its own -- flip it "
+            "below the board when chain_edge is 'top', the way the overall "
+            "width dimension flips -- and reserve it there for the balloon "
+            "placer as well.")
 
     # The notes are known before anything is drawn, and their height decides
     # how much of the sheet is left for the view, so they are built first and
