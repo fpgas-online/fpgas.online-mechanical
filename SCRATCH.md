@@ -2101,7 +2101,7 @@ sits on three shapes at once.  Three things were tried:
 
 - **Exclusive dots.**  Search the points that are inside this group's
   outlines and outside every other group's.  It works for the RJ45 -- the
-  Pi 4B's reaches 2.65 mm further left than the Pi 3's, which is room for a
+  Pi 4B's reaches 2.65 mm further left than the Pi 3's upper USB pair, which is room for a
   dot -- and is far too tight for the USB pairs: the widest exclusive strip
   is 1.22 mm for the upper pair and 0.562 for the lower, against the 1.4 mm
   a dot with `DOT_CLEAR` on each side of it needs.  Kept anyway, as a score
