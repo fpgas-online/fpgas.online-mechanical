@@ -334,9 +334,10 @@ class Frame:
 def frame_for(target: Target, margin: float = FRAME_MARGIN) -> Frame:
     """The smallest 4:3 frame, either way up, holding *target* plus *margin*.
 
-    Either way up matters.  The Arty's LED row with the Ethernet jack above it
-    is half as wide as it is tall; framed landscape the camera has to go to
-    80 mm, turned through ninety degrees it goes to 60.
+    Either way up matters.  The Arty's LED row with the Ethernet jack above
+    it is 31.08 x 50.20 mm, nearer five-eighths as wide as it is tall than
+    half; framed landscape the camera has to go to 80 mm, turned through
+    ninety degrees it goes to 60.
     """
     x0, y0 = target.x0 - margin, target.y0 - margin
     x1, y1 = target.x1 + margin, target.y1 + margin

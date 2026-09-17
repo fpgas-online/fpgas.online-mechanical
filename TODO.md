@@ -293,10 +293,13 @@ checker that measures the finished PDFs rather than trusting them.
       `RPICAM-OVER-ETH` for the Arty with its Ethernet LEDs, and
       `RPICAM-OVER-ACORN` for an Acorn CLE-215+ in a Waveshare
       PoE M.2 HAT+ (B) on a Pi 5
-- [x] Two frames per subject, whole subject and indicators, each the smallest
-      4:3 rectangle holding its target plus 5.00 mm all round, with the camera
-      height for both lenses and the focus verdict against the published near
-      limit
+- [x] Two frames on each subject sheet, the whole subject and its indicators,
+      and one on the Arty's Ethernet sheet: each the smallest 4:3 rectangle
+      holding its target plus 5.00 mm all round, with the camera height for
+      both lenses and the focus verdict against the published near limit
+- [x] Z measured from the plane the frame's target lies in, not the subject's
+      own top face: the demo boards' indicators are on a board standing on
+      standoffs above the plate, and the Acorn is a card seated above a Pi
 - [x] `raspberry_pi_camera/verify.py`: the quotes, the model, and every frame
       against its target and its height
 - [x] The Acorn taken from `accessories/parts.py` rather than restated: the
@@ -323,3 +326,13 @@ checker that measures the finished PDFs rather than trusting them.
       declared figures confirm to a hundredth of a degree; at 120 degrees a
       real lens is not, and the frame will be barrel distorted. Nothing here
       models it.
+- [ ] A standoff height for the Tiny Tapeout plate.
+      `RPICAM-OVER-PLATE` frame B is set from the demo board's
+      top face and the offset from the plate is the standoff height plus the
+      board thickness; only the thickness is in this repository. If the plate
+      ever specifies a standoff, put the figure in
+      `tinytapeout/mounting_plate/plate.py` and let the sheet add it.
+- [ ] A Pi-to-card stack height for the Acorn. Waveshare dimension no height
+      and the CLE-215+'s heatsink is unpublished, so
+      `RPICAM-OVER-ACORN` can only say to measure the stack and
+      which way the error goes.

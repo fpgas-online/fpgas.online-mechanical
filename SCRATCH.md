@@ -3238,12 +3238,13 @@ pretending to be a margin.
 ### The camera may be turned through ninety degrees
 
 The frame is the smaller of the two 4:3 orientations. It matters exactly once,
-and by a lot: the Arty's LED row with the Ethernet jack above it is half as
-wide as it is tall, and framing it landscape puts the camera at 80 mm where
-turning the camera puts it at 60. The `LONG` column says which way round, and
-`verify.py` checks that the declared angles reach the frame the way round it
-was drawn -- which is the one place the orientation could have been got
-backwards without anything looking wrong.
+and by a lot: the Arty's LED row with the Ethernet jack above it is 31.08 x
+50.20 mm -- nearer five-eighths as wide as it is tall than half -- and framing
+it landscape puts the camera at 80 mm where turning the camera puts it at 60.
+The `LONG` column says which way round, and `verify.py` checks that the
+declared angles reach the frame the way round it was drawn -- which is the
+one place the orientation could have been got backwards without anything
+looking wrong.
 
 ### The indicators on the plate are not clustered
 
@@ -3301,12 +3302,13 @@ The card itself needs no branch: the PCI Express M.2 specification gives Type
 80, with both citations on the sheet.
 
 Where it *sits* is `accessories/parts.py`'s, which `ACC-HAT-M2POE` is drawn
-from: the connector datum at X 5.07, the module axis at Y 18.26, and the
-3.00 mm the 2280 standoff projects past the HAT's 85.00 edge. Nothing is
-restated here -- the card feature itself is imported, so the rectangle on
+from: the connector datum at X 5.07, the module axis at Y 18.26, the HAT's
+own 85.00 mm width and the 3.00 mm the 2280 standoff projects past it.
+Nothing is copied -- the card feature itself is imported, so the rectangle on
 this sheet is the rectangle on that one. The assembly's 88.00 x 57.32 mm
-envelope then falls out of this repository's own Pi 5 data: the Pi alone is
-87.960 x 57.320, and the standoff takes the 87.960 to 88.00.
+envelope then falls out of this repository's own Pi 5 data: the Pi's own
+assembled *envelope*, connectors included, is 87.960 x 57.320 over an
+85 x 56 board, and the standoff takes the 87.960 to 88.00.
 
 The boss itself is not drawn. Drawing it would have meant restating a fourth
 figure, its ø5.87, for a circle 2 mm outside the Pi's own Ethernet jack; the
@@ -3334,6 +3336,52 @@ gained the two frame line styles. Those are colours as well as a line type,
 because on a sheet where one frame contains the other, type K alone cannot
 say *which* frame a rectangle is, and that is the only question a reader has.
 
+### Z is measured from the target's plane, not the subject's face
+
+The review caught the one thing here that was wrong rather than untidy, and it
+is worth writing down because it is the mistake this whole model invites.
+
+The camera height is a distance from the pinhole to the plane it is focused
+and framed on. The subject's own top face is the obvious plane to quote it
+from, and on two of these four frames it is the wrong one:
+
+* `RPICAM-OVER-PLATE` frame B frames the demo boards'
+  indicators, and a demo board stands on standoffs above the plate. At the
+  100.1 mm the sheet first gave, a board 12 mm up put the picture at
+  88.83 x 66.62 against an indicator union of 90.91 x 62.79. The outer LEDs
+  were outside the frame.
+* `RPICAM-OVER-ACORN` frames an Acorn seated in a HAT above a
+  Pi, roughly 16 mm up. At 89.3 mm the picture at the card was
+  73.89 x 55.41 against a 90 x 67.50 frame, so the 80 mm card did not fit at
+  all.
+
+The picture at `h` above the plane the height was set from is `(Z - h) / Z`
+of what is drawn, so the error is always in the direction that loses the
+edges -- never the safe one. A `Target` now carries the plane it lies in and
+Z is quoted above that, with a PLANE note on every sheet saying which.
+
+Where the offset to the subject's own face is known, the sheet gives it. Where
+it is not, the sheet says so rather than inventing one, and that turns out to
+be both cases:
+
+* the plate-to-board offset is the standoff height plus the board thickness.
+  The thickness is in `tinytapeout/boards.py`, 1.56 to 1.60 mm across the
+  revisions; the standoff height is the builder's and is specified nowhere in
+  this repository, standoffs having never been drawn. Measure the stack.
+* the Pi-to-card offset is published by nobody. Waveshare dimension no height
+  on their drawing, `accessories/parts.py` carries none either, and the
+  CLE-215+'s heatsink is unpublished. Both Acorn frames are therefore set
+  from the card's own top face, which is the HIGHEST plane either target
+  reaches -- so everything below it is covered by more than the frame, which
+  is the safe direction.
+
+Frame A on the plate keeps the plate's own face, because the plate is what it
+frames. The board still stands above it and is still inside it, so the sheet
+prints the headroom instead: the board outlines stay in the picture up to
+25.2 mm above the plate at 65 deg and 9.5 mm at 120 deg. At 120 degrees that
+is less than a 10 mm standoff and a 1.6 mm board, which is worth knowing
+before building the rig.
+
 ### What is left uncertain
 
 - Z is to the lens's entrance pupil, and no vendor says where that sits behind
@@ -3348,3 +3396,11 @@ say *which* frame a rectangle is, and that is the only question a reader has.
   it behaves like a rectilinear angle to the array edge on the stock lens; at
   120 degrees real lenses are not rectilinear and the frame will be barrel
   distorted. Nothing here models distortion.
+- Neither plane offset that matters is published. The plate-to-board offset
+  needs a standoff height nobody here has written down, and the Pi-to-card
+  offset needs a stack height nobody publishes at all. Both sheets say to
+  measure, and say which way the error goes if you do not; neither can do
+  better until somebody specifies a standoff or dimensions the HAT.
+- The 65 degree column's excess over the rectangle drawn is 0.01 to 0.02 mm,
+  which is the rounding in the declared 53.50 and 41.41 rather than anything
+  physical. It is reported by `verify.py` and not by the sheets.

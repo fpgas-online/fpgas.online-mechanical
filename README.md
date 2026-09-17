@@ -348,10 +348,13 @@ with uncommitted changes.
 
 Nine checks run over the output. The eight that predate the camera position
 sheets have each caught a real defect, from text colliding on a sheet to a
-mounting hole no M3 screw actually fits; the ninth reads back the vendor
-pages those sheets quote their optics from and fails if a quote is not in
-them. [`tools/README.md`](tools/README.md) says what each one does and what
-it found.
+mounting hole no M3 screw actually fits. The ninth is newer than the sheets
+it checks and has caught nothing yet: it reads back the vendor pages those
+sheets quote their optics from, re-derives Raspberry Pi's own declared field
+of view from their own focal length and pixel count, and proves every camera
+frame holds its target at the height printed.
+[`tools/README.md`](tools/README.md) says what each one does and what it
+found.
 
 ## Licence
 
