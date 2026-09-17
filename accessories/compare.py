@@ -33,7 +33,7 @@ sys.path.insert(0, str(ROOT))
 from accessories.parts import PMOD_HAT, PMOD_HAT_PINS  # noqa: E402
 from accessories.raspmod import PI_HEADER, PORT_PINS, RASPMOD  # noqa: E402
 from tinytapeout.boards import BOARDS as TT  # noqa: E402
-from tools.layout import PMOD_HAT_SHEET, drawing_name  # noqa: E402
+from tools.layout import PMOD_HAT_SHEET, acc_stem, drawing_name  # noqa: E402
 
 PAGE = ROOT / "accessories" / "raspmod-vs-pmod-hat.md"
 
@@ -156,7 +156,8 @@ def mechanics_table() -> list[str]:
         return "; ".join(f"{p.label} ({p.cx:.2f}, {p.cy:.2f})" for p in ps)
 
     rows = [
-        ["Drawing", PMOD_HAT_SHEET, drawing_name("accessories", rm.key)],
+        ["Drawing", PMOD_HAT_SHEET,
+         drawing_name("accessories", acc_stem(rm.key))],
         ["Outline", f"{hat.outline.width:.1f} x {hat.outline.height:.1f} mm, "
                     f"R{hat.outline.corner_radius:.0f} corners",
          f"{rm.outline.width:.1f} x {rm.outline.height:.1f} mm, "

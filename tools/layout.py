@@ -32,16 +32,31 @@ FAMILY_DIRS = {
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "output",
 }
 
-#: Every demo board sheet's file stem is this and the revisions it covers.
+#: Every demo board sheet's file stem is this and the revisions it covers,
+#: assembled by ``tt_stem``.
 TT_STEM_LEAD = "tt-demo-board"
 
-#: The file stems of the sheets that are not named after a board key: the
-#: accessories' adapter sheet, whose part key is shorter than the file it
-#: renders to, and the mounting plate's four.  Here rather than in the
-#: generator because a stem is where a sheet lives, and because the notes on
-#: other sheets cite these by name and must derive that name from the same
-#: string the file is written to.
-PMOD_HAT_STEM = "digilent-pmod-hat-adapter"
+#: Each accessory sheet's file stem, by the key of the part it is drawn from.
+#: Here rather than in the generator because a stem is where a sheet lives,
+#: and because the notes on other sheets cite these by name and must derive
+#: that name from the same string the file is written to.
+#:
+#: A part key names the thing, vendor and all, because the data is a catalogue
+#: of parts somebody has to buy.  A stem names the sheet, and the sheet's title
+#: block already says who makes it, so the stem says what it is: ``poe-usbc``,
+#: not ``waveshare-poe-usbc``.  The names that came out of the vendor-bearing
+#: stems -- ``ACC-DIGILENT-PMOD-HAT-ADAPTER``, ``ACC-WAVESHARE-POE-USBC`` --
+#: were long enough to be read as a sentence rather than as a label.
+ACC_STEMS = {
+    "pmod-hat-adapter": "pmod-hat",
+    "waveshare-poe-usbc": "poe-usbc",
+    "generic-poe-microusb": "poe-microusb",
+    "raspmod": "raspmod",
+}
+
+PMOD_HAT_STEM = ACC_STEMS["pmod-hat-adapter"]
+
+#: The mounting plate's four file stems.
 PLATE_STEM = "tt-generic-mounting-plate"
 FITTING_GUIDE_STEM = f"{PLATE_STEM}-fitting-guide"
 
@@ -56,18 +71,17 @@ DRILL_TEMPLATE_STEMS = {
 #:
 #: The lead is stripped so a name says each thing once: the demo board stems
 #: all begin ``tt-demo-board``, which ``TT-DB`` is, and every mounting plate
-#: stem begins ``tt-generic-mounting``, which ``TT-MP`` is.  The lead stops
-#: there rather than taking the whole of ``tt-generic-mounting-plate``: that
-#: left the plate's own fabrication drawing with nothing but the prefix, and a
-#: bare ``TT-MP`` reads as the family rather than as one sheet of it -- "work
-#: from the coordinates on TT-MP" is a note pointing at four drawings.  Every
-#: name in this family says PLATE, and the plate's own is ``TT-MP-PLATE``.
+#: stem begins ``tt-generic-mounting-plate``, which ``TT-MP`` is.  The whole of
+#: it: the family is the plate and its three satellites, so PLATE on three of
+#: the four names says nothing the prefix has not.  The sheet whose stem is
+#: exactly the lead keeps it, by the rule in ``drawing_name``, and is
+#: ``TT-MP-PLATE``.
 FAMILY_PREFIXES = {
     "tinytapeout": ("TT-DB", TT_STEM_LEAD),
     "raspberry-pi": ("RPI", "rpi"),
     "fpga": ("FPGA", ""),
     "accessories": ("ACC", ""),
-    "mounting-plate": ("TT-MP", "tt-generic-mounting"),
+    "mounting-plate": ("TT-MP", PLATE_STEM),
 }
 
 
@@ -78,6 +92,45 @@ def slug(key: str) -> str:
     point is the convention the board files themselves use.
     """
     return key.replace(".", "p").replace("_", "-")
+
+
+def tt_stem(keys: list[str]) -> str:
+    """The file stem of the demo board sheet covering *keys*, in board order.
+
+    A sheet covers one geometry, which can be several revisions: the stem is
+    the first revision and the last, and a board name the two share written
+    once, so v2.2.5 and v2.2.6 of the tt123 board give
+    ``tt-demo-board-tt123-v2p2p5-v2p2p6`` and the 4+ board's v1.2.1, v1.2.2 and
+    v1.2.3 give ``tt-demo-board-v1p2p1-v1p2p3``.
+
+    It listed every revision it covered, and every board name with it:
+    ``tt-demo-board-tt123-v2p2p5-tt123-v2p2p6``, whose drawing name ran to
+    31 characters and said tt123 twice.  A range says which revisions in the
+    length of two, and the revisions are in order, so the end points are the
+    range.  What the range cannot say -- that the middle revision is on this
+    sheet too, and which shuttles and kits it went out in -- the title, the
+    subtitle and the notes say in full, and they are what a reader of the
+    drawing has in front of them.
+    """
+    first, last = slug(keys[0]), slug(keys[-1])
+    if first == last:
+        return f"{TT_STEM_LEAD}-{first}"
+    board, _, rev = first.rpartition("-")
+    board_last, _, rev_last = last.rpartition("-")
+    if board and board == board_last:
+        return f"{TT_STEM_LEAD}-{board}-{rev}-{rev_last}"
+    return f"{TT_STEM_LEAD}-{first}-{last}"
+
+
+def acc_stem(key: str) -> str:
+    """The file stem of the accessory sheet drawn from the part *key*."""
+    try:
+        return ACC_STEMS[key]
+    except KeyError:
+        raise SystemExit(
+            f"no sheet file stem for the accessory {key!r}; add one to "
+            "ACC_STEMS in tools/layout.py, saying what the part is without "
+            "the vendor the title block already names")
 
 
 def drawing_name(family: str, stem: str) -> str:
@@ -101,6 +154,18 @@ def drawing_name(family: str, stem: str) -> str:
     give ``RPI-5`` -- so uniqueness is very nearly the file system's, but not
     quite, and ``tools/check_sheets.py`` checks it rather than assuming it.
 
+    A family whose lead is one of its own stems has one sheet the stripping
+    leaves nothing of: the mounting plate's fabrication drawing is written to
+    ``tt-generic-mounting-plate``, which is the lead entire.  That sheet takes
+    the last word of the lead, so it is ``TT-MP-PLATE`` -- named for what it
+    is, which is the plate, rather than for the family it heads.  Handing back
+    the bare prefix instead would be worse than terse: ``TT-MP`` is a substring
+    of ``TT-MP-FITTING-GUIDE``, so the check that each sheet carries its own
+    name was satisfied by the plate's *note* citing the fitting guide, and
+    deleting the title block from the plate SVG did not fail it.  A name that
+    is a prefix of its siblings' cannot be told from them by any test that
+    reads a sheet, so the rule is not to produce one.
+
     The reading-order lists stay.  The bound copies and the README grid still
     need an order; they just no longer number anything.
     """
@@ -112,13 +177,13 @@ def drawing_name(family: str, stem: str) -> str:
             "FAMILY_PREFIXES in tools/layout.py, beside its output directory")
     rest = slug(stem)
     if lead and rest.startswith(lead):
-        rest = rest[len(lead):]
+        rest = rest[len(lead):] or lead.rsplit("-", 1)[-1]
     rest = rest.strip("-").upper()
     if not rest:
         raise SystemExit(
-            f"the sheet {stem!r} is nothing but its family's stem lead, so "
+            f"the sheet {stem!r} has no file stem to be named after, so "
             f"{family!r} would name it {prefix!r}, which is the family and "
-            "not a sheet of it. Shorten the lead in FAMILY_PREFIXES.")
+            "not a sheet of it.")
     return f"{prefix}-{rest}"
 
 

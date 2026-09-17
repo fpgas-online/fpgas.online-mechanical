@@ -30,7 +30,7 @@ from tinytapeout.boards import BOARDS as TT                   # noqa: E402
 from tools.generate_diagrams import FPGA_ORDER, RPI_ORDER, tt_sheets  # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           FITTING_GUIDE_STEM, PLATE_STEM, PMOD_HAT_STEM,
-                          drawing_name, rel, slug)
+                          acc_stem, drawing_name, rel, slug)
 
 BEGIN = "<!-- sheets:begin -->"
 END = "<!-- sheets:end -->"
@@ -74,10 +74,11 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
         ("Accessories", "accessories", COLUMNS,
          named("accessories",
                [(PMOD_HAT_STEM, PMOD_HAT.title, PMOD_HAT.subtitle),
-                (WAVESHARE_POE.key, WAVESHARE_POE.title,
+                (acc_stem(WAVESHARE_POE.key), WAVESHARE_POE.title,
                  WAVESHARE_POE.subtitle),
-                (GENERIC_POE.key, GENERIC_POE.title, GENERIC_POE.subtitle),
-                (RASPMOD.key, RASPMOD.title, RASPMOD.subtitle)])),
+                (acc_stem(GENERIC_POE.key), GENERIC_POE.title,
+                 GENERIC_POE.subtitle),
+                (acc_stem(RASPMOD.key), RASPMOD.title, RASPMOD.subtitle)])),
         ("Mounting plate", "mounting-plate", 2,
          named("mounting-plate",
                [(PLATE_STEM, PLATE.title, PLATE.subtitle),

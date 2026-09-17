@@ -36,8 +36,8 @@ from tools.drafting.template_sheet import render_drill_template  # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           FITTING_GUIDE_SHEET, FITTING_GUIDE_STEM,
                           PLATE_SHEET, PLATE_STEM, PMOD_HAT_SHEET,
-                          PMOD_HAT_STEM, TT_STEM_LEAD, drawing_name,
-                          preview_for, rel, slug)
+                          PMOD_HAT_STEM, acc_stem, drawing_name,
+                          preview_for, rel, slug, tt_stem)
 from tools.render_svg import combine_pdfs  # noqa: E402
 from tools import reproducible  # noqa: E402
 
@@ -110,7 +110,8 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
     identical, which the sheets themselves then said in a note.  They are
     merged instead, and the sheet names every revision and shuttle it covers.
     Each returns with the file stem it is written to, which is also where its
-    drawing name comes from.
+    drawing name comes from; ``layout.tt_stem`` assembles it from the first
+    revision and the last, and the title and notes here carry the rest.
 
     The data keeps every revision: it is a database of what was built, and the
     plate is designed against individual revisions.  Only the drawing set is
@@ -141,7 +142,7 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
     for keys in groups:
         first = TT_BOARDS[keys[0]]
         if len(keys) == 1:
-            out.append((f"{TT_STEM_LEAD}-{slug(keys[0])}", first))
+            out.append((tt_stem(keys), first))
             continue
         revs = [TT_BOARDS[k] for k in keys]
         # Every revision's own board file is cited, each at its own commit,
@@ -203,7 +204,7 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
             sources=tuple(sources),
             notes=notes,
         )
-        out.append(("-".join([TT_STEM_LEAD] + [slug(k) for k in keys]), spec))
+        out.append((tt_stem(keys), spec))
     return out
 
 
@@ -385,18 +386,20 @@ def main() -> None:
     made.append(path)
 
     for spec in [WAVESHARE_POE, GENERIC_POE]:
+        stem = acc_stem(spec.key)
         sheet = render_enclosure(
-            spec, drawing_no=drawing_name("accessories", spec.key),
+            spec, drawing_no=drawing_name("accessories", stem),
             version=VERSION)
-        path = acc_dir / f"{spec.key}.svg"
+        path = acc_dir / f"{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
 
     # The Raspmod: the other way of putting Pmods on a Raspberry Pi, drawn
     # beside the Digilent adapter it is compared with.
+    raspmod_stem = acc_stem(RASPMOD.key)
     sheet = render_board(RASPMOD, version=VERSION,
-                         drawing_no=drawing_name("accessories", RASPMOD.key))
-    path = acc_dir / f"{RASPMOD.key}.svg"
+                         drawing_no=drawing_name("accessories", raspmod_stem))
+    path = acc_dir / f"{raspmod_stem}.svg"
     sheet.canvas.save(str(path))
     made.append(path)
 
