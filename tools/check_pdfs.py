@@ -17,7 +17,12 @@ committed, and none of them is obvious by looking:
   ``tools/reproducible.py``;
 * the page is the size the drawing says it is, and carries no font.  Inkscape
   is asked for text as paths, so a print shop with no DejaVu installed still
-  gets the right lettering rather than a substituted face at the wrong width.
+  gets the right lettering rather than a substituted face at the wrong width;
+* every bound copy really is the committed sheets, page for page, and every
+  page carries a bookmark naming the drawing on it.  A bundle is the copy
+  people mail and print whole, and it is bound from the sheet PDFs rather
+  than re-rendered precisely so that it cannot say something different --
+  which is only worth anything if somebody checks.
 
 
 Run: uv run --no-project --with pypdf --with pillow python tools/check_pdfs.py
@@ -25,6 +30,7 @@ Run: uv run --no-project --with pypdf --with pillow python tools/check_pdfs.py
 
 from __future__ import annotations
 
+import io
 import re
 import shutil
 import subprocess
@@ -36,7 +42,7 @@ from pypdf import PdfReader
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tools.layout import FAMILY_DIRS, rel  # noqa: E402
+from tools.layout import FAMILY_DIRS, bundles, drawing_name_for, rel  # noqa: E402
 from tools.render_svg import to_pdf  # noqa: E402
 
 WORK = ROOT / "tmp" / "check-pdfs"
@@ -116,6 +122,52 @@ def check(svg_path: str) -> list[str]:
     return bad
 
 
+def content_stream(page) -> bytes:
+    """The page's drawing instructions, with the file's furniture left out."""
+    contents = page.get_contents()
+    return contents.get_data() if contents is not None else b""
+
+
+def check_bundle(path: str, by_stream: dict[bytes, tuple[str, str]]) -> list[str]:
+    """One bound copy: the committed sheets, in order, bookmarked by name.
+
+    Page identity is the content stream, which is the drawing itself: the
+    surrounding Info dictionary differs between a sheet and a bundle by
+    design, since pypdf bound the one and cairo drew the other.  Matching on
+    it proves the bundle was assembled from the PDFs in the index rather than
+    re-rendered, and it names the sheet each page came from, which is what
+    the bookmark is then held to.
+    """
+    data = blob(path)
+    if data is None:
+        return ["not staged"]
+    reader = PdfReader(io.BytesIO(data))
+    bad: list[str] = []
+    pages: list[tuple[str, str] | None] = []
+    for i, page in enumerate(reader.pages, 1):
+        hit = by_stream.get(content_stream(page))
+        if hit is None:
+            bad.append(f"page {i} is not any sheet in the index; it was not "
+                       "bound from the committed PDFs")
+        pages.append(hit)
+
+    entries = [e for e in (reader.outline or []) if not isinstance(e, list)]
+    if len(entries) != len(pages):
+        bad.append(f"{len(pages)} page(s) but {len(entries)} bookmark(s); "
+                   "every page of a bound copy gets one")
+    for entry in entries:
+        n = reader.get_destination_page_number(entry)
+        hit = pages[n] if 0 <= n < len(pages) else None
+        if hit is None:
+            continue
+        sheet, name = hit
+        title = str(entry.title)
+        if not title.startswith(f"{name} "):
+            bad.append(f"page {n + 1} is {sheet}, so its bookmark should open "
+                       f"with the drawing name {name}; it reads {title!r}")
+    return bad
+
+
 def main() -> int:
     svgs = tracked_sheets()
     if not svgs:
@@ -137,7 +189,29 @@ def main() -> int:
                       "true size, no fonts")
     finally:
         shutil.rmtree(WORK, ignore_errors=True)
-    print(f"\n{total} problem(s) across {len(svgs)} PDFs in the index")
+    by_stream: dict[bytes, tuple[str, str]] = {}
+    for svg in svgs:
+        data = blob(svg[:-4] + ".pdf")
+        if data is None:
+            continue
+        name = drawing_name_for(ROOT / svg)
+        for page in PdfReader(io.BytesIO(data)).pages:
+            by_stream[content_stream(page)] = (svg, name)
+
+    bound = [rel(b) for b in bundles()]
+    for path in bound:
+        problems = check_bundle(path, by_stream)
+        total += len(problems)
+        if problems:
+            print(f"{path}: {len(problems)} problem(s)")
+            for line in problems:
+                print(f"    {line}")
+        else:
+            print(f"{path}: bound from the committed sheets, "
+                  "bookmarked by drawing name")
+
+    print(f"\n{total} problem(s) across {len(svgs)} PDFs and {len(bound)} "
+          "bound copies in the index")
     return 1 if total else 0
 
 

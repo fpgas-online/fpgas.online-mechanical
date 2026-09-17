@@ -24,7 +24,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from tools.drafting import style  # noqa: E402
-from tools.layout import preview_for, rel, sheets  # noqa: E402
+from tools.drafting.sheet import Sheet  # noqa: E402
+from tools.layout import drawing_name_for, preview_for, rel, sheets  # noqa: E402
 
 TEXT_RE = re.compile(
     r'<text x="([-\d.]+)" y="([-\d.]+)"[^>]*?font-size="([\d.]+)"[^>]*?'
@@ -198,6 +199,42 @@ def check_readme_previews() -> list[str]:
     return problems
 
 
+def check_drawing_names() -> list[str]:
+    """Every sheet's drawing name is unique and fits the DRAWING NO cell.
+
+    The name is derived from the sheet's own file stem, so two sheets cannot
+    share one and nothing else in the set can take it away.  What derivation
+    does not guarantee is that the result fits: a sheet covering four board
+    revisions makes a long name, and the title block is a fixed 165 mm wide.
+
+    ``Sheet._title_cell`` refuses to draw a value that overruns its cell, so
+    this cannot reach paper -- but that refusal happens one sheet at a time,
+    partway through a render, with the rest of the set unbuilt.  Measured here
+    the whole set is answered at once, against the same font metrics the
+    layout uses, and the sheet is checked to actually carry the name derived
+    for it, which is what catches a renderer that was passed something else.
+    """
+    room = Sheet.drawing_no_room()
+    problems = []
+    seen: dict[str, Path] = {}
+    for svg in sheets():
+        name = drawing_name_for(svg)
+        if name in seen:
+            problems.append(f"{name} names two sheets, {rel(seen[name])} and "
+                            f"{rel(svg)}")
+        seen[name] = svg
+        width = style.text_width(name, style.T_MIN, bold=True)
+        if width > room:
+            problems.append(
+                f"{rel(svg)}: the drawing name {name} needs {width:.2f} mm of "
+                f"the {room:.2f} mm in the DRAWING NO cell, at the ISO 3098 "
+                "minimum lettering size")
+        elif name not in svg.read_text():
+            problems.append(f"{rel(svg)} does not carry its own drawing name, "
+                            f"{name}")
+    return problems
+
+
 #: A Markdown link to something in the repository: ``[text](path)`` where the
 #: path is not a URL.  The anchor, if any, is not checked.
 DOC_LINK_RE = re.compile(r"\]\((?!https?://|#)([^)\s]+)\)")
@@ -283,6 +320,10 @@ def main() -> int:
                 print(f"    ... and {len(problems) - 14} more")
         else:
             print(f"{name}: clean ({len(items)} text elements)")
+    names = check_drawing_names()
+    for line in names:
+        print(f"names: {line}")
+    total += len(names)
     readme = check_readme_previews() + check_doc_links()
     for line in readme:
         print(f"docs: {line}")
