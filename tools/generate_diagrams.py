@@ -33,7 +33,11 @@ from tools.drafting.enclosure_sheet import render_enclosure  # noqa: E402
 from tools.drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
-from tools.layout import FAMILY_DIRS, preview_for, rel  # noqa: E402
+from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
+                          FITTING_GUIDE_SHEET, FITTING_GUIDE_STEM,
+                          PLATE_SHEET, PLATE_STEM, PMOD_HAT_SHEET,
+                          PMOD_HAT_STEM, TT_STEM_LEAD, drawing_name,
+                          preview_for, rel, slug)
 from tools.render_svg import combine_pdfs  # noqa: E402
 from tools import reproducible  # noqa: E402
 
@@ -60,8 +64,10 @@ RPI_BUNDLE = "raspberry-pi-sheets.pdf"
 #: And the FPGA development boards.
 FPGA_BUNDLE = "fpga-sheets.pdf"
 
-# Sheet numbering: family prefix, then the order the sheets are meant to be
-# read in.  Numbers are stable so a reference to a drawing keeps working.
+# Reading order: what a bound copy pages through and what the README grid
+# runs across.  It numbers nothing -- a sheet's drawing name comes from its
+# own file stem, see tools.layout.drawing_name -- so adding a board here
+# cannot renumber the sheets already drawn.
 TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.1", "v1.2.2", "v1.2.3",
             "v2.0.1", "v2.1.0", "v2.1.2", "v3.2", "v3.3"]
 RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
@@ -71,12 +77,6 @@ RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
 #: is fitted to its own board.
 FPGA_ORDER = ["arty-a7", "ulx3s", "pynq-z2", "butterstick"]
 
-#: The drill templates, in sheet order, and the file stem each is written to.
-DRILL_TEMPLATES = {
-    "plate": "tt-generic-mounting-plate-drill-template",
-    "chassis": "tt-generic-mounting-plate-chassis-drill-template",
-}
-
 #: The pitch is dimensioned on the view; what the view cannot say is where
 #: the number comes from and that every revision shares it, which is what
 #: lets one mounting plate serve them all.  The sheets are registered on the
@@ -85,7 +85,7 @@ DRILL_TEMPLATES = {
 TT_NOTES = (
     "Pmod host pitch, 22.86 mm (0.9 in), is the Digilent Pmod Interface "
     "Specification 1.2.0 figure and is the same on every revision; the "
-    "mounting plate, TT-MP-01, registers against it.",
+    f"mounting plate, {PLATE_SHEET}, registers against it.",
 )
 
 RPI_NOTES = (
@@ -97,12 +97,8 @@ RPI_NOTES = (
     # plate designer needs.  Stated with the adapter's constant rather than
     # a copied "0.75", so the two sheets cannot drift apart.
     "Pmod HAT Adapter host positions are DERIVED, good to about "
-    f"+/-{PMOD_HAT_TOL} mm; drawing ACC-01 has the derivation.",
+    f"+/-{PMOD_HAT_TOL} mm; drawing {PMOD_HAT_SHEET} has the derivation.",
 )
-
-
-def slug(key: str) -> str:
-    return key.replace(".", "p").replace("_", "-")
 
 
 def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
@@ -113,6 +109,8 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
     each meant two drawings a reader had to compare to discover they were
     identical, which the sheets themselves then said in a note.  They are
     merged instead, and the sheet names every revision and shuttle it covers.
+    Each returns with the file stem it is written to, which is also where its
+    drawing name comes from.
 
     The data keeps every revision: it is a database of what was built, and the
     plate is designed against individual revisions.  Only the drawing set is
@@ -143,7 +141,7 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
     for keys in groups:
         first = TT_BOARDS[keys[0]]
         if len(keys) == 1:
-            out.append((slug(keys[0]), first))
+            out.append((f"{TT_STEM_LEAD}-{slug(keys[0])}", first))
             continue
         revs = [TT_BOARDS[k] for k in keys]
         # Every revision's own board file is cited, each at its own commit,
@@ -205,7 +203,7 @@ def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
             sources=tuple(sources),
             notes=notes,
         )
-        out.append(("-".join(slug(k) for k in keys), spec))
+        out.append(("-".join([TT_STEM_LEAD] + [slug(k) for k in keys]), spec))
     return out
 
 
@@ -330,15 +328,16 @@ def main() -> None:
     band = max(planned_band_height(spec, extra_notes=TT_NOTES,
                                    view_bbox=frames[stem])
                for stem, spec in sheets)
-    for n, (stem, spec) in enumerate(sheets, 1):
-        sheet = render_board(spec, drawing_no=f"TT-DB-{n:02d}", version=VERSION,
+    for stem, spec in sheets:
+        name = drawing_name("tinytapeout", stem)
+        sheet = render_board(spec, drawing_no=name, version=VERSION,
                              extra_notes=TT_NOTES, family_numbers=TT_NUMBERS,
                              view_bbox=frames[stem], band_height=band)
-        path = tt_dir / f"tt-demo-board-{stem}.svg"
+        path = tt_dir / f"{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
         board_set.append((path.with_suffix(".pdf"),
-                          f"TT-DB-{n:02d}  {spec.title}  -  {spec.subtitle}"))
+                          f"{name}  {spec.title}  -  {spec.subtitle}"))
 
     rpi_dir = FAMILY_DIRS["raspberry-pi"]
     rpi_dir.mkdir(parents=True, exist_ok=True)
@@ -349,75 +348,83 @@ def main() -> None:
     rpi_band = max(planned_band_height(RPI_BOARDS[k], extra_notes=RPI_NOTES,
                                        overlay=PMOD_HAT, view_bbox=rpi_frame)
                    for k in RPI_ORDER)
-    for n, key in enumerate(RPI_ORDER, 1):
+    for key in RPI_ORDER:
         spec = RPI_BOARDS[key]
-        sheet = render_board(spec, drawing_no=f"RPI-{n:02d}", version=VERSION,
+        stem = slug(key)
+        name = drawing_name("raspberry-pi", stem)
+        sheet = render_board(spec, drawing_no=name, version=VERSION,
                              overlay=PMOD_HAT, extra_notes=RPI_NOTES,
                              family_numbers=RPI_NUMBERS, view_bbox=rpi_frame,
                              band_height=rpi_band)
-        path = rpi_dir / f"{slug(key)}.svg"
+        path = rpi_dir / f"{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
         rpi_set.append((path.with_suffix(".pdf"),
-                        f"RPI-{n:02d}  {spec.title}  -  {spec.subtitle}"))
+                        f"{name}  {spec.title}  -  {spec.subtitle}"))
 
     fpga_dir = FAMILY_DIRS["fpga"]
     fpga_dir.mkdir(parents=True, exist_ok=True)
     fpga_set: list[tuple[Path, str]] = []
-    for n, key in enumerate(FPGA_ORDER, 1):
+    for key in FPGA_ORDER:
         spec = FPGA_BOARDS[key]
-        sheet = render_board(spec, drawing_no=f"FPGA-{n:02d}", version=VERSION,
+        stem = slug(key)
+        name = drawing_name("fpga", stem)
+        sheet = render_board(spec, drawing_no=name, version=VERSION,
                              family_numbers=FPGA_NUMBERS)
-        path = fpga_dir / f"{slug(key)}.svg"
+        path = fpga_dir / f"{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
         fpga_set.append((path.with_suffix(".pdf"),
-                         f"FPGA-{n:02d}  {spec.title}  -  {spec.subtitle}"))
+                         f"{name}  {spec.title}  -  {spec.subtitle}"))
 
     acc_dir = FAMILY_DIRS["accessories"]
     acc_dir.mkdir(parents=True, exist_ok=True)
-    sheet = render_board(PMOD_HAT, drawing_no="ACC-01", version=VERSION)
-    path = acc_dir / "digilent-pmod-hat-adapter.svg"
+    sheet = render_board(PMOD_HAT, drawing_no=PMOD_HAT_SHEET, version=VERSION)
+    path = acc_dir / f"{PMOD_HAT_STEM}.svg"
     sheet.canvas.save(str(path))
     made.append(path)
 
-    for n, spec in enumerate([WAVESHARE_POE, GENERIC_POE], 2):
-        sheet = render_enclosure(spec, drawing_no=f"ACC-{n:02d}", version=VERSION)
+    for spec in [WAVESHARE_POE, GENERIC_POE]:
+        sheet = render_enclosure(
+            spec, drawing_no=drawing_name("accessories", spec.key),
+            version=VERSION)
         path = acc_dir / f"{spec.key}.svg"
         sheet.canvas.save(str(path))
         made.append(path)
 
-    # The Raspmod, ACC-04: the other way of putting Pmods on a Raspberry Pi,
-    # drawn beside the Digilent adapter it is compared with.  Numbered after
-    # the splitters because it arrived after them, and the numbers are stable.
-    sheet = render_board(RASPMOD, drawing_no="ACC-04", version=VERSION)
+    # The Raspmod: the other way of putting Pmods on a Raspberry Pi, drawn
+    # beside the Digilent adapter it is compared with.
+    sheet = render_board(RASPMOD, version=VERSION,
+                         drawing_no=drawing_name("accessories", RASPMOD.key))
     path = acc_dir / f"{RASPMOD.key}.svg"
     sheet.canvas.save(str(path))
     made.append(path)
 
     plate_dir = FAMILY_DIRS["mounting-plate"]
     plate_dir.mkdir(parents=True, exist_ok=True)
-    sheet = render_plate(drawing_no="TT-MP-01", version=VERSION)
-    path = plate_dir / "tt-generic-mounting-plate.svg"
+    sheet = render_plate(drawing_no=PLATE_SHEET, version=VERSION)
+    path = plate_dir / f"{PLATE_STEM}.svg"
     sheet.canvas.save(str(path))
     made.append(path)
     plate_set.append((path.with_suffix(".pdf"),
-                      f"TT-MP-01  {PLATE.title}  -  {PLATE.subtitle}"))
+                      f"{PLATE_SHEET}  {PLATE.title}  -  {PLATE.subtitle}"))
 
-    sheet = render_fitting_guide(drawing_no="TT-MP-02", version=VERSION)
-    path = plate_dir / "tt-generic-mounting-plate-fitting-guide.svg"
+    sheet = render_fitting_guide(drawing_no=FITTING_GUIDE_SHEET,
+                                 version=VERSION)
+    path = plate_dir / f"{FITTING_GUIDE_STEM}.svg"
     sheet.canvas.save(str(path))
     made.append(path)
     plate_set.append((path.with_suffix(".pdf"),
-                      "TT-MP-02  TT Mounting Plate Fitting Guide  -  "
-                      "Which holes each demo board revision uses"))
+                      f"{FITTING_GUIDE_SHEET}  TT Mounting Plate Fitting "
+                      "Guide  -  Which holes each demo board revision uses"))
 
     # The drill templates are A4 portrait and 1:1 rather than A3 drawings,
     # but they are still sheets of the mounting plate and live with it: a
     # directory of their own split the plate's four sheets across two places.
-    for n, (kind, stem) in enumerate(DRILL_TEMPLATES.items(), 3):
-        sheet = render_drill_template(kind, drawing_no=f"TT-MP-{n:02d}",
-                                      version=VERSION)
+    for kind, stem in DRILL_TEMPLATE_STEMS.items():
+        sheet = render_drill_template(
+            kind, drawing_no=drawing_name("mounting-plate", stem),
+            version=VERSION)
         path = plate_dir / f"{stem}.svg"
         sheet.canvas.save(str(path))
         made.append(path)

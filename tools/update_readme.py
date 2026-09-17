@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rewrite the README's preview grid from the sheets that actually exist.
 
-The grid names every sheet, its drawing number and its file paths.  Kept by
+The grid names every sheet, its drawing name and its file paths.  Kept by
 hand it drifts the moment a sheet is added, renamed or dropped -- which is
 what happened when the Raspberry Pi 3 Model A+ was removed.  ``check_sheets``
 catches that drift; this fixes it.
@@ -27,8 +27,10 @@ from tinytapeout.mounting_plate.plate import PLATE                              
 from fpga.boards import BOARDS as FPGA                        # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
-from tools.generate_diagrams import FPGA_ORDER, RPI_ORDER, slug, tt_sheets  # noqa: E402
-from tools.layout import FAMILY_DIRS, rel                               # noqa: E402
+from tools.generate_diagrams import FPGA_ORDER, RPI_ORDER, tt_sheets  # noqa: E402
+from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
+                          FITTING_GUIDE_STEM, PLATE_STEM, PMOD_HAT_STEM,
+                          drawing_name, rel, slug)
 
 BEGIN = "<!-- sheets:begin -->"
 END = "<!-- sheets:end -->"
@@ -45,39 +47,48 @@ COLUMNS = 3
 CELL_WIDTH = 270
 
 
+def named(family: str, rows) -> list[tuple[str, str, str, str]]:
+    """Put each row's drawing name in front of it, derived from its stem.
+
+    Derived here rather than written into the tables below, for the same
+    reason the sheets themselves derive it: a name written out by hand is a
+    name that can disagree with the one on the drawing.
+    """
+    return [(drawing_name(family, stem), stem, title, sub)
+            for stem, title, sub in rows]
+
+
 def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
     """Each family: its heading, layout key, cells per row, and its sheets."""
     return [
         ("Tiny Tapeout demo boards", "tinytapeout", COLUMNS,
-         [(f"TT-DB-{n:02d}", f"tt-demo-board-{stem}", spec.title, spec.subtitle)
-          for n, (stem, spec) in enumerate(tt_sheets(), 1)]),
+         named("tinytapeout", [(stem, spec.title, spec.subtitle)
+                               for stem, spec in tt_sheets()])),
         ("Raspberry Pi, with a Digilent Pmod HAT Adapter overlaid",
          "raspberry-pi", COLUMNS,
-         [(f"RPI-{n:02d}", slug(k), RPI[k].title, RPI[k].subtitle)
-          for n, k in enumerate(RPI_ORDER, 1)]),
+         named("raspberry-pi", [(slug(k), RPI[k].title, RPI[k].subtitle)
+                                for k in RPI_ORDER])),
         ("FPGA development boards", "fpga", COLUMNS,
-         [(f"FPGA-{n:02d}", slug(k), FPGA[k].title, FPGA[k].subtitle)
-          for n, k in enumerate(FPGA_ORDER, 1)]),
+         named("fpga", [(slug(k), FPGA[k].title, FPGA[k].subtitle)
+                        for k in FPGA_ORDER])),
         ("Accessories", "accessories", COLUMNS,
-         [("ACC-01", "digilent-pmod-hat-adapter",
-           PMOD_HAT.title, PMOD_HAT.subtitle),
-          ("ACC-02", WAVESHARE_POE.key,
-           WAVESHARE_POE.title, WAVESHARE_POE.subtitle),
-          ("ACC-03", GENERIC_POE.key,
-           GENERIC_POE.title, GENERIC_POE.subtitle),
-          ("ACC-04", RASPMOD.key, RASPMOD.title, RASPMOD.subtitle)]),
+         named("accessories",
+               [(PMOD_HAT_STEM, PMOD_HAT.title, PMOD_HAT.subtitle),
+                (WAVESHARE_POE.key, WAVESHARE_POE.title,
+                 WAVESHARE_POE.subtitle),
+                (GENERIC_POE.key, GENERIC_POE.title, GENERIC_POE.subtitle),
+                (RASPMOD.key, RASPMOD.title, RASPMOD.subtitle)])),
         ("Mounting plate", "mounting-plate", 2,
-         [("TT-MP-01", "tt-generic-mounting-plate",
-           PLATE.title, PLATE.subtitle),
-          ("TT-MP-02", "tt-generic-mounting-plate-fitting-guide",
-           "TT Mounting Plate Fitting Guide",
-           "Which holes each demo board revision uses"),
-          ("TT-MP-03", "tt-generic-mounting-plate-drill-template",
-           "Drill Template: Mounting Plate",
-           "A4 at 1:1 - print, tape down and drill through"),
-          ("TT-MP-04", "tt-generic-mounting-plate-chassis-drill-template",
-           "Drill Template: Chassis",
-           "A4 at 1:1 - the six M4 fixings in the box the plate bolts to")]),
+         named("mounting-plate",
+               [(PLATE_STEM, PLATE.title, PLATE.subtitle),
+                (FITTING_GUIDE_STEM, "TT Mounting Plate Fitting Guide",
+                 "Which holes each demo board revision uses"),
+                (DRILL_TEMPLATE_STEMS["plate"],
+                 "Drill Template: Mounting Plate",
+                 "A4 at 1:1 - print, tape down and drill through"),
+                (DRILL_TEMPLATE_STEMS["chassis"], "Drill Template: Chassis",
+                 "A4 at 1:1 - the six M4 fixings in the box the plate bolts "
+                 "to")])),
     ]
 
 
@@ -100,14 +111,14 @@ def table(rows, base: Path, columns: int = COLUMNS) -> list[str]:
             if i + j >= len(rows):
                 out.append(f'<td width="{width}"></td>')
                 continue
-            no, folder, stem, title, sub = rows[i + j]
+            name, folder, stem, title, sub = rows[i + j]
             d = FAMILY_DIRS[folder]
             img = os.path.relpath(d / "previews" / f"{stem}.png", base)
             pdf = os.path.relpath(d / f"{stem}.pdf", base)
             out.append(f'<td width="{width}" valign="top" align="center">')
             out.append(f'<a href="{pdf}"><img src="{img}" '
-                       f'width="{CELL_WIDTH}" alt="{no} {title}"></a><br>')
-            out.append(f'<b>{no}</b> {title}<br>{sub}')
+                       f'width="{CELL_WIDTH}" alt="{name} {title}"></a><br>')
+            out.append(f'<b>{name}</b> {title}<br>{sub}')
             out.append("</td>")
         out.append("</tr>")
     out += ["</table>", ""]
@@ -120,16 +131,16 @@ def full_grid(base: Path) -> str:
            "SVG.", ""]
     for heading, folder, columns, rows in groups():
         out += [f"### {heading}", ""]
-        out += table([(no, folder, stem, title, sub)
-                      for no, stem, title, sub in rows], base, columns)
+        out += table([(name, folder, stem, title, sub)
+                      for name, stem, title, sub in rows], base, columns)
     return "\n".join(out).rstrip() + "\n"
 
 
 def family_grid(folder: str, base: Path) -> str:
     """One family's sheets, for that family's own README."""
-    rows = [(no, folder, stem, title, sub)
+    rows = [(name, folder, stem, title, sub)
             for heading, key, columns, group in groups() if key == folder
-            for no, stem, title, sub in group]
+            for name, stem, title, sub in group]
     columns = next(c for heading, key, c, group in groups() if key == folder)
     out = ["Each thumbnail links to the PDF. The same sheet is also there as "
            "SVG.", ""]
