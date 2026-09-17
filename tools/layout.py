@@ -41,12 +41,20 @@ TT_STEM_LEAD = "tt-demo-board"
 #: and because the notes on other sheets cite these by name and must derive
 #: that name from the same string the file is written to.
 #:
-#: A part key names the thing, vendor and all, because the data is a catalogue
-#: of parts somebody has to buy.  A stem names the sheet, and the sheet's title
-#: block already says who makes it, so the stem says what it is: ``poe-usbc``,
-#: not ``waveshare-poe-usbc``.  The names that came out of the vendor-bearing
-#: stems -- ``ACC-DIGILENT-PMOD-HAT-ADAPTER``, ``ACC-WAVESHARE-POE-USBC`` --
-#: were long enough to be read as a sentence rather than as a label.
+#: A stem names the sheet, and the sheet's title block already says who makes
+#: the part and what its part number is, so the stem is left to say what the
+#: thing is.  What that drops differs by row, and only two of the four keys
+#: carry a vendor at all:
+#:
+#: * ``pmod-hat-adapter`` keeps its key and loses ``-adapter``, which the
+#:   sheet's title says.  Its file used to be ``digilent-pmod-hat-adapter``:
+#:   the vendor was not in the key, it was put in front of it by hand when the
+#:   file name was written, and that is where ``ACC-DIGILENT-PMOD-HAT-ADAPTER``
+#:   came from.
+#: * ``waveshare-poe-usbc`` and ``generic-poe-microusb`` are keys that do name
+#:   the vendor, because the data is a catalogue of parts somebody has to buy
+#:   and that is what they buy.  The stem drops it.
+#: * ``raspmod`` is already what the thing is called; nothing to drop.
 ACC_STEMS = {
     "pmod-hat-adapter": "pmod-hat",
     "waveshare-poe-usbc": "poe-usbc",
@@ -165,6 +173,13 @@ def drawing_name(family: str, stem: str) -> str:
     deleting the title block from the plate SVG did not fail it.  A name that
     is a prefix of its siblings' cannot be told from them by any test that
     reads a sheet, so the rule is not to produce one.
+
+    "The last word of the lead" is the whole lead where the lead is one word,
+    which would give ``RPI-RPI`` for a Raspberry Pi sheet whose file is
+    ``rpi.svg``.  No family has such a sheet -- every Pi stem says which Pi --
+    and the name it would produce is at least honest about being the family's
+    one sheet rather than the family.  Recorded because it is the case a
+    reader will think of, not because anything needs doing about it.
 
     The reading-order lists stay.  The bound copies and the README grid still
     need an order; they just no longer number anything.

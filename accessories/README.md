@@ -25,13 +25,16 @@ uv run --no-project python accessories/extract.py      # needs tmp/src, see make
 uv run --no-project python accessories/compare.py
 ```
 
-A part's key in `parts.py` names the thing to buy, vendor and all --
-`waveshare-poe-usbc` -- and its sheet's file is named for what the part is:
-`output/poe-usbc.pdf`, drawing `ACC-POE-USBC`. The vendor is on the sheet, in
-the title block, where a reader of the drawing needs it; repeating it in the
-drawing name made the name longer than anything it labels.
-`ACC_STEMS` in [`tools/layout.py`](../tools/layout.py) maps the one to the
-other.
+A sheet's file is named for what the part is, and the title block says who
+makes it and what its part number is. `ACC_STEMS` in
+[`tools/layout.py`](../tools/layout.py) maps each part key to its stem, and
+what that drops differs by part: the two PoE splitters' keys name their
+vendor, because that is what you buy -- `waveshare-poe-usbc` becomes
+`output/poe-usbc.pdf`, drawing `ACC-POE-USBC`. The adapter's key never did:
+it is `pmod-hat-adapter`, and `digilent-` was put in front of it by hand when
+the file name was written, which is where the old
+`ACC-DIGILENT-PMOD-HAT-ADAPTER` came from. The Raspmod's key is already what
+the thing is called.
 
 ## The sheets
 

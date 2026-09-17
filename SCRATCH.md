@@ -1173,7 +1173,7 @@ what gives. Three changes, none of them to the rule above:
 | | was | is |
 |---|---|---|
 | a demo board sheet covering several revisions | every revision, and every board name with it: `tt-demo-board-tt123-v2p2p5-tt123-v2p2p6` | the first revision and the last, a shared board name once: `tt-demo-board-tt123-v2p2p5-v2p2p6` |
-| an accessory sheet | the vendor too: `digilent-pmod-hat-adapter`, `waveshare-poe-usbc` | what the part is: `pmod-hat`, `poe-usbc` |
+| an accessory sheet | a vendor the sheet already names: `digilent-pmod-hat-adapter`, `waveshare-poe-usbc` | what the part is: `pmod-hat`, `poe-usbc` |
 | the mounting plate's lead | `tt-generic-mounting`, so every name said PLATE | `tt-generic-mounting-plate`, which `TT-MP` is |
 
 The demo board stems are a range because the revisions are already in order,
@@ -1183,13 +1183,21 @@ every revision and shuttle it covers, in full, and those are what a reader of
 the drawing has in front of them, where the file name is what somebody types.
 `TT-DB-TT123-V2P2P5-V2P2P6` is 50.25 mm against 61.75, and said `TT123` once.
 
-The accessory stems drop the vendor because the title block carries it: the
-sheet says "Waveshare PoE Splitter 25 W, Type-C" and its subtitle the part
-number. The part *keys* in `parts.py` keep the vendor, because the data is a
-catalogue of things somebody has to buy and `waveshare-poe-usbc` is what they
-buy; `ACC_STEMS` in `tools/layout.py` maps key to stem, and refuses a part
-that has no row. `ACC-DIGILENT-PMOD-HAT-ADAPTER` at 60.84 mm becomes
-`ACC-PMOD-HAT` at 26.95.
+The accessory stems say what the part is, and leave the vendor and the part
+number to the title block, which carries both: "Waveshare PoE Splitter 25 W,
+Type-C" over "POE-SPLITTER-25W-TYPE-C". `ACC_STEMS` in `tools/layout.py` maps
+each part key to its stem and refuses a part that has no row. What the stem
+drops is not the same thing in each row, and it is worth being exact, because
+two of the four keys carry no vendor at all:
+
+| part key | stem | what went |
+|---|---|---|
+| `pmod-hat-adapter` | `pmod-hat` | `-adapter`, from the key. The old file was `digilent-pmod-hat-adapter`: the vendor was never in the key, it was written in front of it by hand when the file was named, and that is where `ACC-DIGILENT-PMOD-HAT-ADAPTER` came from |
+| `waveshare-poe-usbc` | `poe-usbc` | the vendor, which this key does carry, because the data is a catalogue of things somebody has to buy and that is what they buy |
+| `generic-poe-microusb` | `poe-microusb` | `generic-`, which says only that no vendor is authoritative -- a fact the sheet's notes state properly |
+| `raspmod` | `raspmod` | nothing; the key is already what the thing is called |
+
+`ACC-DIGILENT-PMOD-HAT-ADAPTER` at 60.84 mm becomes `ACC-PMOD-HAT` at 26.95.
 
 The plate's lead is the other direction: it moved out one word rather than in.
 See below -- the file stems did not change, only what the prefix accounts for.
