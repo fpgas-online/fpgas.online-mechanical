@@ -507,6 +507,9 @@ class Subject:
     #: cell, not a caption, and the sheet's own title carries the long form.
     subject_field: str = ""
     #: What the title block should say the subject's own figures are good to.
+    #: Comma-separated, because SVG collapses the runs of spaces the other
+    #: sheets separate their tolerance fields with, and "card +/-0.20 DERIVED
+    #: Z DERIVED" then reads as one clause about nothing in particular.
     #: Not the drafting library's PCB default: nothing on these sheets is a
     #: hole in a board, and each subject's geometry came from a different
     #: source with a different claim.
@@ -603,7 +606,7 @@ def _plate_subject() -> Subject:
                    note="LED and 7-segment footprints, in plate "
                         "coordinates."),
         ),
-        tolerance="plate +/-0.20   LEDs +/-0.10   Z DERIVED",
+        tolerance="plate +/-0.20, LEDs +/-0.10, Z DERIVED",
         notes=(
             "Frame B is the union of every LED and 7-segment over all five "
             "revision families; no one revision needs all of it. They are "
@@ -658,7 +661,7 @@ def _arty_subjects() -> tuple[Subject, Subject]:
         subtitle="Camera Module OV5647, 65 and 120 degree lenses",
         spec=spec, targets=(t["board"], t["leds"]), sources=src,
         subject_field="Digilent Arty A7",
-        tolerance="DXF +/-0.20   plot bodies +/-0.30   Z DERIVED",
+        tolerance="DXF +/-0.20, plot bodies +/-0.30, Z DERIVED",
         notes=(
             "Which LED row is which is not named by any Digilent source; "
             f"{arty_sheet} takes the row nearest the edge as the tri-colour "
@@ -685,7 +688,7 @@ def _arty_subjects() -> tuple[Subject, Subject]:
         subtitle="Camera Module OV5647, 65 and 120 degree lenses",
         spec=spec, targets=(t["eth"],), sources=src,
         subject_field="Digilent Arty A7",
-        tolerance="jack body +/-0.30   pipe ASSUMED   Z DERIVED",
+        tolerance="jack body +/-0.30, pipe exit ASSUMED, Z DERIVED",
         notes=(
             "ASSUMED: the Ethernet LEDs are on the front face of the RJ45 "
             "jack, pointing out of the board edge, and cannot be seen from "
@@ -798,7 +801,7 @@ def _acorn_subject() -> Subject:
                         "3.00 is the standoff past the board edge. It "
                         "dimensions no height."),
         ),
-        tolerance="Pi 5 +/-0.20   card +/-0.20 DERIVED   Z DERIVED",
+        tolerance="Pi 5 +/-0.20, card +/-0.20 DERIVED, Z DERIVED",
         notes=(
             "The Acorn's own LED positions are not published: SQRL issued "
             "no mechanical drawing and their site is gone, so frame B is the "
