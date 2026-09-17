@@ -268,9 +268,11 @@ make check     # render every sheet, refresh the grids, then run the checks
 Rebuilding is deterministic, and that is checked rather than hoped for: three
 full `make clean && make diagrams` cycles produce every output file
 byte-identical, so `git status` is silent after a rebuild unless a drawing
-actually changed. Cairo, pypdf and ezdxf all stamp a clock, cairo, Inkscape
-and pypdf their names and versions, and ezdxf two random GUIDs into what
-they write;
+actually changed. (On a branch that has added a sheet, that silence returns
+only once the whole set has been restamped with the new `VERSION`, which is
+one change made on its own rather than a side effect of adding a drawing.)
+Cairo, pypdf and ezdxf all stamp a clock, cairo, Inkscape and pypdf their
+names and versions, and ezdxf two random GUIDs into what they write;
 `tools/reproducible.py` pins all of it. That is what lets a second machine
 reproduce the set: Inkscape 1.4 and 1.4.3 on the same cairo draw identical
 content and differed only in the version string.
