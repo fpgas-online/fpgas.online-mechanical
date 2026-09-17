@@ -13,7 +13,7 @@ Camera Module 3 Wide  the same drawing again for the wide lens
 Neither is a 1:1 plot by assumption.  The scale is *recovered* from the
 mounting-hole rectangle, which every camera module shares, and then checked
 against the two overall dimensions the drawing prints; the Camera Module 3
-drawings come out at 1.0000 and the Camera Module 2 drawing at 1.5052, so a
+drawings come out at 1.0000 and the Camera Module 2 drawing at 1.5055, so a
 sheet that trusted the page would have been half again too big.
 
 What can be machine-read differs between them, and the sheets say which is
@@ -64,10 +64,11 @@ HOLE_INSET = 2.0
 #: information.
 SHARED_TOL = 0.05
 
-#: How far a recovered plot scale may sit from a round ratio and still be
-#: called that ratio.  The Camera Module 3 drawings measure 1.0000; the
-#: Camera Module 2 drawing measures 1.5052 and is described as a 1.5:1
-#: enlargement rather than as a 1:1 plot.
+#: How far a recovered plot scale may sit from 1.0 and still be called a
+#: true 1:1 plot.  The Camera Module 3 drawings measure 1.0000 and are; the
+#: Camera Module 2 drawing measures 1.5055 and is described by that figure,
+#: not rounded to the 1.5:1 it was presumably plotted at, because the number
+#: on the sheet is the one the extraction actually used.
 SCALE_TOLERANCE = 0.01
 
 #: Feature numbers, fixed across the family: a number means the same part on
@@ -97,7 +98,7 @@ MODELS = [
         # Geometry only.  Every figure printed on this drawing is an outlined
         # path, so nothing on it can be quoted back from the file.
         text_is_outlined=True,
-        printed=(),
+        printed=(), printed_own=(),
         parts=[
             ("lens", "Lens and sensor module", "lens",
              (12.49, 14.40), (8.49, 8.49)),
@@ -112,9 +113,9 @@ MODELS = [
         # No elevation and no height anywhere on the sheet.
         height_note="The source drawing is a plan view only and gives no "
                     "height.",
-        lens_note="Feature 1 is dimensioned 8.5 square on the drawing. "
-                  "Its lower body, stepped, reaches to 2.76 from the lower "
-                  "edge across 6.72 to 16.14.",
+        lens_note="Feature 1 is dimensioned 8.5 square. Its lower body, "
+                  "stepped, reaches to 2.76 from the lower edge across 6.72 "
+                  "to 16.14.",
     ),
     dict(
         key="cm3",
@@ -123,23 +124,36 @@ MODELS = [
         file="camera-module-3-standard-mechanical-drawing.pdf",
         drawing=f"{DOC}/camera-module-3-standard-mechanical-drawing.pdf",
         drawing_note="Raspberry Pi Ltd, RP-008153-DS-1",
+        # The wide drawing is the same sheet redrawn for the other lens, so
+        # it carries its own five figures where the standard carries five
+        # others.  Each drawing is checked against its own set; a set shared
+        # between them would have to leave out exactly the figures this
+        # sheet quotes for the wide lens.
         also=[("Camera Module 3 Wide",
                "camera-module-3-wide-mechanical-drawing.pdf",
                f"{DOC}/camera-module-3-wide-mechanical-drawing.pdf",
-               "Raspberry Pi Ltd, RP-008155-DS-1")],
+               "Raspberry Pi Ltd, RP-008155-DS-1",
+               ("o6.95", "12", "8.3", "102", "67"), 6.95)],
         width=25.0, height=23.862, corner_radius=2.0, thickness=1.12,
         plan_rotation=0,
         hole_dia=2.2, hole_keepout=4.75,
         hole_note="o2.2, with an o4.75 land round each one.",
         text_is_outlined=False,
-        # Quoted from the drawing's own text layer, and checked to be there.
-        printed=("25", "23.862", "12.5", "14.5", "14.4", "10.8", "o2.2",
-                 "o4.75", "o5.75", "1.12", "2.75", "5.71", "19.61", "11.3",
-                 "6.98", "66", "41"),
+        # Quoted from the drawing's own text layer, and checked to be
+        # there.  `printed` is what both Camera Module 3 drawings carry,
+        # `printed_own` what only the standard one does.
+        printed=("25", "23.862", "12.5", "14.5", "14.4", "10.8", "8.9",
+                 "o2.2", "o4.75", "1.12", "2.75", "5.71", "19.61"),
+        printed_own=("o5.75", "11.3", "6.98", "66", "41"),
         parts=[
             ("lens", "Lens and sensor module", "lens",
              (12.50, 14.40), (10.80, 10.80)),
         ],
+        #: What the drawing prints beside the aperture circle.  Measured as
+        #: well, and the two are required to stay close: the standard draws
+        #: its o5.75 exactly and the wide draws o7.00 against a printed
+        #: o6.95, which is the same disagreement the heights have.
+        aperture_printed=5.75,
         ffc_side="bottom",
         # Not in the plan view: the connector is on the underside and the
         # drawing draws it only in the two elevations, so its width comes
@@ -147,11 +161,11 @@ MODELS = [
         ffc_from_elevations=True,
         height_note="Overall thickness printed 11.3 standard, 12 wide, "
                     "lens tip to connector back; lens assembly 6.98 and 8.3 "
-                    "above the board. The source's elevations scale 1.2 "
-                    "short of those, so no height is drawn here.",
-        lens_note="Clear aperture o5.75 standard, o6.95 wide. Feature 1's "
-                  "lower body, 8.9 across, reaches to 1.70 from the lower "
-                  "edge.",
+                    "above the board. The source's own elevations scale 1.2 "
+                    "short, so no height is drawn here.",
+        lens_note="Clear aperture printed o5.75 standard, o6.95 wide; the "
+                  "wide drawing draws o7.00. Feature 1's lower body, 8.9 "
+                  "across, reaches to 1.70 from the lower edge.",
     ),
 ]
 
@@ -433,9 +447,13 @@ def extract(model: dict) -> dict:
             f"{model['key']}: the drawing's text layer "
             f"{'went away' if outlined else 'came back'}; the sheet says the "
             "opposite about what can be quoted from it")
-    text = "".join(c["text"] for c in page.chars).replace("ø", "o")
-    for want in model["printed"]:
-        if want not in text:
+    # Whole words, not a substring search over the page: "12" is a figure the
+    # wide drawing prints on its own and also the first half of the "12.5"
+    # both drawings print, so a substring test would pass on the wrong one.
+    words = {w["text"].replace("ø", "o").rstrip("°")
+             for w in page.extract_words()} if page.chars else set()
+    for want in tuple(model["printed"]) + tuple(model["printed_own"]):
+        if want not in words:
             raise SystemExit(
                 f"{model['key']}: this sheet quotes {want!r} from the "
                 "drawing and the drawing no longer prints it")
@@ -498,6 +516,28 @@ def extract(model: dict) -> dict:
     for f in features:
         f["number"] = FEATURE_ORDER.index(f["key"]) + 1
 
+    # The clear aperture, measured rather than taken from the print.  It is
+    # the largest circle drawn concentric with the lens module and smaller
+    # than it: the aperture on both Camera Module 3 drawings, and nothing at
+    # all on the Camera Module 2 drawing, which dimensions none.
+    aperture = None
+    if model.get("aperture_printed"):
+        lens = next(f for f in features if f["kind"] == "lens")
+        lcx, lcy = (lens["x0"] + lens["x1"]) / 2, (lens["y0"] + lens["y1"]) / 2
+        span = min(lens["x1"] - lens["x0"], lens["y1"] - lens["y0"])
+        inner = [dia * s for cx, cy, dia in circles(page)
+                 for bx, by in [to_board(cx, cy)]
+                 if abs(bx - lcx) < 0.1 and abs(by - lcy) < 0.1
+                 and 0.5 < dia * s < span]
+        if not inner:
+            raise SystemExit(f"{model['key']}: no aperture circle on the lens")
+        aperture = round(max(inner), 3)
+        if abs(aperture - model["aperture_printed"]) > 0.2:
+            raise SystemExit(
+                f"{model['key']}: the aperture measures {aperture:.3f} "
+                f"against a printed {model['aperture_printed']}; the sheet "
+                "quotes the printed figure and would now be wrong")
+
     holes = []
     for cx, cy, dia in circles(page):
         bx, by = to_board(cx, cy)
@@ -517,7 +557,7 @@ def extract(model: dict) -> dict:
 
     return dict(model=model, features=features, holes=holes, scale=scale,
                 hole_dia=hole_dia, outline=outline, residual=residual,
-                ffc_z=ffc_z)
+                ffc_z=ffc_z, aperture=aperture)
 
 
 def cross_check(model: dict, rec: dict) -> None:
@@ -527,11 +567,11 @@ def cross_check(model: dict, rec: dict) -> None:
     long as the two drawings agree about the board.  Raspberry Pi say they
     do; this is what entitles the sheet to repeat it.
     """
-    for name, filename, _, _ in model.get("also", ()):
+    for name, filename, _, _, printed_own, aperture in model.get("also", ()):
         other = extract(dict(model, file=filename, also=(),
-                             printed=tuple(p for p in model["printed"]
-                                           if p not in ("o5.75", "11.3",
-                                                        "6.98", "66", "41"))))
+                             printed_own=printed_own,
+                             aperture_printed=aperture))
+        rec.setdefault("apertures", []).append((name, other["aperture"]))
         mine = sorted((h["x"], h["y"], h["dia"]) for h in rec["holes"])
         theirs = sorted((h["x"], h["y"], h["dia"]) for h in other["holes"])
         if max(abs(a - b) for m, t in zip(mine, theirs)
@@ -608,14 +648,15 @@ def render(rec: dict) -> str:
     also = "".join(
         f'        Source(label="Mechanical drawing", ref={ref!r},\n'
         f'               note={note!r}),\n'
-        for _, _, ref, note in m.get("also", ()))
+        for _, _, ref, note, _, _ in m.get("also", ()))
 
     notes = [
         repr("Hole IDs are this drawing's, the same hole on every camera "
-             "sheet here."),
-        repr(f"Optical axis at X {lens['cx']:.2f}, Y {lens['cy']:.2f} from "
-             f"the datum, the centre of feature {lens['number']}. "
-             + m["lens_note"]),
+             "sheet. The two drawings are read separately and their hole "
+             f"patterns agree to {rec['family_spread']:.3f}, which is why one "
+             "sheet prints 22.98 where the other prints 23.00."),
+        repr(f"Optical axis at X {lens['cx']:.2f}, Y {lens['cy']:.2f}, the "
+             f"centre of feature {lens['number']}. " + m["lens_note"]),
         repr(m["height_note"]),
         repr(f"Source read as {describe_scale(rec['scale'])}: scale from "
              f"the {HOLE_PITCH_X} x {HOLE_PITCH_Y} hole rectangle, overall "
@@ -626,11 +667,10 @@ def render(rec: dict) -> str:
             "Every figure printed on the source is an outlined path, not "
             "text: its geometry is machine-read, its printed dimensions are "
             "transcribed by eye."))
-    for name, _, _, _ in m.get("also", ()):
+    for name, _, _, _, _, _ in m.get("also", ()):
         notes.append(repr(
-            f"The standard and {name} drawings agree on the outline, holes "
-            f"and lens module within {SHARED_TOL}, so one sheet covers "
-            "both."))
+            f"The standard and wide drawings agree on the outline, holes and "
+            f"lens module within {SHARED_TOL}, so one sheet covers both."))
     # No note saying the connector is on the underside: the legend already
     # carries "On the underside, seen through the board", and a sheet that
     # says a thing twice is a sheet with a line less of view.
@@ -689,6 +729,13 @@ def main() -> None:
                 f"mm, over the {SHARED_TOL} mm allowed. Check the sources.")
         print(f"  {ref['model']['key']} against {rec['model']['key']}: "
               f"hole patterns agree to {spread:.3f} mm")
+        # Both sheets say it, because a reader comparing them sees MT2 and
+        # MT4 at 22.98 on one and 23.00 on the other and is owed the reason.
+        # Each record carries its own figure, and the reference carries the
+        # widest of the disagreements it is the reference for, so a third
+        # camera joining the family cannot overwrite the second's.
+        rec["family_spread"] = spread
+        ref["family_spread"] = max(ref.get("family_spread", 0.0), spread)
 
     numbers = "{\n" + "".join(
         f"    {i}: {FEATURE_NAMES[key]!r},\n"
@@ -701,6 +748,13 @@ def main() -> None:
               f"{len(rec['holes'])} holes  {len(rec['features'])} features  "
               f"plot={rec['scale']:.4f}  hole dia read {rec['hole_dia']:.3f}  "
               f"outline residual {rec['residual']:.3f} mm")
+        for name, dia in ([(m["title"], rec["aperture"])] if rec["aperture"]
+                          else []) + rec.get("apertures", []):
+            printed = (m["aperture_printed"] if name == m["title"]
+                       else next(a for n, _, _, _, _, a in m["also"]
+                                 if n == name))
+            print(f"  {name}: aperture printed {printed}, drawn {dia:.3f}"
+                  + ("" if abs(dia - printed) < 0.005 else "  <- differ"))
     out = ROOT / "raspberry_pi_camera" / "boards.py"
     out.write_text("".join(chunks))
     print(f"wrote {out.relative_to(ROOT)}")

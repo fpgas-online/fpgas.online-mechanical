@@ -126,6 +126,14 @@ RPI_NOTES = (
     f"+/-{PMOD_HAT_TOL} mm; drawing {PMOD_HAT_SHEET} has the derivation.",
 )
 
+#: Both camera sheets say which face is being looked at.  The generic note is
+#: "Viewed from the component side", which on a board with its lens on one
+#: face and its connector on the other leaves the reader to work out which
+#: side that is, and it is the side the light goes in.
+RPICAM_NOTES = (
+    "The component side is the lens side; the connector is on the far face.",
+)
+
 #: The M.2 HAT assembly sheet's own title and subtitle.  Named here rather
 #: than written into the render call because the README grid has to print the
 #: same words, and a sheet whose caption and title block disagree is exactly
@@ -657,10 +665,12 @@ def main() -> None:
     # the two boards are the same outline on the same hole pattern, so the
     # board holds still between the pages and what moves is the lens module.
     cam_frame = shared_view_frame(cam_specs, None)
-    cam_band = max(planned_band_height(spec, view_bbox=cam_frame)
+    cam_band = max(planned_band_height(spec, extra_notes=RPICAM_NOTES,
+                                       view_bbox=cam_frame)
                    for spec in cam_specs)
     for name, path, spec in rpicam_sheets():
         sheet = render_board(spec, drawing_no=name, version=VERSION,
+                             extra_notes=RPICAM_NOTES,
                              family_numbers=RPICAM_NUMBERS,
                              view_bbox=cam_frame, band_height=cam_band)
         save(sheet, path, f"{name} ({spec.title})")
