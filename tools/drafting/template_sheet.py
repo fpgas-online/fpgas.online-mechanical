@@ -444,19 +444,26 @@ def render_drill_template(kind: str, *, drawing_no: str,
     # line under it.  All four shared the first line while a drawing number
     # was eight characters: TT-MP-03 with the version, the page size and the
     # scale left 91.93 mm for a title needing 70.25 mm at the ISO floor, and
-    # the chassis title 52.57 mm, both comfortable.  A drawing name is as long
-    # as it takes to say which sheet this is, and the same line holding
-    # TT-MP-PLATE-DRILL-TEMPLATE leaves 59.97 mm for that same 70.25 mm title;
-    # the chassis 45.49 mm for 52.57 mm.  Both are short, the plate by more.
+    # the chassis title 52.57 mm, both comfortable.  A drawing name is longer,
+    # and TT-MP-PLATE-DRILL-TEMPLATE on that line left 59.97 mm for that same
+    # 70.25 mm title -- 10 mm short.
     #
-    # Split, each line's right-hand string is fixed-width and its left-hand
-    # one is not, so the left one gives way -- and both titles come out at the
-    # size they had before the names, 2.5 mm for the plate and 3.5 mm for the
-    # chassis, rather than the floor or worse.
+    # The names are shorter again now, TT-MP-DRILL-TEMPLATE and
+    # TT-MP-CHASSIS-DRILL-TEMPLATE, and one line would just hold them: it
+    # leaves 70.34 mm for the plate's 70.25 mm title, a margin of 0.09 mm that
+    # the version's next character takes away -- 1.96 mm for the commit count
+    # going to four figures, 2.59 mm for the dirty mark on an uncommitted
+    # render.  It stays split.  The split line carries
+    # no version, so its room does not move: 104.80 mm beside the plate's name
+    # and 90.32 mm beside the chassis's.
     #
-    # "Or worse" is the real defect: fit_size returns the ISO floor when
-    # nothing on its ladder fits, so the old line would have drawn a title
-    # straight through the stamp rather than refusing.  _fit_beside refuses.
+    # Each line's right-hand string is fixed-width and its left-hand one is
+    # not, so the left one gives way.  With that much room both titles are set
+    # at 3.5 mm, where on one line both would be at the 2.5 mm floor.
+    #
+    # The floor is the real defect: fit_size returns it when nothing on its
+    # ladder fits, so the old line would have drawn a title straight through
+    # the stamp rather than refusing.  _fit_beside refuses.
     stamp = f"{drawing_no}    A4 PORTRAIT    SCALE 1:1"
     avail = area.w - style.text_width(stamp, style.T_TINY) - 6.0
     tsize = _fit_beside(kind, title, avail, stamp, face="sans", bold=True)
