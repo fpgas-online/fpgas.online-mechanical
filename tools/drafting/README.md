@@ -42,6 +42,22 @@ once a part has more than a handful of holes.
 The general tolerance lives in the title block, where a real drawing puts it
 and where it cannot be the note that gets dropped for space.
 
+DRAWING NO carries a name, not a number, and it is given half the title block
+rather than the quarter the other fields in its row share. Half is more than
+anything in this set needs now that the three families with the longest
+stems are named by a rule: the widest name left, `FPGA-BUTTERSTICK`, clears a
+quarter by 3.72 mm, where the mounting plate's fitting guide cleared it by
+half a millimetre before that family had a rule of its own. But a sheet on
+another branch needs half as much again as a quarter has, so the field is
+sized for the names it will be given, not the ones it has. The two drill
+templates carry their name in a header line instead, having no title block
+for it to overrun.
+The name itself is [`tools/layout.py`](../layout.py)'s. Any title block value that
+will not fit its cell at the ISO 3098 minimum stops the render rather than
+overprinting its neighbour, and `check_sheets.py` measures every name in the
+set against the cell the sheet was actually drawn with, found on the page by
+its own label and measured between its own rules.
+
 Only three broken line types appear, each carrying exactly one meaning:
 long-dash dotted for centre lines and axes, long-dash double-dotted for the
 outlines of adjacent parts and keep-out envelopes, dashed for hidden detail

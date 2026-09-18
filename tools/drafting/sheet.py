@@ -74,6 +74,34 @@ class Sheet:
     COLUMN_WIDTH = 165.0
     TITLE_HEIGHT = 48.0
 
+    #: Padding a title block cell keeps around its value, in millimetres:
+    #: 1.6 mm in from the rule on each side.
+    CELL_PAD = 3.2
+
+    #: Fractions of the title block width for the row that carries the
+    #: drawing name.  Not four equal quarters, because the drawing name is
+    #: not a quarter-width field: a quarter of the block is 41.25 mm with
+    #: 38.05 mm of it usable, and while every sheet was named for the whole
+    #: of its file stem, seven of the nineteen sheets with a title block
+    #: overran that, the longest of them by 23.70 mm at the ISO 3098 floor.
+    #: The demo boards, the accessories and the mounting plate are named by a
+    #: rule now, and none of the nineteen overruns the quarter: the widest is
+    #: ``FPGA-BUTTERSTICK`` at 34.33 mm, 3.72 mm clear of 38.05 mm.  The
+    #: quarter is not restored all the same.  The sheets waiting on other
+    #: branches are longer than anything here --
+    #: ``FPGA-ARTY-ETHERNET-LIGHT-PIPE`` is 58.03 mm, which a quarter would
+    #: refuse outright and the half holds with 21.27 mm to spare.  And the
+    #: clearance a quarter leaves has been of the half-millimetre class within
+    #: this branch: ``TT-MP-FITTING-GUIDE``, the name ``TT-MP-FIT`` replaced,
+    #: cleared 38.05 mm by 0.49 mm, so one sheet renamed or one board added
+    #: puts a quarter back over the edge.  The three fields this
+    #: one shares the row with are a sheet size, a page count and a revision
+    #: letter, none of which ever needed the room they had.  Taken sideways
+    #: rather than by adding a fourth row: the title block's height is the
+    #: notes band's and the view's, and an A3 holds the tallest board at 1:1
+    #: with nothing to spare.
+    ROW_FRACS = {"SIZE": 0.14, "SHEET": 0.20, "DRAWING NO": 0.50, "REV": 0.16}
+
     def __init__(self, size: str = "A3", title: TitleBlock | None = None,
                  column_width: float | None = None,
                  notes_band_height: float | None = None):
@@ -206,44 +234,42 @@ class Sheet:
             c.text(r.x + 2.5, r.y1 - band + 1.6, t.subtitle,
                    size=style.T_LABEL, colour="#333333")
 
-        # Two rows of narrow fields, then one full-width row for the fields
-        # whose values are long enough to run out of a quarter-width cell.
-        grid = [
-            ("DRAWN", t.drawn_by), ("VERSION", t.version), ("UNITS", t.units),
-            ("SCALE", t.scale), ("SIZE", self.size_name), ("SHEET", t.sheet),
-            ("DRAWING NO", t.drawing_no), ("REV", t.rev),
-        ]
+        # A row of quarter-width fields, then two rows whose columns are cut
+        # to the widths their values actually want.  Each row is a list of
+        # (label, value, fraction of the block's width), and every row's
+        # fractions add to one.
+        f = self.ROW_FRACS
         # A single-view sheet does not get a PROJECTION cell at all: an empty
         # cell on a title block reads as an omission, not as "not applicable".
         wide = [("MATERIAL", t.material, 0.28 if t.projection else 0.34),
                 ("GENERAL TOLERANCE", t.tolerance, 0.56 if t.projection else 0.66)]
         if t.projection:
             wide.append(("PROJECTION", "", 0.16))
-        rows, cols = 3, 4
-        ch = (r.h - band) / rows
-        cw = r.w / cols
-        for i, (label, value) in enumerate(grid):
-            col, row = i % cols, i // cols
-            x = r.x + col * cw
-            y = r.y1 - band - (row + 1) * ch
-            if col:
-                c.line(x, y, x, y + ch, w=style.W_TABLE)
-            if row:
-                c.line(x, y + ch, x + cw, y + ch, w=style.W_TABLE)
-            self._title_cell(x, y, ch, label, value, width=cw)
-        y = r.y
-        c.line(r.x, y + ch, r.x1, y + ch, w=style.W_TABLE)
-        x = r.x
-        for label, value, frac in wide:
-            if x > r.x:
-                c.line(x, y, x, y + ch, w=style.W_TABLE)
-            self._title_cell(x, y, ch, label, value, width=r.w * frac)
-            if label == "PROJECTION" and t.projection:
-                # In the title block, which is where a reader looks for it, and
-                # where it cannot collide with the notes band.
-                self.projection_symbol(x + r.w * frac / 2, y + 1.0, scale=0.62,
-                                       caption=False)
-            x += r.w * frac
+        rows = [
+            [("DRAWN", t.drawn_by, 0.25), ("VERSION", t.version, 0.25),
+             ("UNITS", t.units, 0.25), ("SCALE", t.scale, 0.25)],
+            [("SIZE", self.size_name, f["SIZE"]), ("SHEET", t.sheet, f["SHEET"]),
+             ("DRAWING NO", t.drawing_no, f["DRAWING NO"]),
+             ("REV", t.rev, f["REV"])],
+            wide,
+        ]
+        ch = (r.h - band) / len(rows)
+        for i, row in enumerate(rows):
+            y = r.y1 - band - (i + 1) * ch
+            if i:
+                c.line(r.x, y + ch, r.x1, y + ch, w=style.W_TABLE)
+            x = r.x
+            for label, value, frac in row:
+                w = r.w * frac
+                if x > r.x:
+                    c.line(x, y, x, y + ch, w=style.W_TABLE)
+                self._title_cell(x, y, ch, label, value, width=w)
+                if label == "PROJECTION" and t.projection:
+                    # In the title block, which is where a reader looks for
+                    # it, and where it cannot collide with the notes band.
+                    self.projection_symbol(x + w / 2, y + 1.0, scale=0.62,
+                                           caption=False)
+                x += w
 
     def _title_cell(self, x: float, y: float, ch: float, label: str,
                     value: str, width: float | None = None) -> None:
@@ -263,7 +289,7 @@ class Sheet:
         if not text:
             return
         if width is not None:
-            room = width - 3.2
+            room = width - self.CELL_PAD
             size = style.T_LABEL
             if style.text_width(text, size, bold=True) > room:
                 size = style.T_MIN

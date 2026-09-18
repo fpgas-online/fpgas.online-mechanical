@@ -8,7 +8,7 @@ the Pmod host positions can be read off directly.
 |---|---|
 | `boards.py` | **Generated.** Pi 3B/3B+, 4B and 5 |
 | `extract.py` | Reads Raspberry Pi Ltd's own drawings and writes `boards.py` |
-| `output/` | `RPI-01` to `RPI-03`, as SVG and PDF, and `raspberry-pi-sheets.pdf`, the three bound into one document |
+| `output/` | `RPI-3B`, `RPI-4B` and `RPI-5`, as SVG and PDF, and `raspberry-pi-sheets.pdf`, the three bound into one document |
 
 ```sh
 tools/fetch_raspberry_pi.sh                           # once, needs network
@@ -24,16 +24,16 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/rpi3b.pdf"><img src="output/previews/rpi3b.png" width="270" alt="RPI-01 Raspberry Pi 3 Model B and B+"></a><br>
-<b>RPI-01</b> Raspberry Pi 3 Model B and B+<br>85 x 56 mm, both models
+<a href="output/rpi3b.pdf"><img src="output/previews/rpi3b.png" width="270" alt="RPI-3B Raspberry Pi 3 Model B and B+"></a><br>
+<b>RPI-3B</b> Raspberry Pi 3 Model B and B+<br>85 x 56 mm, both models
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/rpi4b.pdf"><img src="output/previews/rpi4b.png" width="270" alt="RPI-02 Raspberry Pi 4 Model B"></a><br>
-<b>RPI-02</b> Raspberry Pi 4 Model B<br>85 x 56 mm
+<a href="output/rpi4b.pdf"><img src="output/previews/rpi4b.png" width="270" alt="RPI-4B Raspberry Pi 4 Model B"></a><br>
+<b>RPI-4B</b> Raspberry Pi 4 Model B<br>85 x 56 mm
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/rpi5.pdf"><img src="output/previews/rpi5.png" width="270" alt="RPI-03 Raspberry Pi 5"></a><br>
-<b>RPI-03</b> Raspberry Pi 5<br>85 x 56 mm
+<a href="output/rpi5.pdf"><img src="output/previews/rpi5.png" width="270" alt="RPI-5 Raspberry Pi 5"></a><br>
+<b>RPI-5</b> Raspberry Pi 5<br>85 x 56 mm
 </td>
 </tr>
 </table>

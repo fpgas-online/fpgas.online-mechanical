@@ -85,11 +85,38 @@ checker that measures the finished PDFs rather than trusting them.
       `git status` silent, on a second machine as well as the first
 
 ## 7. Drill templates  -- DONE
-- [x] A4 portrait 1:1 template for the mounting plate itself (TT-MP-03)
-- [x] A4 portrait 1:1 template for the chassis the plate bolts to (TT-MP-04)
+- [x] A4 portrait 1:1 template for the mounting plate itself
+      (`TT-MP-DRILL`)
+- [x] A4 portrait 1:1 template for the chassis the plate bolts to
+      (`TT-MP-CHASSIS`)
 - [x] Printed scale bar per axis, so a scaled print is caught before drilling
 - [x] `tools/check_drill_template.py`: measures the PDFs back and proves
       every hole lands where the plate data puts it
+
+## 11. Sheets named, not numbered  -- DONE
+- [x] `tools/layout.py` derives every drawing name from the sheet's own file
+      stem, so a sheet added on a branch cannot collide with one added on
+      another
+- [x] The generator, the README builder, the notes, the schedule cross
+      references and `accessories/compare.py` all ask for it; no drawing name
+      is written out by hand anywhere
+- [x] DRAWING NO widened to half the title block, measured against the longest
+      name at the ISO 3098 floor; `check_sheets.py` reads the cell back and
+      fails on an overflow or on a sheet not carrying its own name
+- [x] `check_pdfs.py` reads the bound copies: every page is a committed sheet
+      and every bookmark opens with that sheet's name
+- [x] Stems short enough to read as labels: a demo board sheet is its first
+      revision and its last, an accessory drops the vendor its title block
+      names, and the mounting plate's three satellites drop the PLATE the
+      family prefix already says
+- [x] Names short enough to quote: at most four or five characters behind the
+      prefix, which the stems cannot give and do not have to. A family may
+      have a rule in `FAMILY_NAME_RULES` that cuts its stem down to a name --
+      a demo board is named for the first revision it covers (`TT-DB-V121`,
+      `TT-DB-TT123`) and an accessory by a table, the kind of part and which
+      one (`ACC-HAT-PMOD`, `ACC-POE-MUSB`). No file moves, so every link,
+      preview and branch that cites a stem keeps working
+- [ ] The open pull requests each rename their own sheets on top of this
 
 ## 9. FPGA development boards  -- DONE
 - [x] Arty A7 from Digilent's DXF and PDF plot; no mounting holes, rubber feet

@@ -18,6 +18,7 @@ import math
 from tinytapeout.mounting_plate.plate import (PLACEMENTS, PMOD_BODY,
                                               PMOD_ROW_Y, PMOD_SLOT_X,
                                               PLATE, USB_C)
+from tools.layout import FITTING_GUIDE_SHEET, PLATE_SHEET
 from tools.schema import LABEL_SEP, BoardSpec, Hole, Slot
 from tinytapeout.boards import BOARDS as TT_BOARDS
 
@@ -235,14 +236,15 @@ def _plate_text(spec) -> tuple[list[str], list[str]]:
     # The view shows the datum, the axes and that the holes are tabulated.
     # It cannot show which side it is seen from, how to read the two tables'
     # own conventions, or that the PMOD envelopes are not to be cut.  The
-    # revision each board name covers is on TT-MP-02, under its own view,
-    # and on every TT-DB sheet; it is not repeated here.
+    # revision each board name covers is on the fitting guide, under its own
+    # view, and on every demo board sheet; it is not repeated here.
     notes = [
         "Viewed from the side the board mounts on.",
         "A slot row gives its two end centres; DIA/WIDTH is the slot width "
         "and LENGTH its overall length.",
         "USED BY names the board a feature serves and that board's own hole "
-        "ID, MT1 to MT4. Drawing TT-MP-02 shows each board on the plate.",
+        f"ID, MT1 to MT4. Drawing {FITTING_GUIDE_SHEET} shows each board on "
+        "the plate.",
         "A hole's ID letter is the board it is there for, " + _letter_key()
         + ", numbered within it. S is a slot, P a plate fixing. A feature "
         "two boards share keeps one ID.",
@@ -613,7 +615,7 @@ def render_fitting_guide(*, drawing_no: str, version: str,
         # assert a manufacturing tolerance; the previous default claimed an
         # edge, hole position and hole diameter tolerance of its own, which
         # differed from the ones on the sheet the plate is actually made from.
-        tolerance="reference only - TT-MP-01 governs every dimension"))
+        tolerance=f"reference only - {PLATE_SHEET} governs every dimension"))
     sheet.draw_frame()
     c = sheet.canvas
     area = sheet.area
@@ -675,7 +677,7 @@ def render_fitting_guide(*, drawing_no: str, version: str,
     # table says so in its PMODS column.  Left are the two table conventions
     # and the one thing a group hides: what its revisions do not share.
     notes = [
-        "Hole IDs are those of drawing TT-MP-01, which governs every "
+        f"Hole IDs are those of drawing {PLATE_SHEET}, which governs every "
         "dimension.",
         "Revisions in a group share mounting holes and Pmod host positions "
         "exactly; they may differ elsewhere. v2.1.2's USB-C, for instance, "
@@ -719,7 +721,8 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
                weight=style.W_PHANTOM, colour=style.C_PHANTOM,
                dash=style.D_PHANTOM)
 
-    # This revision's USB-C, in the same colour it carries on TT-MP-01.  Only
+    # This revision's USB-C, in the same colour it carries on the plate
+    # fabrication drawing.  Only
     # this one: the guide's whole job is to show one board at a time, and the
     # other four positions are on the plate sheet.
     # Filled rather than lettered: at 1:2 the connector is five millimetres

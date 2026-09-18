@@ -16,7 +16,7 @@ Imported, not run.
 |---|---|
 | [`drafting/`](drafting/README.md) | The 2D drawing library: turns a `BoardSpec` into an ISO-style sheet |
 | `schema.py` | `BoardSpec`, `Outline`, `Hole`, `Slot`, `Pmod`, `Feature`, `Source` |
-| `layout.py` | Where the sheets are. One answer, so the generator and the checks cannot disagree about the set |
+| `layout.py` | Where the sheets are, what file each is written to and what each is called: one answer, so nothing can disagree about the set, a file stem or a drawing name. A name is the stem in capitals behind the family prefix, unless the family has a rule in `FAMILY_NAME_RULES` that cuts it shorter, which the demo boards and the accessories do |
 | `kicad_pcb.py` | Minimal reader for KiCad `.kicad_pcb` s-expression files |
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
@@ -47,12 +47,17 @@ and lives with it.
 - **`check_sheets.py`** re-reads the generated SVGs, recomputes every text
   bounding box from the same font metrics the layout used, and reports text
   that collides, has a line running through it, falls outside the frame, or
-  drops below the 2.5 mm ISO 3098 floor. It also checks that every sheet
-  appears in the preview grid and that every reference in it resolves, so
-  adding a sheet cannot silently leave the grid showing the wrong set. It
-  found the notes block printing over the sources heading on four Raspberry Pi
-  sheets, a datum leader running back through its own text, and overall
-  dimension extension lines crossing the ordinate labels.
+  drops below the 2.5 mm ISO 3098 floor. It also derives every sheet's drawing
+  name and reads the sheet back for it: the DRAWING NO cell is found by its
+  own label and measured between its own rules, so a name that does not fit
+  and a cell that says something else are two separate reports and neither can
+  be satisfied by a note elsewhere on the sheet citing another drawing. And it
+  checks that every sheet appears in the
+  preview grid and that every reference in it resolves, so adding a sheet
+  cannot silently leave the grid showing the wrong set. It found the notes
+  block printing over the sources heading on four Raspberry Pi sheets, a datum
+  leader running back through its own text, and overall dimension extension
+  lines crossing the ordinate labels.
 
 - **`check_balloons.py`** looks one level below the finished SVG, at the
   obstacle model the balloon placer works from, and reports every leader whose
@@ -82,6 +87,10 @@ and lives with it.
   had been committed. The comparison is byte for byte, which it can be because
   `reproducible.py` makes rendering reproducible; it used to compare only page
   content streams, because cairo stamped a clock into every file it wrote.
+  It reads the bound copies too: every page of a bundle has to be a committed
+  sheet, matched on its content stream, and every bookmark has to open with
+  that sheet's drawing name. Until then nothing checked a bundle at all, and
+  the only evidence one was what it claimed was a manual rebuild.
 
 - **`crosscheck_gerber.py`** compares an extracted board outline against the
   upstream Edge_Cuts gerber, which KiCad's own plotter produced from the same

@@ -2,8 +2,10 @@
 """Rewrite the tables in ``raspmod-vs-pmod-hat.md`` from the data modules.
 
 The page compares the two ways of putting Pmod ports on a Raspberry Pi: the
-Digilent Pmod HAT Adapter (ACC-01, hand-curated in ``parts.py``) and Pat
-Deegan's Raspmod (ACC-04, generated from its board file into ``raspmod.py``).
+Digilent Pmod HAT Adapter (hand-curated in ``parts.py``) and Pat Deegan's
+Raspmod (generated from its board file into ``raspmod.py``).  Each drawing is
+named by ``tools.layout``, so the table's Drawing row cannot drift from the
+title blocks.
 Its prose is written by hand; its tables are not, because a pin map copied
 into a document by hand is a pin map that drifts from the data the drawings
 are made from.  Everything between a pair of ``<!-- name:begin -->`` and
@@ -31,6 +33,7 @@ sys.path.insert(0, str(ROOT))
 from accessories.parts import PMOD_HAT, PMOD_HAT_PINS  # noqa: E402
 from accessories.raspmod import PI_HEADER, PORT_PINS, RASPMOD  # noqa: E402
 from tinytapeout.boards import BOARDS as TT  # noqa: E402
+from tools.layout import PMOD_HAT_SHEET, acc_stem, drawing_name  # noqa: E402
 
 PAGE = ROOT / "accessories" / "raspmod-vs-pmod-hat.md"
 
@@ -153,7 +156,8 @@ def mechanics_table() -> list[str]:
         return "; ".join(f"{p.label} ({p.cx:.2f}, {p.cy:.2f})" for p in ps)
 
     rows = [
-        ["Drawing", "ACC-01", "ACC-04"],
+        ["Drawing", PMOD_HAT_SHEET,
+         drawing_name("accessories", acc_stem(rm.key))],
         ["Outline", f"{hat.outline.width:.1f} x {hat.outline.height:.1f} mm, "
                     f"R{hat.outline.corner_radius:.0f} corners",
          f"{rm.outline.width:.1f} x {rm.outline.height:.1f} mm, "
@@ -205,14 +209,31 @@ def demoboard_table() -> list[str]:
 
 
 def clkrst_residual() -> str | None:
-    """Re-measure J9 against the demoboard SIL header, if the files are here."""
+    """Re-measure J9 against the demoboard SIL header, if the files are here.
+
+    None when they are not, which is the ordinary case: the board files are
+    upstream checkouts under ``tmp/``, they are not committed, and this page
+    has to regenerate from a clone that has never run ``make fetch``.  The
+    caller prints that it left the figure as written.
+
+    Every file it needs is looked for before any of them is opened.  The
+    Raspmod's own board file was opened first and unguarded, so a missing
+    ``tmp/pcb`` raised FileNotFoundError out of ``make diagrams`` instead of
+    taking this path -- the guard covered the two demoboard revisions and not
+    the third file in the same directory.
+    """
     try:
         from tools import kicad_extract, kicad_pcb
         from tools.kicad_extract import one
     except ImportError:
         return None
     files = {"v2.1.2": ("J3", "J17"), "v3.3": ("J11", "J9")}
-    board = kicad_pcb.load(str(ROOT / "tmp" / "pcb" / "raspmod.kicad_pcb"))
+    pcb = ROOT / "tmp" / "pcb"
+    needed = [pcb / "raspmod.kicad_pcb"]
+    needed += [pcb / f"{rev}.kicad_pcb" for rev in files]
+    if not all(path.exists() for path in needed):
+        return None
+    board = kicad_pcb.load(str(needed[0]))
     to_xy, _, _ = kicad_extract.frame(board)
     plug = one(board.footprints, "J2")
     j9 = one(board.footprints, "J9")
@@ -221,10 +242,7 @@ def clkrst_residual() -> str | None:
     j9_pins = {p.number: to_xy(p.x, p.y) for p in j9.pads}
     worst = 0.0
     for rev, (host_ref, sil_ref) in files.items():
-        path = ROOT / "tmp" / "pcb" / f"{rev}.kicad_pcb"
-        if not path.exists():
-            return None
-        db = kicad_pcb.load(str(path))
+        db = kicad_pcb.load(str(pcb / f"{rev}.kicad_pcb"))
         dxy, _, _ = kicad_extract.frame(db)
         hp = [dxy(p.x, p.y) for p in one(db.footprints, host_ref).pads]
         hc = (sum(p[0] for p in hp) / 12, sum(p[1] for p in hp) / 12)

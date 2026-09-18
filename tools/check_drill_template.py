@@ -29,8 +29,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from tinytapeout.mounting_plate.plate import PLATE                      # noqa: E402
-from tools.generate_diagrams import DRILL_TEMPLATES              # noqa: E402
-from tools.layout import FAMILY_DIRS, rel                        # noqa: E402
+from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
+                          drawing_name, rel)
 from tools.drafting.template_sheet import (A4_PORTRAIT,  # noqa: E402
                                            BAR_LEN, BAR_THICK,
                                            render_drill_template)
@@ -53,7 +53,7 @@ PRINTER_MARGIN = 4.32
 #: Taken from the generator rather than written out again, so a renamed sheet
 #: cannot leave this checking a file that no longer exists.
 SHEETS = {kind: FAMILY_DIRS["mounting-plate"] / f"{stem}.pdf"
-          for kind, stem in DRILL_TEMPLATES.items()}
+          for kind, stem in DRILL_TEMPLATE_STEMS.items()}
 
 
 def circles(page, dia: float) -> list[tuple[float, float]]:
@@ -93,7 +93,11 @@ def bar_runs(page, long_axis: str) -> list[float]:
 
 def check(kind: str, path: Path) -> list[str]:
     bad: list[str] = []
-    page_obj = render_drill_template(kind, drawing_no="X", version="-")
+    # The real drawing name, not a placeholder: the header line has to hold
+    # it beside the title, and a name that will not fit is a failure this
+    # check should see rather than step around.
+    name = drawing_name("mounting-plate", DRILL_TEMPLATE_STEMS[kind])
+    page_obj = render_drill_template(kind, drawing_no=name, version="-")
     view = page_obj.view
 
     with pdfplumber.open(path) as pdf:

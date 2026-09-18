@@ -1,34 +1,40 @@
 # Raspmod and the Digilent Pmod HAT Adapter
 
 Two boards put Digilent-style Pmod ports on a Raspberry Pi, and they do it in
-opposite ways. The [Digilent Pmod HAT Adapter](output/digilent-pmod-hat-adapter.pdf)
-(ACC-01) is a HAT: it sits on the Pi's 40-pin header, and its three hosts take
-whatever Pmod peripheral you plug into them. Pat Deegan's
-[Raspmod](output/raspmod.pdf) (ACC-04, "TT Demoboard To Raspi") is a
+opposite ways. The [Digilent Pmod HAT Adapter](output/pmod-hat.pdf)
+(`ACC-HAT-PMOD`) is a HAT: it sits on the Pi's 40-pin header, and its three
+hosts take whatever Pmod peripheral you plug into them. Pat Deegan's
+[Raspmod](output/raspmod.pdf) (`ACC-HAT-RMOD`, "TT Demoboard To Raspi") is a
 frontplate for a Tiny Tapeout demoboard: it plugs into the demoboard's three
 Pmod hosts, passes them through to three hosts of its own, and hands every
 signal to the Pi over a ribbon cable. One makes the Pi a Pmod host; the other
 makes the Pi the thing on the far end of a Tiny Tapeout chip's ports.
 
+Both drawings are filed under `ACC-HAT-`, which says only that they are the
+two answers to one question. The Raspmod is not a HAT: it does not sit on the
+Pi's header, it does not carry the ID EEPROM a HAT is required to, and the
+difference is most of what is below.
+
 <table>
 <tr>
 <td width="50%" valign="top" align="center">
-<a href="output/digilent-pmod-hat-adapter.pdf"><img src="output/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-01 Digilent Pmod HAT Adapter"></a><br>
-<b>ACC-01</b> Digilent Pmod HAT Adapter
+<a href="output/pmod-hat.pdf"><img src="output/previews/pmod-hat.png" width="270" alt="ACC-HAT-PMOD Digilent Pmod HAT Adapter"></a><br>
+<b>ACC-HAT-PMOD</b> Digilent Pmod HAT Adapter
 </td>
 <td width="50%" valign="top" align="center">
-<a href="output/raspmod.pdf"><img src="output/previews/raspmod.png" width="270" alt="ACC-04 Raspmod"></a><br>
-<b>ACC-04</b> Raspmod
+<a href="output/raspmod.pdf"><img src="output/previews/raspmod.png" width="270" alt="ACC-HAT-RMOD Raspmod"></a><br>
+<b>ACC-HAT-RMOD</b> Raspmod
 </td>
 </tr>
 </table>
 
 The tables on this page are written by `compare.py` from the same data the
 two sheets are drawn from, `parts.py` and `raspmod.py`, so they cannot
-disagree with the drawings. The Digilent figures are the ones ACC-01 carries:
-the HAT outline and holes from the Raspberry Pi HAT specification, the host
-positions measured from Digilent's product photo to about +/-0.75 mm, and the
-pin map transcribed from Digilent's reference manual. The Raspmod figures are
+disagree with the drawings. The Digilent figures are the ones the adapter's
+own sheet carries: the HAT outline and holes from the Raspberry Pi HAT
+specification, the host positions measured from Digilent's product photo to
+about +/-0.75 mm, and the pin map transcribed from Digilent's reference
+manual. The Raspmod figures are
 read from its KiCad board file, pin map included.
 
 ## Mechanics
@@ -37,7 +43,7 @@ read from its KiCad board file, pin map included.
 
 |  | Digilent Pmod HAT Adapter | Raspmod |
 |---|---|---|
-| Drawing | ACC-01 | ACC-04 |
+| Drawing | ACC-HAT-PMOD | ACC-HAT-RMOD |
 | Outline | 65.0 x 56.5 mm, R3 corners | 72.3 x 31.3 mm, R2 corners |
 | Thickness | not stated | 1.6 mm |
 | Mounting holes | 4 x 2.75 mm, the HAT pattern | none |
@@ -59,8 +65,8 @@ hosts are right-angle sockets on the board edges, two on the left and one on
 the bottom, so a Pmod plugged in lies flat and sticks out sideways from the
 Pi, and the bottom host JC overhangs the Pi's HDMI and power connectors,
 which is why Digilent's manual insists on the two standoffs opposite the
-header. The Raspberry Pi sheets RPI-01 to RPI-03 draw it in phantom on each
-Pi so those host positions can be read off directly.
+header. The Raspberry Pi sheets `RPI-3B`, `RPI-4B` and `RPI-5` draw it in
+phantom on each Pi so those host positions can be read off directly.
 
 **The Raspmod** has no mounting holes at all. Its three plugs are 2x6 pin
 headers on the underside, pointing out of the back of the board, on the
@@ -232,8 +238,8 @@ Raspmod it is the `+3V3` net, which J11 connects to the Pi's 3V3.
 - Digilent, *Pmod HAT Adapter Reference Manual*, Appendix: Pinout Tables, and
   the statement that the manual applies to Revision B:
   <https://digilent.com/reference/add-ons/pmod-hat/reference-manual>. Its
-  mechanical figures are those of drawing ACC-01, whose sources are on the
-  sheet.
+  mechanical figures are those of drawing `ACC-HAT-PMOD`,
+  whose sources are on the sheet.
 - Pat Deegan, *TT Demoboard To Raspi* rev 1.0, `TTDB_2_Raspi.kicad_pcb` at
   commit `2c2e3db`, and the README:
   <https://github.com/psychogenic/tinytapeout-demoboard-to-raspi>.

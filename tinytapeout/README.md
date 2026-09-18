@@ -8,7 +8,7 @@ accepts any revision.
 |---|---|
 | `boards.py` | **Generated.** Every mechanically distinct demo board revision |
 | `extract.py` | Reads the upstream KiCad board files and writes `boards.py` |
-| `output/` | `TT-DB-01` to `TT-DB-06`, as SVG and PDF, and `tinytapeout-sheets.pdf`, the plate sheets and demo boards bound into one document |
+| `output/` | One `TT-DB-…` sheet per geometry, as SVG and PDF, and `tinytapeout-sheets.pdf`, the plate sheets and demo boards bound into one document |
 | `mounting_plate/` | The plate every revision bolts onto, and its drill templates |
 
 ```sh
@@ -24,30 +24,30 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-tt123-v2p2p5-tt123-v2p2p6.pdf"><img src="output/previews/tt-demo-board-tt123-v2p2p5-tt123-v2p2p6.png" width="270" alt="TT-DB-01 DB mpw v2.2.5 / DB mpw v2.2.6"></a><br>
-<b>TT-DB-01</b> DB mpw v2.2.5 / DB mpw v2.2.6<br>mpw-mb1 rev 2.2.5 and 2.2.6
+<a href="output/tt-demo-board-tt123-v2p2p5-v2p2p6.pdf"><img src="output/previews/tt-demo-board-tt123-v2p2p5-v2p2p6.png" width="270" alt="TT-DB-TT123 DB mpw v2.2.5 / DB mpw v2.2.6"></a><br>
+<b>TT-DB-TT123</b> DB mpw v2.2.5 / DB mpw v2.2.6<br>mpw-mb1 rev 2.2.5 and 2.2.6
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-v1p2p1-v1p2p2-v1p2p3.pdf"><img src="output/previews/tt-demo-board-v1p2p1-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-02 DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
-<b>TT-DB-02</b> DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.1, 1.2.2 and 1.2.3
+<a href="output/tt-demo-board-v1p2p1-v1p2p3.pdf"><img src="output/previews/tt-demo-board-v1p2p1-v1p2p3.png" width="270" alt="TT-DB-V121 DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
+<b>TT-DB-V121</b> DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.1, 1.2.2 and 1.2.3
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-03 DB 06+ v2.0.1 / DB 06+ v2.1.0"></a><br>
-<b>TT-DB-03</b> DB 06+ v2.0.1 / DB 06+ v2.1.0<br>tinytapeout-demo rev 2.0.1 and 2.1.0
+<a href="output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-V201 DB 06+ v2.0.1 / DB 06+ v2.1.0"></a><br>
+<b>TT-DB-V201</b> DB 06+ v2.0.1 / DB 06+ v2.1.0<br>tinytapeout-demo rev 2.0.1 and 2.1.0
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-v2p1p2.pdf"><img src="output/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-04 DB 06+ v2.1.2"></a><br>
-<b>TT-DB-04</b> DB 06+ v2.1.2<br>tinytapeout-demo rev 2.1.2
+<a href="output/tt-demo-board-v2p1p2.pdf"><img src="output/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-V212 DB 06+ v2.1.2"></a><br>
+<b>TT-DB-V212</b> DB 06+ v2.1.2<br>tinytapeout-demo rev 2.1.2
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-v3p2.pdf"><img src="output/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-05 DB ETR v3.2"></a><br>
-<b>TT-DB-05</b> DB ETR v3.2<br>tinytapeout-demo rev 3.2
+<a href="output/tt-demo-board-v3p2.pdf"><img src="output/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-V32 DB ETR v3.2"></a><br>
+<b>TT-DB-V32</b> DB ETR v3.2<br>tinytapeout-demo rev 3.2
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/tt-demo-board-v3p3.pdf"><img src="output/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-06 DB ETR v3.3"></a><br>
-<b>TT-DB-06</b> DB ETR v3.3<br>tinytapeout-demo rev 3.3
+<a href="output/tt-demo-board-v3p3.pdf"><img src="output/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-V33 DB ETR v3.3"></a><br>
+<b>TT-DB-V33</b> DB ETR v3.3<br>tinytapeout-demo rev 3.3
 </td>
 </tr>
 </table>
@@ -86,6 +86,14 @@ Several revisions differ only electrically. v2.2.5 and v2.2.6 are the same
 board mechanically, as are v1.2.2 and v1.2.3, and v2.0.1 and v2.1.0, so nine
 revisions make six sheets, and each sheet names every revision and shuttle it
 covers.
+
+A sheet is called after the first revision on it, with the `p` separators
+taken out, so `TT-DB-V121` is the sheet covering v1.2.1, v1.2.2 and v1.2.3;
+or after the board name where the revisions carry one, so the two mpw-mb1
+revisions are `TT-DB-TT123`. The file keeps the whole range --
+`tt-demo-board-v1p2p1-v1p2p3` -- because a file name is read from a directory
+listing, where both end points are worth the characters, and a drawing number
+is read off a title block and quoted in notes, where they are not.
 
 `boards.py` still carries all nine: it is a database of what was built, and
 the mounting plate is designed against individual revisions. Only the drawing

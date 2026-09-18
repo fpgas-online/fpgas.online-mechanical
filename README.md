@@ -17,12 +17,58 @@ it, so a new board is a new directory and does not disturb the others.
 
 | Directory | Sheets | |
 |-----------|--------|--|
-| [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-01`..`06` | Tiny Tapeout demo boards, one sheet per distinct geometry |
-| [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-01`..`04` | The plate every demo board revision bolts onto, and its drill templates |
-| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-01`..`03` | Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
-| [`fpga/`](fpga/README.md) | `FPGA-01`..`04` | Digilent Arty A7, ULX3S, TUL PYNQ-Z2 and ButterStick, with Pmod, USB, Ethernet and LEDs marked |
-| [`accessories/`](accessories/README.md) | `ACC-01`..`04` | Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
+| [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` | Tiny Tapeout demo boards, one sheet per distinct geometry |
+| [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` | The plate every demo board revision bolts onto, and its drill templates |
+| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` | Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
+| [`fpga/`](fpga/README.md) | `FPGA-*` | Digilent Arty A7, ULX3S, TUL PYNQ-Z2 and ButterStick, with Pmod, USB, Ethernet and LEDs marked |
+| [`accessories/`](accessories/README.md) | `ACC-*` | Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | -- | The [drafting library](tools/drafting/README.md), the generator and the checks |
+
+## What a sheet is called
+
+A sheet's drawing name is its own file stem, in capitals, behind its family's
+prefix: `fpga/output/arty-a7.pdf` is **`FPGA-ARTY-A7`** and
+`raspberry_pi/output/rpi5.pdf` is **`RPI-5`**. The part of the stem the prefix
+already says is dropped: the mounting plate's four stems all begin
+`tt-generic-mounting-plate`, which is what `TT-MP` says.
+
+Three families are named by a rule instead, because their file stems say more
+than a drawing number can carry. A file name is read once from a directory
+listing by somebody choosing between files, and can afford to say what a sheet
+covers; a drawing number is read off a title block, quoted in a note on another
+sheet, written on an order and said out loud across a workshop, so it has to be
+short enough to take in at a glance and to copy without a slip -- at most four
+or five characters behind the prefix. So the stems are left exactly as they
+are, and only the name is cut:
+
+- a demo board sheet is named for the first revision it covers, with the `p`
+  separators taken out, so `tt-demo-board-v1p2p1-v1p2p3.pdf` is `TT-DB-V121`;
+  or for the board name where the revisions carry one, so
+  `tt-demo-board-tt123-v2p2p5-v2p2p6.pdf` is `TT-DB-TT123`. A sheet covers one
+  geometry and the first revision to carry it is where that geometry came
+  from -- v1.2.2 and v1.2.3 are on the `TT-DB-V121` sheet because mechanically
+  they are the v1.2.1 board -- while the sheet's title, subtitle and notes list
+  every revision and shuttle in full.
+- an accessory is named for what kind of part it is and which one of that kind:
+  `ACC-HAT-PMOD` and `ACC-HAT-RMOD` are the two ways of putting Pmod ports on a
+  Raspberry Pi, `ACC-POE-USBC` and `ACC-POE-MUSB` the two PoE splitters. That
+  one is a table, `ACC_NAMES`, keyed by file stem, because these stems are
+  words rather than codes and nothing mechanical shortens them.
+- a mounting plate sheet is named for which of the family's four it is, in one
+  word: `TT-MP-PLATE` is the fabrication drawing, `TT-MP-FIT` the fitting
+  guide, `TT-MP-DRILL` and `TT-MP-CHASSIS` the two A4 drill templates. What is
+  left of these stems once `TT-MP` has said `tt-generic-mounting-plate` is the
+  sheet's title (`chassis-drill-template`), which the sheet already carries in
+  full, so that one is a table as well, `PLATE_NAMES`.
+
+Nothing is numbered. A number is a position in a list, so it depends on what
+else is in the list: two branches each adding a board sheet gave it the same
+next number, and whichever merged second had to renumber, re-render, rebind
+and revisit every reference written against the old number. A name derived
+from the sheet alone is fixed when the sheet is created, and nothing else in
+the set can take it away. [`tools/layout.py`](tools/layout.py) derives every
+name; nothing anywhere writes one out by hand, and `tools/check_sheets.py`
+reads each sheet's DRAWING NO cell back to prove it.
 
 Each sheet is written as SVG and PDF, plus a small preview beside it.
 **The PDFs are committed**, so cloning this is enough to print from: no
@@ -40,30 +86,30 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-tt123-v2p2p5-tt123-v2p2p6.pdf"><img src="tinytapeout/output/previews/tt-demo-board-tt123-v2p2p5-tt123-v2p2p6.png" width="270" alt="TT-DB-01 DB mpw v2.2.5 / DB mpw v2.2.6"></a><br>
-<b>TT-DB-01</b> DB mpw v2.2.5 / DB mpw v2.2.6<br>mpw-mb1 rev 2.2.5 and 2.2.6
+<a href="tinytapeout/output/tt-demo-board-tt123-v2p2p5-v2p2p6.pdf"><img src="tinytapeout/output/previews/tt-demo-board-tt123-v2p2p5-v2p2p6.png" width="270" alt="TT-DB-TT123 DB mpw v2.2.5 / DB mpw v2.2.6"></a><br>
+<b>TT-DB-TT123</b> DB mpw v2.2.5 / DB mpw v2.2.6<br>mpw-mb1 rev 2.2.5 and 2.2.6
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v1p2p1-v1p2p2-v1p2p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v1p2p1-v1p2p2-v1p2p3.png" width="270" alt="TT-DB-02 DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
-<b>TT-DB-02</b> DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.1, 1.2.2 and 1.2.3
+<a href="tinytapeout/output/tt-demo-board-v1p2p1-v1p2p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v1p2p1-v1p2p3.png" width="270" alt="TT-DB-V121 DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c"></a><br>
+<b>TT-DB-V121</b> DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c<br>tinytapeout-demo rev 1.2.1, 1.2.2 and 1.2.3
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-03 DB 06+ v2.0.1 / DB 06+ v2.1.0"></a><br>
-<b>TT-DB-03</b> DB 06+ v2.0.1 / DB 06+ v2.1.0<br>tinytapeout-demo rev 2.0.1 and 2.1.0
+<a href="tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p0p1-v2p1p0.png" width="270" alt="TT-DB-V201 DB 06+ v2.0.1 / DB 06+ v2.1.0"></a><br>
+<b>TT-DB-V201</b> DB 06+ v2.0.1 / DB 06+ v2.1.0<br>tinytapeout-demo rev 2.0.1 and 2.1.0
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v2p1p2.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-04 DB 06+ v2.1.2"></a><br>
-<b>TT-DB-04</b> DB 06+ v2.1.2<br>tinytapeout-demo rev 2.1.2
+<a href="tinytapeout/output/tt-demo-board-v2p1p2.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v2p1p2.png" width="270" alt="TT-DB-V212 DB 06+ v2.1.2"></a><br>
+<b>TT-DB-V212</b> DB 06+ v2.1.2<br>tinytapeout-demo rev 2.1.2
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v3p2.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-05 DB ETR v3.2"></a><br>
-<b>TT-DB-05</b> DB ETR v3.2<br>tinytapeout-demo rev 3.2
+<a href="tinytapeout/output/tt-demo-board-v3p2.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v3p2.png" width="270" alt="TT-DB-V32 DB ETR v3.2"></a><br>
+<b>TT-DB-V32</b> DB ETR v3.2<br>tinytapeout-demo rev 3.2
 </td>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/output/tt-demo-board-v3p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-06 DB ETR v3.3"></a><br>
-<b>TT-DB-06</b> DB ETR v3.3<br>tinytapeout-demo rev 3.3
+<a href="tinytapeout/output/tt-demo-board-v3p3.pdf"><img src="tinytapeout/output/previews/tt-demo-board-v3p3.png" width="270" alt="TT-DB-V33 DB ETR v3.3"></a><br>
+<b>TT-DB-V33</b> DB ETR v3.3<br>tinytapeout-demo rev 3.3
 </td>
 </tr>
 </table>
@@ -73,16 +119,16 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="raspberry_pi/output/rpi3b.pdf"><img src="raspberry_pi/output/previews/rpi3b.png" width="270" alt="RPI-01 Raspberry Pi 3 Model B and B+"></a><br>
-<b>RPI-01</b> Raspberry Pi 3 Model B and B+<br>85 x 56 mm, both models
+<a href="raspberry_pi/output/rpi3b.pdf"><img src="raspberry_pi/output/previews/rpi3b.png" width="270" alt="RPI-3B Raspberry Pi 3 Model B and B+"></a><br>
+<b>RPI-3B</b> Raspberry Pi 3 Model B and B+<br>85 x 56 mm, both models
 </td>
 <td width="33%" valign="top" align="center">
-<a href="raspberry_pi/output/rpi4b.pdf"><img src="raspberry_pi/output/previews/rpi4b.png" width="270" alt="RPI-02 Raspberry Pi 4 Model B"></a><br>
-<b>RPI-02</b> Raspberry Pi 4 Model B<br>85 x 56 mm
+<a href="raspberry_pi/output/rpi4b.pdf"><img src="raspberry_pi/output/previews/rpi4b.png" width="270" alt="RPI-4B Raspberry Pi 4 Model B"></a><br>
+<b>RPI-4B</b> Raspberry Pi 4 Model B<br>85 x 56 mm
 </td>
 <td width="33%" valign="top" align="center">
-<a href="raspberry_pi/output/rpi5.pdf"><img src="raspberry_pi/output/previews/rpi5.png" width="270" alt="RPI-03 Raspberry Pi 5"></a><br>
-<b>RPI-03</b> Raspberry Pi 5<br>85 x 56 mm
+<a href="raspberry_pi/output/rpi5.pdf"><img src="raspberry_pi/output/previews/rpi5.png" width="270" alt="RPI-5 Raspberry Pi 5"></a><br>
+<b>RPI-5</b> Raspberry Pi 5<br>85 x 56 mm
 </td>
 </tr>
 </table>
@@ -92,22 +138,22 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="fpga/output/arty-a7.pdf"><img src="fpga/output/previews/arty-a7.png" width="270" alt="FPGA-01 Digilent Arty A7"></a><br>
-<b>FPGA-01</b> Digilent Arty A7<br>A7-35T and A7-100T
+<a href="fpga/output/arty-a7.pdf"><img src="fpga/output/previews/arty-a7.png" width="270" alt="FPGA-ARTY-A7 Digilent Arty A7"></a><br>
+<b>FPGA-ARTY-A7</b> Digilent Arty A7<br>A7-35T and A7-100T
 </td>
 <td width="33%" valign="top" align="center">
-<a href="fpga/output/ulx3s.pdf"><img src="fpga/output/previews/ulx3s.png" width="270" alt="FPGA-02 ULX3S"></a><br>
-<b>FPGA-02</b> ULX3S<br>v3.0.3, v3.0.7, v3.0.8 and v3.1.7
+<a href="fpga/output/ulx3s.pdf"><img src="fpga/output/previews/ulx3s.png" width="270" alt="FPGA-ULX3S ULX3S"></a><br>
+<b>FPGA-ULX3S</b> ULX3S<br>v3.0.3, v3.0.7, v3.0.8 and v3.1.7
 </td>
 <td width="33%" valign="top" align="center">
-<a href="fpga/output/pynq-z2.pdf"><img src="fpga/output/previews/pynq-z2.png" width="270" alt="FPGA-03 TUL PYNQ-Z2"></a><br>
-<b>FPGA-03</b> TUL PYNQ-Z2<br>137 x 87 mm
+<a href="fpga/output/pynq-z2.pdf"><img src="fpga/output/previews/pynq-z2.png" width="270" alt="FPGA-PYNQ-Z2 TUL PYNQ-Z2"></a><br>
+<b>FPGA-PYNQ-Z2</b> TUL PYNQ-Z2<br>137 x 87 mm
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="fpga/output/butterstick.pdf"><img src="fpga/output/previews/butterstick.png" width="270" alt="FPGA-04 ButterStick"></a><br>
-<b>FPGA-04</b> ButterStick<br>r1.0
+<a href="fpga/output/butterstick.pdf"><img src="fpga/output/previews/butterstick.png" width="270" alt="FPGA-BUTTERSTICK ButterStick"></a><br>
+<b>FPGA-BUTTERSTICK</b> ButterStick<br>r1.0
 </td>
 <td width="33%"></td>
 <td width="33%"></td>
@@ -119,22 +165,22 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="accessories/output/digilent-pmod-hat-adapter.pdf"><img src="accessories/output/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-01 Digilent Pmod HAT Adapter"></a><br>
-<b>ACC-01</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
+<a href="accessories/output/pmod-hat.pdf"><img src="accessories/output/previews/pmod-hat.png" width="270" alt="ACC-HAT-PMOD Digilent Pmod HAT Adapter"></a><br>
+<b>ACC-HAT-PMOD</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
 </td>
 <td width="33%" valign="top" align="center">
-<a href="accessories/output/waveshare-poe-usbc.pdf"><img src="accessories/output/previews/waveshare-poe-usbc.png" width="270" alt="ACC-02 Waveshare PoE Splitter 25 W, Type-C"></a><br>
-<b>ACC-02</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
+<a href="accessories/output/poe-usbc.pdf"><img src="accessories/output/previews/poe-usbc.png" width="270" alt="ACC-POE-USBC Waveshare PoE Splitter 25 W, Type-C"></a><br>
+<b>ACC-POE-USBC</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
 </td>
 <td width="33%" valign="top" align="center">
-<a href="accessories/output/generic-poe-microusb.pdf"><img src="accessories/output/previews/generic-poe-microusb.png" width="270" alt="ACC-03 Generic PoE splitter to micro-USB"></a><br>
-<b>ACC-03</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
+<a href="accessories/output/poe-microusb.pdf"><img src="accessories/output/previews/poe-microusb.png" width="270" alt="ACC-POE-MUSB Generic PoE splitter to micro-USB"></a><br>
+<b>ACC-POE-MUSB</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="accessories/output/raspmod.pdf"><img src="accessories/output/previews/raspmod.png" width="270" alt="ACC-04 Raspmod"></a><br>
-<b>ACC-04</b> Raspmod<br>TT Demoboard To Raspi rev 1.0, silkscreen v1.1: a frontplate for the demoboard's three Pmod hosts
+<a href="accessories/output/raspmod.pdf"><img src="accessories/output/previews/raspmod.png" width="270" alt="ACC-HAT-RMOD Raspmod"></a><br>
+<b>ACC-HAT-RMOD</b> Raspmod<br>TT Demoboard To Raspi rev 1.0, silkscreen v1.1: a frontplate for the demoboard's three Pmod hosts
 </td>
 <td width="33%"></td>
 <td width="33%"></td>
@@ -146,22 +192,22 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate.png" width="270" alt="TT-MP-01 TT Generic Mounting Plate"></a><br>
-<b>TT-MP-01</b> TT Generic Mounting Plate<br>Accepts every demo board revision, Pmod hosts fixed in place
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate.png" width="270" alt="TT-MP-PLATE TT Generic Mounting Plate"></a><br>
+<b>TT-MP-PLATE</b> TT Generic Mounting Plate<br>Accepts every demo board revision, Pmod hosts fixed in place
 </td>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-02 TT Mounting Plate Fitting Guide"></a><br>
-<b>TT-MP-02</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-FIT TT Mounting Plate Fitting Guide"></a><br>
+<b>TT-MP-FIT</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-03 Drill Template: Mounting Plate"></a><br>
-<b>TT-MP-03</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-DRILL Drill Template: Mounting Plate"></a><br>
+<b>TT-MP-DRILL</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
 </td>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-04 Drill Template: Chassis"></a><br>
-<b>TT-MP-04</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-CHASSIS Drill Template: Chassis"></a><br>
+<b>TT-MP-CHASSIS</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
 </td>
 </tr>
 </table>

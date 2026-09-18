@@ -11,7 +11,7 @@ up in the same assemblies.
 | `extract.py` | Reads the Raspmod's KiCad board file and writes `raspmod.py` |
 | `compare.py` | Rewrites the tables in `raspmod-vs-pmod-hat.md` from the two data modules |
 | [`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md) | The two ways of putting Pmods on a Raspberry Pi, compared: pin maps and mechanics |
-| `output/` | `ACC-01` to `ACC-04`, as SVG and PDF |
+| `output/` | Four `ACC-…` sheets, as SVG and PDF |
 
 `parts.py` is hand-curated because its sources are not machine-readable: a
 product photo, a dimensioned marketing image, and a pinout table on a web
@@ -25,6 +25,29 @@ uv run --no-project python accessories/extract.py      # needs tmp/src, see make
 uv run --no-project python accessories/compare.py
 ```
 
+A sheet's file is named for what the part is, and the title block says who
+makes it and what its part number is. `ACC_STEMS` in
+[`tools/layout.py`](../tools/layout.py) maps each part key to its stem, and
+what that drops differs by part: the two PoE splitters' keys name their
+vendor, because that is what you buy -- `waveshare-poe-usbc` becomes
+`output/poe-usbc.pdf`. The adapter's key never did: it is `pmod-hat-adapter`,
+and `digilent-` was put in front of it by hand when the file name was written,
+which is where the old `ACC-DIGILENT-PMOD-HAT-ADAPTER` came from. The
+Raspmod's key is already what the thing is called.
+
+The drawing name is not that stem in capitals. A drawing number is quoted in
+notes, on orders and out loud, so `ACC_NAMES`, beside `ACC_STEMS`, gives each
+stem a name of two short words: the kind of part, then which one of that kind.
+`pmod-hat` is `ACC-HAT-PMOD` and `raspmod` is `ACC-HAT-RMOD`, the two ways of
+putting Pmod ports on a Raspberry Pi; `poe-usbc` is `ACC-POE-USBC` and
+`poe-microusb` is `ACC-POE-MUSB`, the two splitters. A table rather than a
+rule, because these stems are words and not codes and nothing mechanical
+shortens `raspmod` to four characters that still say which board it is. HAT is
+Digilent's own word for its adapter; the Raspmod is filed under it as the
+other way of doing the same job, though it is
+[not a HAT](raspmod-vs-pmod-hat.md) in the specification's sense and reaches
+the Pi over a ribbon cable.
+
 ## The sheets
 
 <!-- sheets:begin -->
@@ -34,22 +57,22 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/digilent-pmod-hat-adapter.pdf"><img src="output/previews/digilent-pmod-hat-adapter.png" width="270" alt="ACC-01 Digilent Pmod HAT Adapter"></a><br>
-<b>ACC-01</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
+<a href="output/pmod-hat.pdf"><img src="output/previews/pmod-hat.png" width="270" alt="ACC-HAT-PMOD Digilent Pmod HAT Adapter"></a><br>
+<b>ACC-HAT-PMOD</b> Digilent Pmod HAT Adapter<br>410-366, fitted to a Raspberry Pi 40-pin GPIO header
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/waveshare-poe-usbc.pdf"><img src="output/previews/waveshare-poe-usbc.png" width="270" alt="ACC-02 Waveshare PoE Splitter 25 W, Type-C"></a><br>
-<b>ACC-02</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
+<a href="output/poe-usbc.pdf"><img src="output/previews/poe-usbc.png" width="270" alt="ACC-POE-USBC Waveshare PoE Splitter 25 W, Type-C"></a><br>
+<b>ACC-POE-USBC</b> Waveshare PoE Splitter 25 W, Type-C<br>POE-SPLITTER-25W-TYPE-C, extruded aluminium body
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/generic-poe-microusb.pdf"><img src="output/previews/generic-poe-microusb.png" width="270" alt="ACC-03 Generic PoE splitter to micro-USB"></a><br>
-<b>ACC-03</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
+<a href="output/poe-microusb.pdf"><img src="output/previews/poe-microusb.png" width="270" alt="ACC-POE-MUSB Generic PoE splitter to micro-USB"></a><br>
+<b>ACC-POE-MUSB</b> Generic PoE splitter to micro-USB<br>IEEE 802.3af, 5 V output, sealed plastic body
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/raspmod.pdf"><img src="output/previews/raspmod.png" width="270" alt="ACC-04 Raspmod"></a><br>
-<b>ACC-04</b> Raspmod<br>TT Demoboard To Raspi rev 1.0, silkscreen v1.1: a frontplate for the demoboard's three Pmod hosts
+<a href="output/raspmod.pdf"><img src="output/previews/raspmod.png" width="270" alt="ACC-HAT-RMOD Raspmod"></a><br>
+<b>ACC-HAT-RMOD</b> Raspmod<br>TT Demoboard To Raspi rev 1.0, silkscreen v1.1: a frontplate for the demoboard's three Pmod hosts
 </td>
 <td width="33%"></td>
 <td width="33%"></td>
@@ -58,7 +81,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 
 <!-- sheets:end -->
 
-## Digilent Pmod HAT Adapter (ACC-01)
+## Digilent Pmod HAT Adapter (`ACC-HAT-PMOD`)
 
 Digilent publish no mechanical drawing, DXF, STEP or board file for this part.
 The three Pmod host positions were measured photogrammetrically from
@@ -75,9 +98,11 @@ uv run --no-project --with pillow --with numpy python \
     accessories/measure_pmod_hat.py tmp/digilent/hat.png
 ```
 
-## Raspmod (ACC-04)
+## Raspmod (`ACC-HAT-RMOD`)
 
-Pat Deegan's "TT Demoboard To Raspi": not a HAT but a frontplate. Three
+Pat Deegan's "TT Demoboard To Raspi": not a HAT but a frontplate, whatever its
+drawing number says -- the `HAT` there files it with the Digilent adapter it
+is an alternative to, not with the specification. Three
 2x6 pin headers on its underside go into a Tiny Tapeout demoboard's three
 Pmod hosts, three sockets on its front take external Pmods in their place,
 and a 2x20 box header carries every signal to a Raspberry Pi over a ribbon
@@ -90,7 +115,7 @@ KiCad writes each pad's net into it. Which demoboard it fits, and how it
 differs from the Digilent adapter, is in
 [`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md).
 
-## PoE splitters (ACC-02, ACC-03)
+## PoE splitters (`ACC-POE-USBC`, `ACC-POE-MUSB`)
 
 Drawn as three-view envelope drawings, which is what they are useful as: they
 go inside a box and what matters is the space they need and where the cable

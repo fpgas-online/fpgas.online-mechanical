@@ -8,7 +8,7 @@ jack and user LEDs marked.
 |---|---|
 | `boards.py` | **Generated.** Arty A7, ULX3S, PYNQ-Z2 and ButterStick |
 | `extract.py` | Reads each board's own published source and writes `boards.py` |
-| `output/` | `FPGA-01` to `FPGA-04`, as SVG and PDF, and `fpga-sheets.pdf`, the four bound into one document |
+| `output/` | `FPGA-ARTY-A7`, `FPGA-ULX3S`, `FPGA-PYNQ-Z2` and `FPGA-BUTTERSTICK`, as SVG and PDF, and `fpga-sheets.pdf`, the four bound into one document |
 
 ```sh
 tools/fetch_fpga.sh                                   # once, needs network
@@ -25,22 +25,22 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/arty-a7.pdf"><img src="output/previews/arty-a7.png" width="270" alt="FPGA-01 Digilent Arty A7"></a><br>
-<b>FPGA-01</b> Digilent Arty A7<br>A7-35T and A7-100T
+<a href="output/arty-a7.pdf"><img src="output/previews/arty-a7.png" width="270" alt="FPGA-ARTY-A7 Digilent Arty A7"></a><br>
+<b>FPGA-ARTY-A7</b> Digilent Arty A7<br>A7-35T and A7-100T
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/ulx3s.pdf"><img src="output/previews/ulx3s.png" width="270" alt="FPGA-02 ULX3S"></a><br>
-<b>FPGA-02</b> ULX3S<br>v3.0.3, v3.0.7, v3.0.8 and v3.1.7
+<a href="output/ulx3s.pdf"><img src="output/previews/ulx3s.png" width="270" alt="FPGA-ULX3S ULX3S"></a><br>
+<b>FPGA-ULX3S</b> ULX3S<br>v3.0.3, v3.0.7, v3.0.8 and v3.1.7
 </td>
 <td width="33%" valign="top" align="center">
-<a href="output/pynq-z2.pdf"><img src="output/previews/pynq-z2.png" width="270" alt="FPGA-03 TUL PYNQ-Z2"></a><br>
-<b>FPGA-03</b> TUL PYNQ-Z2<br>137 x 87 mm
+<a href="output/pynq-z2.pdf"><img src="output/previews/pynq-z2.png" width="270" alt="FPGA-PYNQ-Z2 TUL PYNQ-Z2"></a><br>
+<b>FPGA-PYNQ-Z2</b> TUL PYNQ-Z2<br>137 x 87 mm
 </td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="output/butterstick.pdf"><img src="output/previews/butterstick.png" width="270" alt="FPGA-04 ButterStick"></a><br>
-<b>FPGA-04</b> ButterStick<br>r1.0
+<a href="output/butterstick.pdf"><img src="output/previews/butterstick.png" width="270" alt="FPGA-BUTTERSTICK ButterStick"></a><br>
+<b>FPGA-BUTTERSTICK</b> ButterStick<br>r1.0
 </td>
 <td width="33%"></td>
 <td width="33%"></td>

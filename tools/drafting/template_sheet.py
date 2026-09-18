@@ -30,6 +30,7 @@ import math
 
 from tinytapeout.mounting_plate.plate import (PLACEMENTS, PMOD_BODY,
                                               PMOD_ROW_Y, PMOD_SLOT_X, PLATE)
+from tools.layout import DRILL_TEMPLATE_STEMS, PLATE_SHEET, drawing_name
 from tools.schema import LABEL_SEP, Outline
 from tinytapeout.boards import BOARDS as TT_BOARDS
 
@@ -259,7 +260,8 @@ def schedule_blocks() -> list[tuple[str, list[list[str]]]]:
 
     Indexed the way someone at a drill press asks the question.  The flat
     table this replaced was indexed by hole and answered "what is this hole
-    for", which is the fabricator's question and is already on TT-MP-01; a
+    for", which is the fabricator's question and is already on the plate
+    fabrication drawing; a
     person holding a v3.3 board wants to be told H9 and H10 and nothing else.
 
     Grouping cannot partition the features, because H1, H9, S1 and S2 each
@@ -330,7 +332,8 @@ COMMON_NOTES = [
 TAIL_NOTES = [
     "Tape it down printed side up, FRONT EDGE along the edge the Pmod bodies "
     "will overhang, and punch every cross.",
-    "With a mill or a DRO, work from the coordinates on TT-MP-01 instead.",
+    f"With a mill or a DRO, work from the coordinates on {PLATE_SHEET} "
+    "instead.",
 ]
 
 def _fixing_span() -> str:
@@ -400,6 +403,59 @@ TITLES = {
 WARNING = "PRINT AT 100 %   -   DO NOT FIT TO PAGE"
 
 
+def _fit_beside(kind: str, text: str, room: float, neighbour: str,
+                face: str = "condensed", bold: bool = False) -> float:
+    """The size *text* is set at beside *neighbour*, or a refusal to draw it.
+
+    ``fit_size`` returns the ISO 3098 floor when nothing on the ladder fits,
+    which would put the two strings through each other rather than say so.
+    The page is A4 and both strings are content, so there is nothing to do
+    automatically: one of them has to get shorter, and a person has to choose
+    which.
+    """
+    size = fit_size(text, room, face=face, bold=bold)
+    # Measured in the face it will be drawn in, which is why both are passed
+    # through rather than left to two different sets of defaults: fit_size
+    # sets sans bold and style.text_width condensed regular, and the same
+    # string is 70.25 mm one way and 56.21 mm the other.
+    width = style.text_width(text, size, face=face, bold=bold)
+    if width > room:
+        raise SystemExit(
+            f"{kind} drill template: the header line holds {room:.1f} mm "
+            f"beside {neighbour!r}, and {text!r} needs {width:.1f} mm at the "
+            "ISO 3098 floor. Shorten one of them.")
+    return size
+
+
+def _stamp(drawing_no: str) -> str:
+    """The right-hand end of a template's title line."""
+    return f"{drawing_no}    A4 PORTRAIT    SCALE 1:1"
+
+
+def _header_sizes(version: str) -> tuple[float, float]:
+    """The title and subtitle sizes every drill template is set at.
+
+    One pair for the family rather than one per sheet: each line is set at
+    the largest rung at which every template's string fits beside its own
+    right-hand end, so the two templates read as a pair.  Left to fit one at
+    a time, the chassis's shorter name and shorter title took the 5.0 mm
+    rung while the plate's stayed at 3.5 mm, and the two sheets that are
+    printed and used together came out with headers a size apart.  The
+    refusal in ``_fit_beside`` still happens per sheet, and names the sheet.
+    """
+    area = TemplatePage().area
+    tsizes, ssizes = [], []
+    for kind, (title, subtitle) in TITLES.items():
+        name = drawing_name("mounting-plate", DRILL_TEMPLATE_STEMS[kind])
+        stamp = _stamp(name)
+        avail = area.w - style.text_width(stamp, style.T_TINY) - 6.0
+        tsizes.append(_fit_beside(kind, title, avail, stamp, face="sans",
+                                  bold=True))
+        avail = area.w - style.text_width(version, style.T_TINY) - 6.0
+        ssizes.append(_fit_beside(kind, subtitle, avail, version))
+    return min(tsizes), min(ssizes)
+
+
 def render_drill_template(kind: str, *, drawing_no: str,
                           version: str) -> TemplatePage:
     if kind not in TITLES:
@@ -413,17 +469,49 @@ def render_drill_template(kind: str, *, drawing_no: str,
     # -- header ------------------------------------------------------------
     title, subtitle = TITLES[kind]
     y = area.y1
-    stamp = f"{drawing_no}    {version}    A4 PORTRAIT    SCALE 1:1"
-    # The stamp is fixed-width and the title is not, so the title is the one
-    # that gives way; setting both at their natural sizes ran one through the
-    # other.
-    avail = area.w - style.text_width(stamp, style.T_TINY) - 6.0
-    tsize = fit_size(title, avail)
+    # What the sheet is goes on the title line, what it was drawn from on the
+    # line under it.  All four shared the first line while a drawing number
+    # was eight characters: TT-MP-03 with the version, the page size and the
+    # scale left 91.93 mm for a title needing 70.25 mm at the ISO floor, and
+    # the chassis title 52.57 mm, both comfortable.  A drawing name is longer,
+    # and TT-MP-PLATE-DRILL-TEMPLATE on that line left 59.97 mm for that same
+    # 70.25 mm title -- 10 mm short.
+    #
+    # The names are TT-MP-DRILL and TT-MP-CHASSIS now, and the fit is no
+    # longer what the split is for: one line would hold them.  The version on
+    # that line is `git describe`, whose abbreviated hash is as long as it has
+    # to be to stay unique and whose glyphs are not all one width, so the room
+    # it leaves is not a constant -- but the margin no longer turns on that.
+    # Beside TT-MP-DRILL and the version these sheets carry, one line leaves
+    # 86.99 mm for the plate's title, needing 70.25 mm at the ISO floor:
+    # 16.74 mm of margin, still 14.78 mm when the commit count reaches four
+    # digits and 8.51 mm with the dirty mark an uncommitted render adds.  The
+    # figures this comment used to quote were of the thin kind those two
+    # accidents eat -- a margin of 0.16 mm at worst -- because the name on the
+    # line was TT-MP-PLATE-DRILL-TEMPLATE and then TT-MP-DRILL-TEMPLATE.
+    #
+    # It stays split, for the type size rather than for the fit.  A one-line
+    # header sets the plate's title at the 2.5 mm floor, which is fitting and
+    # nothing more.  The split title line carries no version, so its room is
+    # fixed and much larger: 121.37 mm beside the plate's name, 116.86 mm
+    # beside the chassis's.
+    #
+    # Each line's right-hand string is fixed-width and its left-hand one is
+    # not, so the left one gives way.  With that much room the plate's title
+    # fits at 3.5 mm, and the chassis's, the shorter of the two at 52.57 mm,
+    # would fit the 5.0 mm rung above it; _header_sizes sets both at the
+    # 3.5 mm the plate's allows, so the pair match.
+    #
+    # The floor is the real defect: fit_size returns it when nothing on its
+    # ladder fits, so the old line would have drawn a title straight through
+    # the stamp rather than refusing.  _fit_beside refuses.
+    stamp = _stamp(drawing_no)
+    tsize, ssize = _header_sizes(version)
     c.text(area.x, y - tsize, title, size=tsize, face="sans", bold=True)
     c.text(area.x1, y - tsize, stamp, size=style.T_TINY, anchor="end")
     y -= tsize + 2.8
-    ssize = fit_size(subtitle, area.w, face="condensed", bold=False)
     c.text(area.x, y - ssize, subtitle, size=ssize)
+    c.text(area.x1, y - ssize, version, size=style.T_TINY, anchor="end")
     y -= ssize + 3.6
 
     box_h = 11.0

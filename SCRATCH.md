@@ -1135,3 +1135,468 @@ committed sheet PDFs gives `raspberry-pi-sheets.pdf` back byte for byte.
 The Inkscape 1.4.3 AppImage was tried first and is worse: it bundles cairo
 1.16.0, so its `/Producer` differs instead. Debian's package is the one that
 draws the same bytes.
+
+## Sheets are named, not numbered
+
+Every sheet carried a family prefix and a sequence position -- `TT-DB-01` to
+`TT-DB-06`, `RPI-01` to `RPI-03`, `FPGA-01` to `FPGA-04`, `ACC-01` to
+`ACC-04`, `TT-MP-01` to `TT-MP-04` -- produced by `enumerate()` over a reading
+order list in the generator, repeated by the same `enumerate()` in the README
+builder, and quoted by hand in four notes, two comments, `compare.py` and
+every README. A sheet's identity therefore depended on what else was in the
+set. With several pull requests open at once that each add a sheet, it
+collides: four of them each called their FPGA sheet `FPGA-05`, and whichever
+merged second had to renumber, re-render, rebind, and go back over every cross
+reference written against the old number.
+
+**The rule.** A sheet's drawing name is its own file stem in capitals, behind
+its family's prefix, with the head of the stem that the prefix already says
+taken off. One function, `tools.layout.drawing_name(family, stem)`, and one
+table beside it giving each family its prefix and that lead:
+
+| family | prefix | lead dropped |
+|---|---|---|
+| `tinytapeout` | `TT-DB` | `tt-demo-board` |
+| `raspberry-pi` | `RPI` | `rpi` |
+| `fpga` | `FPGA` | -- |
+| `accessories` | `ACC` | -- |
+| `mounting-plate` | `TT-MP` | `tt-generic-mounting-plate` |
+
+Dots become `p` and underscores hyphens on the way into a file stem, which is
+`slug()` and is how the stems were already written, so `v2.2.5` is `V2P2P5`.
+
+**Then the names were too long.** The owner's verdict on the first set of
+them: "The names in #30 are way to long for the tiny tapeout and accessories.
+Try to keep them short." A name is its file stem in capitals, so the stems are
+what gives. Three changes, none of them to the rule above:
+
+| | was | is |
+|---|---|---|
+| a demo board sheet covering several revisions | every revision, and every board name with it: `tt-demo-board-tt123-v2p2p5-tt123-v2p2p6` | the first revision and the last, a shared board name once: `tt-demo-board-tt123-v2p2p5-v2p2p6` |
+| an accessory sheet | a vendor the sheet already names: `digilent-pmod-hat-adapter`, `waveshare-poe-usbc` | what the part is: `pmod-hat`, `poe-usbc` |
+| the mounting plate's lead | `tt-generic-mounting`, so every name said PLATE | `tt-generic-mounting-plate`, which `TT-MP` is |
+
+The demo board stems are a range because the revisions are already in order,
+so the end points say which. It gives up saying that v1.2.2 is on the sheet
+between v1.2.1 and v1.2.3 -- the sheet's title, subtitle and notes still list
+every revision and shuttle it covers, in full, and those are what a reader of
+the drawing has in front of them, where the file name is what somebody types.
+`TT-DB-TT123-V2P2P5-V2P2P6` is 50.25 mm against 61.75, and said `TT123` once.
+
+The accessory stems say what the part is, and leave the vendor and the part
+number to the title block, which carries both: "Waveshare PoE Splitter 25 W,
+Type-C" over "POE-SPLITTER-25W-TYPE-C". `ACC_STEMS` in `tools/layout.py` maps
+each part key to its stem and refuses a part that has no row. What the stem
+drops is not the same thing in each row, and it is worth being exact, because
+two of the four keys carry no vendor at all:
+
+| part key | stem | what went |
+|---|---|---|
+| `pmod-hat-adapter` | `pmod-hat` | `-adapter`, from the key. The old file was `digilent-pmod-hat-adapter`: the vendor was never in the key, it was written in front of it by hand when the file was named, and that is where `ACC-DIGILENT-PMOD-HAT-ADAPTER` came from |
+| `waveshare-poe-usbc` | `poe-usbc` | the vendor, which this key does carry, because the data is a catalogue of things somebody has to buy and that is what they buy |
+| `generic-poe-microusb` | `poe-microusb` | `generic-`, which says only that no vendor is authoritative -- a fact the sheet's notes state properly |
+| `raspmod` | `raspmod` | nothing; the key is already what the thing is called |
+
+`ACC-DIGILENT-PMOD-HAT-ADAPTER` at 60.84 mm becomes `ACC-PMOD-HAT` at 26.95.
+
+The plate's lead is the other direction: it moved out one word rather than in.
+See below -- the file stems did not change, only what the prefix accounts for.
+
+**Where the mounting plate's lead stops.** It takes the whole of
+`tt-generic-mounting-plate`, which leaves the plate's own fabrication drawing
+with nothing at all -- and that is a case the rule now has an answer for,
+arrived at the long way round.
+
+The first attempt took the whole lead too, and handed the plate's own sheet
+back the bare prefix, `TT-MP`. Three things were wrong with that, all of them
+found in review:
+
+- `TT-MP` is a substring of `TT-MP-FITTING-GUIDE`, so a check asking "does
+  this sheet carry its own name" could be satisfied by the sheet's *note*
+  citing the fitting guide. Deleting the title block's text element from the
+  plate SVG and re-running the check proved it: the check still passed.
+- "Work from the coordinates on TT-MP" reads as a pointer at the family, which
+  is four drawings, not at the one that governs every dimension.
+- The issue's own worked example was `TT-MP-PLATE`.
+
+So the lead was shortened to `tt-generic-mounting`, one word, and every name
+in the family said PLATE: `TT-MP-PLATE`, `TT-MP-PLATE-FITTING-GUIDE`,
+`TT-MP-PLATE-DRILL-TEMPLATE`, `TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE`. That
+answered the review and made the names longer, and PLATE on the last three
+said nothing `TT-MP` had not: this family *is* the plate and three satellites.
+
+The lead goes back to the whole stem, and the rule gains its one general case
+instead. **When stripping the lead leaves nothing, the name takes the lead's
+last word**, so the sheet whose stem is exactly its family's lead is named for
+what it is: `TT-MP-PLATE`, with `TT-MP-FITTING-GUIDE`, `TT-MP-DRILL-TEMPLATE`
+and `TT-MP-CHASSIS-DRILL-TEMPLATE` beside it. It is not special pleading for
+this family. A family named after its principal sheet is an ordinary shape,
+and the reason not to hand back the bare prefix is general too: a name that is
+a prefix of its siblings' names cannot be told from them by any test that
+reads a sheet, which is exactly how `TT-MP` made the carry check vacuous. The
+rule produces no such name, and `drawing_name`'s docstring says that is why.
+
+The file stems do not change, so nothing on disk moves: the four files are
+still `tt-generic-mounting-plate*`, and so is the DXF cut file, which the
+fabrication drawing cites by name and something outside this repository may
+link to.
+
+`TT-MP-CHASSIS-DRILL-TEMPLATE` is then the longest name in the set at
+**56.43 mm**, ahead of `TT-DB-TT123-V2P2P5-V2P2P6` at 50.25 mm -- the longest
+name the demo boards ever carried, and superseded below -- and it fits
+the 79.30 mm cell with 23 mm to spare. It fits the drill templates' split
+header line too, which now leaves both titles at 3.5 mm.
+
+The whole set, 21 sheets, against the numbers they carried before this branch
+and each set of names they have carried on it. The `now` column is the rule
+in the section below this one, which is where the demo boards and the
+accessories stopped being named for their stems at all; the file column has
+not moved since the stems were shortened, and does not move again.
+
+| numbered | named for the stem | stem shortened | now | file |
+|---|---|---|---|---|
+| `TT-DB-01` | `TT-DB-TT123-V2P2P5-TT123-V2P2P6` | `TT-DB-TT123-V2P2P5-V2P2P6` | `TT-DB-TT123` | `tinytapeout/output/tt-demo-board-tt123-v2p2p5-v2p2p6` |
+| `TT-DB-02` | `TT-DB-V1P2P1-V1P2P2-V1P2P3` | `TT-DB-V1P2P1-V1P2P3` | `TT-DB-V121` | `tinytapeout/output/tt-demo-board-v1p2p1-v1p2p3` |
+| `TT-DB-03` | `TT-DB-V2P0P1-V2P1P0` | `TT-DB-V2P0P1-V2P1P0` | `TT-DB-V201` | `tinytapeout/output/tt-demo-board-v2p0p1-v2p1p0` |
+| `TT-DB-04` | `TT-DB-V2P1P2` | `TT-DB-V2P1P2` | `TT-DB-V212` | `tinytapeout/output/tt-demo-board-v2p1p2` |
+| `TT-DB-05` | `TT-DB-V3P2` | `TT-DB-V3P2` | `TT-DB-V32` | `tinytapeout/output/tt-demo-board-v3p2` |
+| `TT-DB-06` | `TT-DB-V3P3` | `TT-DB-V3P3` | `TT-DB-V33` | `tinytapeout/output/tt-demo-board-v3p3` |
+| `RPI-01` | `RPI-3B` | `RPI-3B` | `RPI-3B` | `raspberry_pi/output/rpi3b` |
+| `RPI-02` | `RPI-4B` | `RPI-4B` | `RPI-4B` | `raspberry_pi/output/rpi4b` |
+| `RPI-03` | `RPI-5` | `RPI-5` | `RPI-5` | `raspberry_pi/output/rpi5` |
+| `FPGA-01` | `FPGA-ARTY-A7` | `FPGA-ARTY-A7` | `FPGA-ARTY-A7` | `fpga/output/arty-a7` |
+| `FPGA-02` | `FPGA-ULX3S` | `FPGA-ULX3S` | `FPGA-ULX3S` | `fpga/output/ulx3s` |
+| `FPGA-03` | `FPGA-PYNQ-Z2` | `FPGA-PYNQ-Z2` | `FPGA-PYNQ-Z2` | `fpga/output/pynq-z2` |
+| `FPGA-04` | `FPGA-BUTTERSTICK` | `FPGA-BUTTERSTICK` | `FPGA-BUTTERSTICK` | `fpga/output/butterstick` |
+| `ACC-01` | `ACC-DIGILENT-PMOD-HAT-ADAPTER` | `ACC-PMOD-HAT` | `ACC-HAT-PMOD` | `accessories/output/pmod-hat` |
+| `ACC-02` | `ACC-WAVESHARE-POE-USBC` | `ACC-POE-USBC` | `ACC-POE-USBC` | `accessories/output/poe-usbc` |
+| `ACC-03` | `ACC-GENERIC-POE-MICROUSB` | `ACC-POE-MICROUSB` | `ACC-POE-MUSB` | `accessories/output/poe-microusb` |
+| `ACC-04` | `ACC-RASPMOD` | `ACC-RASPMOD` | `ACC-HAT-RMOD` | `accessories/output/raspmod` |
+| `TT-MP-01` | `TT-MP-PLATE` | `TT-MP-PLATE` | `TT-MP-PLATE` | `tinytapeout/mounting_plate/output/tt-generic-mounting-plate` |
+| `TT-MP-02` | `TT-MP-PLATE-FITTING-GUIDE` | `TT-MP-FITTING-GUIDE` | `TT-MP-FITTING-GUIDE` | `…/tt-generic-mounting-plate-fitting-guide` |
+| `TT-MP-03` | `TT-MP-PLATE-DRILL-TEMPLATE` | `TT-MP-DRILL-TEMPLATE` | `TT-MP-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-drill-template` |
+| `TT-MP-04` | `TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` | `TT-MP-CHASSIS-DRILL-TEMPLATE` | `TT-MP-CHASSIS-DRILL-TEMPLATE` | `…/tt-generic-mounting-plate-chassis-drill-template` |
+
+**Why the file stem and not something shorter.** The argument for it is not
+brevity, it is that a collision needs nobody's attention. Two sheets in a
+family can only collide if their stems differ by something `slug()` and
+`upper()` throw away -- `rpi5`, `rpi-5` and `rpi_5` all give `RPI-5` -- so it
+is very nearly the file system's guarantee but not quite, which is why
+`check_sheets.py` checks for duplicates rather than assuming there can be
+none. The name and the path also convert into each other by hand, so a
+reference to `FPGA-PYNQ-Z2` tells a reader where to find it. The alternatives
+all gave that up:
+
+- **A per-sheet name declared in the data**, beside the title. Collision-free
+  in the same way, but it is a second string to keep in step with the file
+  name, and nothing would notice the two disagreeing.
+- **The board's title, slugged** -- `TT-DB-DB-ETR-V3P3` from "DB ETR v3.3".
+  The titles carry spaces, slashes and, on the merged sheets, the whole list
+  of revisions joined by " / ". Slugging them is a second naming rule.
+- **The first revision only on a merged sheet** -- `TT-DB-V1P2P1` for the
+  sheet covering v1.2.1, v1.2.2 and v1.2.3. Shorter still than the range that
+  was chosen, and rejected for the same reason the full list was: it says
+  where the sheet starts and nothing about where it stops, so two sheets that
+  differ only in how far they run would be told apart by neither. The range
+  keeps both end points, and the stem still matches the file, which is the
+  property being bought. A revision joining a group renames one sheet; that is
+  a real drawing change, it changes the sheet's title too, and one rename on a
+  branch that is already re-rendering that sheet is not the problem this is
+  fixing.
+- **Restoring the dots** -- `TT-DB-V2.2.5`. Not reversible: `p` for a dot can
+  be undone only where no literal `p` occurs, and `pynq-z2` has two.
+
+**The title block had to grow.** The DRAWING NO cell was a quarter of the
+165 mm title block, 41.25 mm wide with 38.05 mm of room inside it. Measured
+with the drafting library's own font metrics at the ISO 3098 minimum, 2.5 mm
+capitals in DejaVu Sans Condensed Bold, nine of the first 21 names overran it,
+and seven of those were on the nineteen sheets that have a title block for a
+name to overrun: the longest of the seven, `TT-DB-TT123-V2P2P5-TT123-V2P2P6`,
+needed 61.75 mm and `ACC-DIGILENT-PMOD-HAT-ADAPTER` 60.84 mm. (The two over
+it with no title block were the drill templates, whose
+`TT-MP-PLATE-CHASSIS-DRILL-TEMPLATE` was the widest name of all at 68.27 mm
+and had nothing to overrun. "Eight" was recorded here and in the comment on
+`ROW_FRACS`, and is neither figure.) So the second row of the title block
+no longer splits into four quarters: SIZE, SHEET and REV hold a sheet size, a
+page count and a revision letter and never needed a quarter each, and the row
+is now 0.14 / 0.20 / 0.50 / 0.16, which gives DRAWING NO an 82.5 mm cell with
+79.3 mm of room. Sideways rather than by adding a row: the title block's
+height comes out of the notes band and the view, and an A3 holds the tallest
+demo board at 1:1 with nothing to spare. VERSION keeps its quarter and its
+38.05 mm, which is the figure `reproducible.py`'s one-character dirty mark is
+sized against.
+
+The row stayed that way when the stems were shortened, because three of the 19
+sheets with a title block still overran the old quarter, and it stays that way
+now that nothing does. The widest name on a sheet that has a title block is
+`TT-MP-FITTING-GUIDE` at 37.56 mm, which clears 38.05 mm by half a
+millimetre, and half a millimetre is not a margin: the mounting plate and the
+FPGA sheets are named for their file stems, which nobody is keeping short for
+this, and `FPGA-ARTY-ETHERNET-LIGHT-PIPE`, waiting on another branch, is
+58.03 mm. The widest name in this set is `TT-MP-CHASSIS-DRILL-TEMPLATE` at
+56.43 mm, on a drill template, which has no title block to overrun. Restoring
+the quarter would also re-render all 19 sheets to buy a field nothing wants.
+
+The drill templates have no title block. Their header line carried the drawing
+number, the version, the page size and the scale, right-aligned, beside a
+title that shrank to fit whatever was left. While the number was eight
+characters that line was not tight at all: `TT-MP-03` with the version left
+**91.93 mm** for the plate template's title, which needs 70.25 mm at the ISO
+floor, and the same for the chassis title's 52.57 mm. The names are what broke
+it. `TT-MP-PLATE-DRILL-TEMPLATE` on that line left **59.97 mm** for that
+70.25 mm title, and the chassis 45.49 mm for 52.57 mm: both short, the plate
+by more.
+
+So the line is split -- what the sheet is, with the page size and scale, on
+the title line; what it was drawn from under it -- which costs no height and
+leaves both titles at a proper size rather than the floor.
+
+The shorter names would very nearly fit on one line again -- and "very nearly"
+is as precise as that can be put, because the figure is not a constant. The
+version on that line is `git describe`, whose abbreviated hash is as long as
+it has to be to stay unique and whose characters are not all the same width,
+so the room left for the plate template's **70.25 mm** title moves from commit
+to commit. Across the 29 version strings this branch's sheets have carried it
+runs from **70.41 mm** to **72.24 mm**: a margin of **0.16 mm** at worst,
+2.00 mm at best, and 0.98 mm on the version these sheets went out with.
+
+Nothing that thin survives. The commit count reaching four digits costs
+**1.96 mm** by itself, more than the margin for every one of those strings but
+the most fortunate hash, where it leaves 0.03 mm; the dirty mark on an
+uncommitted render costs 2.59 mm and takes all of them. The header would be
+right in the repository and wrong on the next commit, which is the shape of
+the "69.2 against 70.2" quoted here before and withdrawn. So the line stays
+split. The split title line carries no version, so its room does not move:
+**104.80 mm** beside `TT-MP-DRILL-TEMPLATE` and **90.32 mm** beside
+`TT-MP-CHASSIS-DRILL-TEMPLATE`, and both titles are set at 3.5 mm where one
+line would put both at the 2.5 mm floor. The plate template's title is a
+millimetre taller than it was, which is the visible part of the change.
+
+Two things were said about this before and were wrong. The figure quoted was
+"69.2 mm for a title needing 70.2 mm", which is only reachable from a render
+with uncommitted source, where the version carries its `+`; no committed sheet
+ever had it. And the sheet named as the tight one was the chassis, when it is
+the plate: the plate template has the long title.
+
+The defect worth recording is the one that would have shipped in silence.
+`fit_size` returns the ISO floor when nothing on its ladder fits, so the old
+line would have drawn the title straight through the stamp rather than
+refusing. `_fit_beside` refuses. It is *not* a face mismatch -- `fit_size`
+defaults to sans bold and the title is drawn sans bold -- but the two faces
+are far enough apart that measuring in the wrong one would be invisible until
+it printed: "DRILL TEMPLATE - MOUNTING PLATE" at the 2.5 mm floor is 70.25 mm
+in sans bold and 56.21 mm in condensed regular, so `_fit_beside` passes the
+face and weight through to both calls instead of leaving them to two different
+sets of defaults.
+
+**What now catches this.** `check_sheets.py` derives every sheet's name and
+then reads the sheet back: it finds the DRAWING NO cell by its own label,
+measures the cell between the rules that were actually drawn -- 79.30 mm on
+all nineteen sheets that have one, so a family overriding the column width
+could not slip past -- and reports separately if the name does not fit and if
+the cell does not say it. Reading the cell rather than searching the file is
+what stops a note citing another drawing from standing in for the title block,
+which is exactly what `TT-MP` did; a sheet doctored to read `FPGA-01` in the
+cell while a note says `FPGA-ARTY-A7` now fails, where a substring test
+passed. With the cell put back to a quarter of the block it reported seven
+sheets over, 38.74 to 61.75 mm of name in 38.05 mm of cell, and three with the
+names shortened. Seven and not the nine names that were over the quarter,
+because a sheet with no title block has no cell to measure and this check
+passes over it; the range quoted was always the seven's.
+
+It also reports a name that is a *prefix* of another sheet's, which is the
+property `drawing_name`'s docstring argues for and nothing enforced. Two such
+names are distinct strings, so the duplicate test passes them, and nothing
+that quotes the shorter one can be read unambiguously. The hole the bare
+`TT-MP` opened is closed by reading the cell, but the rule is general and
+`tt_name` keeps it reachable: it takes the `p` separators out, so a `v3p2`
+sheet is `V32` and a `v3p2p1` sheet would be `V321`, which begins with it.
+Checked on a synthetic pair rather than argued: two sheets named `TT-MP` and
+`TT-MP-FITTING-GUIDE`, each carrying its own name and neither a duplicate,
+produce exactly one problem, and `TT-DB-V32` beside `TT-DB-V33` produces none.
+
+`check_pdfs.py` had never read a bound copy at all, which the note above on
+reproducing the set on a second machine says outright; it now matches every
+page of every bundle against the committed sheet PDFs by content stream and
+requires the bookmark to open with that page's drawing name.
+
+## A drawing number is not a file name
+
+The owner read the shortened names and said they were still far too long:
+"They should be at most TT-DB-<4-5 characters> and ACC-{HAT,POE}-<4-5
+characters>." Everything above this heading answered "the names are too long"
+by shortening the stems, because the name *was* the stem in capitals. There
+was nothing left to take out of the stems, and that was the wrong place to
+look anyway.
+
+**The two are read by different people for different reasons.** A file name is
+read once, from a directory listing, by somebody choosing between files: both
+end points of a revision range are worth the characters there, and so is
+`poe-microusb` rather than a code. A drawing number is read off a title block,
+quoted in a note on another sheet, written on an order, typed into a
+spreadsheet and said out loud across a workshop; it has to be taken in at a
+glance and copied without a slip, and four or five characters behind the
+prefix is what that costs. So this time the stems do not move at all. Every
+README link, every preview `<img>`, every bound copy's page order and every
+other branch that cites a file keeps working, and the only thing that changes
+is the string in the DRAWING NO cell.
+
+**The rule.** `drawing_name` strips the family's lead as before, and then, if
+the family has a row in a new `FAMILY_NAME_RULES` table, replaces what is left
+with what that rule makes of it. A separate table and not a third column of
+`FAMILY_PREFIXES`: several branches are open at once, each adding a row to
+that table, and changing its shape would conflict with every one of them,
+where a new table beside it conflicts with nothing. A rule takes the stem and
+nothing else, because `drawing_name_for` has to answer from a rendered
+sheet's path alone -- the checks and the bundle bookmarks all go through it.
+
+Three families have no rule and are untouched: `RPI-3B`, `FPGA-ARTY-A7`,
+`TT-MP-PLATE` and the rest are already as short as those sheets can honestly
+be said to be, and a table of names for them would be a second string to keep
+in step with the files.
+
+**`tt_name`.** The rest of a demo board stem is words: a board name first if
+the revisions carry one, then the revisions. If the first word is not a
+revision it is the name -- `tt123-v2p2p5-v2p2p6` gives `TT123` -- and
+otherwise the name is the first revision with its `p` separators taken out.
+The six sheets:
+
+| file | name |
+|---|---|
+| `tt-demo-board-tt123-v2p2p5-v2p2p6` | `TT-DB-TT123` |
+| `tt-demo-board-v1p2p1-v1p2p3` | `TT-DB-V121` |
+| `tt-demo-board-v2p0p1-v2p1p0` | `TT-DB-V201` |
+| `tt-demo-board-v2p1p2` | `TT-DB-V212` |
+| `tt-demo-board-v3p2` | `TT-DB-V32` |
+| `tt-demo-board-v3p3` | `TT-DB-V33` |
+
+Naming a sheet after one of the revisions on it is exact rather than
+approximate. A sheet covers one geometry -- the generator compares outline,
+holes, hosts and every feature before it merges two revisions -- and the first
+revision to carry that geometry is where it came from: v1.2.2 and v1.2.3 are
+on `TT-DB-V121` because mechanically they *are* the v1.2.1 board. The title,
+the subtitle and the notes still list every revision and every shuttle, which
+is what a reader with the drawing in front of them has.
+
+**A revision may be lettered, and the pattern has to say so.** The 4+ sheet's
+own title is "DB 4+ v1.2.1 / DB 4+ v1.2.2 / DB 4+ v1.2.2c", so a lettered
+revision is not a hypothetical in this data, it is already on a drawing; it
+simply has not been the *first* revision of a sheet yet. A pattern of
+`v\d+(?:p\d+)*` does not match `v1p2p2c`, and the failure would be silent
+rather than loud: an unmatched first word is taken for a board name and passed
+through whole, so the sheet would quietly be called `TT-DB-V1P2P2C` -- a
+stem-shaped name, which is the one thing this rule exists to prevent. The
+pattern takes an optional trailing letter, and keeps it: `V122C`. The number
+and the letter are separate groups so the `p` separators come out of the
+number alone, which costs nothing and means a revision whose letter is `p`
+does not lose it.
+
+**This reverses a decision recorded above, and it is worth saying which.**
+"The first revision only on a merged sheet" is listed there among the
+alternatives rejected, because it says where a sheet starts and nothing about
+where it stops. That is a file name's job and the reason still holds for the
+file name, which keeps the range. It was never an argument about the drawing
+number, and as a drawing number the objection does not apply: two sheets
+cannot start at one revision, because a revision is on exactly one sheet, and
+the number is not what anybody browses a directory with.
+
+**`ACC_NAMES`.** A table, because the accessory stems are words and not codes
+and no mechanical shortening of `raspmod` leaves four characters that still
+say which board it is. Keyed by the stem rather than the part key, so it
+answers from a rendered file the way `tt_name` does, and a stem with no row is
+a `SystemExit` naming the table, as `acc_stem` already was for a part with no
+stem.
+
+| file | name | |
+|---|---|---|
+| `pmod-hat` | `ACC-HAT-PMOD` | Digilent's Pmod HAT Adapter |
+| `raspmod` | `ACC-HAT-RMOD` | the Raspmod |
+| `poe-usbc` | `ACC-POE-USBC` | Waveshare's splitter, Type-C out |
+| `poe-microusb` | `ACC-POE-MUSB` | the generic splitter, micro-USB out |
+
+The first word is the kind and the second which one of it, so two names quoted
+in one note show which two parts are alternatives to each other. `HAT` is
+Digilent's own word for the adapter that sits on the Pi's 40-pin header. The
+Raspmod is filed under it as the other way of getting Pmod ports onto a Pi and
+is *not* a HAT: it does not sit on the header, it uses the ID EEPROM pins for
+a switch and a clock, and `raspmod-vs-pmod-hat.md` is largely about the
+difference. The name says what shelf the drawing is on, not what the part
+conforms to, and all three documents that carry the name say so outright
+rather than leaving a reader to find the contradiction.
+
+**Nothing else had to move.** The names are between 9 and 12 characters and
+between 17.69 mm (`TT-DB-V32`, `TT-DB-V33`) and 26.70 mm (`ACC-POE-MUSB`) at
+the ISO 3098 floor, against the 79.30 mm the DRAWING NO cell has, so no cell,
+no header line and no title block proportion changes. No new name is a prefix
+of a sibling's, which is the property `drawing_name`'s docstring explains and
+`TT-MP` once broke; `TT-DB-V32` and `TT-DB-V33` are the closest pair in the
+set and neither contains the other. The widest name with a title block is now
+`TT-MP-FITTING-GUIDE` at 37.56 mm, from a family with no rule.
+
+**The entries above this one keep the numbers the sheets carried when they
+were written.** They are a log of what happened on a date, not references to
+resolve, and rewriting them would make the record say something that was not
+true at the time.
+
+## The mounting plate's four, one word each
+
+The owner read the set once more and asked for the mounting plate's three
+satellites to be "something like `TT-MP-FIT`, `TT-MP-DRILL`, `TT-MP-CHASSIS`"
+(18 September 2026). The entry above had left that family with no rule on the
+grounds that `TT-MP-PLATE` and the rest "are already as short as those sheets
+can honestly be said to be" -- which was true of the plate and not of
+`TT-MP-CHASSIS-DRILL-TEMPLATE`, whose 56.43 mm made it the widest name in the
+set by 22 mm. What is left of those stems once `TT-MP` has said
+`tt-generic-mounting-plate` is a title (`fitting-guide`,
+`chassis-drill-template`), and the sheet carries its title in full already.
+
+**A table, like the accessories.** `PLATE_NAMES` in `tools/layout.py` is
+keyed by the four stems, built from `PLATE_STEM`, `FITTING_GUIDE_STEM` and
+`DRILL_TEMPLATE_STEMS` rather than retyped, and gives one word each: `plate`,
+`fit`, `drill`, `chassis`. `plate_name` is the family's row in
+`FAMILY_NAME_RULES`. Because a rule is handed what is left after the lead is
+stripped, and the plate's own stem is the lead entire, the stripping moved out
+of `drawing_name` into `strip_lead`, which both sides of the lookup go
+through: the keys of the table and the stem being asked about are cut the
+same way, and the sheet whose stem is the lead is the one they would have
+disagreed about. `TT-MP-PLATE` is unchanged.
+
+| stem | was | is | width |
+|---|---|---|---|
+| `tt-generic-mounting-plate` | `TT-MP-PLATE` | `TT-MP-PLATE` | 22.18 mm |
+| `…-fitting-guide` | `TT-MP-FITTING-GUIDE` | `TT-MP-FIT` | 16.98 mm |
+| `…-drill-template` | `TT-MP-DRILL-TEMPLATE` | `TT-MP-DRILL` | 21.63 mm |
+| `…-chassis-drill-template` | `TT-MP-CHASSIS-DRILL-TEMPLATE` | `TT-MP-CHASSIS` | 26.51 mm |
+
+**Measured again.** Every name in the set at the ISO 3098 floor, bold: the
+widest is now `FPGA-BUTTERSTICK` at 34.33 mm, and every one of the nineteen
+names on a sheet with a title block clears the 38.05 mm a quarter-width
+DRAWING NO cell had, the closest by 3.72 mm where `TT-MP-FITTING-GUIDE` had
+cleared it by 0.49. The half cell (79.30 mm) stays all the same:
+`FPGA-ARTY-ETHERNET-LIGHT-PIPE` on the light pipe branch is 58.03 mm, and a
+quarter's clearance has been of the half-millimetre class within this branch
+already. The `ROW_FRACS` comment and the `check_drawing_names` docstring say
+so with these figures.
+
+**The drill template header.** The split of the templates' header into a
+title line and a version line was justified above by fit: one line beside
+`TT-MP-DRILL-TEMPLATE` and a `git describe` string left the plate's 70.25 mm
+title a margin of 0.16 mm at worst. Beside `TT-MP-DRILL` one line would leave
+86.99 mm, a margin of 16.74 mm, still 8.51 mm with the dirty mark -- so the
+fit no longer decides it. The split stays for the type size: one line sets
+the plate's title at the 2.5 mm floor, the split line at 3.5 mm. The split
+title line now has 121.37 mm beside `TT-MP-DRILL` and 116.86 mm beside
+`TT-MP-CHASSIS`. Fitted one sheet at a time, as before, the plate's title
+stayed at 3.5 mm and the chassis's, 52.57 mm at the floor, took the 5.0 mm
+rung its shorter name left room for, and the two templates that are printed
+and used together came out with headers a size apart. So the header sizes
+are now one pair for the family, `_header_sizes`: each line at the largest
+rung every template's string fits at beside its own right-hand end, which is
+3.5 mm for the titles and the 2.5 mm floor for the subtitles. The refusal to
+draw a title through its neighbour is still made per sheet.
+
+**Everything that quoted the names.** `README.md` ("What a sheet is called"
+gains the third rule), `tinytapeout/mounting_plate/README.md`, `TODO.md`
+section 7, the docstrings in `layout.py`, `check_sheets.py`, `sheet.py` and
+`template_sheet.py`. The README grids are regenerated. The entries above keep
+the names the sheets carried when they were written.
