@@ -86,9 +86,9 @@ checker that measures the finished PDFs rather than trusting them.
 
 ## 7. Drill templates  -- DONE
 - [x] A4 portrait 1:1 template for the mounting plate itself
-      (`TT-MP-DRILL-TEMPLATE`)
+      (`TT-MP-DRILL`)
 - [x] A4 portrait 1:1 template for the chassis the plate bolts to
-      (`TT-MP-CHASSIS-DRILL-TEMPLATE`)
+      (`TT-MP-CHASSIS`)
 - [x] Printed scale bar per axis, so a scaled print is caught before drilling
 - [x] `tools/check_drill_template.py`: measures the PDFs back and proves
       every hole lands where the plate data puts it

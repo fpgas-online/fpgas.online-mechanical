@@ -29,12 +29,10 @@ it, so a new board is a new directory and does not disturb the others.
 A sheet's drawing name is its own file stem, in capitals, behind its family's
 prefix: `fpga/output/arty-a7.pdf` is **`FPGA-ARTY-A7`** and
 `raspberry_pi/output/rpi5.pdf` is **`RPI-5`**. The part of the stem the prefix
-already says is dropped, so the mounting plate's four, which all begin
-`tt-generic-mounting-plate`, are `TT-MP-PLATE` for the plate's own sheet and
-`TT-MP-FITTING-GUIDE`, `TT-MP-DRILL-TEMPLATE` and
-`TT-MP-CHASSIS-DRILL-TEMPLATE` for the three hanging off it.
+already says is dropped: the mounting plate's four stems all begin
+`tt-generic-mounting-plate`, which is what `TT-MP` says.
 
-Two families are named by a rule instead, because their file stems say more
+Three families are named by a rule instead, because their file stems say more
 than a drawing number can carry. A file name is read once from a directory
 listing by somebody choosing between files, and can afford to say what a sheet
 covers; a drawing number is read off a title block, quoted in a note on another
@@ -56,6 +54,12 @@ are, and only the name is cut:
   Raspberry Pi, `ACC-POE-USBC` and `ACC-POE-MUSB` the two PoE splitters. That
   one is a table, `ACC_NAMES`, keyed by file stem, because these stems are
   words rather than codes and nothing mechanical shortens them.
+- a mounting plate sheet is named for which of the family's four it is, in one
+  word: `TT-MP-PLATE` is the fabrication drawing, `TT-MP-FIT` the fitting
+  guide, `TT-MP-DRILL` and `TT-MP-CHASSIS` the two A4 drill templates. What is
+  left of these stems once `TT-MP` has said `tt-generic-mounting-plate` is the
+  sheet's title (`chassis-drill-template`), which the sheet already carries in
+  full, so that one is a table as well, `PLATE_NAMES`.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
@@ -192,18 +196,18 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>TT-MP-PLATE</b> TT Generic Mounting Plate<br>Accepts every demo board revision, Pmod hosts fixed in place
 </td>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-FITTING-GUIDE TT Mounting Plate Fitting Guide"></a><br>
-<b>TT-MP-FITTING-GUIDE</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-fitting-guide.png" width="270" alt="TT-MP-FIT TT Mounting Plate Fitting Guide"></a><br>
+<b>TT-MP-FIT</b> TT Mounting Plate Fitting Guide<br>Which holes each demo board revision uses
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-DRILL-TEMPLATE Drill Template: Mounting Plate"></a><br>
-<b>TT-MP-DRILL-TEMPLATE</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-drill-template.png" width="270" alt="TT-MP-DRILL Drill Template: Mounting Plate"></a><br>
+<b>TT-MP-DRILL</b> Drill Template: Mounting Plate<br>A4 at 1:1 - print, tape down and drill through
 </td>
 <td width="50%" valign="top" align="center">
-<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-CHASSIS-DRILL-TEMPLATE Drill Template: Chassis"></a><br>
-<b>TT-MP-CHASSIS-DRILL-TEMPLATE</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
+<a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-CHASSIS Drill Template: Chassis"></a><br>
+<b>TT-MP-CHASSIS</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
 </td>
 </tr>
 </table>
