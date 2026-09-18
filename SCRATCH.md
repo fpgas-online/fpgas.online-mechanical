@@ -1537,3 +1537,66 @@ set and neither contains the other. The widest name with a title block is now
 were written.** They are a log of what happened on a date, not references to
 resolve, and rewriting them would make the record say something that was not
 true at the time.
+
+## The mounting plate's four, one word each
+
+The owner read the set once more and asked for the mounting plate's three
+satellites to be "something like `TT-MP-FIT`, `TT-MP-DRILL`, `TT-MP-CHASSIS`"
+(18 September 2026). The entry above had left that family with no rule on the
+grounds that `TT-MP-PLATE` and the rest "are already as short as those sheets
+can honestly be said to be" -- which was true of the plate and not of
+`TT-MP-CHASSIS-DRILL-TEMPLATE`, whose 56.43 mm made it the widest name in the
+set by 22 mm. What is left of those stems once `TT-MP` has said
+`tt-generic-mounting-plate` is a title (`fitting-guide`,
+`chassis-drill-template`), and the sheet carries its title in full already.
+
+**A table, like the accessories.** `PLATE_NAMES` in `tools/layout.py` is
+keyed by the four stems, built from `PLATE_STEM`, `FITTING_GUIDE_STEM` and
+`DRILL_TEMPLATE_STEMS` rather than retyped, and gives one word each: `plate`,
+`fit`, `drill`, `chassis`. `plate_name` is the family's row in
+`FAMILY_NAME_RULES`. Because a rule is handed what is left after the lead is
+stripped, and the plate's own stem is the lead entire, the stripping moved out
+of `drawing_name` into `strip_lead`, which both sides of the lookup go
+through: the keys of the table and the stem being asked about are cut the
+same way, and the sheet whose stem is the lead is the one they would have
+disagreed about. `TT-MP-PLATE` is unchanged.
+
+| stem | was | is | width |
+|---|---|---|---|
+| `tt-generic-mounting-plate` | `TT-MP-PLATE` | `TT-MP-PLATE` | 22.18 mm |
+| `…-fitting-guide` | `TT-MP-FITTING-GUIDE` | `TT-MP-FIT` | 16.98 mm |
+| `…-drill-template` | `TT-MP-DRILL-TEMPLATE` | `TT-MP-DRILL` | 21.63 mm |
+| `…-chassis-drill-template` | `TT-MP-CHASSIS-DRILL-TEMPLATE` | `TT-MP-CHASSIS` | 26.51 mm |
+
+**Measured again.** Every name in the set at the ISO 3098 floor, bold: the
+widest is now `FPGA-BUTTERSTICK` at 34.33 mm, and every one of the nineteen
+names on a sheet with a title block clears the 38.05 mm a quarter-width
+DRAWING NO cell had, the closest by 3.72 mm where `TT-MP-FITTING-GUIDE` had
+cleared it by 0.49. The half cell (79.30 mm) stays all the same:
+`FPGA-ARTY-ETHERNET-LIGHT-PIPE` on the light pipe branch is 58.03 mm, and a
+quarter's clearance has been of the half-millimetre class within this branch
+already. The `ROW_FRACS` comment and the `check_drawing_names` docstring say
+so with these figures.
+
+**The drill template header.** The split of the templates' header into a
+title line and a version line was justified above by fit: one line beside
+`TT-MP-DRILL-TEMPLATE` and a `git describe` string left the plate's 70.25 mm
+title a margin of 0.16 mm at worst. Beside `TT-MP-DRILL` one line would leave
+86.99 mm, a margin of 16.74 mm, still 8.51 mm with the dirty mark -- so the
+fit no longer decides it. The split stays for the type size: one line sets
+the plate's title at the 2.5 mm floor, the split line at 3.5 mm. The split
+title line now has 121.37 mm beside `TT-MP-DRILL` and 116.86 mm beside
+`TT-MP-CHASSIS`. Fitted one sheet at a time, as before, the plate's title
+stayed at 3.5 mm and the chassis's, 52.57 mm at the floor, took the 5.0 mm
+rung its shorter name left room for, and the two templates that are printed
+and used together came out with headers a size apart. So the header sizes
+are now one pair for the family, `_header_sizes`: each line at the largest
+rung every template's string fits at beside its own right-hand end, which is
+3.5 mm for the titles and the 2.5 mm floor for the subtitles. The refusal to
+draw a title through its neighbour is still made per sheet.
+
+**Everything that quoted the names.** `README.md` ("What a sheet is called"
+gains the third rule), `tinytapeout/mounting_plate/README.md`, `TODO.md`
+section 7, the docstrings in `layout.py`, `check_sheets.py`, `sheet.py` and
+`template_sheet.py`. The README grids are regenerated. The entries above keep
+the names the sheets carried when they were written.
