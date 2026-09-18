@@ -30,7 +30,7 @@ import math
 
 from tinytapeout.mounting_plate.plate import (PLACEMENTS, PMOD_BODY,
                                               PMOD_ROW_Y, PMOD_SLOT_X, PLATE)
-from tools.layout import PLATE_SHEET
+from tools.layout import DRILL_TEMPLATE_STEMS, PLATE_SHEET, drawing_name
 from tools.schema import LABEL_SEP, Outline
 from tinytapeout.boards import BOARDS as TT_BOARDS
 
@@ -427,6 +427,35 @@ def _fit_beside(kind: str, text: str, room: float, neighbour: str,
     return size
 
 
+def _stamp(drawing_no: str) -> str:
+    """The right-hand end of a template's title line."""
+    return f"{drawing_no}    A4 PORTRAIT    SCALE 1:1"
+
+
+def _header_sizes(version: str) -> tuple[float, float]:
+    """The title and subtitle sizes every drill template is set at.
+
+    One pair for the family rather than one per sheet: each line is set at
+    the largest rung at which every template's string fits beside its own
+    right-hand end, so the two templates read as a pair.  Left to fit one at
+    a time, the chassis's shorter name and shorter title took the 5.0 mm
+    rung while the plate's stayed at 3.5 mm, and the two sheets that are
+    printed and used together came out with headers a size apart.  The
+    refusal in ``_fit_beside`` still happens per sheet, and names the sheet.
+    """
+    area = TemplatePage().area
+    tsizes, ssizes = [], []
+    for kind, (title, subtitle) in TITLES.items():
+        name = drawing_name("mounting-plate", DRILL_TEMPLATE_STEMS[kind])
+        stamp = _stamp(name)
+        avail = area.w - style.text_width(stamp, style.T_TINY) - 6.0
+        tsizes.append(_fit_beside(kind, title, avail, stamp, face="sans",
+                                  bold=True))
+        avail = area.w - style.text_width(version, style.T_TINY) - 6.0
+        ssizes.append(_fit_beside(kind, subtitle, avail, version))
+    return min(tsizes), min(ssizes)
+
+
 def render_drill_template(kind: str, *, drawing_no: str,
                           version: str) -> TemplatePage:
     if kind not in TITLES:
@@ -448,41 +477,39 @@ def render_drill_template(kind: str, *, drawing_no: str,
     # and TT-MP-PLATE-DRILL-TEMPLATE on that line left 59.97 mm for that same
     # 70.25 mm title -- 10 mm short.
     #
-    # The names are shorter again now, TT-MP-DRILL-TEMPLATE and
-    # TT-MP-CHASSIS-DRILL-TEMPLATE, and one line would just hold them -- but
-    # only just, and by an amount that is not a constant.  The version on that
-    # line is `git describe`, whose abbreviated hash is as long as it has to
-    # be to stay unique and whose glyphs are not all one width, so the room
-    # left for the plate's 70.25 mm title moves with the commit: across the
-    # 29 versions this branch's sheets have carried it runs from 70.41 mm to
-    # 72.24 mm, a margin of 0.16 mm at worst and 2.00 mm at best.
+    # The names are TT-MP-DRILL and TT-MP-CHASSIS now, and the fit is no
+    # longer what the split is for: one line would hold them.  The version on
+    # that line is `git describe`, whose abbreviated hash is as long as it has
+    # to be to stay unique and whose glyphs are not all one width, so the room
+    # it leaves is not a constant -- but the margin no longer turns on that.
+    # Beside TT-MP-DRILL and the version these sheets carry, one line leaves
+    # 86.99 mm for the plate's title, needing 70.25 mm at the ISO floor:
+    # 16.74 mm of margin, still 14.78 mm when the commit count reaches four
+    # digits and 8.51 mm with the dirty mark an uncommitted render adds.  The
+    # figures this comment used to quote were of the thin kind those two
+    # accidents eat -- a margin of 0.16 mm at worst -- because the name on the
+    # line was TT-MP-PLATE-DRILL-TEMPLATE and then TT-MP-DRILL-TEMPLATE.
     #
-    # Nothing that thin survives: the commit count reaching four digits costs
-    # 1.96 mm on its own, which is more than the margin for every version
-    # string in that range but the most fortunate hash, where it leaves
-    # 0.03 mm.  The dirty mark on an uncommitted render costs 2.59 mm and
-    # takes every one of them.  So the header would come out right in the
-    # repository and wrong on the next commit, which is the shape of the
-    # figure quoted here before and withdrawn.
-    #
-    # It stays split.  The split title line carries no version, so its room is
-    # fixed: 104.80 mm beside the plate's name, 90.32 mm beside the chassis's.
+    # It stays split, for the type size rather than for the fit.  A one-line
+    # header sets the plate's title at the 2.5 mm floor, which is fitting and
+    # nothing more.  The split title line carries no version, so its room is
+    # fixed and much larger: 121.37 mm beside the plate's name, 116.86 mm
+    # beside the chassis's.
     #
     # Each line's right-hand string is fixed-width and its left-hand one is
-    # not, so the left one gives way.  With that much room both titles are set
-    # at 3.5 mm, where on one line both would be at the 2.5 mm floor.
+    # not, so the left one gives way.  With that much room the plate's title
+    # fits at 3.5 mm, and the chassis's, the shorter of the two at 52.57 mm,
+    # would fit the 5.0 mm rung above it; _header_sizes sets both at the
+    # 3.5 mm the plate's allows, so the pair match.
     #
     # The floor is the real defect: fit_size returns it when nothing on its
     # ladder fits, so the old line would have drawn a title straight through
     # the stamp rather than refusing.  _fit_beside refuses.
-    stamp = f"{drawing_no}    A4 PORTRAIT    SCALE 1:1"
-    avail = area.w - style.text_width(stamp, style.T_TINY) - 6.0
-    tsize = _fit_beside(kind, title, avail, stamp, face="sans", bold=True)
+    stamp = _stamp(drawing_no)
+    tsize, ssize = _header_sizes(version)
     c.text(area.x, y - tsize, title, size=tsize, face="sans", bold=True)
     c.text(area.x1, y - tsize, stamp, size=style.T_TINY, anchor="end")
     y -= tsize + 2.8
-    avail = area.w - style.text_width(version, style.T_TINY) - 6.0
-    ssize = _fit_beside(kind, subtitle, avail, version)
     c.text(area.x, y - ssize, subtitle, size=ssize)
     c.text(area.x1, y - ssize, version, size=style.T_TINY, anchor="end")
     y -= ssize + 3.6
