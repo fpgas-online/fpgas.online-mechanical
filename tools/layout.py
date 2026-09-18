@@ -99,6 +99,32 @@ DRILL_TEMPLATE_STEMS = {
     "chassis": f"{PLATE_STEM}-chassis-drill-template",
 }
 
+#: What each mounting plate sheet is called, by the file stem it is written
+#: to.  ``plate_name`` reads it, and ``drawing_name`` puts ``TT-MP-`` in front,
+#: so these four stems give ``TT-MP-PLATE``, ``TT-MP-FIT``, ``TT-MP-DRILL`` and
+#: ``TT-MP-CHASSIS``.
+#:
+#: A table and not a rule, for the reason ``ACC_NAMES`` is one: what is left
+#: of these stems is words -- ``fitting-guide``, ``chassis-drill-template`` --
+#: and no mechanical shortening of them leaves something a workshop would say
+#: out loud.  Keyed by the whole stem rather than by the tail of it, so that a
+#: row can be read against the stems it is built from; ``plate_name`` strips
+#: the lead off the keys the same way ``drawing_name`` strips it off the stem
+#: it is asked about.
+#:
+#: One word each, and the word is what the sheet is for rather than what it is
+#: titled: the fitting guide is the sheet you FIT a board with, the two
+#: templates are the DRILL and the CHASSIS. The full titles were the names
+#: until the owner asked for them shortened -- ``TT-MP-CHASSIS-DRILL-TEMPLATE``
+#: is a drawing number nobody reads out -- and the titles still say all of it
+#: on the sheets themselves.
+PLATE_NAMES = {
+    PLATE_STEM: "plate",                        # the fabrication drawing
+    FITTING_GUIDE_STEM: "fit",                  # which holes a revision uses
+    DRILL_TEMPLATE_STEMS["plate"]: "drill",     # A4 template for the plate
+    DRILL_TEMPLATE_STEMS["chassis"]: "chassis",  # A4 template for its box
+}
+
 #: Each family's drawing-name prefix, and the head of its file stems that the
 #: prefix already says.  Adding a family is one row here beside its row above,
 #: and a row in ``FAMILY_NAME_RULES`` as well if what is left of its stems is
@@ -109,8 +135,8 @@ DRILL_TEMPLATE_STEMS = {
 #: stem begins ``tt-generic-mounting-plate``, which ``TT-MP`` is.  The whole of
 #: it: the family is the plate and its three satellites, so PLATE on three of
 #: the four names says nothing the prefix has not.  The sheet whose stem is
-#: exactly the lead keeps it, by the rule in ``drawing_name``, and is
-#: ``TT-MP-PLATE``.
+#: exactly the lead is left the lead's last word by ``drawing_name``, and
+#: ``PLATE_NAMES`` keeps that word, so it is ``TT-MP-PLATE``.
 FAMILY_PREFIXES = {
     "tinytapeout": ("TT-DB", TT_STEM_LEAD),
     "raspberry-pi": ("RPI", "rpi"),
@@ -127,6 +153,26 @@ def slug(key: str) -> str:
     point is the convention the board files themselves use.
     """
     return key.replace(".", "p").replace("_", "-")
+
+
+def strip_lead(lead: str, stem: str) -> str:
+    """What is left of *stem* once its family's prefix has said *lead*.
+
+    The slugged stem with *lead* taken off the front, which is what
+    ``drawing_name`` names a sheet after and what it hands a family's rule in
+    ``FAMILY_NAME_RULES``.  A sheet whose stem is exactly the lead would be
+    left nothing, so it is left the lead's last word instead; see
+    ``drawing_name`` for why that is a name and the bare prefix is not.
+
+    Its own function because ``plate_name`` puts the keys of ``PLATE_NAMES``
+    through it to meet the stem ``drawing_name`` is asking about.  Two copies
+    of this stripping could disagree, and the sheet whose stem is the lead is
+    exactly the one they would disagree about.
+    """
+    rest = slug(stem)
+    if lead and rest.startswith(lead):
+        rest = rest[len(lead):] or lead.rsplit("-", 1)[-1]
+    return rest.strip("-")
 
 
 def tt_stem(keys: list[str]) -> str:
@@ -238,21 +284,46 @@ def acc_name(stem: str) -> str:
             "or five characters saying which one")
 
 
+def plate_name(stem_tail: str) -> str:
+    """What the mounting plate sheet ending in *stem_tail* is called.
+
+    *stem_tail* is what ``strip_lead`` leaves of the sheet's file stem once
+    ``tt-generic-mounting-plate`` has been taken off -- ``fitting-guide``,
+    ``drill-template``, ``chassis-drill-template``, and for the plate's own
+    sheet, whose stem is the lead entire, the lead's last word, ``plate``.
+    ``PLATE_NAMES`` is keyed by the whole stem, so its keys go through the
+    same stripping to be looked up in those terms.
+    """
+    names = {strip_lead(PLATE_STEM, stem): name
+             for stem, name in PLATE_NAMES.items()}
+    try:
+        return names[stem_tail]
+    except KeyError:
+        raise SystemExit(
+            f"no drawing name for the mounting plate sheet whose stem ends "
+            f"{stem_tail!r}; add one to PLATE_NAMES in tools/layout.py, keyed "
+            "by that sheet's whole file stem, as the one word saying which of "
+            "the family's sheets it is -- not the sheet's title, which the "
+            "sheet itself already carries in full")
+
+
 #: How a family cuts what is left of a stem down to a drawing name, for the
-#: two families that need it.  A separate table rather than a third column of
-#: FAMILY_PREFIXES: several branches are open at once each adding a row to
+#: three families that need it.  A separate table rather than a third column
+#: of FAMILY_PREFIXES: several branches are open at once each adding a row to
 #: that table, and changing its shape would conflict with every one of them,
 #: where a new table beside it conflicts with nothing.
 #:
 #: A family with no rule here is named for its stem, which is the ordinary
-#: case and wants no table: RPI-3B, FPGA-ARTY-A7 and TT-MP-PLATE are already
-#: as short as their sheets can honestly be said to be.  The two families here
-#: are the ones where the stem is not: a demo board's carries every revision
-#: the sheet covers, and an accessory's says in words what the part is.  Both
-#: are right for a file name and far too long for a drawing number.
+#: case and wants no table: RPI-3B and FPGA-ARTY-A7 are already as short as
+#: their sheets can honestly be said to be.  The three families here are the
+#: ones where the stem is not: a demo board's carries every revision the sheet
+#: covers, an accessory's says in words what the part is, and a mounting plate
+#: sheet's says its title -- ``chassis-drill-template``.  All three are right
+#: for a file name and too long for a drawing number.
 FAMILY_NAME_RULES = {
     "tinytapeout": tt_name,
     "accessories": acc_name,
+    "mounting-plate": plate_name,
 }
 
 
@@ -265,11 +336,14 @@ def drawing_name(family: str, stem: str) -> str:
     ``raspberry_pi/output/rpi5.svg`` is ``RPI-5``.
 
     A family may shorten what is left of its stem instead, by having a rule
-    in ``FAMILY_NAME_RULES``: the demo boards and the accessories do, so
-    ``tinytapeout/output/tt-demo-board-v1p2p1-v1p2p3.svg`` is ``TT-DB-V121``
-    and ``accessories/output/pmod-hat.svg`` is ``ACC-HAT-PMOD``.  The rule is
-    a function of the stem and nothing else, because ``drawing_name_for`` has
-    to answer from a rendered sheet's path alone.
+    in ``FAMILY_NAME_RULES``: the demo boards, the accessories and the
+    mounting plate do, so
+    ``tinytapeout/output/tt-demo-board-v1p2p1-v1p2p3.svg`` is ``TT-DB-V121``,
+    ``accessories/output/pmod-hat.svg`` is ``ACC-HAT-PMOD`` and the plate's
+    ``tt-generic-mounting-plate-chassis-drill-template.svg`` is
+    ``TT-MP-CHASSIS``.  The rule is a function of the stem and nothing
+    else, because ``drawing_name_for`` has to answer from a rendered sheet's
+    path alone.
 
     The two are named for different readers, which is why they are allowed to
     differ.  A drawing number is read off a title block, quoted in a note on
@@ -295,21 +369,25 @@ def drawing_name(family: str, stem: str) -> str:
     ``rpi_5`` all give ``RPI-5`` -- so uniqueness is very nearly the file
     system's, but not quite.  A rule throws away more than that by design: two
     demo board sheets starting at one revision would both take its name, and
-    two rows of ``ACC_NAMES`` could be given the same value.  Neither is
-    reachable today, and neither is argued about here, because
+    two rows of ``ACC_NAMES`` or of ``PLATE_NAMES`` could be given the same
+    value.  Neither is reachable today, and neither is argued about here,
+    because
     ``tools/check_sheets.py`` checks the whole set rather than assuming it.
 
     A family whose lead is one of its own stems has one sheet the stripping
     leaves nothing of: the mounting plate's fabrication drawing is written to
-    ``tt-generic-mounting-plate``, which is the lead entire.  That sheet takes
-    the last word of the lead, so it is ``TT-MP-PLATE`` -- named for what it
-    is, which is the plate, rather than for the family it heads.  Handing back
-    the bare prefix instead would be worse than terse: ``TT-MP`` is a substring
-    of ``TT-MP-FITTING-GUIDE``, so the check that each sheet carries its own
-    name was satisfied by the plate's *note* citing the fitting guide, and
-    deleting the title block from the plate SVG did not fail it.  A name that
-    is a prefix of its siblings' cannot be told from them by any test that
-    reads a sheet, so the rule is not to produce one.
+    ``tt-generic-mounting-plate``, which is the lead entire.  ``strip_lead``
+    leaves that sheet the last word of the lead, ``plate``, which is the word
+    ``PLATE_NAMES`` keeps for it, so it is ``TT-MP-PLATE`` -- named for what
+    it is, which is the plate, rather than for the family it heads.  Handing
+    back the bare prefix instead would be worse than terse: ``TT-MP`` is a
+    prefix of ``TT-MP-FIT`` and of every other name in the family, so the
+    check that each sheet carries its own name was satisfied by the plate's
+    *note* citing the fitting guide, and deleting the title block from the
+    plate SVG did not fail it.  A name that is a prefix of its siblings'
+    cannot be told from them by any test that reads a sheet, so the rule is
+    not to produce one -- which is why the family's four names are four
+    different words and not ``TT-MP``, ``TT-MP-F``, ``TT-MP-D``.
 
     "The last word of the lead" is the whole lead where the lead is one word,
     which would give ``RPI-RPI`` for a Raspberry Pi sheet whose file is
@@ -327,10 +405,7 @@ def drawing_name(family: str, stem: str) -> str:
         raise SystemExit(
             f"no drawing-name prefix for the family {family!r}; add one to "
             "FAMILY_PREFIXES in tools/layout.py, beside its output directory")
-    rest = slug(stem)
-    if lead and rest.startswith(lead):
-        rest = rest[len(lead):] or lead.rsplit("-", 1)[-1]
-    rest = rest.strip("-")
+    rest = strip_lead(lead, stem)
     rule = FAMILY_NAME_RULES.get(family)
     if rule is not None and rest:
         rest = rule(rest)
