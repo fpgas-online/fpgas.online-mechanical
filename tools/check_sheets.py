@@ -252,7 +252,7 @@ def check_drawing_names() -> list[str]:
     Two such names are distinct strings, so the test above passes them, but
     nothing that quotes the shorter one can be read unambiguously: "work from
     the coordinates on TT-MP" points at a family rather than at a drawing
-    when ``TT-MP-FITTING-GUIDE`` is one of its sheets, and searching a set of
+    when ``TT-MP-FIT`` is one of its sheets, and searching a set of
     documents for the shorter name returns every mention of the longer.  It
     was worse than ambiguous while the carry test below was a substring
     search: handing the bare family prefix back was ``drawing_name``'s first
@@ -270,7 +270,13 @@ def check_drawing_names() -> list[str]:
     165 mm wide whatever a family chooses to call its sheets, and the
     families with no rule are named for stems nobody is keeping short for
     this: ``FPGA-BUTTERSTICK`` is 34.33 mm of lettering at the ISO 3098
-    minimum and ``TT-MP-FITTING-GUIDE`` 37.56 mm.  ``Sheet._title_cell``
+    minimum, the widest of the twenty-one names in the set, and the FPGA
+    sheet waiting on another branch will be ``FPGA-ARTY-ETHERNET-LIGHT-PIPE``
+    at 58.03 mm.  All nineteen names on a sheet with a title block fit the
+    79.30 mm that cell leaves, and clear the 38.05 mm a quarter-width one
+    would have left as well -- the closest by 3.72 mm, where before the
+    mounting plate had a rule of its own the closest was 0.49 mm.
+    ``Sheet._title_cell``
     refuses to draw a value that overruns its cell, so an overflow cannot
     reach paper -- but that refusal happens one sheet at a time, partway
     through a render, with the rest of the set unbuilt.  Here the whole set

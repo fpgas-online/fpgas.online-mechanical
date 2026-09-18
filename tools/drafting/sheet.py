@@ -84,13 +84,17 @@ class Sheet:
     #: 38.05 mm of it usable, and while every sheet was named for the whole
     #: of its file stem, seven of the nineteen sheets with a title block
     #: overran that, the longest of them by 23.70 mm at the ISO 3098 floor.
-    #: The demo boards and the accessories are named by a rule now and are
-    #: nowhere near it, but the quarter is not restored, because the widest
-    #: name that still comes from a stem and lands on a sheet with a title
-    #: block has no such room to spare: ``TT-MP-FITTING-GUIDE`` is 37.56 mm,
-    #: which clears 38.05 by half a millimetre.  The sheets waiting on other
+    #: The demo boards, the accessories and the mounting plate are named by a
+    #: rule now, and none of the nineteen overruns the quarter: the widest is
+    #: ``FPGA-BUTTERSTICK`` at 34.33 mm, 3.72 mm clear of 38.05 mm.  The
+    #: quarter is not restored all the same.  The sheets waiting on other
     #: branches are longer than anything here --
-    #: ``FPGA-ARTY-ETHERNET-LIGHT-PIPE`` is 58.03 mm.  The three fields this
+    #: ``FPGA-ARTY-ETHERNET-LIGHT-PIPE`` is 58.03 mm, which a quarter would
+    #: refuse outright and the half holds with 21.27 mm to spare.  And the
+    #: clearance a quarter leaves has been of the half-millimetre class within
+    #: this branch: ``TT-MP-FITTING-GUIDE``, the name ``TT-MP-FIT`` replaced,
+    #: cleared 38.05 mm by 0.49 mm, so one sheet renamed or one board added
+    #: puts a quarter back over the edge.  The three fields this
     #: one shares the row with are a sheet size, a page count and a revision
     #: letter, none of which ever needed the room they had.  Taken sideways
     #: rather than by adding a fourth row: the title block's height is the
