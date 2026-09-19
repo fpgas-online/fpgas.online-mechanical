@@ -170,65 +170,80 @@
 <line x1="294.9038" y1="22.1" x2="294.9038" y2="49.8778" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="59.3778" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">FEATURE SCHEDULE</text>
 <line x1="243" y1="60.7778" x2="405" y2="60.7778" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<rect x="243" y="62.9778" width="144.0342" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
-<text x="246.0927" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">#</text>
-<text x="250.9854" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">FEATURE</text>
-<text x="357.4361" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">X EXTENT mm</text>
-<text x="385.2342" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">Y EXTENT mm</text>
-<rect x="243" y="68.5333" width="144.0342" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="246.0927" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">1</text>
-<text x="250.9854" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USB-C J3, JTAG and console</text>
-<text x="357.4361" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">22.68 to 33.32</text>
-<text x="385.2342" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-1.93 to 7.01</text>
-<rect x="243" y="74.0889" width="144.0342" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="246.0927" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">2</text>
-<text x="250.9854" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USB-C J5 and J4, to the FPGA, 2 on 12.50 mm pitch</text>
-<text x="357.4361" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">35.18 to 58.32</text>
-<text x="385.2342" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-1.93 to 7.01</text>
-<rect x="243" y="79.6444" width="144.0342" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="246.0927" y="83.4222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">3</text>
-<text x="250.9854" y="83.4222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Ethernet RJ45 - not on this board</text>
-<text x="357.4361" y="83.4222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="385.2342" y="83.4222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<rect x="243" y="85.2" width="144.0342" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="246.0927" y="88.9778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">4</text>
-<text x="250.9854" y="88.9778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">User LEDs LED0-LED4, 5 on 2.98 mm pitch</text>
-<text x="357.4361" y="88.9778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">48.94 to 63.83</text>
-<text x="385.2342" y="88.9778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">7.01 to 8.49</text>
-<rect x="243" y="90.7556" width="144.0342" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="246.0927" y="94.5333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">5</text>
-<text x="250.9854" y="94.5333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">User LEDs, tri-colour - not on this board</text>
-<text x="357.4361" y="94.5333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<text x="385.2342" y="94.5333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
-<rect x="243" y="96.3111" width="144.0342" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="246.0927" y="100.0889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">6</text>
-<text x="250.9854" y="100.0889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">GPIO header J1, 2x20, not fitted</text>
-<text x="357.4361" y="100.0889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">6.59 to 58.41</text>
-<text x="385.2342" y="100.0889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">23.45 to 29.55</text>
-<rect x="243" y="101.8667" width="144.0342" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="246.0927" y="105.6444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">7</text>
-<text x="250.9854" y="105.6444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">GPDI video connector J2</text>
-<text x="357.4361" y="105.6444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">6.80 to 18.00</text>
-<text x="385.2342" y="105.6444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-0.85 to 6.65</text>
-<rect x="243" y="107.4222" width="144.0342" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="246.0927" y="111.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">8</text>
-<text x="250.9854" y="111.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">microSD card socket J6</text>
-<text x="357.4361" y="111.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-0.03 to 11.57</text>
-<text x="385.2342" y="111.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">11.45 to 23.45</text>
-<line x1="249.1854" y1="62.9778" x2="249.1854" y2="112.9778" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="331.2925" y1="62.9778" x2="331.2925" y2="112.9778" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="359.2361" y1="62.9778" x2="359.2361" y2="112.9778" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<text x="243" y="122.4778" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
-<line x1="243" y1="123.8778" x2="405" y2="123.8778" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<line x1="243" y1="128.3778" x2="263" y2="128.3778" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
-<text x="266" y="129.6278" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline</text>
-<line x1="243" y1="132.9778" x2="263" y2="132.9778" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
-<text x="266" y="134.2278" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Component body, scheduled</text>
-<line x1="243" y1="137.5778" x2="263" y2="137.5778" stroke="#7a7a7a" stroke-width="0.35" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
-<text x="266" y="138.8278" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Position not fitted on this revision</text>
-<line x1="243" y1="142.1778" x2="263" y2="142.1778" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
-<polygon points="263,142.1778 260,141.2778 260,143.0778" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
-<text x="266" y="143.4278" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
+<rect x="243" y="62.9778" width="145.3738" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">#</text>
+<text x="252.325" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">FEATURE</text>
+<text x="358.7757" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">X EXTENT mm</text>
+<text x="386.5738" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">Y EXTENT mm</text>
+<rect x="243" y="68.5333" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">1</text>
+<text x="252.325" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USB-C J3, JTAG and console</text>
+<text x="358.7757" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">22.68 to 33.32</text>
+<text x="386.5738" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-1.93 to 7.01</text>
+<rect x="243" y="74.0889" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">2</text>
+<text x="252.325" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">USB-C J5 and J4, to the FPGA, 2 on 12.50 mm pitch</text>
+<text x="358.7757" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">35.18 to 58.32</text>
+<text x="386.5738" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-1.93 to 7.01</text>
+<rect x="243" y="79.6444" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="83.4222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">3</text>
+<text x="252.325" y="83.4222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Ethernet RJ45 - not on this board</text>
+<text x="358.7757" y="83.4222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="386.5738" y="83.4222" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<rect x="243" y="85.2" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="88.9778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">4</text>
+<text x="252.325" y="88.9778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">User LEDs LED0-LED4, 5 on 2.98 mm pitch</text>
+<text x="358.7757" y="88.9778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">48.94 to 63.83</text>
+<text x="386.5738" y="88.9778" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">7.01 to 8.49</text>
+<rect x="243" y="90.7556" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="94.5333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">5</text>
+<text x="252.325" y="94.5333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">User LEDs, tri-colour - not on this board</text>
+<text x="358.7757" y="94.5333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="386.5738" y="94.5333" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<rect x="243" y="96.3111" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="100.0889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">6</text>
+<text x="252.325" y="100.0889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">GPIO header J1, 2x20, not fitted</text>
+<text x="358.7757" y="100.0889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">6.59 to 58.41</text>
+<text x="386.5738" y="100.0889" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">23.45 to 29.55</text>
+<rect x="243" y="101.8667" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="105.6444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">7</text>
+<text x="252.325" y="105.6444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">GPDI video connector J2</text>
+<text x="358.7757" y="105.6444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">6.80 to 18.00</text>
+<text x="386.5738" y="105.6444" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-0.85 to 6.65</text>
+<rect x="243" y="107.4222" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="111.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">8</text>
+<text x="252.325" y="111.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">microSD card socket J6</text>
+<text x="358.7757" y="111.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-0.03 to 11.57</text>
+<text x="386.5738" y="111.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">11.45 to 23.45</text>
+<rect x="243" y="112.9778" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="116.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">9</text>
+<text x="252.325" y="116.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Third USB port - not on this board</text>
+<text x="358.7757" y="116.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="386.5738" y="116.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<rect x="243" y="118.5333" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="122.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">10</text>
+<text x="252.325" y="122.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Fourth USB port - not on this board</text>
+<text x="358.7757" y="122.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="386.5738" y="122.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<rect x="243" y="124.0889" width="145.3738" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="246.7625" y="127.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle">11</text>
+<text x="252.325" y="127.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Status LEDs, debug controller - not on this board</text>
+<text x="358.7757" y="127.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<text x="386.5738" y="127.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">-</text>
+<line x1="250.525" y1="62.9778" x2="250.525" y2="129.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="332.6321" y1="62.9778" x2="332.6321" y2="129.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="360.5757" y1="62.9778" x2="360.5757" y2="129.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<text x="243" y="139.1444" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
+<line x1="243" y1="140.5444" x2="405" y2="140.5444" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="145.0444" x2="263" y2="145.0444" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
+<text x="266" y="146.2944" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board outline</text>
+<line x1="243" y1="149.6444" x2="263" y2="149.6444" stroke="#a00000" stroke-width="0.35" stroke-linecap="round"/>
+<text x="266" y="150.8944" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Component body, scheduled</text>
+<line x1="243" y1="154.2444" x2="263" y2="154.2444" stroke="#7a7a7a" stroke-width="0.35" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="155.4944" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Position not fitted on this revision</text>
+<line x1="243" y1="158.8444" x2="263" y2="158.8444" stroke="#004c99" stroke-width="0.25" stroke-linecap="round"/>
+<polygon points="263,158.8444 260,157.9444 260,159.7444" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
+<text x="266" y="160.0944" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Dimension, extension and leader</text>
 <text x="24" y="156.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
 <line x1="24" y1="157.9" x2="125.5" y2="157.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="24" y="162.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
@@ -301,7 +316,7 @@
 <text x="244.6" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">generated</text>
 <line x1="284.25" y1="263" x2="284.25" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="285.85" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">VERSION</text>
-<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-230-g35bb275</text>
+<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-249-ge63f3ce</text>
 <line x1="325.5" y1="263" x2="325.5" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="327.1" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">UNITS</text>
 <text x="327.1" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">mm</text>

@@ -10,6 +10,7 @@ centred on its line, reading from the bottom or from the right.
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 
 from . import style
 from .canvas import Canvas
@@ -19,13 +20,111 @@ def _fmt(value: float, places: int = 2) -> str:
     return f"{value:.{places}f}"
 
 
+@dataclass(frozen=True)
+class LinearDim:
+    """Where :func:`linear` will put its line, its arrows and its value.
+
+    Worked out apart from the drawing so that a caller which has to keep paper
+    clear for the value can ask where the value goes instead of guessing.  The
+    pin-field depth dimension writes its value beside its line rather than
+    between its arrows, and the balloon placer, told only about the line, put
+    a balloon through the last digit of a 3.23.
+    """
+
+    horizontal: bool
+    #: The dimension line: its Y for a horizontal dimension, its X for a
+    #: vertical one.
+    line: float
+    lo: float
+    hi: float
+    #: Whether the value fits between the arrows.  When it does not, the
+    #: arrows point inwards and the value sits beyond one end.
+    inside: bool
+    label: str
+    size: float
+    tx: float
+    ty: float
+    anchor: str
+    rotate: float
+
+    @property
+    def text_box(self) -> tuple[float, float, float, float]:
+        """The value's bounding box in sheet millimetres, Y up.
+
+        The same box ``tools/check_sheets.py`` recovers from the finished SVG,
+        derived the same way: the anchor decides which end of the run the
+        point is, and a rotated run stands the ascender and descender out to
+        the sides instead of above and below.
+        """
+        w = style.text_width(self.label, self.size)
+        asc, desc = style.text_height(self.size), style.descender(self.size)
+        start = {"start": 0.0, "middle": -w / 2, "end": -w}[self.anchor]
+        if self.rotate:
+            y0 = self.ty + start
+            return (self.tx - asc, y0, self.tx + desc, y0 + w)
+        x0 = self.tx + start
+        return (x0, self.ty - desc, x0 + w, self.ty + asc)
+
+
+def linear_geometry(p1: tuple[float, float], p2: tuple[float, float],
+                    offset: float, *, horizontal: bool | None = None,
+                    text: str | None = None, places: int = 2,
+                    value: float | None = None, size: float = style.T_DIM,
+                    text_offset: float = 0.0,
+                    text_side: str | None = None) -> LinearDim:
+    """Where :func:`linear` would put everything, without drawing any of it.
+
+    :func:`linear` places its own line, arrows and value from this and nothing
+    else, so a caller that needs the value's paper reserved gets the answer
+    the drawing will use rather than a second derivation of it.
+    """
+    (x1, y1), (x2, y2) = p1, p2
+    if horizontal is None:
+        horizontal = abs(x2 - x1) >= abs(y2 - y1)
+    stub = style.ARROW_LEN * 2.2 + 1.4
+
+    if horizontal:
+        line = max(y1, y2) + offset if offset >= 0 else min(y1, y2) + offset
+        lo, hi = min(x1, x2), max(x1, x2)
+        span = abs(x2 - x1)
+    else:
+        line = max(x1, x2) + offset if offset >= 0 else min(x1, x2) + offset
+        lo, hi = min(y1, y2), max(y1, y2)
+        span = hi - lo
+    label = text if text is not None else _fmt(span if value is None else value,
+                                               places)
+    inside = span > style.text_width(label, size) + 2 * style.ARROW_LEN + 2.0
+
+    # Centred on its own span unless the value will not fit between the arrows
+    # and the caller has said which side has room.  ISO 129-1 puts such a value
+    # outside the extension lines, and only the caller knows which side is
+    # free: in a stack of dimensions one side is the next dimension's.
+    along, anchor = (lo + hi) / 2, "middle"
+    if not inside and text_side:
+        along, anchor = ((lo - stub, "end") if text_side == "low"
+                         else (hi + stub, "start"))
+
+    if horizontal:
+        # Clear of the line by the gap, with the descender allowed for: the
+        # baseline is not the bottom of the text.
+        below = style.DIM_TEXT_GAP + style.descender(size)
+        return LinearDim(True, line, lo, hi, inside, label, size,
+                         along, line + below + text_offset, anchor, 0.0)
+    # Turned on its side and centred, so half the character height sticks out
+    # towards the dimension line and has to be cleared as well.
+    aside = (style.DIM_TEXT_GAP + style.text_height(size) / 2
+             + style.descender(size) / 2)
+    return LinearDim(False, line, lo, hi, inside, label, size,
+                     line - aside - text_offset, along, anchor, 90.0)
+
+
 def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
            offset: float, *, horizontal: bool | None = None,
            text: str | None = None, places: int = 2, value: float | None = None,
            colour: str = style.C_DIM, size: float = style.T_DIM,
            extension: bool = True,
            text_offset: float = 0.0, ext_start: float | None = None,
-           text_side: str | None = None) -> None:
+           text_side: str | None = None) -> LinearDim:
     """Dimension between two sheet points, offset perpendicular to their span.
 
     *offset* is signed: positive puts the dimension line above a horizontal
@@ -39,25 +138,18 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
 
     *text_side* is "low" or "high" and says which end a value too wide for its
     span is written beyond: "low" past the left or bottom end, "high" past the
-    right or top.  ISO 129-1 puts such a value outside the extension lines, and
-    which side has room is something only the caller knows -- in a stack of
-    dimensions the space on one side is taken by the next dimension's extension
-    lines.  Left unset, the value stays centred on its span, which is right
-    when nothing is stacked beneath it.
+    right or top.  See :func:`linear_geometry`, which decides all of that and
+    is returned, so a caller can reserve the paper the value lands on.
     """
+    g = linear_geometry(p1, p2, offset, horizontal=horizontal, text=text,
+                        places=places, value=value, size=size,
+                        text_offset=text_offset, text_side=text_side)
     (x1, y1), (x2, y2) = p1, p2
-    if horizontal is None:
-        horizontal = abs(x2 - x1) >= abs(y2 - y1)
+    over = style.EXT_OVER if g.inside else 0.0
+    tail = style.ARROW_LEN * 2.2
 
-    if horizontal:
-        dy = offset
-        line_y = max(y1, y2) + dy if dy >= 0 else min(y1, y2) + dy
-        a, b = (min(x1, x2), line_y), (max(x1, x2), line_y)
-        span = abs(x2 - x1)
-        shown = span if value is None else value
-        label = text if text is not None else _fmt(shown, places)
-        tw = style.text_width(label, size)
-        inside = span > tw + 2 * style.ARROW_LEN + 2.0
+    if g.horizontal:
+        line_y = g.line
         if extension:
             for x, y in ((x1, y1), (x2, y2)):
                 sign = 1 if line_y > y else -1
@@ -66,86 +158,45 @@ def linear(c: Canvas, p1: tuple[float, float], p2: tuple[float, float],
                 # A value too wide for its span sits on the far side of the
                 # dimension line, and the extension lines stop at the line
                 # rather than overshooting into it.
-                over = 0.0 if not inside else style.EXT_OVER
                 c.line(x, start, x, line_y + over * sign,
                        w=style.W_THIN, colour=colour)
-        c.line(a[0], line_y, b[0], line_y, w=style.W_THIN, colour=colour)
-        if inside:
-            c.arrow(a[0], line_y, 180, colour=colour)
-            c.arrow(b[0], line_y, 0, colour=colour)
-            tx = (a[0] + b[0]) / 2
+        c.line(g.lo, line_y, g.hi, line_y, w=style.W_THIN, colour=colour)
+        if g.inside:
+            c.arrow(g.lo, line_y, 180, colour=colour)
+            c.arrow(g.hi, line_y, 0, colour=colour)
         else:
-            c.arrow(a[0], line_y, 0, colour=colour)
-            c.arrow(b[0], line_y, 180, colour=colour)
-            c.line(a[0] - style.ARROW_LEN * 2.2, line_y, a[0], line_y,
+            c.arrow(g.lo, line_y, 0, colour=colour)
+            c.arrow(g.hi, line_y, 180, colour=colour)
+            c.line(g.lo - tail, line_y, g.lo, line_y,
                    w=style.W_THIN, colour=colour)
-            c.line(b[0], line_y, b[0] + style.ARROW_LEN * 2.2, line_y,
+            c.line(g.hi, line_y, g.hi + tail, line_y,
                    w=style.W_THIN, colour=colour)
-            # Centred on its own span unless the caller says which side has
-            # room.  Centred, it reads unambiguously but can be crossed by a
-            # neighbouring dimension's extension lines; beyond a stub, the two
-            # inward arrows still tie it to the right pair of extension lines.
-            tx = (a[0] + b[0]) / 2
-        # Clear of the line by the gap, with the descender allowed for: the
-        # baseline is not the bottom of the text.
-        below = style.DIM_TEXT_GAP + style.descender(size)
-        # Which side of the line the feature is on.  A label that does not fit
-        # between the arrows goes on the other side, clear of the extension
-        # lines running up to the dimension line.
-        anchor = "middle"
-        if not inside and text_side:
-            stub = style.ARROW_LEN * 2.2 + 1.4
-            if text_side == "low":
-                tx, anchor = a[0] - stub, "end"
-            else:
-                tx, anchor = b[0] + stub, "start"
-        ty = line_y + below + text_offset
-        c.text(tx, ty, label, size=size, colour=colour, anchor=anchor)
+        c.text(g.tx, g.ty, g.label, size=size, colour=colour, anchor=g.anchor)
     else:
-        dx = offset
-        line_x = max(x1, x2) + dx if dx >= 0 else min(x1, x2) + dx
-        lo, hi = min(y1, y2), max(y1, y2)
-        span = hi - lo
-        shown = span if value is None else value
-        label = text if text is not None else _fmt(shown, places)
-        tw = style.text_width(label, size)
-        inside = span > tw + 2 * style.ARROW_LEN + 2.0
+        line_x = g.line
         if extension:
             for x, y in ((x1, y1), (x2, y2)):
                 sign = 1 if line_x > x else -1
                 start = x + style.EXT_GAP * sign if ext_start is None \
                     else ext_start
-                over = 0.0 if not inside else style.EXT_OVER
                 c.line(start, y, line_x + over * sign, y,
                        w=style.W_THIN, colour=colour)
-        c.line(line_x, lo, line_x, hi, w=style.W_THIN, colour=colour)
-        if inside:
-            c.arrow(line_x, lo, -90, colour=colour)
-            c.arrow(line_x, hi, 90, colour=colour)
-            ty = (lo + hi) / 2
+        c.line(line_x, g.lo, line_x, g.hi, w=style.W_THIN, colour=colour)
+        if g.inside:
+            c.arrow(line_x, g.lo, -90, colour=colour)
+            c.arrow(line_x, g.hi, 90, colour=colour)
         else:
-            c.arrow(line_x, lo, 90, colour=colour)
-            c.arrow(line_x, hi, -90, colour=colour)
-            c.line(line_x, lo - style.ARROW_LEN * 2.2, line_x, lo,
+            c.arrow(line_x, g.lo, 90, colour=colour)
+            c.arrow(line_x, g.hi, -90, colour=colour)
+            c.line(line_x, g.lo - tail, line_x, g.lo,
                    w=style.W_THIN, colour=colour)
-            c.line(line_x, hi, line_x, hi + style.ARROW_LEN * 2.2,
+            c.line(line_x, g.hi, line_x, g.hi + tail,
                    w=style.W_THIN, colour=colour)
-            ty = (lo + hi) / 2
-        # Turned on its side and centred, so half the character height sticks
-        # out towards the dimension line and has to be cleared as well.
-        aside = (style.DIM_TEXT_GAP + style.text_height(size) / 2
-                 + style.descender(size) / 2)
-        anchor = "middle"
-        if not inside and text_side:
-            stub = style.ARROW_LEN * 2.2 + 1.4
-            if text_side == "low":
-                ty, anchor = lo - stub, "end"
-            else:
-                ty, anchor = hi + stub, "start"
-        tx = line_x - aside - text_offset
         # Vertical dimension text reads from the right, per ISO 129-1.
-        c.text(tx, ty, label, size=size, colour=colour, anchor=anchor,
+        c.text(g.tx, g.ty, g.label, size=size, colour=colour, anchor=g.anchor,
                rotate=90)
+    return g
+
 
 
 def centre_mark(c: Canvas, cx: float, cy: float, r: float, *,

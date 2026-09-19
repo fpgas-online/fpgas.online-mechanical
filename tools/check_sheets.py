@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Check generated sheets for text collisions and out-of-frame content.
 
-Two failure modes are easy to introduce and easy to miss when a sheet is only
-eyeballed at screen size: two pieces of text landing on top of each other, and
-something drifting outside the drawing frame.  Both are cheap to test for,
-because the SVG carries every text element's position and size, and the font
-metrics are the same ones the layout code used.
+Three failure modes are easy to introduce and easy to miss when a sheet is
+only eyeballed at screen size: two pieces of text landing on top of each
+other, something drifting outside the drawing frame, and a balloon circle
+coming down on a piece of text -- which is not a text-to-text overlap, so the
+first test never saw it, and is not a ruled line either, so the line test
+never saw it.  All three are cheap to test for, because the SVG carries every
+text element's position and size, every balloon's centre and radius, and the
+font metrics are the same ones the layout code used.
 
 Reports rather than asserts: some overlaps are deliberate (a dimension value
 sitting on its own dimension line, say), so the output is for a human to read.
@@ -24,6 +27,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from tools.drafting import style  # noqa: E402
+from tools.drafting.board_sheet import BALLOON_R  # noqa: E402
 from tools.drafting.sheet import Sheet  # noqa: E402
 from tools.layout import drawing_name_for, preview_for, rel, sheets  # noqa: E402
 
@@ -161,6 +165,34 @@ def side_gap(a, b, rules) -> float | None:
         if lo - 0.2 <= rx <= hi + 0.2 and ry0 <= top + 0.2 and ry1 >= bottom - 0.2:
             return None
     return gap
+
+
+#: A balloon: a circle of the balloon radius, drawn in the highlight colour
+#: on a white core.  The radius and the colour are the drawing's own, imported
+#: rather than written out again, so a change to either cannot leave this
+#: looking for circles nothing draws any more.
+CIRCLE_RE = re.compile(
+    r'<circle cx="([-\d.]+)" cy="([-\d.]+)" r="([\d.]+)" fill="([#\w]+)" '
+    r'stroke="([#\w]+)"')
+
+
+def balloons(svg: str) -> list[tuple[float, float, float]]:
+    """Every balloon circle on the sheet, as (cx, cy, r)."""
+    out = []
+    for m in CIRCLE_RE.finditer(svg):
+        cx, cy, r = (float(v) for v in m.groups()[:3])
+        if abs(r - BALLOON_R) < 0.01 and m.group(5) == style.C_HIGHLIGHT:
+            out.append((cx, cy, r))
+    return out
+
+
+def circle_bites_box(circle, box) -> float:
+    """How far a circle reaches inside a box, 0 if it stays clear."""
+    cx, cy, r = circle
+    nx = min(max(cx, box[0]), box[2])
+    ny = min(max(cy, box[1]), box[3])
+    d = math.hypot(cx - nx, cy - ny)
+    return r - d if d < r else 0.0
 
 
 def vertical_rules(svg_lines) -> list[tuple[float, float, float]]:
@@ -449,6 +481,20 @@ def main() -> int:
                         f"a line runs {run:.2f} mm through the text {a[4]!r} "
                         f"at ({a[0]:.1f},{a[1]:.1f})")
                     break
+        # A balloon is opaque: it is a white disc with a digit in it, so
+        # wherever its rim comes down on someone else's text it takes a bite
+        # out of the word.  Its own digit is the text its centre is inside,
+        # and is the one piece of text it is allowed to cover.
+        for circle in balloons(svg):
+            for a in items:
+                if a[0] <= circle[0] <= a[2] and a[1] <= circle[1] <= a[3]:
+                    continue
+                bite = circle_bites_box(circle, a[:4])
+                if bite > OVERLAP_TOL:
+                    problems.append(
+                        f"a balloon at ({circle[0]:.1f},{circle[1]:.1f}) "
+                        f"covers {bite:.2f} mm of the text {a[4]!r} at "
+                        f"({a[0]:.1f},{a[1]:.1f})")
 
         name = rel(path)
         if problems:
