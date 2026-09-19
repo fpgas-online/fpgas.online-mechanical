@@ -153,6 +153,17 @@ C_NOTE = "#000000"
 C_COMPONENT = "#333333"
 C_HIGHLIGHT = "#a00000"  # the features a given sheet is about
 C_PHANTOM = "#7a7a7a"
+#: The two camera frame footprints on a camera position sheet.  They are
+#: phantom-line envelopes, ISO 128 type K, so the line type already says what
+#: they are; what the type cannot say is WHICH of the two a rectangle is, and
+#: on a sheet where one frame sits inside the other that is the only question
+#: a reader has.  Two colours dark enough to photocopy, distinct from the
+#: component red so neither reads as a part of the subject.
+C_FRAME_A = "#005f5f"
+#: The second frame's colour, and the colour a USB-C opening is marked in on
+#: the mounting plate sheets.  One name: the two were the same literal in two
+#: files, and a value with two spellings is a value that drifts.
+C_FRAME_B = "#7a4a00"
 C_FILL_HOLE = "#ffffff"
 C_FILL_LIGHT = "#f0f0f0"
 C_FILL_TABLE_HEAD = "#e6e6e6"

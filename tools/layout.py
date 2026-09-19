@@ -394,27 +394,65 @@ def lp_name(stem: str) -> str:
             "which board it clips onto")
 
 
+#: The camera position sheets, by file stem.  A camera module's own sheet
+#: needs no row: ``cm3`` leaves ``3`` behind the lead and the name is
+#: RPICAM-3.  A position sheet's stem is ``over-`` and its subject's key,
+#: which says the subject in full -- ``over-acorn-cle-215-plus`` -- where
+#: the drawing number wants OVER and one word for which subject.
+RPICAM_NAMES = {
+    "over-tt-mounting-plate": "over-plate",    # the TT mounting plate
+    "over-arty-a7": "over-arty",               # the Arty A7
+    "over-arty-ethernet": "over-eth",          # the Arty's Ethernet corner
+    "over-acorn-cle-215-plus": "over-acorn",   # the Acorn CLE-215+ in its HAT
+}
+
+#: What a camera module sheet's stem leaves behind the lead: the module
+#: number, ``2`` or ``3``.
+RPICAM_MODULE_RE = re.compile(r"\d+")
+
+
+def rpicam_name(rest: str) -> str:
+    """What the camera sheet whose stem ends in *rest* is called.
+
+    A module's own sheet keeps the module number; anything else is looked up
+    in ``RPICAM_NAMES``, and a stem that is neither stops the render rather
+    than passing a stem-shaped name through.
+    """
+    if RPICAM_MODULE_RE.fullmatch(rest):
+        return rest
+    try:
+        return RPICAM_NAMES[rest]
+    except KeyError:
+        raise SystemExit(
+            f"no drawing name for the camera sheet whose stem ends {rest!r}; "
+            "a module sheet is named for its module, and a position sheet "
+            "wants a row in RPICAM_NAMES in tools/layout.py, OVER and four "
+            "or five characters saying which subject")
+
+
 #: How a family cuts what is left of a stem down to a drawing name, for the
-#: five families that need it.  A separate table rather than a third column
+#: six families that need it.  A separate table rather than a third column
 #: of FAMILY_PREFIXES: several branches are open at once each adding a row to
 #: that table, and changing its shape would conflict with every one of them,
 #: where a new table beside it conflicts with nothing.
 #:
 #: A family with no rule here is named for its stem, which is the ordinary
 #: case and wants no table: FPGA-ARTY-A7 is already as short as its sheet can
-#: honestly be said to be.  The five families here are the ones where a stem
+#: honestly be said to be.  The six families here are the ones where a stem
 #: is not: a demo board's carries every revision the sheet covers, an
 #: accessory's says in words what the part is, a mounting plate sheet's says
 #: its title -- ``chassis-drill-template`` -- and the Pi family has one sheet
-#: that is no model's own and whose stem says what it shows, and a light
-#: pipe's says the board, the jack and the part.  All are right for a file
-#: name and too long for a drawing number.
+#: that is no model's own and whose stem says what it shows, a light pipe's
+#: says the board, the jack and the part, and a camera position sheet's says
+#: its subject in full.  All are right for a file name and too long for a
+#: drawing number.
 FAMILY_NAME_RULES = {
     "tinytapeout": tt_name,
     "raspberry-pi": rpi_name,
     "accessories": acc_name,
     "mounting-plate": plate_name,
     "light-pipe": lp_name,
+    "raspberry-pi-camera": rpicam_name,
 }
 
 

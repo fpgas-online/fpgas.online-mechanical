@@ -20,7 +20,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid, and the three of them on the one outline they share |
-| [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Camera Module 2 and Camera Module 3, with the lens module, its optical axis and the FFC connector marked |
+| [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Camera Module 2 and Camera Module 3, with the lens module, its optical axis and the FFC connector marked; then where to put an OV5647 camera over the mounting plate, the Arty A7 and an Acorn, for a 65 and a 120 degree lens |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- Digilent Arty A7, ULX3S, TUL PYNQ-Z2, ButterStick, the Icepi Zero, the Cynthion, the Digilent Zybo Z7 and the Avnet Ultra96-V2, with Pmod, USB, Ethernet and LEDs marked |
 | [`fpga/light_pipe/`](fpga/light_pipe/README.md) | `FPGA-LP-ARTY` -- A printed clip that brings the Arty A7's Ethernet LEDs, which face forwards, round to a face you can see from above |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Pmod HAT Adapter, two PoE splitters as envelope drawings, the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md), and an Acorn CLE-215+ in a Waveshare PoE M.2 HAT+ on a Pi 5 |
@@ -34,7 +34,7 @@ prefix: `fpga/output/arty-a7.pdf` is **`FPGA-ARTY-A7`** and
 already says is dropped: the mounting plate's four stems all begin
 `tt-generic-mounting-plate`, which is what `TT-MP` says.
 
-Five families are named by a rule instead, because their file stems say more
+Six families are named by a rule instead, because their file stems say more
 than a drawing number can carry. A file name is read once from a directory
 listing by somebody choosing between files, and can afford to say what a sheet
 covers; a drawing number is read off a title block, quoted in a note on another
@@ -69,6 +69,10 @@ are, and only the name is cut:
 - the light pipe, a made part filed beside the FPGA boards and bound with
   them, has the set's prefix and its kind, `FPGA-LP`, and a one-row table,
   `LP_NAMES`, saying which board it clips onto: `FPGA-LP-ARTY`.
+- a camera sheet is named for its module, `RPICAM-3`, and the four that put
+  a camera over a subject are OVER and one word for the subject,
+  `RPICAM-OVER-ARTY`: a table, `RPICAM_NAMES`, since the stem says the
+  subject in full.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
@@ -162,7 +166,24 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="raspberry_pi_camera/output/cm3.pdf"><img src="raspberry_pi_camera/output/previews/cm3.png" width="270" alt="RPICAM-3 Raspberry Pi Camera Module 3"></a><br>
 <b>RPICAM-3</b> Raspberry Pi Camera Module 3<br>25 x 23.862 mm, standard and wide, Sony IMX708
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/over-tt-mounting-plate.pdf"><img src="raspberry_pi_camera/output/previews/over-tt-mounting-plate.png" width="270" alt="RPICAM-OVER-PLATE Camera over the TT Mounting Plate"></a><br>
+<b>RPICAM-OVER-PLATE</b> Camera over the TT Mounting Plate<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/over-arty-a7.pdf"><img src="raspberry_pi_camera/output/previews/over-arty-a7.png" width="270" alt="RPICAM-OVER-ARTY Camera over the Arty A7"></a><br>
+<b>RPICAM-OVER-ARTY</b> Camera over the Arty A7<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/over-arty-ethernet.pdf"><img src="raspberry_pi_camera/output/previews/over-arty-ethernet.png" width="270" alt="RPICAM-OVER-ETH Camera over the Arty A7, Ethernet LEDs included"></a><br>
+<b>RPICAM-OVER-ETH</b> Camera over the Arty A7, Ethernet LEDs included<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/over-acorn-cle-215-plus.pdf"><img src="raspberry_pi_camera/output/previews/over-acorn-cle-215-plus.png" width="270" alt="RPICAM-OVER-ACORN Camera over the Acorn CLE-215+"></a><br>
+<b>RPICAM-OVER-ACORN</b> Camera over the Acorn CLE-215+<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
 </tr>
 </table>
 
@@ -306,7 +327,7 @@ make check     # render every sheet, refresh the grids, then run the checks
 ```
 
 Rebuilding is deterministic, and that is checked rather than hoped for: three
-full `make clean && make diagrams` cycles produce all 96 output files
+full `make clean && make diagrams` cycles produce all 108 output files
 byte-identical, so `git status` is silent after a rebuild unless a drawing
 actually changed. (On a branch that has added a sheet, that silence returns
 only once the whole set has been restamped with the new `VERSION`, which is
@@ -325,8 +346,13 @@ never answered the question a reader actually has, which is which version of
 the data the drawing was made from. A `+` on the end means it was rendered
 with uncommitted changes.
 
-Eight checks run over the output and each has caught a real defect, from text
-colliding on a sheet to a mounting hole no M3 screw actually fits.
+Nine checks run over the output. The eight that predate the camera position
+sheets have each caught a real defect, from text colliding on a sheet to a
+mounting hole no M3 screw actually fits. The ninth is newer than the sheets
+it checks and has caught nothing yet: it reads back the vendor pages those
+sheets quote their optics from, re-derives Raspberry Pi's own declared field
+of view from their own focal length and pixel count, and proves every camera
+frame holds its target at the height printed.
 [`tools/README.md`](tools/README.md) says what each one does and what it
 found.
 
