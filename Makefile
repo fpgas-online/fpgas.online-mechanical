@@ -49,11 +49,12 @@ check: diagrams
 	$(DRAW) python tools/check_sheets.py
 	$(UV) python tinytapeout/mounting_plate/verify.py
 	$(DRAW) python tools/check_balloons.py
+	$(UV) --with pillow python tools/check_leader_arrows.py
 	$(UV) --with pdfplumber --with pillow python tools/check_drill_template.py
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
 
 # Every output/ directory is build product: `make clean && make diagrams`
-# restores all 79 files, every one of them byte for byte, since
+# restores all 82 files, every one of them byte for byte, since
 # tools/reproducible.py pins the clocks and tool version strings the formats
 # would otherwise stamp in.  So remove them outright rather than picking off
 # extensions one at a time.

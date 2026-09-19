@@ -20,7 +20,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid, and the three of them on the one outline they share |
-| [`fpga/`](fpga/README.md) | `FPGA-*` -- Digilent Arty A7, ULX3S, TUL PYNQ-Z2, ButterStick, the Icepi Zero, the Cynthion and the Digilent Zybo Z7, with Pmod, USB, Ethernet and LEDs marked |
+| [`fpga/`](fpga/README.md) | `FPGA-*` -- Digilent Arty A7, ULX3S, TUL PYNQ-Z2, ButterStick, the Icepi Zero, the Cynthion, the Digilent Zybo Z7 and the Avnet Ultra96-V2, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
 
@@ -180,7 +180,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="fpga/output/zybo-z7.pdf"><img src="fpga/output/previews/zybo-z7.png" width="270" alt="FPGA-ZYBO-Z7 Digilent Zybo Z7"></a><br>
 <b>FPGA-ZYBO-Z7</b> Digilent Zybo Z7<br>Z7-10 and Z7-20
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="fpga/output/ultra96-v2.pdf"><img src="fpga/output/previews/ultra96-v2.png" width="270" alt="FPGA-ULTRA96-V2 Avnet Ultra96-V2"></a><br>
+<b>FPGA-ULTRA96-V2</b> Avnet Ultra96-V2<br>96Boards CE, 85 x 54 mm
+</td>
 <td width="33%"></td>
 </tr>
 </table>
@@ -265,7 +268,7 @@ make check     # render every sheet, refresh the grids, then run the checks
 ```
 
 Rebuilding is deterministic, and that is checked rather than hoped for: three
-full `make clean && make diagrams` cycles produce all 79 output files
+full `make clean && make diagrams` cycles produce all 82 output files
 byte-identical, so `git status` is silent after a rebuild unless a drawing
 actually changed. Cairo, pypdf and ezdxf all stamp a clock, cairo, Inkscape
 and pypdf their names and versions, and ezdxf two random GUIDs into what
@@ -282,7 +285,7 @@ never answered the question a reader actually has, which is which version of
 the data the drawing was made from. A `+` on the end means it was rendered
 with uncommitted changes.
 
-Six checks run over the output and each has caught a real defect, from text
+Seven checks run over the output and each has caught a real defect, from text
 colliding on a sheet to a mounting hole no M3 screw actually fits.
 [`tools/README.md`](tools/README.md) says what each one does and what it
 found.
@@ -294,5 +297,7 @@ derived from keep their own licences: the Tiny Tapeout board files are Apache
 2.0, the Raspberry Pi mechanical drawings are Raspberry Pi Ltd's, the Arty A7
 drawing is Digilent's, the PYNQ-Z2 model is TUL's, the Icepi Zero board files
 are under the Solderpad Hardware Licence 2.1, the Cynthion board file is
-Great Scott Gadgets' under the CERN-OHL-P v2, and the ULX3S and ButterStick
-board files carry their makers' open hardware licences.
+Great Scott Gadgets' under the CERN-OHL-P v2, the ULX3S and ButterStick
+board files carry their makers' open hardware licences, and the Ultra96-V2
+drawing is Avnet's, republished by Linaro with the 96Boards Consumer Edition
+specification.

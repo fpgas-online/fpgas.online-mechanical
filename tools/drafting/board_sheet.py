@@ -58,16 +58,17 @@ KIND_LABEL = {
 #
 # Both are floors, not answers.  Thirty millimetres on the chain's edge is
 # roughly what a chain whose labels all fit in one lane needs -- the Arty
-# A7's wants 30.33 -- and thirteen of the eighteen board sheets
+# A7's wants 30.33 -- and fourteen of the nineteen board sheets
 # `render_board` draws stagger a label into a second lane and want up to
 # 42.76.  They get it from the height the sheet has spare, half of which
 # falls on each side of a centred view; every sheet was measured and two came
 # up short, the Zybo Z7 by 9.17 mm and the Cynthion by 3.33, the two whose
-# chains ask for more than the centring gives them (the Pmod HAT Adapter is
-# left less room than the Cynthion, and is not short only because its chain
-# wants 19.83).  `_view_margins` is where a short sheet is given what the
-# centring did not, out of the spare height and, if need be, out of the free
-# edge's margin as far as `_view_room_free_edge`.
+# chains ask for more than the centring gives them (the Pmod HAT Adapter and
+# the Ultra96-V2 are left less room than the Cynthion, and are not short only
+# because their chains want 19.83 and 30.30).  `_view_margins` is where a
+# short sheet is given what the centring did not, out of the spare height
+# and, if need be, out of the free edge's margin as far as
+# `_view_room_free_edge`.
 VIEW_MARGIN_SIDE = 46.0
 VIEW_MARGIN_TOP = 20.0
 VIEW_MARGIN_BOTTOM = 30.0
@@ -757,6 +758,18 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
     it is position only.  Reserving the whole band against leaders as well
     boxed the balloons into the board's interior, because a leader from a part
     near one of those two edges had to cross a band to reach any space at all.
+
+    The two ends of that band are the exception: a solid filled arrowhead with
+    a leader ruled through it stops reading as an arrowhead, and it is three
+    millimetres long rather than a band the width of the board, so charging
+    leaders for it cannot box anything in.  The Ultra96-V2's LED balloon went
+    out to the right at the height of the 54.00 dimension's lower arrowhead
+    and straight through it.  Reserved at both ends and on both sides of the
+    tip, because a span too narrow for its value flips its arrows outboard.
+    No padding: the box is the arrowhead's bounding box, already wider than
+    the triangle everywhere but its base, and the leader test carries a
+    millimetre of clearance of its own.  Padded further it started moving
+    balloons that were not touching anything.
     """
     o = spec.outline
     for edge in ((0, 0, o.width, 0), (o.width, 0, o.width, o.height),
@@ -767,6 +780,7 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
     band = dim_text_band()
     edge_y, offset = overall_width_line(board, chain_edge)
     overall_y = edge_y + offset
+    nose, flank = style.ARROW_LEN, style.ARROW_HALF_WIDTH
     for value, horizontal in ((o.width, True), (o.height, False)):
         half = style.text_width(f"{value:.2f}", style.T_DIM) / 2
         if horizontal:
@@ -775,12 +789,19 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
             edge_only.add_rect(board.x, lo, board.x1, hi, pad=1.2, weight=HARD)
             obstacles.add_rect(mid - half, lo, mid + half, hi,
                                pad=1.2, weight=HARD)
+            for tip in (board.x, board.x1):
+                obstacles.add_rect(tip - nose, overall_y - flank,
+                                   tip + nose, overall_y + flank, weight=HARD)
         else:
             mid = (board.y + board.y1) / 2
             lo, hi = board.x1 + OVERALL_GAP - band, board.x1 + OVERALL_GAP + 1.0
             edge_only.add_rect(lo, board.y, hi, board.y1, pad=1.2, weight=HARD)
             obstacles.add_rect(lo, mid - half, hi, mid + half,
                                pad=1.2, weight=HARD)
+            line = board.x1 + OVERALL_GAP
+            for tip in (board.y, board.y1):
+                obstacles.add_rect(line - flank, tip - nose,
+                                   line + flank, tip + nose, weight=HARD)
 
 
 def draw_outline_frame(sheet: Sheet, view: View, spec: BoardSpec,
@@ -917,7 +938,7 @@ def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
     A view is centred in what its margins leave, so half of whatever height
     the sheet has spare already falls on the chain's side of the board and
     pays for most of a staggered ordinate lane.  Every sheet here leans on
-    that: measured against `_chain_room`, fifteen of the eighteen board
+    that: measured against `_chain_room`, sixteen of the nineteen board
     sheets `render_board` draws want more than `VIEW_MARGIN_BOTTOM` -- the
     ULX3S, the Icepi Zero and the Pmod HAT Adapter, all at 19.83, do not --
     and all but two are given it by the centring alone.
@@ -933,8 +954,11 @@ def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
 
     A bias inside the room the sheet already has, not a claim on the notes
     band: reserving the full figure in `_view_height_needed` was tried and
-    moves fourteen other sheets, whose bands are what the height would come
-    out of.
+    moved fourteen other sheets, whose bands are what the height would come
+    out of.  Past tense on purpose -- that count was taken while `_chain_room`
+    still measured in model millimetres, and it has not been retaken since the
+    figure became scale-aware, so it is what the experiment showed and not a
+    claim about what it would show today.
 
     Not applied to a sheet drawn on a family's shared view frame.  The point
     of such a frame is that a feature lands on the same point of every page,
@@ -1943,8 +1967,11 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         sheet.table(block, title, head, rows, align)
 
     if schedule:
-        block = sheet.column_block(sheet.table_height("FEATURE SCHEDULE", len(schedule)))
-        sheet.table(block, "FEATURE SCHEDULE",
+        title = "FEATURE SCHEDULE"
+        if spec.extent_of:
+            title += f" - {spec.extent_of}"
+        block = sheet.column_block(sheet.table_height(title, len(schedule)))
+        sheet.table(block, title,
                     ["#", "FEATURE", "X EXTENT mm", "Y EXTENT mm"], schedule,
                     ["middle", "start", "end", "end"])
 
