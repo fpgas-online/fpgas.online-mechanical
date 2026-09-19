@@ -132,7 +132,7 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] Ultra96-V2 from Avnet's Altium "Mechanical and Drill" plot, scale
       recovered from the outline and checked against the 96Boards CE
       specification; no Pmod, no Ethernet
-- [x] `fpga-sheets.pdf`, the eight bound into one document
+- [x] `fpga-sheets.pdf`, the eight boards, bound with the light pipe
 - [ ] PYNQ-Z2 LED positions, by photogrammetry from TUL's product photo if
       no vector source turns up
 - [x] `dims.ordinate_reach` and `_view_margins`: a view whose ordinate chain
@@ -233,3 +233,37 @@ checker that measures the finished PDFs rather than trusting them.
       part would settle both
 - [ ] Check the derived socket footprint against a real board: it is the one
       figure here quoted at +/-1 mm rather than +/-0.2
+
+## 17. Arty A7 Ethernet light pipe (issue #8)  -- DONE
+- [x] Name the jack from Digilent's schematic: `J9`, Bel `08B0-1X1T-36-F`
+- [x] Measure its LED windows, plug aperture, latch keyway and EMI springs
+      off Bel's own drawing, scale recovered per axis from the figures it
+      dimensions
+- [x] Cross-check the two drawings against each other: Digilent's board-lock
+      pads are 16.104 mm apart, Bel's are 16.13
+- [x] Bore the part for a catalogue light pipe, Bivar `PLP2-4MM`, to Bivar's
+      own mounting hole and panel thickness
+- [x] `fpga/light_pipe/verify.py`: 37 checks over the cable, the light path
+      and the fit, and one figure it reports rather than claims
+- [x] `FPGA-LP-ARTY`, three views at 5:1, bound into
+      `fpga-sheets.pdf`
+- [x] STEP solid, `fpga/light_pipe/output/arty-ethernet-light-pipe.step`
+- [x] Act on the review: the 7.75 reading, the proud LED window, the skirt
+      clearance against the grip, the section's hatch angle, the tautologies
+      in verify.py, `make clean`, and the file counts
+- [ ] Print one and try it. Two things are calculated and neither has been
+      put on a real jack: the retention, which is 0.33 mm of deflection in
+      the jack's own EMI spring at minimum material and nothing else, and the
+      bore, which is a printed hole holding a press fit
+- [ ] Decide whether 0.33 mm of spring deflection is enough grip in practice.
+      It is what the two tolerances leave after the shield is cleared by
+      0.31; if it turns out not to be, the answer is a barb on the skirt or
+      a screw into the roof, not a smaller clearance
+- [ ] Measure a snagless patch cord's boot against the cheeks. The sheet says
+      a boot standing proud of the plug's own top face within 7 mm of the
+      jack will foul them; that 7 mm is the part's own geometry, and no
+      published boot drawing was found to check it against
+- [ ] Say which LED is link and which is speed. Bel's schematic gives LED1 as
+      yellow on pins 7/8 and LED2 as a bi-colour green/orange on 9/10;
+      Digilent's sheet 8 drives two of those four pins through 274 ohm
+      resistors, and which is which was not read off the schematic

@@ -21,28 +21,31 @@ Imported, not run.
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
 | `render_svg.py` | SVG to PDF and PNG via Inkscape, text exported as paths |
-| `reproducible.py` | Pins the clocks, tool version strings and GUIDs that cairo, Inkscape, pypdf and ezdxf stamp into their output |
+| `reproducible.py` | Pins the clocks, tool version strings and GUIDs that cairo, Inkscape, pypdf and ezdxf stamp into their output, and the export clock, the absolute path and the per-process product counter OpenCascade stamps into a STEP |
 
 ## Build
 
 | | |
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's mechanical drawings into `tmp/` |
-| `fetch_fpga.sh` | Clones the ULX3S, ButterStick, Icepi Zero and Cynthion repositories and downloads the Arty A7 and Zybo Z7 drawings and the PYNQ-Z2 model into `tmp/` |
+| `fetch_fpga.sh` | Clones the ULX3S, ButterStick, Icepi Zero and Cynthion repositories and downloads the Arty A7 and Zybo Z7 drawings, the Arty A7 schematic, Bel's drawing of the RJ45 on it, Bivar's light pipe drawing and the PYNQ-Z2 model into `tmp/` |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the three A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
 
 The extractors are not here. Each lives with its subject:
 [`tinytapeout/extract.py`](../tinytapeout/README.md),
 [`raspberry_pi/extract.py`](../raspberry_pi/README.md),
-[`fpga/extract.py`](../fpga/README.md), and
+[`fpga/extract.py`](../fpga/README.md),
+[`fpga/light_pipe/design.py`](../fpga/light_pipe/README.md), and
 [`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md).
 
 ## Checks
 
 Each has caught a real defect. `make check` runs all but `crosscheck_gerber.py`,
-which needs network. A seventh, `verify.py`, is specific to the mounting plate
-and lives with it.
+which needs network. Two more are specific to a made part and live with it, a
+`verify.py` each: the mounting plate's, and the Ethernet light pipe's, which
+proves the cable still fits, the pipes see the LED windows and the jack's own
+springs hold the part on.
 
 - **`check_sheets.py`** re-reads the generated SVGs, recomputes every text
   bounding box from the same font metrics the layout used, and reports text

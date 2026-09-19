@@ -21,6 +21,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid, and the three of them on the one outline they share |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- Digilent Arty A7, ULX3S, TUL PYNQ-Z2, ButterStick, the Icepi Zero, the Cynthion, the Digilent Zybo Z7 and the Avnet Ultra96-V2, with Pmod, USB, Ethernet and LEDs marked |
+| [`fpga/light_pipe/`](fpga/light_pipe/README.md) | `FPGA-LP-ARTY` -- A printed clip that brings the Arty A7's Ethernet LEDs, which face forwards, round to a face you can see from above |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Pmod HAT Adapter, two PoE splitters as envelope drawings, the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md), and an Acorn CLE-215+ in a Waveshare PoE M.2 HAT+ on a Pi 5 |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
 
@@ -32,7 +33,7 @@ prefix: `fpga/output/arty-a7.pdf` is **`FPGA-ARTY-A7`** and
 already says is dropped: the mounting plate's four stems all begin
 `tt-generic-mounting-plate`, which is what `TT-MP` says.
 
-Four families are named by a rule instead, because their file stems say more
+Five families are named by a rule instead, because their file stems say more
 than a drawing number can carry. A file name is read once from a directory
 listing by somebody choosing between files, and can afford to say what a sheet
 covers; a drawing number is read off a title block, quoted in a note on another
@@ -64,6 +65,9 @@ are, and only the name is cut:
 - a Raspberry Pi sheet is named for its model, `RPI-5`, and the one sheet
   that is no model's own, the three models superimposed, is `RPI-ALL`: a
   one-row table, `RPI_NAMES`, since `models-compared` is a title too.
+- the light pipe, a made part filed beside the FPGA boards and bound with
+  them, has the set's prefix and its kind, `FPGA-LP`, and a one-row table,
+  `LP_NAMES`, saying which board it clips onto: `FPGA-LP-ARTY`.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
@@ -189,6 +193,19 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </tr>
 </table>
 
+### Arty A7 Ethernet light pipe
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="fpga/light_pipe/output/arty-ethernet-light-pipe.pdf"><img src="fpga/light_pipe/output/previews/arty-ethernet-light-pipe.png" width="270" alt="FPGA-LP-ARTY Arty A7 Ethernet Light Pipe"></a><br>
+<b>FPGA-LP-ARTY</b> Arty A7 Ethernet Light Pipe<br>Clips over J9 and carries its two LEDs to a face you can see from above
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
+</tr>
+</table>
+
 ### Accessories
 
 <table>
@@ -272,11 +289,13 @@ make check     # render every sheet, refresh the grids, then run the checks
 ```
 
 Rebuilding is deterministic, and that is checked rather than hoped for: three
-full `make clean && make diagrams` cycles produce all 85 output files
+full `make clean && make diagrams` cycles produce all 89 output files
 byte-identical, so `git status` is silent after a rebuild unless a drawing
-actually changed. Cairo, pypdf and ezdxf all stamp a clock, cairo, Inkscape
-and pypdf their names and versions, and ezdxf two random GUIDs into what
-they write;
+actually changed. (On a branch that has added a sheet, that silence returns
+only once the whole set has been restamped with the new `VERSION`, which is
+one change made on its own rather than a side effect of adding a drawing.)
+Cairo, pypdf and ezdxf all stamp a clock, cairo, Inkscape and pypdf their
+names and versions, and ezdxf two random GUIDs into what they write;
 `tools/reproducible.py` pins all of it. That is what lets a second machine
 reproduce the set: Inkscape 1.4 and 1.4.3 on the same cairo draw identical
 content and differed only in the version string.
@@ -289,7 +308,7 @@ never answered the question a reader actually has, which is which version of
 the data the drawing was made from. A `+` on the end means it was rendered
 with uncommitted changes.
 
-Seven checks run over the output and each has caught a real defect, from text
+Eight checks run over the output and each has caught a real defect, from text
 colliding on a sheet to a mounting hole no M3 screw actually fits.
 [`tools/README.md`](tools/README.md) says what each one does and what it
 found.
@@ -299,8 +318,9 @@ found.
 Apache 2.0; see [`LICENSE`](LICENSE). The upstream sources these drawings are
 derived from keep their own licences: the Tiny Tapeout board files are Apache
 2.0, the Raspberry Pi mechanical drawings are Raspberry Pi Ltd's, the Arty A7
-drawing is Digilent's, the PYNQ-Z2 model is TUL's, the Icepi Zero board files
-are under the Solderpad Hardware Licence 2.1, the Cynthion board file is
+drawing and schematic are Digilent's, the RJ45 drawing is Bel's, the light
+pipe drawing is Bivar's, the PYNQ-Z2 model is TUL's, the Icepi Zero board
+files are under the Solderpad Hardware Licence 2.1, the Cynthion board file is
 Great Scott Gadgets' under the CERN-OHL-P v2, the ULX3S and ButterStick
 board files carry their makers' open hardware licences, and the Ultra96-V2
 drawing is Avnet's, republished by Linaro with the 96Boards Consumer Edition

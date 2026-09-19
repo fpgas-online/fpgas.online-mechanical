@@ -36,11 +36,13 @@ data:
 	$(EXTRACT) --with cadquery python fpga/extract.py
 	$(UV) python accessories/extract.py
 	$(UV) python tinytapeout/mounting_plate/design.py
+	$(EXTRACT) python fpga/light_pipe/design.py
 
-## diagrams: render every sheet as SVG, PDF and PNG, plus the plate cut file
+## diagrams: render every sheet as SVG, PDF and PNG, plus the cut files
 diagrams:
 	$(DRAW) python tools/generate_diagrams.py
 	$(UV) --with ezdxf python tinytapeout/mounting_plate/export_dxf.py
+	$(UV) --with cadquery python fpga/light_pipe/export_step.py
 	$(DRAW) python tools/update_readme.py
 	$(UV) python accessories/compare.py
 
@@ -48,16 +50,19 @@ diagrams:
 check: diagrams
 	$(DRAW) python tools/check_sheets.py
 	$(UV) python tinytapeout/mounting_plate/verify.py
+	$(UV) python fpga/light_pipe/verify.py
 	$(DRAW) python tools/check_balloons.py
 	$(UV) --with pillow python tools/check_leader_arrows.py
 	$(UV) --with pdfplumber --with pillow python tools/check_drill_template.py
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
 
 # Every output/ directory is build product: `make clean && make diagrams`
-# restores all 85 files, every one of them byte for byte, since
+# restores all 89 files, every one of them byte for byte, since
 # tools/reproducible.py pins the clocks and tool version strings the formats
 # would otherwise stamp in.  So remove them outright rather than picking off
-# extensions one at a time.
+# extensions one at a time -- and remove all of them: a directory left off
+# this list is a family whose output `make clean` quietly keeps.
 clean:
 	rm -rf accessories/output raspberry_pi/output fpga/output \
+	       fpga/light_pipe/output \
 	       tinytapeout/output tinytapeout/mounting_plate/output

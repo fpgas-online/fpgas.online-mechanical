@@ -91,7 +91,7 @@ def boxes(svg: str) -> list[tuple[float, float, float, float, str, float]]:
 
 LINE_RE = re.compile(
     r'<line x1="([-\d.]+)" y1="([-\d.]+)" x2="([-\d.]+)" y2="([-\d.]+)" '
-    r'stroke="([#\w]+)"')
+    r'stroke="([#\w]+)"([^>]*)>')
 
 #: Lines a label must not sit on.  Table rules and heading underlines are drawn
 #: deliberately close to their text, so only annotation and geometry lines are
@@ -99,11 +99,20 @@ LINE_RE = re.compile(
 CHECKED_STROKES = {style.C_DIM, style.C_HIGHLIGHT, style.C_PHANTOM,
                    style.C_COMPONENT}
 
+#: A centre line, which is the one black line this checks.  Black was left out
+#: above for the table rules, and that let every centre line through as well --
+#: which is wrong, because a centre line is annotation and is run past the part
+#: by eye, so it is exactly the kind of line that ends up ruled through a
+#: caption or a dimension's text.  It is told from a rule by its dash pattern:
+#: nothing else on a sheet is drawn with D_CENTRE.
+CENTRE_DASH = f'stroke-dasharray="{style.D_CENTRE}"'
+
 
 def lines(svg: str):
     for m in LINE_RE.finditer(svg):
         x1, y1, x2, y2 = (float(v) for v in m.groups()[:4])
-        if m.group(5) in CHECKED_STROKES:
+        if (m.group(5) in CHECKED_STROKES
+                or (m.group(5) == style.C_LINE and CENTRE_DASH in m.group(6))):
             yield x1, y1, x2, y2
 
 
@@ -302,10 +311,9 @@ def check_drawing_names() -> list[str]:
     165 mm wide whatever a family chooses to call its sheets, and the
     families with no rule are named for stems nobody is keeping short for
     this: ``FPGA-BUTTERSTICK`` is 34.33 mm of lettering at the ISO 3098
-    minimum, the widest of the twenty-one names in the set, and the FPGA
-    sheet waiting on another branch will be ``FPGA-ARTY-ETHERNET-LIGHT-PIPE``
-    at 58.03 mm.  All nineteen names on a sheet with a title block fit the
-    79.30 mm that cell leaves, and clear the 38.05 mm a quarter-width one
+    minimum, the widest name that comes from a stem; the light pipe's sheet,
+    which has a rule of its own, is ``FPGA-LP-ARTY`` at 24.97 mm.  Every
+    name on a sheet with a title block fits the 79.30 mm that cell leaves, and clear the 38.05 mm a quarter-width one
     would have left as well -- the closest by 3.72 mm, where before the
     mounting plate had a rule of its own the closest was 0.49 mm.
     ``Sheet._title_cell``
