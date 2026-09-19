@@ -140,3 +140,15 @@ checker that measures the finished PDFs rather than trusting them.
 - [ ] Measure how far in front of the demoboard's front edge the Raspmod's
       faces sit when mated: the plug pin length and the host socket depth
       are footprint figures, not measured ones
+
+## 12. Orange Pi PC  -- BLOCKED, no source
+- [x] Find what Shenzhen Xunlong publish: manual, schematic, datasheet, wiki,
+      product page, the old download host and the forum, all read
+- [ ] A sheet, once a dimension drawing exists. Everything Xunlong publish
+      about the board's mechanics is `Product Size 85mm×55mm`; there are no
+      mounting hole positions and no connector positions to draw, and none
+      are to be invented. SCRATCH.md records what was searched.
+- [ ] If one turns up: no Pmod HAT Adapter overlay and no `rpi_view_frame`
+      unless the source itself puts the 40-pin header in the Pi's position.
+      "Compatible with Raspberry Pi" in Xunlong's table is an electrical
+      claim, and the board is 55 mm deep where a Pi is 56.
