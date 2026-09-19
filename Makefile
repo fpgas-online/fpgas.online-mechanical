@@ -1,9 +1,9 @@
 # Regenerate everything from the sources.
 #
-# The repository groups by subject: tinytapeout/, raspberry_pi/, fpga/ and
-# accessories/ each own their data, their extractor and their sheets, the
-# mounting plate sits under tinytapeout/, and tools/ holds the machinery that
-# belongs to no subject.
+# The repository groups by subject: tinytapeout/, raspberry_pi/,
+# raspberry_pi_camera/, fpga/ and accessories/ each own their data, their
+# extractor and their sheets, the mounting plate sits under tinytapeout/, and
+# tools/ holds the machinery that belongs to no subject.
 #
 # The upstream inputs live under tmp/ and are not committed: run `make fetch`
 # once to get them, then `make` to rebuild the data and every drawing.
@@ -20,6 +20,7 @@ all: check
 ## fetch: download the upstream sources into tmp/ (needs network)
 fetch:
 	tools/fetch_raspberry_pi.sh
+	tools/fetch_raspberry_pi_camera.sh
 	@test -d tmp/src/tt-demo-pcb || git clone --quiet \
 		https://github.com/TinyTapeout/tt-demo-pcb tmp/src/tt-demo-pcb
 	@test -d tmp/src/tt123-demo-pcb || git clone --quiet \
@@ -33,6 +34,7 @@ fetch:
 data:
 	$(UV) python tinytapeout/extract.py
 	$(EXTRACT) python raspberry_pi/extract.py
+	$(UV) --with pdfplumber python raspberry_pi_camera/extract.py
 	$(EXTRACT) --with cadquery python fpga/extract.py
 	$(UV) python accessories/extract.py
 	$(UV) python tinytapeout/mounting_plate/design.py
@@ -57,12 +59,12 @@ check: diagrams
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
 
 # Every output/ directory is build product: `make clean && make diagrams`
-# restores all 89 files, every one of them byte for byte, since
+# restores all 96 files, every one of them byte for byte, since
 # tools/reproducible.py pins the clocks and tool version strings the formats
 # would otherwise stamp in.  So remove them outright rather than picking off
 # extensions one at a time -- and remove all of them: a directory left off
 # this list is a family whose output `make clean` quietly keeps.
 clean:
 	rm -rf accessories/output raspberry_pi/output fpga/output \
-	       fpga/light_pipe/output \
+	       fpga/light_pipe/output raspberry_pi_camera/output \
 	       tinytapeout/output tinytapeout/mounting_plate/output

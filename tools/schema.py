@@ -96,6 +96,7 @@ class Feature:
     ``switch``      a switch or DIP switch block
     ``header``      any other pin header
     ``connector``   any other connector
+    ``lens``        a lens and sensor module; its centre is the optical axis
     ``outline``     an informational body outline, not dimensioned
     """
 

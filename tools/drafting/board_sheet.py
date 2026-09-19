@@ -58,7 +58,7 @@ KIND_LABEL = {
 #
 # Both are floors, not answers.  Thirty millimetres on the chain's edge is
 # roughly what a chain whose labels all fit in one lane needs -- the Arty
-# A7's wants 30.33 -- and fifteen of the twenty board sheets
+# A7's wants 30.33 -- and fifteen of the twenty-two board sheets
 # `render_board` draws stagger a label into a second lane and want up to
 # 42.76.  They get it from the height the sheet has spare, half of which
 # falls on each side of a centred view; every sheet was measured and two came
@@ -221,6 +221,13 @@ def draw_feature(c: Canvas, view: View, f: Feature) -> None:
     if f.kind == "led":
         c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
                weight=0.05, colour=colour, fill=colour)
+    if f.kind == "lens":
+        # The one feature whose centre is the point of it.  A camera board is
+        # mounted to put the optical axis somewhere, and the housing outline
+        # alone leaves the reader to halve two ordinates to find it; the hole
+        # schedule marks every hole centre for the same reason.
+        cx, cy = view.pt(f.cx, f.cy)
+        dims.centre_mark(c, cx, cy, view.d(min(f.width, f.height)) / 4)
 
 
 def draw_pmod(c: Canvas, view: View, p, spec: BoardSpec) -> None:
@@ -960,16 +967,17 @@ def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
     A view is centred in what its margins leave, so half of whatever height
     the sheet has spare already falls on the chain's side of the board and
     pays for most of a staggered ordinate lane.  Every sheet here leans on
-    that: measured against `_chain_room`, seventeen of the twenty board
-    sheets `render_board` draws want more than `VIEW_MARGIN_BOTTOM` -- the
-    ULX3S, the Icepi Zero and the Pmod HAT Adapter, all at 19.83, do not --
-    and all but two are given it by the centring alone.
+    that: measured against `_chain_room`, seventeen of the twenty-two board
+    sheets `render_board` draws want more than `VIEW_MARGIN_BOTTOM` -- the two
+    camera sheets, the ULX3S, the Icepi Zero and the Pmod HAT Adapter, all at
+    19.83, do not -- and all but two are given it by the centring alone.
 
-    The twentieth is the M.2 HAT assembly, the only sheet whose chain depends
-    on `overlay_detail`: the Pi 5's own two values want 30.30 and the phantom
+    The M.2 HAT assembly is the only sheet whose chain depends on
+    `overlay_detail`: the Pi 5's own two values want 30.30 and the phantom
     part's four retention standoffs take it to 32.26, which staggers a label
     into a second lane.  The centring leaves it 34.84, so it is not short --
-    by 2.58 mm, the narrowest margin of any sheet that is not.
+    by 2.58 mm, and only the Ultra96-V2, whose chain wants 30.30 against the
+    32.50 it is left, comes closer.
 
     So nothing moves unless the centring leaves a sheet short.  When it does,
     the board is pushed away from the chain: the chain's margin is raised by
@@ -1090,6 +1098,16 @@ STANDARD_PCB_THICKNESS = (0.6, 0.8, 1.0, 1.2, 1.6, 2.0, 2.4)
 #: as that thickness.  The demo boards are all within 0.04 mm of 1.6.
 NOMINAL_THICKNESS_TOL = 0.05
 
+#: How far a part may reach past the board edge before the sheet calls it an
+#: overhang.  Equality was the test, and the Camera Module 3's connector
+#: cleared the edge by 0.001 mm -- its width is read from one elevation and
+#: its depth from another, so the two need not land on the same last digit --
+#: which printed an "assembled envelope" note giving the outline back.  The
+#: same figure as NOMINAL_THICKNESS_TOL, doing the same job: telling the last
+#: digit of a measurement from a real difference.  Every sheet that carries
+#: the note overhangs by 0.35 mm or more.
+ENVELOPE_TOL = 0.05
+
 
 def _nominal_thickness(o) -> float | None:
     """The finished thickness a board's stackup sum corresponds to, if any.
@@ -1116,7 +1134,12 @@ def _pcb_material(o) -> str:
     nominal = _nominal_thickness(o)
     if nominal is not None:
         return f"PCB, {nominal:.1f} nominal"
-    return f"PCB, {o.thickness:.3f} stackup sum"
+    # Not every thickness comes from a board file: the Camera Module 3 is
+    # dimensioned 1.12 on its own drawing, which is a finished thickness and
+    # not a stackup sum, and calling it one would be a claim about a source
+    # this function never sees.  No sheet reached this branch before that
+    # board arrived; every other thickness here is within 0.05 mm of 1.6.
+    return f"PCB, {o.thickness:.3f} as given"
 
 
 #: How tall one legend row is, and how long its line sample is.
@@ -1257,8 +1280,9 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         # prints the raw figure, and an unexplained number on a drawing is
         # worse than a line of prose.
         notes.append(
-            f"MATERIAL gives the KiCad stackup sum, {o.thickness:.3f} mm, "
-            "which is within 0.05 mm of no standard finished thickness.")
+            "MATERIAL gives the thickness the source states, "
+            f"{o.thickness:.3f} mm, which is within 0.05 mm of no standard "
+            "finished thickness.")
     fitted = [f for f in spec.features if is_fitted(f)]
     if spec.envelope_note:
         # A board whose envelope the computation below gets badly wrong states
@@ -1300,7 +1324,7 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         hy1 = max([o.height] + [f.y1 for f in fitted])
         x0, x1 = min([hx0] + extra_x), max([hx1] + extra_x)
         y0, y1 = min([hy0] + extra_y), max([hy1] + extra_y)
-        if (x0, y0, x1, y1) != (0.0, 0.0, o.width, o.height):
+        if max(-x0, -y0, x1 - o.width, y1 - o.height) > ENVELOPE_TOL:
             # What overhangs is not always a connector.  On the M.2 HAT
             # assembly the figure is set by the retention standoff's boss, and
             # a note that called that a connector would be describing the one
@@ -1678,12 +1702,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         # The corner radius callout is drawn above the board, five millimetres
         # off the top edge, and a chain on that edge puts its spacing
         # dimension six millimetres off the same edge.  The two would print on
-        # top of each other.  Not a hypothetical: fifteen of the twenty
-        # board sheets here have a corner radius -- only the Arty A7, the
-        # ULX3S, the PYNQ-Z2, the Zybo Z7 and the Ultra96-V2 do not -- and the
-        # Pi 5 sits one mounting hole away from a top chain at 4-3.  Loud
-        # rather than silent, because the drawing would still render and the
-        # collision is the sort a reader notices before a check does.
+        # top of each other.  Not a hypothetical: seventeen of the
+        # twenty-two board sheets here have a corner radius -- only the Arty
+        # A7, the ULX3S, the PYNQ-Z2, the Zybo Z7 and the Ultra96-V2 do not --
+        # and the Pi 5 sits one mounting hole away from a top chain at 4-3.
+        # Loud rather than silent, because the drawing would still render and
+        # the collision is the sort a reader notices before a check does.
         raise SystemExit(
             f"{spec.key}: the X ordinate chain wants the top edge, where the "
             f"R{o.corner_radius:.2f} corner callout is drawn, and the two "

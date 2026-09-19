@@ -53,6 +53,7 @@ from accessories.parts import (ACCESSORIES, PMOD_HAT,  # noqa: E402
 from accessories.raspmod import RASPMOD              # noqa: E402
 from fpga.boards import BOARDS as FPGA               # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI        # noqa: E402
+from raspberry_pi_camera.boards import BOARDS as RPICAM  # noqa: E402
 from tinytapeout.boards import BOARDS as TT          # noqa: E402
 from tools.drafting import rpi_compare_sheet         # noqa: E402
 
@@ -172,6 +173,8 @@ def main() -> int:
     sheets.append((f"raspberry-pi/{rpi_compare_sheet.STEM}",
                    partial(rpi_compare_sheet.render_rpi_comparison,
                            drawing_no="-", version="-")))
+    sheets += [(f"raspberry-pi-camera/{k}", board(v))
+               for k, v in RPICAM.items()]
     sheets += [(f"fpga/{k}", board(v)) for k, v in FPGA.items()]
     sheets.append(("accessories/pmod-hat", board(PMOD_HAT)))
     sheets += [(f"accessories/{k}", board(v)) for k, v in ACCESSORIES.items()

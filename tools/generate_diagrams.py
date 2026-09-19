@@ -33,6 +33,8 @@ from fpga.boards import FEATURE_NUMBERS as FPGA_NUMBERS  # noqa: E402
 from fpga.light_pipe.adapter import ADAPTER as LIGHT_PIPE  # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI_BOARDS  # noqa: E402
 from raspberry_pi.boards import FEATURE_NUMBERS as RPI_NUMBERS  # noqa: E402
+from raspberry_pi_camera.boards import (  # noqa: E402
+    BOARDS as RPICAM_BOARDS, FEATURE_NUMBERS as RPICAM_NUMBERS)
 from tinytapeout.boards import BOARDS as TT_BOARDS  # noqa: E402
 from tinytapeout.boards import FEATURE_NUMBERS as TT_NUMBERS  # noqa: E402
 from tools.drafting.board_sheet import (planned_band_height,  # noqa: E402
@@ -73,6 +75,10 @@ TT_BUNDLE = "tinytapeout-sheets.pdf"
 #: another.
 RPI_BUNDLE = "raspberry-pi-sheets.pdf"
 
+#: And the two camera sheets, which are a pair: the same board twice, with
+#: the lens module the only thing that moves between them.
+RPICAM_BUNDLE = "raspberry-pi-camera-sheets.pdf"
+
 #: And the FPGA development boards, with the light pipe adapter after them:
 #: it is a part for one of those boards, so a reader of the set meets the
 #: board first and the thing that clips onto it second.
@@ -85,6 +91,11 @@ FPGA_BUNDLE = "fpga-sheets.pdf"
 TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.1", "v1.2.2", "v1.2.3",
             "v2.0.1", "v2.1.0", "v2.1.2", "v3.2", "v3.3"]
 RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
+#: Oldest first, as the Pi sheets are.  Both camera boards are the same
+#: 25 x 23.862 mm outline on the same hole pattern, so the two sheets share
+#: one view frame and one notes band and the board holds still between them:
+#: what moves is the lens module, which is the whole point of the pair.
+RPICAM_ORDER = ["cm2", "cm3"]
 #: In the order they were asked for.  No shared frame: unlike the demo
 #: boards, which register on their Pmod hosts, and the Pis, which share an
 #: outline, these have nothing in common to hold still, so each sheet is
@@ -113,6 +124,14 @@ RPI_NOTES = (
     # a copied "0.75", so the two sheets cannot drift apart.
     "Pmod HAT Adapter host positions are DERIVED, good to about "
     f"+/-{PMOD_HAT_TOL} mm; drawing {PMOD_HAT_SHEET} has the derivation.",
+)
+
+#: Both camera sheets say which face is being looked at.  The generic note is
+#: "Viewed from the component side", which on a board with its lens on one
+#: face and its connector on the other leaves the reader to work out which
+#: side that is, and it is the side the light goes in.
+RPICAM_NOTES = (
+    "The component side is the lens side; the connector is on the far face.",
 )
 
 #: The M.2 HAT assembly sheet's own title and subtitle.  Named here rather
@@ -312,16 +331,25 @@ def _drawn_bbox(spec, overlay=None) -> tuple[float, float, float, float]:
     return min(xs), min(ys), max(xs), max(ys)
 
 
-def rpi_view_frame(specs, overlay) -> tuple[float, float, float, float]:
-    """One view frame for every Raspberry Pi sheet.
+def shared_view_frame(specs, overlay) -> tuple[float, float, float, float]:
+    """One view frame for a family whose boards share a coordinate system.
 
-    What the Tiny Tapeout set does for the Pmod hosts, this does for the
-    board: every Model B sized Pi is 85 x 56 with the same hole pattern and
-    the 40-pin header in the same place, so the sheets share one coordinate
-    frame already and need no offsets.  Each used to be fitted to its own
-    connectors, and the Pi 5's USB ports reach further than the Pi 3B's, so
-    the board itself moved between pages.  The union of what every sheet
-    draws, overlay included, holds it still.
+    What ``tt_view_frames`` does for the Pmod hosts, this does for the board
+    itself.  Where every member of a family is the same outline on the same
+    hole pattern the sheets already share a frame and need no offsets, so
+    the union of what they all draw -- overlay included -- is enough to hold
+    the board on the same point of every page.
+
+    Two families use it.  Every Model B sized Pi is 85 x 56 with the same
+    hole pattern and the 40-pin header in the same place; each sheet used to
+    be fitted to its own connectors, and the Pi 5's USB ports reach further
+    than the Pi 3B's, so the board itself moved between pages.  Both camera
+    boards are 25 x 23.862 on one hole pattern, and holding that still is the
+    point of drawing them as a pair: what moves between the two sheets is
+    the lens module.
+
+    It was ``rpi_view_frame`` while the Pi sheets were the only caller;
+    nothing in it was ever particular to a Raspberry Pi.
     """
     boxes = [_drawn_bbox(spec, overlay) for spec in specs]
     return (min(b[0] for b in boxes), min(b[1] for b in boxes),
@@ -442,6 +470,20 @@ def rpi_compare() -> tuple[str, Path, str]:
             f"{rpi_compare_sheet.SUBTITLE}")
 
 
+def rpicam_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
+    """The Raspberry Pi camera sheets: drawing name, path, spec.
+
+    A family of its own rather than two more Pi sheets: a 25 x 23.862 mm
+    camera shares nothing with an 85 x 56 mm Pi but the company that made it,
+    and the Pi sheets are drawn with the Pmod HAT Adapter overlaid on a frame
+    a 25 mm board would be lost in.
+    """
+    cam_dir = FAMILY_DIRS["raspberry-pi-camera"]
+    return [(drawing_name("raspberry-pi-camera", slug(key)),
+             cam_dir / f"{slug(key)}.svg", RPICAM_BOARDS[key])
+            for key in RPICAM_ORDER]
+
+
 def fpga_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
     """The FPGA development board sheets: drawing name, path, spec."""
     fpga_dir = FAMILY_DIRS["fpga"]
@@ -510,6 +552,8 @@ def bundles() -> list[Bundle]:
                  for name, path, spec in rpi_sheets()]
     _, compare_path, compare_label = rpi_compare()
     rpi_pages.append((compare_path.with_suffix(".pdf"), compare_label))
+    cam_pages = [(path.with_suffix(".pdf"), _label(name, spec))
+                 for name, path, spec in rpicam_sheets()]
     # The boards, then the light pipe: it is a part for one of them, so a
     # reader meets the board first and the thing that clips onto it second.
     fpga_pages = [(path.with_suffix(".pdf"), _label(name, spec))
@@ -521,6 +565,9 @@ def bundles() -> list[Bundle]:
                "Tiny Tapeout - mechanical drawings", tuple(tt_pages)),
         Bundle(FAMILY_DIRS["raspberry-pi"] / RPI_BUNDLE,
                "Raspberry Pi - mechanical drawings", tuple(rpi_pages)),
+        Bundle(FAMILY_DIRS["raspberry-pi-camera"] / RPICAM_BUNDLE,
+               "Raspberry Pi camera modules - mechanical drawings",
+               tuple(cam_pages)),
         Bundle(FAMILY_DIRS["fpga"] / FPGA_BUNDLE,
                "FPGA development boards - mechanical drawings",
                tuple(fpga_pages)),
@@ -585,7 +632,8 @@ def main() -> None:
 
     rpi_dir = FAMILY_DIRS["raspberry-pi"]
     rpi_dir.mkdir(parents=True, exist_ok=True)
-    rpi_frame = rpi_view_frame([RPI_BOARDS[k] for k in RPI_ORDER], PMOD_HAT)
+    rpi_frame = shared_view_frame(
+        [RPI_BOARDS[k] for k in RPI_ORDER], PMOD_HAT)
     # One band for the family, as for the Tiny Tapeout set: a taller notes
     # band on one sheet would shrink its view and drop its scale.
     rpi_band = max(planned_band_height(RPI_BOARDS[k], extra_notes=RPI_NOTES,
@@ -609,6 +657,23 @@ def main() -> None:
         drawing_no=compare_name, version=VERSION,
         view_bbox=rpi_frame, band_height=rpi_band)
     save(sheet, compare_path, f"{compare_name} ({rpi_compare_sheet.TITLE})")
+
+    cam_dir = FAMILY_DIRS["raspberry-pi-camera"]
+    cam_dir.mkdir(parents=True, exist_ok=True)
+    cam_specs = [RPICAM_BOARDS[k] for k in RPICAM_ORDER]
+    # One frame and one band for the two, for the reason RPICAM_ORDER gives:
+    # the two boards are the same outline on the same hole pattern, so the
+    # board holds still between the pages and what moves is the lens module.
+    cam_frame = shared_view_frame(cam_specs, None)
+    cam_band = max(planned_band_height(spec, extra_notes=RPICAM_NOTES,
+                                       view_bbox=cam_frame)
+                   for spec in cam_specs)
+    for name, path, spec in rpicam_sheets():
+        sheet = render_board(spec, drawing_no=name, version=VERSION,
+                             extra_notes=RPICAM_NOTES,
+                             family_numbers=RPICAM_NUMBERS,
+                             view_bbox=cam_frame, band_height=cam_band)
+        save(sheet, path, f"{name} ({spec.title})")
 
     fpga_dir = FAMILY_DIRS["fpga"]
     fpga_dir.mkdir(parents=True, exist_ok=True)
