@@ -212,3 +212,24 @@ checker that measures the finished PDFs rather than trusting them.
       `tinytapeout-sheets.pdf` rebuilt with it, so it is a change of its own.
       Cynthion states its own figure through `BoardSpec.envelope_note`
       meanwhile; that field should go when this is fixed.
+
+## 16. An Acorn in a PoE M.2 HAT on a Pi 5  -- DONE
+- [x] Identify the card: SQRL Acorn CLE-215+, M.2 2280 M-key, which is what
+      "Acorn" means at fpgas.online
+- [x] Identify the HAT: Waveshare PoE M.2 HAT+ **(B)**, the only one of their
+      three that takes a 2280 card
+- [x] Waveshare's dimension drawing transcribed as declared figures, and the
+      M.2 socket and standoffs recovered from it by photogrammetry, checked
+      three ways to 0.12 mm and a fourth, the board's corner, to 0.23
+- [x] Card outline from the PCI Express M.2 Specification's Type 2280, with
+      SQRL's own extra millimetre of width
+- [x] `overlay_detail`: an overlay's holes and bodies drawn in phantom, in
+      the view frame, the ordinate chain, the envelope note and their own
+      tables; off by default, so no existing sheet moves
+- [x] `ACC-HAT-M2POE`, the assembly sheet: the Pi 5 drawn, the HAT and
+      the card phantom
+- [ ] Heights. Nothing published gives the HAT's stack-up or the CLE-215+'s
+      heatsink, so the sheet is plan only and claims no Z at all. A measured
+      part would settle both
+- [ ] Check the derived socket footprint against a real board: it is the one
+      figure here quoted at +/-1 mm rather than +/-0.2

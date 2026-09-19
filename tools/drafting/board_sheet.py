@@ -58,7 +58,7 @@ KIND_LABEL = {
 #
 # Both are floors, not answers.  Thirty millimetres on the chain's edge is
 # roughly what a chain whose labels all fit in one lane needs -- the Arty
-# A7's wants 30.33 -- and fourteen of the nineteen board sheets
+# A7's wants 30.33 -- and fifteen of the twenty board sheets
 # `render_board` draws stagger a label into a second lane and want up to
 # 42.76.  They get it from the height the sheet has spare, half of which
 # falls on each side of a centred view; every sheet was measured and two came
@@ -419,7 +419,8 @@ CLEAN_SCORE = _RADII[-1] * 2.0 + 1.0
 TIP_PENALTY = 45.0
 
 
-def _ordinate_values(spec: BoardSpec, overlay: BoardSpec | None
+def _ordinate_values(spec: BoardSpec, overlay: BoardSpec | None,
+                     overlay_detail: bool = False
                      ) -> tuple[dict[float, float], dict[float, float]]:
     """The X and Y ordinate values, each with the feature it comes from.
 
@@ -450,6 +451,13 @@ def _ordinate_values(spec: BoardSpec, overlay: BoardSpec | None
     for h in spec.holes:
         note_x(h.x, h.y)
         note_y(h.y, h.x)
+    # A phantom part drawn in detail brings its own holes, and they are what
+    # the sheet is for: on the M.2 HAT assembly the four retention standoffs
+    # are the only thing that says where a card of each length ends.
+    if overlay is not None and overlay_detail:
+        for h in overlay.holes:
+            note_x(h.x, h.y)
+            note_y(h.y, h.x)
     for p in list(spec.pmods) + list(overlay.pmods if overlay else ()):
         # Hosts only.  The Raspmod's underside plugs sit 0.05 mm from its
         # hosts along the chain's axis, which is two witness lines printing
@@ -464,7 +472,8 @@ def _ordinate_values(spec: BoardSpec, overlay: BoardSpec | None
     return xvals, yvals
 
 
-def _x_chain_edge(spec: BoardSpec, overlay: BoardSpec | None) -> str:
+def _x_chain_edge(spec: BoardSpec, overlay: BoardSpec | None,
+                  overlay_detail: bool = False) -> str:
     """Which horizontal edge of the view the X ordinate chain belongs on.
 
     A witness line runs from the feature it locates out to the chain, so a
@@ -487,6 +496,16 @@ def _x_chain_edge(spec: BoardSpec, overlay: BoardSpec | None) -> str:
     is 4-3.  Of every sheet drawn here only the Arty moves, and it moves four
     votes to none.
 
+    A phantom part drawn in detail votes with its own holes, because those
+    are in the chain: ``_ordinate_values`` puts them there under the same
+    flag, and a chain deciding its edge from a subset of the features it
+    carries is the drift this rule exists to avoid.  The M.2 HAT assembly is
+    the only sheet that passes the flag and it does not move: the Pi 5's six
+    holes tie three above the midline and three below, which keeps the chain
+    underneath, and every hole the HAT adds is either on the card's axis, well
+    below the midline, or on the Pi's own mounting pattern, which is symmetric
+    about it -- so none of them can turn that tie.
+
     Only the horizontal chain is decided this way.  The vertical one has the
     same question to answer and nobody has asked it; deciding both at once
     would move the PYNQ-Z2's chain across the sheet for a complaint nobody has
@@ -503,6 +522,8 @@ def _x_chain_edge(spec: BoardSpec, overlay: BoardSpec | None) -> str:
     """
     height = spec.outline.height
     ys = [h.y for h in spec.holes]
+    if overlay is not None and overlay_detail:
+        ys += [h.y for h in overlay.holes]
     for p in list(spec.pmods) + list(overlay.pmods if overlay else ()):
         if p.role == "host" and p.edge in ("bottom", "top"):
             ys.append(p.cy)
@@ -867,7 +888,7 @@ def place_legend_and_notes(sheet: Sheet, entries, notes: list[str],
 
 
 def _chain_room(spec: BoardSpec, overlay: BoardSpec | None,
-                scale: float) -> float:
+                scale: float, overlay_detail: bool = False) -> float:
     """Room the dimensions on the chain's edge need, in sheet millimetres.
 
     Outboard of the lowest thing drawn come, in this order, one spacing
@@ -906,7 +927,7 @@ def _chain_room(spec: BoardSpec, overlay: BoardSpec | None,
         if along[1] - along[0] >= 0.01:
             horiz += 1
     step = 6.0 + style.T_DIM + 2.0
-    xvals, _ = _ordinate_values(spec, overlay)
+    xvals, _ = _ordinate_values(spec, overlay, overlay_detail)
     reach = dims.ordinate_reach(
         [(v * scale, f"{v:.2f}", f) for v, f in xvals.items()],
         0.0, zero_pos=0.0)
@@ -932,16 +953,23 @@ def _view_room_free_edge() -> float:
 def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
                   area_height: float, drawn_height: float, scale: float,
                   chain_edge: str = "bottom",
-                  shared_frame: bool = False) -> tuple[float, float]:
+                  shared_frame: bool = False,
+                  overlay_detail: bool = False) -> tuple[float, float]:
     """This sheet's top and bottom view margins, with the band already fixed.
 
     A view is centred in what its margins leave, so half of whatever height
     the sheet has spare already falls on the chain's side of the board and
     pays for most of a staggered ordinate lane.  Every sheet here leans on
-    that: measured against `_chain_room`, sixteen of the nineteen board
+    that: measured against `_chain_room`, seventeen of the twenty board
     sheets `render_board` draws want more than `VIEW_MARGIN_BOTTOM` -- the
     ULX3S, the Icepi Zero and the Pmod HAT Adapter, all at 19.83, do not --
     and all but two are given it by the centring alone.
+
+    The twentieth is the M.2 HAT assembly, the only sheet whose chain depends
+    on `overlay_detail`: the Pi 5's own two values want 30.30 and the phantom
+    part's four retention standoffs take it to 32.26, which staggers a label
+    into a second lane.  The centring leaves it 34.84, so it is not short --
+    by 2.58 mm, the narrowest margin of any sheet that is not.
 
     So nothing moves unless the centring leaves a sheet short.  When it does,
     the board is pushed away from the chain: the chain's margin is raised by
@@ -971,7 +999,7 @@ def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
     if shared_frame:
         return ((VIEW_MARGIN_BOTTOM, VIEW_MARGIN_TOP) if chain_edge == "top"
                 else (VIEW_MARGIN_TOP, VIEW_MARGIN_BOTTOM))
-    room = _chain_room(spec, overlay, scale)
+    room = _chain_room(spec, overlay, scale, overlay_detail)
     free = VIEW_MARGIN_TOP
     spare = area_height - free - drawn_height
     if 2 * room - spare > VIEW_MARGIN_BOTTOM:
@@ -981,8 +1009,28 @@ def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
     return (chain, free) if chain_edge == "top" else (free, chain)
 
 
+def _overlay_detail_extent(overlay: BoardSpec
+                           ) -> tuple[list[float], list[float]]:
+    """What a phantom part's own holes and bodies add to the view.
+
+    Only ever asked for when the caller has opted into drawing them, so a
+    sheet whose overlay is an outline and a row of connectors is unaffected.
+    """
+    xs: list[float] = []
+    ys: list[float] = []
+    for f in overlay.features:
+        xs += [f.x0, f.x1]
+        ys += [f.y0, f.y1]
+    for h in overlay.holes:
+        r = max(h.dia, h.keepout_dia or 0.0) / 2
+        xs += [h.x - r, h.x + r]
+        ys += [h.y - r, h.y + r]
+    return xs, ys
+
+
 def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None,
-                        view_bbox=None) -> float:
+                        view_bbox=None,
+                        overlay_detail: bool = False) -> float:
     """Vertical room the view and its dimensions want, in sheet millimetres.
 
     The two margins are added, so which of them the ordinate chain takes makes
@@ -1000,13 +1048,15 @@ def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None,
             ys += [p.body_y0, p.body_y1]
     if overlay is not None:
         ys += [0.0, overlay.outline.height]
+        if overlay_detail:
+            ys += _overlay_detail_extent(overlay)[1]
     return (max(ys) - min(ys)) + VIEW_MARGIN_TOP + VIEW_MARGIN_BOTTOM
 
 
 def planned_band_height(spec: BoardSpec, *, sheet_size: str = "A3",
                         extra_notes: tuple[str, ...] = (),
                         overlay: BoardSpec | None = None,
-                        view_bbox=None) -> float:
+                        view_bbox=None, overlay_detail: bool = False) -> float:
     """The notes band height render_board would choose for *spec*.
 
     Exposed so a caller drawing a family can give every sheet the same band.
@@ -1021,11 +1071,12 @@ def planned_band_height(spec: BoardSpec, *, sheet_size: str = "A3",
     family that comes to need it should take the largest of its members'
     margins, as it takes the tallest of their bands here.
     """
-    notes, src_lines = _sheet_text(spec, overlay, extra_notes)
+    notes, src_lines = _sheet_text(spec, overlay, extra_notes,
+                                   overlay_detail)
     return Sheet.plan_notes_band(
         sheet_size, note_blocks(notes, src_lines),
         max_height=style.SHEET_SIZES[sheet_size][1] - 2 * style.FRAME_MARGIN
-        - _view_height_needed(spec, overlay, view_bbox) - 6.0)[0]
+        - _view_height_needed(spec, overlay, view_bbox, overlay_detail) - 6.0)[0]
 
 
 #: Finished PCB thicknesses a fabricator actually offers.  A KiCad board file
@@ -1177,7 +1228,8 @@ def _join(items) -> str:
 
 
 def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
-                extra_notes: tuple[str, ...]) -> tuple[list[str], list[str]]:
+                extra_notes: tuple[str, ...],
+                overlay_detail: bool = False) -> tuple[list[str], list[str]]:
     """The notes and sources this sheet will carry."""
     o = spec.outline
     # Every note here is something the drawing cannot show.  Units are in the
@@ -1190,7 +1242,10 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
     if overlay is not None:
         notes.append(
             f"Phantom outline is the {overlay.title} fitted on the 40-pin "
-            "GPIO header; its mounting holes coincide with this board's.")
+            "GPIO header; its mounting holes coincide with this board's."
+            + (" Its own holes and bodies, and anything seated in them, are "
+               "phantom too and are scheduled under its name."
+               if overlay_detail else ""))
     if spec.kits:
         # Which product a board arrives in is how most people identify the one
         # on their desk.  Just the list: what a kit is belongs to the shop,
@@ -1225,13 +1280,37 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         # which is a change of its own and not one to slip in beside a new
         # board.  ``envelope_note`` is how the new board says the truth
         # meanwhile.
-        x0 = min([0.0] + [f.x0 for f in fitted])
-        x1 = max([o.width] + [f.x1 for f in fitted])
-        y0 = min([0.0] + [f.y0 for f in fitted])
-        y1 = max([o.height] + [f.y1 for f in fitted])
+        #
+        # A phantom part drawn in detail is part of the envelope too: on the
+        # M.2 HAT assembly the retention standoff's boss reaches further past
+        # the board edge than any connector on the Pi does, and a note that
+        # left it out would contradict the one beside it that gives it.
+        extra_x, extra_y = (_overlay_detail_extent(overlay)
+                            if overlay is not None and overlay_detail
+                            else ([], []))
+        # The board's own envelope first, then what the phantom part adds to
+        # it, so the two can be compared: the note's wording turns on whether
+        # a phantom value actually sets one of the four extremities, not on
+        # whether a phantom part is drawn that might.  An overlay drawn in
+        # detail entirely inside the board leaves a plain connector overhang
+        # figure, which is what it is.
+        hx0 = min([0.0] + [f.x0 for f in fitted])
+        hx1 = max([o.width] + [f.x1 for f in fitted])
+        hy0 = min([0.0] + [f.y0 for f in fitted])
+        hy1 = max([o.height] + [f.y1 for f in fitted])
+        x0, x1 = min([hx0] + extra_x), max([hx1] + extra_x)
+        y0, y1 = min([hy0] + extra_y), max([hy1] + extra_y)
         if (x0, y0, x1, y1) != (0.0, 0.0, o.width, o.height):
+            # What overhangs is not always a connector.  On the M.2 HAT
+            # assembly the figure is set by the retention standoff's boss, and
+            # a note that called that a connector would be describing the one
+            # part of the envelope it is not.
+            overhang = ("connector overhang included"
+                        if (x0, y0, x1, y1) == (hx0, hy0, hx1, hy1)
+                        else "every overhang drawn included, the phantom "
+                             "part's as well")
             notes.append(
-                "Assembled envelope, connector overhang included: "
+                f"Assembled envelope, {overhang}: "
                 f"{x1 - x0:.2f} x {y1 - y0:.2f} mm.")
     if o.profile_note:
         notes.append(o.profile_note)
@@ -1299,6 +1378,10 @@ def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
     Used to show where a Digilent Pmod HAT Adapter's host connectors land once
     it is plugged onto a Raspberry Pi.  Phantom line is the convention for a
     part that is not the subject of the drawing but constrains it.
+
+    The part's own holes and component bodies, if the sheet wants them, are
+    :func:`draw_overlay_detail`, which goes on after the board's own parts
+    rather than here.
     """
     outline_path(c, view, spec, colour=style.C_PHANTOM, w=style.W_PHANTOM,
                  dash=style.D_PHANTOM)
@@ -1337,6 +1420,77 @@ def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
         c.text(lx, ly, p.label, size=style.T_LABEL, colour=style.C_PHANTOM,
                anchor=anchor, baseline="middle" if p.edge in ("left", "right")
                else "alphabetic", bold=True)
+
+
+def draw_overlay_detail(c: Canvas, view: View, spec: BoardSpec,
+                        host: BoardSpec | None = None) -> None:
+    """An adjacent part's own holes and component bodies, in phantom.
+
+    For an overlay that is more than an outline and a row of connectors: the
+    M.2 HAT's retention standoffs and the card in its socket are the whole
+    point of that sheet, and drawing them in phantom is what says they belong
+    to the adjacent part and not to the board underneath.
+
+    Drawn AFTER the board's own features, unlike the overlay outline, which
+    goes on first.  The board's component bodies are filled, and the card runs
+    the length of the Pi and ends over the Ethernet jack: drawn before them,
+    the one thing this sheet exists to show -- where the card's far end and
+    its retention standoff land -- disappeared under the fill of the
+    connector it lands on.  The outline stays underneath, where it belongs:
+    it is the edge of the board this part is, not a thing on top of it.
+
+    A phantom hole that lands on one of *host*'s own holes is drawn once, by
+    the host.  The M.2 HAT bolts through the Pi's four mounting holes, so
+    drawing both gives a dashed circle a fortieth of a millimetre outside a
+    solid one, which reads as a defect rather than as a coincidence.
+    """
+    host_boxes = [(*view.pt(g.x0, g.y0), *view.pt(g.x1, g.y1))
+                  for g in (host.features if host else ())]
+    shared = [(h.x, h.y) for h in (host.holes if host else ())]
+    for hole in spec.holes:
+        if any(abs(hole.x - x) < 0.5 and abs(hole.y - y) < 0.5
+               for x, y in shared):
+            continue
+        px, py = view.pt(hole.x, hole.y)
+        if hole.keepout_dia:
+            c.circle(px, py, view.d(hole.keepout_dia / 2),
+                     w=style.W_PHANTOM, colour=style.C_PHANTOM,
+                     dash=style.D_PHANTOM)
+        c.circle(px, py, view.d(hole.dia / 2), w=style.W_PHANTOM,
+                 colour=style.C_PHANTOM, dash=style.D_PHANTOM)
+    for f in spec.features:
+        fx0, fy0 = view.pt(f.x0, f.y0)
+        fx1, fy1 = view.pt(f.x1, f.y1)
+        c.rect(min(fx0, fx1), min(fy0, fy1), abs(fx1 - fx0),
+               abs(fy1 - fy0), weight=style.W_PHANTOM,
+               colour=style.C_PHANTOM, dash=style.D_PHANTOM)
+        # Named inside its own outline, along the top edge, and only when the
+        # name fits between the sides of it and lands on clear paper.  A
+        # phantom body carries no balloon -- balloons belong to the subject of
+        # the drawing -- so without this the reader has only the schedule's
+        # extents to tell one dashed rectangle from another, and the card the
+        # whole sheet is about is the one that needs saying.  A body too
+        # narrow for its name, or one whose name would print across a part of
+        # the board underneath, keeps to the schedule: the card on the M.2 HAT
+        # is long enough to reach over the Pi's USB ports, and a label centred
+        # in it runs into them.
+        #
+        # The designator when there is one: a mark short enough for the view,
+        # with the full name kept for the schedule.  That is what a designator
+        # is for, and the card's full name is half as wide again as the clear
+        # paper inside its own outline.
+        text = f.designator or f.label
+        tw = style.text_width(text, style.T_LABEL)
+        tx0, tx1 = (fx0 + fx1) / 2 - tw / 2, (fx0 + fx1) / 2 + tw / 2
+        ty1 = max(fy0, fy1) - 1.4
+        ty0 = ty1 - style.T_LABEL
+        clear = all(
+            tx1 + 1.0 < min(gx0, gx1) or tx0 - 1.0 > max(gx0, gx1)
+            or ty1 + 1.0 < min(gy0, gy1) or ty0 - 1.0 > max(gy0, gy1)
+            for gx0, gy0, gx1, gy1 in host_boxes)
+        if tw < abs(fx1 - fx0) - 4.0 and clear:
+            c.text((fx0 + fx1) / 2, ty0, text, size=style.T_LABEL,
+                   colour=style.C_PHANTOM, anchor="middle")
 
 
 def _pin_row_centre_line(c: Canvas, view: View, group, edge: str,
@@ -1505,6 +1659,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                  overlay: BoardSpec | None = None,
                  view_bbox: tuple[float, float, float, float] | None = None,
                  band_height: float | None = None,
+                 overlay_detail: bool = False,
                  family_numbers: dict[int, str] | None = None) -> Sheet:
     """Build a complete drawing sheet for *spec* and return it.
 
@@ -1517,18 +1672,18 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # Which horizontal edge the dimensions take has to be settled before the
     # view is fitted, because it decides which margin is the deep one.  +1
     # means everything the chain brings with it stacks upwards.
-    chain_edge = _x_chain_edge(spec, overlay)
+    chain_edge = _x_chain_edge(spec, overlay, overlay_detail)
     x_out = 1.0 if chain_edge == "top" else -1.0
     if o.corner_radius and chain_edge == "top":
         # The corner radius callout is drawn above the board, five millimetres
         # off the top edge, and a chain on that edge puts its spacing
         # dimension six millimetres off the same edge.  The two would print on
-        # top of each other.  Not a hypothetical: fourteen of the eighteen
+        # top of each other.  Not a hypothetical: fifteen of the twenty
         # board sheets here have a corner radius -- only the Arty A7, the
-        # ULX3S, the PYNQ-Z2 and the Zybo Z7 do not -- and the Pi 5 sits one
-        # mounting hole away from a top chain at 4-3.  Loud rather than silent,
-        # because the drawing would still render and the collision is the sort
-        # a reader notices before a check does.
+        # ULX3S, the PYNQ-Z2, the Zybo Z7 and the Ultra96-V2 do not -- and the
+        # Pi 5 sits one mounting hole away from a top chain at 4-3.  Loud
+        # rather than silent, because the drawing would still render and the
+        # collision is the sort a reader notices before a check does.
         raise SystemExit(
             f"{spec.key}: the X ordinate chain wants the top edge, where the "
             f"R{o.corner_radius:.2f} corner callout is drawn, and the two "
@@ -1540,8 +1695,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # The notes are known before anything is drawn, and their height decides
     # how much of the sheet is left for the view, so they are built first and
     # the band is sized to them.
-    notes, src_lines = _sheet_text(spec, overlay, extra_notes)
-    view_needs = _view_height_needed(spec, overlay, view_bbox)
+    notes, src_lines = _sheet_text(spec, overlay, extra_notes,
+                                   overlay_detail)
+    view_needs = _view_height_needed(spec, overlay, view_bbox, overlay_detail)
     band_h, band_cols = Sheet.plan_notes_band(
         sheet_size, note_blocks(notes, src_lines),
         max_height=style.SHEET_SIZES[sheet_size][1] - 2 * style.FRAME_MARGIN
@@ -1591,6 +1747,10 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         for p in overlay.pmods:
             xs += [p.cx - p.pin_span / 2 - 2, p.cx + p.pin_span / 2 + 2]
             ys += [p.cy - p.pin_span / 2 - 2, p.cy + p.pin_span / 2 + 2]
+        if overlay_detail:
+            dxs, dys = _overlay_detail_extent(overlay)
+            xs += dxs
+            ys += dys
     bbox = (min(xs), min(ys), max(xs), max(ys))
     if view_bbox is not None:
         # The caller's frame has to cover this board as well, or the board
@@ -1633,7 +1793,8 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # scale label is carried over rather than recomputed from the figure.
     bias_top, bias_bottom = _view_margins(
         spec, overlay, sheet.area.h, (bbox[3] - bbox[1]) * view.scale,
-        view.scale, chain_edge, shared_frame=view_bbox is not None)
+        view.scale, chain_edge, shared_frame=view_bbox is not None,
+        overlay_detail=overlay_detail)
     # Either margin may be the one that moved: a sheet can want the free
     # edge's give without wanting the chain's margin raised past its floor.
     if (bias_top, bias_bottom) != (m_top, m_bottom):
@@ -1652,6 +1813,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         draw_overlay(c, view, overlay)
     for f in spec.features:
         draw_feature(c, view, f)
+    # After the board's own features, which are filled: see draw_overlay_detail.
+    if overlay is not None and overlay_detail:
+        draw_overlay_detail(c, view, overlay, spec)
     for p in spec.pmods:
         draw_pmod(c, view, p, spec)
     outline_path(c, view, spec)
@@ -1744,6 +1908,14 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
             else:
                 obstacles.add_rect(mx - lw / 2, ly1, mx + lw / 2,
                                    ly1 + lh + 3.0, pad=1.0, weight=HARD)
+    if overlay is not None and overlay_detail:
+        # The phantom part's own holes, the same way the board's own are
+        # treated.  Its bodies are handled below with the board outline
+        # instead: they are regions, not solid parts of this board.
+        for h in overlay.holes:
+            obstacles.add_circle(*view.pt(h.x, h.y),
+                                 view.d(max(h.dia, h.keepout_dia or 0) / 2)
+                                 + 1.0)
     for h in spec.holes:
         obstacles.add_circle(*view.pt(h.x, h.y),
                              view.d(max(h.dia, h.keepout_dia or 0) / 2) + 1.0)
@@ -1754,6 +1926,19 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     edge_only = Obstacles()
     reserve_overall_dimensions(sheet, view, spec, board, obstacles,
                                edge_only, chain_edge)
+    # A phantom part's bodies get the same treatment as the board outline,
+    # and for the same reason.  The M.2 card is a region eighty millimetres
+    # long drawn in phantom, not a solid part of this board: a balloon parked
+    # across its edge breaks that line the way one across the board edge
+    # breaks the outline, while a balloon inside it, or a leader crossing it
+    # to reach a connector underneath, is ordinary.  Treated as a filled
+    # rectangle instead, the card would forbid two thirds of the board.
+    if overlay is not None and overlay_detail:
+        for f in overlay.features:
+            corners = [view.pt(f.x0, f.y0), view.pt(f.x1, f.y0),
+                       view.pt(f.x1, f.y1), view.pt(f.x0, f.y1)]
+            for a, b in zip(corners, corners[1:] + corners[:1]):
+                edge_only.add_segment(*a, *b, weight=HARD)
 
     # The ordinate witness lines are drawn after the balloons but stand in
     # their way all the same: a balloon sitting on one reads as though it
@@ -1764,7 +1949,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # ordinary.  Charged to the leader as well, they cost more to cross than a
     # feature costs to sit on, and on the Pi 3A+ a balloon chose to cover a
     # neighbouring connector rather than cross the witness line beside it.
-    xvals, yvals = _ordinate_values(spec, overlay)
+    xvals, yvals = _ordinate_values(spec, overlay, overlay_detail)
     witness_end = (balloon_bounds.y1 if chain_edge == "top"
                    else balloon_bounds.y)
     for v, f in xvals.items():
@@ -1986,6 +2171,33 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                     ["PORT", "EDGE", "CX mm", "CY mm", "PIN1 X mm",
                      "PIN1 Y mm"], rows,
                     ["start", "start", "end", "end", "end", "end"])
+
+    if overlay is not None and overlay_detail:
+        # The phantom part's own schedules.  Its holes and its bodies are
+        # drawn on the view but carry no balloons -- balloons belong to the
+        # subject of the drawing -- so these tables are the only place their
+        # numbers can be read.  Headed with the part's own name, not with the
+        # word "phantom": a table of holes called 2230 to 2280 says nothing
+        # about whose standoffs they are, and a reader who has not got to the
+        # notes yet will take any unattributed schedule for the board's.
+        if overlay.holes:
+            rows = [[h.label or f"H{i}", f"{h.x:.2f}", f"{h.y:.2f}",
+                     f"{h.dia:.2f}",
+                     f"{h.keepout_dia:.2f}" if h.keepout_dia else "not given"]
+                    for i, h in enumerate(overlay.holes, 1)]
+            head = f"{overlay.title.upper()}: HOLES"
+            block = sheet.column_block(sheet.table_height(head, len(rows)))
+            sheet.table(block, head,
+                        ["ID", "X mm", "Y mm", "DIA mm", "BOSS mm"], rows,
+                        ["start", "end", "end", "end", "end"])
+        if overlay.features:
+            rows = [[f.label, f"{f.x0:.2f} to {f.x1:.2f}",
+                     f"{f.y0:.2f} to {f.y1:.2f}"] for f in overlay.features]
+            head = f"{overlay.title.upper()}: BODIES"
+            block = sheet.column_block(sheet.table_height(head, len(rows)))
+            sheet.table(block, head,
+                        ["ITEM", "X EXTENT mm", "Y EXTENT mm"], rows,
+                        ["start", "end", "end"])
 
     place_legend_and_notes(sheet, _legend_entries(spec, overlay), notes,
                            src_lines, band_cols, spec.key)
