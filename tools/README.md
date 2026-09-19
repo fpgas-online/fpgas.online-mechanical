@@ -16,7 +16,7 @@ Imported, not run.
 |---|---|
 | [`drafting/`](drafting/README.md) | The 2D drawing library: turns a `BoardSpec` into an ISO-style sheet |
 | `schema.py` | `BoardSpec`, `Outline`, `Hole`, `Slot`, `Pmod`, `Feature`, `Source` |
-| `layout.py` | Where the sheets are, what file each is written to and what each is called: one answer, so nothing can disagree about the set, a file stem or a drawing name. A name is the stem in capitals behind the family prefix, unless the family has a rule in `FAMILY_NAME_RULES` that cuts it shorter, which the demo boards and the accessories do |
+| `layout.py` | Where the sheets and the bound copies are, what file each sheet is written to and what each is called: one answer, so nothing can disagree about the set, a file stem or a drawing name. A name is the stem in capitals behind the family prefix, unless the family has a rule in `FAMILY_NAME_RULES` that cuts it shorter, which the demo boards and the accessories do. Not what goes *into* a bound copy: that page list is `generate_diagrams.bundles()`, one answer for the same reason |
 | `kicad_pcb.py` | Minimal reader for KiCad `.kicad_pcb` s-expression files |
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
@@ -29,7 +29,7 @@ Imported, not run.
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's mechanical drawings into `tmp/` |
 | `fetch_fpga.sh` | Clones the ULX3S and ButterStick repositories and downloads the Arty A7 drawing and the PYNQ-Z2 model into `tmp/` |
-| `generate_diagrams.py` | Renders every sheet as SVG, then PDF, PNG and preview |
+| `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the three A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
 
 The extractors are not here. Each lives with its subject:
@@ -87,10 +87,20 @@ and lives with it.
   had been committed. The comparison is byte for byte, which it can be because
   `reproducible.py` makes rendering reproducible; it used to compare only page
   content streams, because cairo stamped a clock into every file it wrote.
-  It reads the bound copies too: every page of a bundle has to be a committed
-  sheet, matched on its content stream, and every bookmark has to open with
-  that sheet's drawing name. Until then nothing checked a bundle at all, and
-  the only evidence one was what it claimed was a manual rebuild.
+
+  It then walks the three bound copies, which have no SVG and so cannot be
+  checked by re-rendering anything. Each is held against the page list
+  `generate_diagrams.bundles()` defines -- imported, not retyped, so the two
+  cannot drift -- page by page on the content stream and on the page size,
+  then on its bookmark labels, which open with the drawing names, on the page
+  each bookmark opens, and on its pinned Info dictionary. A bound copy left
+  in an output directory that the generator does not bind is reported as
+  well. Until this nothing read a bundle at all and the only evidence one was
+  what it claimed was a manual rebuild: one went out holding three pages
+  re-rendered at a VERSION stamp no committed sheet carried, the set was
+  green, the bundle was a PDF like any other, and only a reviewer hashing
+  content streams by hand could see it. Fed such a bundle this names the
+  page, the sheet it should have been, and both hashes.
 
 - **`crosscheck_gerber.py`** compares an extracted board outline against the
   upstream Edge_Cuts gerber, which KiCad's own plotter produced from the same

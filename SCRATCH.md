@@ -1600,3 +1600,123 @@ gains the third rule), `tinytapeout/mounting_plate/README.md`, `TODO.md`
 section 7, the docstrings in `layout.py`, `check_sheets.py`, `sheet.py` and
 `template_sheet.py`. The README grids are regenerated. The entries above keep
 the names the sheets carried when they were written.
+
+## The bound copies were outside the net
+
+`check_pdfs.py` walked every committed sheet and said nothing at all about
+the three bound copies. That is not an oversight anyone would spot from the
+outside, because the walk is over the SVGs: it finds a sheet, renders it, and
+compares. A bundle has no SVG. It is the one output in an `output/` directory
+with no drawing of its own, so there was nothing for the walk to find it by,
+and the check's own summary line -- "N problems across N PDFs" -- counted
+the sheets and read as though it had covered everything.
+
+What that cost was a bound copy shipped with three pages re-rendered at a
+VERSION stamp no committed sheet carried. The set was green. The bundle was a
+PDF of the right size with the right bookmarks, and page 1 is an A3 drawing
+whether it is this week's or last week's; the stamp is 3.4 mm of text in the
+title block. It was caught by a reviewer extracting content streams and
+hashing them by hand, which is not a thing to rely on twice.
+
+So a bundle is now checked against what it claims to be. Page for page, the
+bound page's content stream against the staged sheet PDF's -- the content
+stream rather than the file, because the same drawing bound into a document
+is renumbered and recompressed and only the operators survive intact -- and
+the page's MediaBox against the sheet's, because a drawing can come through
+whole on a page of the wrong size, which is the same lie as a sheet that does
+not print 1:1. Then the page count, the bookmark labels in order and the page
+each bookmark actually opens, and an Info dictionary whose key set is exactly
+`/Producer`, `/Title` and `/CreationDate`, so that a `/ModDate` or somebody's
+`/Creator` is noticed rather than ignored.
+
+One line per defect, not per page it shows up on. A swapped pair of bookmarks
+is one mistake, and reporting it as five problems would make the count at the
+foot of the run mean nothing, which is what the count meant before any of
+this.
+
+The page list had to come from somewhere, and the only place it existed was
+inside `generate_diagrams.main()`, as lists accumulated while the sheets were
+being rendered -- which meant the one way to learn what belonged in a bundle
+was to render the whole set again. Retyping it into the check would have given
+the two copies room to drift apart, which is the same shape of bug one level
+up. So the bundle definitions moved out into `bundles()`, with
+`tt_board_sheets()`, `rpi_sheets()`, `fpga_sheets()` and `plate_sheets()`
+under it naming each family's sheets, their drawing names and their paths.
+Data only; nothing in there renders or binds, and the check imports it.
+
+`main()` now draws from those same functions rather than building its lists
+as it goes, so a sheet's name and the file it is written to are stated once.
+Two things confirm the refactor changed nothing: `--no-raster` writes all 21
+SVGs with exactly one line different in each, and that line is the title
+block's VERSION stamp, which any source commit moves -- the `+` for an
+uncommitted working tree, a new describe hash once the commit lands -- and
+rebinding all three bundles from `bundles()` over the committed sheet PDFs
+gives the committed bundles back byte for byte.
+
+Proved the other way as well, before trusting it. A bad bundle was built
+under `tmp/`: `rpi3b.svg` taken from the index, its stamp changed to
+`v0.0-9-gdeadbee`, rendered, and bound in front of the committed Pi 4B and
+Pi 5 sheets with the real labels and title, so that the only thing wrong with
+it was the thing that actually went wrong. One problem, naming the page, the
+sheet it should have been and both hashes. Binding that same stale page and
+then dropping the Pi 5 sheet gives three: the page count, the stale page, and
+a bookmark list two entries long for three pages.
+
+**Where this met the naming change.** #30 landed under this branch and had
+written a bound-copy check of its own: the same gap, found from the other
+side. The two are one check now, taking the stronger half of each. The page
+list is this branch's, `generate_diagrams.bundles()`, so a page is compared
+against the sheet that *belongs* in that position rather than against any
+sheet in the index, and with it come the MediaBox, the bookmark labels in
+order, the page each bookmark opens and the Info key set. From #30 comes
+`content_stream()`, which hands back `b""` for a page with nothing on it and
+never matches on it: pypdf's `ContentStream` is a dict subclass and an empty
+one is falsy, so a comparison written the obvious way would find two empty
+streams equal and pass having compared nothing. #30's other rule, that a
+bookmark opens with its page's drawing name, is inside the labels already,
+because the generator builds every label from that name.
+
+#30's `tools.layout.bundles()` is kept, doing the one thing the generator's
+list cannot: it finds the bound copies the way a bundle is defined, a PDF in
+an output directory with no SVG beside it, so a bundle that is committed and
+that the generator does not bind is reported rather than never looked at.
+
+The proof was run again on the check as it now stands, against the committed
+set:
+
+- bound correctly from the committed sheet PDFs: 0 problems. All three
+  bundles rebuilt that way are byte for byte the committed ones, at 3035895,
+  1302973 and 1544306 bytes, which is the refactor's own receipt as well.
+- page 1's content stream lengthened by nine bytes: 1 problem, naming the
+  page, the sheet it should have been, both lengths and both hashes.
+- bookmark 1 left reading `FPGA-01  Digilent Arty A7  -  A7-35T and
+  A7-100T`: 1 problem, quoting what it reads and what it should.
+- the ButterStick page dropped: 2 problems, the page count and a bookmark
+  list three entries long for four pages.
+- page 1 replaced by a blank page: 1 problem, page 1 has no content stream
+  to compare against `fpga/output/arty-a7.pdf`. That is #30's guard, on this
+  branch's comparison, catching the case neither branch's check would have
+  reported as anything worse than agreement.
+
+**Three things the review found.** A missing Info key was counted twice: once
+by the key-set line and again by the value comparison beneath it, reading
+`/Title is None, not ...`. That is the one-line-per-defect rule broken by the
+check that wrote it, and `meta.get` is how -- an absent key and a wrong value
+look the same through it. The value comparisons ask only whether what is
+*there* is right; an absent one is the key-set line's to report, and a bundle
+with no `/Title` is 1 problem where it was 2.
+
+`unbound_copies` called a stray it had found on disk "committed", but
+`tools.layout.bundles()` globs the working tree, where a PDF may be nothing
+but litter the next `make clean` takes away. It reports only what is in the
+index as well now, like every other line in the file, so an untracked stray
+is silent and a staged one is named. The gap that leaves -- a bundle deleted
+from the working tree but still staged -- is in neither list and is what `git
+status` is for; that is said in the docstring rather than left to be found.
+
+And a truncated or empty bundle raised out of `PdfReader` before any of this
+ran, so `make check` stack-traced: no problem count, and nothing said about
+the two bundles after it. Reading a file that is not a PDF is exactly what
+this check is for, so it is one problem now, quoting the size and what pypdf
+said -- 4096 bytes of a real bundle gives `PdfStreamError: Stream has ended
+unexpectedly`, and an empty file `EmptyFileError`.

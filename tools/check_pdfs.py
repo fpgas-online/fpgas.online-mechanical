@@ -18,11 +18,15 @@ committed, and none of them is obvious by looking:
 * the page is the size the drawing says it is, and carries no font.  Inkscape
   is asked for text as paths, so a print shop with no DejaVu installed still
   gets the right lettering rather than a substituted face at the wrong width;
-* every bound copy really is the committed sheets, page for page, and every
-  page carries a bookmark naming the drawing on it.  A bundle is the copy
+* every bound copy really is the committed sheets, in the generator's own
+  order, page for page and bookmark for bookmark.  A bundle is the copy
   people mail and print whole, and it is bound from the sheet PDFs rather
   than re-rendered precisely so that it cannot say something different --
-  which is only worth anything if somebody checks.
+  which is only worth anything if somebody checks.  There is nothing to
+  re-render it from, so it is held against ``generate_diagrams.bundles()``
+  instead: the page list that bound it.  A bound copy that went out three
+  pages behind the set looks exactly like a correct one from the outside,
+  and one did.
 
 
 Run: uv run --no-project --with pypdf --with pillow python tools/check_pdfs.py
@@ -30,6 +34,7 @@ Run: uv run --no-project --with pypdf --with pillow python tools/check_pdfs.py
 
 from __future__ import annotations
 
+import hashlib
 import io
 import re
 import shutil
@@ -42,8 +47,12 @@ from pypdf import PdfReader
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tools.layout import FAMILY_DIRS, bundles, drawing_name_for, rel  # noqa: E402
+from tools.generate_diagrams import Bundle, bundles  # noqa: E402
+from tools.layout import FAMILY_DIRS, rel  # noqa: E402
+from tools.layout import bundles as bundle_files  # noqa: E402
 from tools.render_svg import to_pdf  # noqa: E402
+from tools.reproducible import (BUNDLE_PRODUCER,  # noqa: E402
+                                PDF_CREATION_DATE)
 
 WORK = ROOT / "tmp" / "check-pdfs"
 PT = 25.4 / 72.0
@@ -122,61 +131,227 @@ def check(svg_path: str) -> list[str]:
     return bad
 
 
+def first_page(data: bytes):
+    """Page one of a PDF held in memory.  A sheet PDF has no other."""
+    return PdfReader(io.BytesIO(data)).pages[0]
+
+
 def content_stream(page) -> bytes:
     """The page's drawing instructions, with the file's furniture left out.
 
+    The operators that put every line and every glyph outline on the page.
+    Two PDFs of the same sheet differ in their object numbering, their
+    compression and their Info dictionary and agree here, which is why this
+    is what a bound page is compared on rather than the file's bytes.
+
     Empty for a page with no content at all, which is a thing to report and
     never a thing to match on: an empty stream on both sides of a comparison
-    is two files agreeing about nothing.  So it is never indexed, and a bundle
-    page that yields one is a problem in its own right.
+    is two files agreeing about nothing.  pypdf's ContentStream is a dict
+    subclass and an empty one is falsy, so the trap is one keystroke away.
     """
     contents = page.get_contents()
     return contents.get_data() if contents is not None else b""
 
 
-def check_bundle(path: str, by_stream: dict[bytes, tuple[str, str]]) -> list[str]:
-    """One bound copy: the committed sheets, in order, bookmarked by name.
+def digest(data: bytes) -> str:
+    """Enough of a SHA-256 to quote in a report and to check by hand."""
+    return hashlib.sha256(data).hexdigest()[:12]
 
-    Page identity is the content stream, which is the drawing itself: the
-    surrounding Info dictionary differs between a sheet and a bundle by
-    design, since pypdf bound the one and cairo drew the other.  Matching on
-    it proves the bundle was assembled from the PDFs in the index rather than
-    re-rendered, and it names the sheet each page came from, which is what
-    the bookmark is then held to.
+
+def outline_items(items) -> list:
+    """Every bookmark, in reading order, flattened.
+
+    ``combine_pdfs`` writes one flat entry per page, but pypdf hands back
+    nested lists for a document with sub-entries, and a bundle that had grown
+    them should still be read rather than crash.
     """
-    data = blob(path)
-    if data is None:
-        return ["not staged"]
-    reader = PdfReader(io.BytesIO(data))
-    bad: list[str] = []
-    pages: list[tuple[str, str] | None] = []
-    for i, page in enumerate(reader.pages, 1):
-        stream = content_stream(page)
-        if not stream:
-            bad.append(f"page {i} has no content stream to compare")
-            pages.append(None)
-            continue
-        hit = by_stream.get(stream)
-        if hit is None:
-            bad.append(f"page {i} is not any sheet in the index; it was not "
-                       "bound from the committed PDFs")
-        pages.append(hit)
+    out: list = []
+    for item in items:
+        if isinstance(item, list):
+            out.extend(outline_items(item))
+        else:
+            out.append(item)
+    return out
 
-    entries = [e for e in (reader.outline or []) if not isinstance(e, list)]
-    if len(entries) != len(pages):
-        bad.append(f"{len(pages)} page(s) but {len(entries)} bookmark(s); "
-                   "every page of a bound copy gets one")
-    for entry in entries:
-        n = reader.get_destination_page_number(entry)
-        hit = pages[n] if 0 <= n < len(pages) else None
-        if hit is None:
+
+def box(page) -> tuple[float, float, float, float]:
+    """A page's MediaBox, in millimetres: left, bottom, right, top.
+
+    Plain floats in the sheets' own unit, so that the two boxes can be
+    compared and, when they differ, quoted in the unit the drawing is
+    dimensioned in rather than in points.
+    """
+    b = page.mediabox
+    return tuple(round(float(v) * PT, 4)
+                 for v in (b.left, b.bottom, b.right, b.top))
+
+
+def check_bundle(bundle: Bundle, data: bytes | None = None) -> list[str]:
+    """Is this bound copy the staged sheets, in the generator's order?
+
+    *data* defaults to the bundle's own staged bytes, read from the index for
+    the reason ``blob`` gives; it is a parameter so that a candidate bundle
+    can be checked before anyone stages it, which is how the check itself was
+    proved against a deliberately stale one.
+
+    The page count, then each page against the sheet it should be -- its
+    drawing and its page size -- then the bookmarks, by label and by the page
+    each opens, then the metadata.  The second is the point.  A bound copy is
+    not rendered from anything, so `make diagrams` writing it is not evidence
+    that the pages in it are the sheets committed beside it: bind the set,
+    change a drawing, rebuild three sheets and stage everything, and the
+    bundle holds three pages of one version and the rest of another.  Nothing
+    in the file says so.  Comparing each bound page's content stream against
+    the staged sheet's says so in one line.
+
+    The bookmark labels are the generator's, which open with the drawing name
+    because that is how the generator writes them, so a bundle whose pages
+    are right and whose outline names the wrong drawings is caught by the
+    same comparison.
+
+    One line per defect, not per page it shows up on: a swapped pair of
+    bookmarks is one mistake, and reporting it as five problems makes the
+    count at the foot of the run mean nothing.
+    """
+    if data is None:
+        data = blob(rel(bundle.path))
+        if data is None:
+            return [f"no {bundle.path.name} staged; the generator binds one"]
+
+    bad: list[str] = []
+    # A bundle truncated, emptied or half-written is exactly the kind of
+    # thing this check exists to find, and pypdf answers it by raising --
+    # EmptyFileError, PdfStreamError, PdfReadError, and whatever it adds
+    # next.  Caught as one problem, because a run that stack-traces reports
+    # nothing about the other bundles and counts nothing at the foot.
+    try:
+        reader = PdfReader(io.BytesIO(data))
+    except Exception as exc:
+        return [f"{bundle.path.name} is {len(data)} bytes that pypdf "
+                f"cannot read as a PDF ({type(exc).__name__}: {exc}); it is "
+                "not a bound copy at all -- rebind with make diagrams and "
+                "stage it"]
+
+    if len(reader.pages) != len(bundle.pages):
+        bad.append(f"{len(reader.pages)} pages, but the generator binds "
+                   f"{len(bundle.pages)} sheets into it")
+
+    for n, (pdf, label) in enumerate(bundle.pages, 1):
+        if n > len(reader.pages):
+            break
+        sheet = blob(rel(pdf))
+        if sheet is None:
+            bad.append(f"page {n} should be {rel(pdf)}, which is not staged")
             continue
-        sheet, name = hit
-        title = str(entry.title)
-        if not title.startswith(f"{name} "):
-            bad.append(f"page {n + 1} is {sheet}, so its bookmark should open "
-                       f"with the drawing name {name}; it reads {title!r}")
+        bound, want_page = reader.pages[n - 1], first_page(sheet)
+        got, want = content_stream(bound), content_stream(want_page)
+        if not got:
+            bad.append(f"page {n} has no content stream, so there is nothing "
+                       f"to compare against {rel(pdf)}")
+        elif not want:
+            bad.append(f"{rel(pdf)} has no content stream, so page {n} "
+                       "cannot be matched against it")
+        elif got != want:
+            bad.append(
+                f"page {n} is not the staged {rel(pdf)}: the bound page's "
+                f"content stream is {len(got)} bytes, sha {digest(got)}, and "
+                f"the sheet's is {len(want)} bytes, sha {digest(want)}; "
+                "rebind with make diagrams and stage the bundle")
+        # The drawing can come through intact on a page of the wrong size,
+        # which is the same lie as a sheet PDF that does not print 1:1 --
+        # checked above for the sheets, and binding is another chance at it.
+        got_box, want_box = box(bound), box(want_page)
+        if got_box != want_box:
+            bad.append(f"page {n} has MediaBox {got_box} mm and "
+                       f"{rel(pdf)} has {want_box} mm, so the bound page "
+                       "would not print at the size the sheet does")
+
+    entries = outline_items(reader.outline)
+    titles = [str(item.title) for item in entries]
+    want_titles = [label for _, label in bundle.pages]
+    if titles != want_titles:
+        detail = [f"bookmark {n} reads {got!r}, not {want!r}"
+                  for n, (got, want) in enumerate(zip(titles, want_titles), 1)
+                  if got != want]
+        if len(titles) != len(want_titles):
+            detail.insert(0, f"{len(titles)} entries for "
+                             f"{len(want_titles)} pages")
+        bad.append("the bookmarks are not the sheets' labels in order: "
+                   + "; ".join(detail))
+
+    # A label is only half a bookmark.  pypdf writes the destination
+    # separately, and an outline whose entries all read correctly but open
+    # the wrong pages is a document that cannot be navigated at all.
+    astray = []
+    for n, item in enumerate(entries, 1):
+        try:
+            landed = reader.get_destination_page_number(item)
+        except Exception:  # a destination pypdf cannot resolve at all
+            landed = None
+        if landed != n - 1:
+            where = "no page" if landed is None or landed < 0 else \
+                f"page {landed + 1}"
+            astray.append(f"bookmark {n} opens {where}")
+    if astray:
+        bad.append("a bookmark does not open its own page: "
+                   + "; ".join(astray))
+
+    meta = dict(reader.metadata or {})
+    # The whole key set, not four lookups: an Info dictionary that has picked
+    # up a /ModDate or a /Producer's worth of somebody's tooling is a file
+    # that will not reproduce, and naming only the keys expected here is how
+    # a new one gets noticed instead of ignored.
+    want_keys = {"/Producer", "/Title", "/CreationDate"}
+    extra = sorted(set(meta) - want_keys)
+    missing = sorted(want_keys - set(meta))
+    if extra or missing:
+        said = ([f"carries {', '.join(extra)}"] if extra else []) + \
+               ([f"is missing {', '.join(missing)}"] if missing else [])
+        bad.append(
+            "the Info dictionary " + " and ".join(said) + "; a bound copy "
+            f"has {', '.join(sorted(want_keys))} and nothing else -- no "
+            "/Creator, because no drawing tool made it, and no /ModDate: "
+            "see tools/reproducible.py")
+    # Each of these asks whether what is there is right, and only that.
+    # A key that is missing altogether has already been reported by the line
+    # above, and ``meta.get`` would report it a second time as a value of
+    # None -- one defect, two problems, which is the counting this check was
+    # written to stop doing.
+    if "/Producer" in meta and meta["/Producer"] != BUNDLE_PRODUCER:
+        bad.append(f"/Producer is {meta['/Producer']!r}, not "
+                   f"{BUNDLE_PRODUCER!r}: see tools/reproducible.py")
+    if "/CreationDate" in meta and meta["/CreationDate"] != PDF_CREATION_DATE:
+        bad.append(f"/CreationDate is {meta['/CreationDate']!r}, not the "
+                   f"pinned {PDF_CREATION_DATE!r}, so it will not reproduce")
+    if "/Title" in meta and meta["/Title"] != bundle.title:
+        bad.append(f"/Title is {meta['/Title']!r}, not {bundle.title!r}")
     return bad
+
+
+def unbound_copies(declared: set[Path]) -> list[str]:
+    """Staged bound copies that the generator does not bind.
+
+    Two questions, and this is the one the generator cannot answer about
+    itself.  ``tools.layout.bundles`` asks the file system which bound copies
+    exist -- found the way a bundle is defined, a PDF in an output directory
+    with no SVG beside it -- and ``generate_diagrams.bundles`` says which
+    ones it writes.  The per-bundle check above walks only the second list,
+    so a bundle left behind by a family that was renamed or dropped is bound
+    by nothing, read by nothing, and would sit in the repository unnoticed.
+
+    Staged, not merely present.  Everything else in this file reads the
+    index, and it has to here as well: ``tools.layout.bundles`` globs the
+    working tree, where a PDF may be nothing but litter that `make clean`
+    takes away, and reporting that as something the repository carries would
+    be false in the one line a reader acts on.  What neither list holds is a
+    bundle deleted from the working tree but still in the index; `git status`
+    is where that one shows up.
+    """
+    return [f"{rel(path)}: a bound copy staged in an output directory that "
+            "tools.generate_diagrams.bundles() does not bind; nothing "
+            "rebuilds it and nothing else reads it"
+            for path in bundle_files()
+            if path not in declared and blob(rel(path)) is not None]
 
 
 def main() -> int:
@@ -200,31 +375,26 @@ def main() -> int:
                       "true size, no fonts")
     finally:
         shutil.rmtree(WORK, ignore_errors=True)
-    by_stream: dict[bytes, tuple[str, str]] = {}
-    for svg in svgs:
-        data = blob(svg[:-4] + ".pdf")
-        if data is None:
-            continue
-        name = drawing_name_for(ROOT / svg)
-        for page in PdfReader(io.BytesIO(data)).pages:
-            stream = content_stream(page)
-            if stream:
-                by_stream[stream] = (svg, name)
-
-    bound = [rel(b) for b in bundles()]
-    for path in bound:
-        problems = check_bundle(path, by_stream)
+    bound = bundles()
+    for bundle in bound:
+        problems = check_bundle(bundle)
         total += len(problems)
+        name = rel(bundle.path)
         if problems:
-            print(f"{path}: {len(problems)} problem(s)")
+            print(f"{name}: {len(problems)} problem(s)")
             for line in problems:
                 print(f"    {line}")
         else:
-            print(f"{path}: bound from the committed sheets, "
-                  "bookmarked by drawing name")
+            print(f"{name}: {len(bundle.pages)} pages, each the staged "
+                  "sheet's own drawing at its own size, bookmarked in order "
+                  "and opening its own page, Info pinned")
 
-    print(f"\n{total} problem(s) across {len(svgs)} PDFs and {len(bound)} "
-          "bound copies in the index")
+    for line in unbound_copies({b.path for b in bound}):
+        total += 1
+        print(line)
+
+    print(f"\n{total} problem(s) across {len(svgs)} sheet PDFs and "
+          f"{len(bound)} bound copies in the index")
     return 1 if total else 0
 
 

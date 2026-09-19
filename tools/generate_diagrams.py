@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -307,6 +307,113 @@ def _geometry(b) -> tuple:
             tuple(sorted((f.key, f.x0, f.y0, f.x1, f.y1) for f in b.features)))
 
 
+@dataclass(frozen=True)
+class Bundle:
+    """One bound copy: where it is written, its title, and its pages in order.
+
+    A bound copy is the one output with no drawing of its own, so nothing
+    about it can be checked by re-rendering an SVG: it is a pypdf assembly of
+    files that were already finished.  What it is *supposed* to hold --
+    which sheets, in what order, under what bookmarks -- lived only inside
+    ``main()``, as lists built while the sheets were being rendered, so the
+    only way to find out was to render the whole set again.  Stated here it
+    can be read by a check that binds nothing, and the generator and
+    ``tools/check_pdfs.py`` cannot disagree about the page list because there
+    is only one.
+    """
+
+    path: Path
+    title: str
+    #: (sheet PDF, bookmark label), in binding order: exactly the argument
+    #: ``tools.render_svg.combine_pdfs`` takes.
+    pages: tuple[tuple[Path, str], ...]
+
+
+def _label(name: str, spec) -> str:
+    """A sheet's outline entry: its name, what it draws, and the subtitle.
+
+    The drawing name leads because at thumbnail size it is the only thing
+    that tells two pages of one family apart.
+    """
+    return f"{name}  {spec.title}  -  {spec.subtitle}"
+
+
+def tt_board_sheets() -> list[tuple[str, str, Path, "BoardSpec"]]:
+    """The demo board sheets: drawing name, file stem, path, spec.
+
+    The stem is both the file ``tt_sheets`` says the sheet is written to and
+    the key ``tt_view_frames`` returns its frame under, and it is what the
+    drawing name is derived from.
+    """
+    tt_dir = FAMILY_DIRS["tinytapeout"]
+    return [(drawing_name("tinytapeout", stem), stem,
+             tt_dir / f"{stem}.svg", spec) for stem, spec in tt_sheets()]
+
+
+def rpi_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
+    """The Raspberry Pi sheets: drawing name, path, spec."""
+    rpi_dir = FAMILY_DIRS["raspberry-pi"]
+    return [(drawing_name("raspberry-pi", slug(key)),
+             rpi_dir / f"{slug(key)}.svg", RPI_BOARDS[key])
+            for key in RPI_ORDER]
+
+
+def fpga_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
+    """The FPGA development board sheets: drawing name, path, spec."""
+    fpga_dir = FAMILY_DIRS["fpga"]
+    return [(drawing_name("fpga", slug(key)),
+             fpga_dir / f"{slug(key)}.svg", FPGA_BOARDS[key])
+            for key in FPGA_ORDER]
+
+
+def plate_sheets() -> list[tuple[str, Path, str]]:
+    """The two A3 mounting plate sheets: drawing name, path, outline label.
+
+    Their labels are written here rather than taken from a spec because
+    neither sheet draws a board: the plate's own drawing takes its title and
+    subtitle from the plate data, and the fitting guide is drawn from the
+    whole demo board set and has no subject of its own to name it.  The names
+    themselves are derived like every other, in tools.layout.
+
+    Not the two drill templates.  They are sheets of the same plate and live
+    in the same directory, but they are A4 portrait and are not bound; see
+    TT_BUNDLE for why.
+    """
+    plate_dir = FAMILY_DIRS["mounting-plate"]
+    return [
+        (PLATE_SHEET, plate_dir / f"{PLATE_STEM}.svg",
+         f"{PLATE_SHEET}  {PLATE.title}  -  {PLATE.subtitle}"),
+        (FITTING_GUIDE_SHEET, plate_dir / f"{FITTING_GUIDE_STEM}.svg",
+         f"{FITTING_GUIDE_SHEET}  TT Mounting Plate Fitting Guide  -  "
+         "Which holes each demo board revision uses"),
+    ]
+
+
+def bundles() -> list[Bundle]:
+    """Every bound copy the generator writes, without rendering anything.
+
+    Data only: reading the board modules and naming files.  Nothing here
+    calls Inkscape, pypdf or the drafting library, so a check can import this
+    and ask what belongs in a bound copy at the cost of an import.
+    """
+    tt_pages = [(path.with_suffix(".pdf"), label)
+                for _, path, label in plate_sheets()]
+    tt_pages += [(path.with_suffix(".pdf"), _label(name, spec))
+                 for name, _, path, spec in tt_board_sheets()]
+    return [
+        Bundle(FAMILY_DIRS["tinytapeout"] / TT_BUNDLE,
+               "Tiny Tapeout - mechanical drawings", tuple(tt_pages)),
+        Bundle(FAMILY_DIRS["raspberry-pi"] / RPI_BUNDLE,
+               "Raspberry Pi - mechanical drawings",
+               tuple((path.with_suffix(".pdf"), _label(name, spec))
+                     for name, path, spec in rpi_sheets())),
+        Bundle(FAMILY_DIRS["fpga"] / FPGA_BUNDLE,
+               "FPGA development boards - mechanical drawings",
+               tuple((path.with_suffix(".pdf"), _label(name, spec))
+                     for name, path, spec in fpga_sheets())),
+    ]
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-raster", action="store_true")
@@ -345,11 +452,6 @@ def main() -> None:
         made.append(path)
         return path
 
-    #: The A3 Tiny Tapeout sheets for the bound copy, in two runs: the plate
-    #: sheets are rendered after the demo boards but bound in front of them.
-    board_set: list[tuple[Path, str]] = []
-    plate_set: list[tuple[Path, str]] = []
-
     tt_dir = FAMILY_DIRS["tinytapeout"]
     tt_dir.mkdir(parents=True, exist_ok=True)
     sheets = tt_sheets()
@@ -362,48 +464,33 @@ def main() -> None:
     band = max(planned_band_height(spec, extra_notes=TT_NOTES,
                                    view_bbox=frames[stem])
                for stem, spec in sheets)
-    for stem, spec in sheets:
-        name = drawing_name("tinytapeout", stem)
+    for name, stem, path, spec in tt_board_sheets():
         sheet = render_board(spec, drawing_no=name, version=VERSION,
                              extra_notes=TT_NOTES, family_numbers=TT_NUMBERS,
                              view_bbox=frames[stem], band_height=band)
-        path = save(sheet, tt_dir / f"{stem}.svg", f"{name} ({spec.title})")
-        board_set.append((path.with_suffix(".pdf"),
-                          f"{name}  {spec.title}  -  {spec.subtitle}"))
+        save(sheet, path, f"{name} ({spec.title})")
 
     rpi_dir = FAMILY_DIRS["raspberry-pi"]
     rpi_dir.mkdir(parents=True, exist_ok=True)
-    rpi_set: list[tuple[Path, str]] = []
     rpi_frame = rpi_view_frame([RPI_BOARDS[k] for k in RPI_ORDER], PMOD_HAT)
     # One band for the family, as for the Tiny Tapeout set: a taller notes
     # band on one sheet would shrink its view and drop its scale.
     rpi_band = max(planned_band_height(RPI_BOARDS[k], extra_notes=RPI_NOTES,
                                        overlay=PMOD_HAT, view_bbox=rpi_frame)
                    for k in RPI_ORDER)
-    for key in RPI_ORDER:
-        spec = RPI_BOARDS[key]
-        stem = slug(key)
-        name = drawing_name("raspberry-pi", stem)
+    for name, path, spec in rpi_sheets():
         sheet = render_board(spec, drawing_no=name, version=VERSION,
                              overlay=PMOD_HAT, extra_notes=RPI_NOTES,
                              family_numbers=RPI_NUMBERS, view_bbox=rpi_frame,
                              band_height=rpi_band)
-        path = save(sheet, rpi_dir / f"{stem}.svg", f"{name} ({spec.title})")
-        rpi_set.append((path.with_suffix(".pdf"),
-                        f"{name}  {spec.title}  -  {spec.subtitle}"))
+        save(sheet, path, f"{name} ({spec.title})")
 
     fpga_dir = FAMILY_DIRS["fpga"]
     fpga_dir.mkdir(parents=True, exist_ok=True)
-    fpga_set: list[tuple[Path, str]] = []
-    for key in FPGA_ORDER:
-        spec = FPGA_BOARDS[key]
-        stem = slug(key)
-        name = drawing_name("fpga", stem)
+    for name, path, spec in fpga_sheets():
         sheet = render_board(spec, drawing_no=name, version=VERSION,
                              family_numbers=FPGA_NUMBERS)
-        path = save(sheet, fpga_dir / f"{stem}.svg", f"{name} ({spec.title})")
-        fpga_set.append((path.with_suffix(".pdf"),
-                         f"{name}  {spec.title}  -  {spec.subtitle}"))
+        save(sheet, path, f"{name} ({spec.title})")
 
     acc_dir = FAMILY_DIRS["accessories"]
     acc_dir.mkdir(parents=True, exist_ok=True)
@@ -425,18 +512,23 @@ def main() -> None:
 
     plate_dir = FAMILY_DIRS["mounting-plate"]
     plate_dir.mkdir(parents=True, exist_ok=True)
-    sheet = render_plate(drawing_no=PLATE_SHEET, version=VERSION)
-    path = save(sheet, plate_dir / f"{PLATE_STEM}.svg", PLATE_SHEET)
-    plate_set.append((path.with_suffix(".pdf"),
-                      f"{PLATE_SHEET}  {PLATE.title}  -  {PLATE.subtitle}"))
+    # The two A3 plate sheets are drawn by a function each rather than by one
+    # renderer over a list, so they are rendered one at a time; where each
+    # lands and what it is called still comes from plate_sheets().
+    plate = plate_sheets()
+    if len(plate) != 2:
+        raise SystemExit(
+            f"plate_sheets() lists {len(plate)} A3 mounting plate sheets, and "
+            "this renders exactly two: the plate's own drawing by "
+            "render_plate and the fitting guide by render_fitting_guide. "
+            "Each plate sheet is drawn by a function of its own, so a third "
+            "needs its call added here, in the order the sheets are bound.")
+    (mp_name, mp_path, _), (fg_name, fg_path, _) = plate
+    sheet = render_plate(drawing_no=mp_name, version=VERSION)
+    save(sheet, mp_path, mp_name)
 
-    sheet = render_fitting_guide(drawing_no=FITTING_GUIDE_SHEET,
-                                 version=VERSION)
-    path = save(sheet, plate_dir / f"{FITTING_GUIDE_STEM}.svg",
-                FITTING_GUIDE_SHEET)
-    plate_set.append((path.with_suffix(".pdf"),
-                      f"{FITTING_GUIDE_SHEET}  TT Mounting Plate Fitting "
-                      "Guide  -  Which holes each demo board revision uses"))
+    sheet = render_fitting_guide(drawing_no=fg_name, version=VERSION)
+    save(sheet, fg_path, fg_name)
 
     # The drill templates are A4 portrait and 1:1 rather than A3 drawings,
     # but they are still sheets of the mounting plate and live with it: a
@@ -469,16 +561,10 @@ def main() -> None:
         # Bound after the individual PDFs exist, from those same files: a
         # second render would be a second chance for the set and the bound
         # copy to disagree about what a sheet says.
-        tt_set = plate_set + board_set
-        bundle = combine_pdfs(tt_set, tt_dir / TT_BUNDLE,
-                              "Tiny Tapeout - mechanical drawings")
-        print(f"  {rel(bundle)}: {len(tt_set)} sheets bound into one PDF")
-        bundle = combine_pdfs(rpi_set, rpi_dir / RPI_BUNDLE,
-                              "Raspberry Pi - mechanical drawings")
-        print(f"  {rel(bundle)}: {len(rpi_set)} sheets bound into one PDF")
-        bundle = combine_pdfs(fpga_set, fpga_dir / FPGA_BUNDLE,
-                              "FPGA development boards - mechanical drawings")
-        print(f"  {rel(bundle)}: {len(fpga_set)} sheets bound into one PDF")
+        for bundle in bundles():
+            out = combine_pdfs(list(bundle.pages), bundle.path, bundle.title)
+            print(f"  {rel(out)}: {len(bundle.pages)} sheets bound into "
+                  "one PDF")
 
 
 if __name__ == "__main__":
