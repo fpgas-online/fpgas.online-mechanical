@@ -15,14 +15,14 @@ it, so a new board is a new directory and does not disturb the others.
 
 ## What is here
 
-| Directory | Sheets | |
-|-----------|--------|--|
-| [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` | Tiny Tapeout demo boards, one sheet per distinct geometry |
-| [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` | The plate every demo board revision bolts onto, and its drill templates |
-| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` | Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
-| [`fpga/`](fpga/README.md) | `FPGA-*` | Digilent Arty A7, ULX3S, TUL PYNQ-Z2 and ButterStick, with Pmod, USB, Ethernet and LEDs marked |
-| [`accessories/`](accessories/README.md) | `ACC-*` | Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
-| [`tools/`](tools/README.md) | -- | The [drafting library](tools/drafting/README.md), the generator and the checks |
+| Directory | Sheets, and what they are of |
+|-----------|------------------------------|
+| [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
+| [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
+| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
+| [`fpga/`](fpga/README.md) | `FPGA-*` -- Digilent Arty A7, ULX3S, TUL PYNQ-Z2 and ButterStick, with Pmod, USB, Ethernet and LEDs marked |
+| [`accessories/`](accessories/README.md) | `ACC-*` -- Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
+| [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
 
 ## What a sheet is called
 
