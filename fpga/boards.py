@@ -9,8 +9,10 @@ Regenerate with::
 Coordinates follow :mod:`tools.schema`: origin at the lower-left corner of the
 board, X right, Y up, top view, millimetres.  Each board is drawn the way its
 maker draws it: the Arty A7 and ULX3S with their Pmod or GPIO edge and USB
-along the top, the PYNQ-Z2 with its Pmod hosts on the right, and ButterStick
-with its USB-C and Ethernet on the right.
+along the top, the PYNQ-Z2 with its Pmod hosts on the right, ButterStick with
+its USB-C and Ethernet on the right, and the Icepi Zero the way Raspberry Pi
+draw a Zero, its GPIO header along the top and its connector edge at the
+bottom.
 """
 
 from __future__ import annotations
@@ -288,5 +290,79 @@ BOARDS['butterstick'] = BoardSpec(
     notes=(
         "Hole IDs H1 and H2 are the KiCad reference designators; SA1 to SC2 are the SYZYGY standoff holes of ports A, B and C, plated, and the maker's acrylic plate bolts through all eight.",
         'No Pmod host: expansion is three SYZYGY ports.',
+    ),
+)
+
+BOARDS['icepi-zero'] = BoardSpec(
+    key='icepi-zero',
+    title='Icepi Zero',
+    subtitle='v1.3, Raspberry Pi Zero form factor',
+    family="fpga",
+    front_edge='bottom',
+    outline=Outline(width=65.0, height=30.0,
+                    corner_radius=3.5, thickness=1.6458,
+                    edges=(
+                        ('line', 65.0, 26.5, 65.0, 3.5),
+                        ('line', 0.0, 3.5, 0.0, 26.5),
+                        ('line', 61.5, 0.0, 3.5, 0.0),
+                        ('line', 3.5, 30.0, 61.5, 30.0),
+                        ('arc', 0.0, 26.5, 3.5, 30.0, 3.5, 0, 0),
+                        ('arc', 61.5, 30.0, 65.0, 26.5, 3.5, 0, 0),
+                        ('arc', 3.5, 0.0, 0.0, 3.5, 3.5, 0, 0),
+                        ('arc', 65.0, 3.5, 61.5, 0.0, 3.5, 0, 0),
+                    )),
+    holes=(
+        Hole(x=3.5, y=3.5, dia=2.7, label='H3', kind='mount', keepout_dia=None),
+        Hole(x=61.5, y=3.5, dia=2.7, label='H4', kind='mount', keepout_dia=None),
+        Hole(x=3.5, y=26.5, dia=2.7, label='H1', kind='mount', keepout_dia=None),
+        Hole(x=61.5, y=26.5, dia=2.7, label='H2', kind='mount', keepout_dia=None),
+    ),
+    pmods=(
+
+    ),
+    features=(
+        Feature(key='usb_prog', label='USB-C J3, JTAG and console', kind='usb_power',
+                designator='J3', x0=22.68, y0=-1.93, x1=33.32, y1=7.01,
+                note='Courtyard, including the shell overhang past the board edge. The receptacle wired to the on-board FT231X.', number=1),
+        Feature(key='usb_second', label='USB-C J5 and J4, to the FPGA, 2 on 12.50 mm pitch', kind='connector',
+                designator='J5, J4', x0=35.18, y0=-1.93, x1=58.32, y1=7.01,
+                note='Courtyards, shell overhang included; two separate receptacles with 1.86 mm of board between them.', number=2),
+        Feature(key='leds', label='User LEDs LED0-LED4, 5 on 2.98 mm pitch', kind='led',
+                designator='D1, D4, D2, D3, D5', x0=48.938, y0=7.01, x1=63.83, y1=8.49,
+                note='LED0 at the left-hand end. Courtyards of the 0603 bodies.', number=4),
+        Feature(key='exp1', label='GPIO header J1, 2x20, not fitted', kind='header',
+                designator='J1', x0=6.595, y0=23.455, x1=58.405, y1=29.545,
+                note='Courtyard of the unfitted 2x20 position.', number=6),
+        Feature(key='exp2', label='GPDI video connector J2', kind='connector',
+                designator='J2', x0=6.8, y0=-0.85, x1=18.0, y1=6.65,
+                note='Courtyard; the body overhangs the board edge.', number=7),
+        Feature(key='exp3', label='microSD card socket J6', kind='connector',
+                designator='J6', x0=-0.03, y0=11.45, x1=11.57, y1=23.45,
+                note='Courtyard. A card in the socket stands proud of the left edge; the source gives no figure for it.', number=8),
+    ),
+    sources=(
+        Source(label='KiCad board file',
+               ref='https://github.com/cheyao/icepi-zero  hardware/v1.3/icepi-zero.kicad_pcb @ 6e4aaba2 (tag v1.3)',
+               note='title block: Icepi Zero rev v1.3, dated 2025-07-22; Chengyin Yao (cheyao). Solderpad Hardware Licence 2.1.'),
+        Source(label='Board revision',
+               ref='https://github.com/cheyao/icepi-zero/releases/tag/v1.3',
+               note='the v1.3 tag, "Final mass production files": the revision made in quantity and sold. The same board file later in its history, at d67bb758, is read too and agrees on every position drawn here.'),
+        Source(label='Board size',
+               ref='https://github.com/cheyao/icepi-zero/blob/v1.3/README.md',
+               note='quoted at this tag: "Icepi Zero is an FPGA development board in the popular Raspberry Pi Zero form factor"; the board file gives 65.00 x 30.00 mm.'),
+        Source(label='Assembly',
+               ref='https://github.com/cheyao/icepi-zero/blob/v1.3/hardware/v1.3/production/bom.csv',
+               note='the production bill of materials at the same tag lists no 2x20 header: the GPIO position is not fitted.'),
+        Source(label='Form factor compared',
+               ref='https://datasheets.raspberrypi.com/rpizero/raspberry-pi-zero-mechanical-drawing.pdf',
+               note='Raspberry Pi Zero, RPI-ZERO-V1_2 of 2015-09-23: 65 x 30 mm, corner radius 3.0, 4x M2.5 mounting holes drilled to 2.75 +/-0.05, 58 x 23 apart and 3.5 in from each edge.'),
+    ),
+    notes=(
+        'Hole IDs are the KiCad reference designators.',
+        "The mounting holes are the Raspberry Pi Zero pattern: 58.00 x 23.00 mm, 3.50 mm in from each edge of a 65 x 30 board. They are drilled 2.70, the bottom of the Pi Zero drawing's 2.75 +/-0.05 band; the corners are R3.50 where the Pi Zero's are R3.00.",
+        'No Pmod host and no Ethernet jack.',
+        "The unfitted GPIO position is a Raspberry Pi 40-pin header: 1.00 mm holes on a 2.54 mm grid, with the Pi's 5 V, 3V3 and first GPIO pins in the Pi's places and pin 1 at (8.38, 25.23), in the row farther from the board edge.",
+        'The two user buttons are on the underside, centred at (46.40, 15.45) and (46.40, 18.85); a plate under the board has to clear them.',
+        'The board file has been re-annotated since the mass-production release. Nothing drawn here moved, but at d67bb758 the programming port is J5 and the user LEDs run D1 to D5 left to right; the designators here are the ones the sold boards were fabbed with.',
     ),
 )

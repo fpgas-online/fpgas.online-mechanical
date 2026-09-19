@@ -159,3 +159,20 @@ checker that measures the finished PDFs rather than trusting them.
       and its pin fields fall exactly where they do differ; if a plate
       designer wants the two questions answered on one page, a second view
       on the same sheet would be the way rather than an overlay
+
+## 14. Icepi Zero  -- DONE
+- [x] `FPGA-ICEPI-ZERO` from cheyao's KiCad board file at the `v1.3` tag,
+      the mass production files, and again at the re-annotated tip of the
+      same revision, the two required to agree on every position
+- [x] Nothing found by reference designator, because the re-annotation moved
+      them: the programming port is the receptacle on the FT231X's data
+      pair, a user LED is one driven from `/LED0` to `/LED4`
+- [x] Raspberry Pi Zero outline and hole pattern, checked against the figures
+      on Raspberry Pi's own Zero drawing before the note claims it
+- [x] The 2x20 GPIO position is not fitted, and its pins are checked to sit
+      on the Raspberry Pi arrangement before the note says so
+- [ ] Measure how far a card in the microSD socket stands proud of the left
+      edge; the board file gives the socket, not the card
+- [ ] The two underside buttons are in a note rather than drawn, and the
+      third USB-C port shares feature 2 with the second: both want a feature
+      number, which means renumbering the family and restamping its sheets

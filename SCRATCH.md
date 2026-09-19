@@ -1997,3 +1997,98 @@ rather than overprinting the next field, which is how it was found.  The
 field reads "reference only - governed by" and the three names, 94.7 mm.  It
 is the GENERAL TOLERANCE cell, so "every dimension" was the part that could
 go, and the sheets it names are still the ones that govern.
+
+## The Icepi Zero, and a board file that was re-annotated after it was sold
+
+Asked for a sheet of cheyao's Icepi Zero, an ECP5 board in the Raspberry Pi
+Zero form factor, as a fifth member of the `fpga/` family.  The KiCad sources
+are in the repository rather than in a release, under `hardware/v1.0` to
+`v1.4-wip`, and the licence is the Solderpad Hardware Licence 2.1.
+
+**Which revision was sold.**  Only `v1.3` is tagged, and its commit is "Final
+mass production files"; the maker's JOURNAL.md has v1.0 to v1.2 as the
+prototypes he had made in ones and twos and ends with a batch of v1.3 ordered
+and Crowd Supply accepting the campaign, and `v1.4-wip` is marked work in
+progress.  So the sheet is drawn from `hardware/v1.3/icepi-zero.kicad_pcb` at
+the tag, 6e4aaba2.
+
+**What was awkward.**  The same file at the tip of the repository is still
+called v1.3 and still has the same board in it -- every outline edge, hole and
+component box is identical -- but it has been re-saved in KiCad 10 and
+**re-annotated**.  The programming port is J3 in the file the boards were
+fabbed from and J5 in the current one; the five user LEDs are D1, D4, D2, D3,
+D5 left to right in the first and D1 to D5 in order in the second; the red
+FTDI activity LED went from D8 to D14; and the GPIO header's DNP flag was
+cleared although the production BOM still leaves it off.  A drawing that named
+parts out of either file alone would be wrong about a board someone is holding.
+
+So the extractor reads both commits through one function and requires them to
+agree on every position, and nothing in that function is looked up by
+designator: the programming port is the receptacle that shares the FT231X's
+data pair, a user LED is one a resistor drives from `/LED0` to `/LED4`, the
+mounting holes are every drill of 2 mm or more, and the rest are found by
+footprint library.  The sheet then carries the mass-production designators and
+one note says the current file disagrees and how.  Two smaller things fell out
+of reading two KiCad generations: KiCad 10 writes a pad's net as `(net "GND")`
+where KiCad 9 wrote `(net 4 "GND")`, so the name is the last atom rather than a
+fixed index, and it wrote the same eight outline edges out in a different
+order, so the outlines are compared as sets.
+
+**Decisions.**
+
+- *The third USB-C port.*  The board has three identical USB-C receptacles in
+  one row on the bottom edge on a 12.50 mm pitch: one to the FT231X for JTAG
+  and console, two to the FPGA.  The family's feature numbers are fixed and
+  adding one would have put a "not on this board" row on all four existing
+  sheets, so the two FPGA ports are one row feature, exactly as a row of LEDs
+  is, with the count and the pitch in the label.  There is 1.86 mm of board
+  between their courtyards, so the one rectangle overstates the part by a
+  sliver rather than by a gap.
+- *GPDI and microSD at 7 and 8.*  Numbers 6 to 8 are the family's expansion
+  connectors and already mean a different connector on each board.  Leaving
+  the video connector and the card socket off the sheet to protect the
+  wording of two schedule rows would have been a mechanical drawing missing
+  two of the four things a cable or a card goes into.
+- *The buttons.*  SW1 and SW2 are on the underside and there was no number
+  left for them, so they are in a note with their centres, the way the
+  PYNQ-Z2's LEDs are.
+- *The Pi Zero comparison.*  Raspberry Pi's own Zero drawing, RPI-ZERO-V1_2,
+  has no extractable text, so it was rendered and read: 65 x 30, corner radius
+  3.0, 4x M2.5 drilled 2.75 +/-0.05, 58 x 23 apart, 3.5 in from each edge.
+  The Icepi matches the outline and the hole pattern exactly, drills 2.70
+  (the bottom of the Pi's tolerance band) and rounds its corners R3.50.  Those
+  figures are a constant in the extractor, which checks the board against them
+  before the note claims the pattern, and the drawing is cited for the
+  comparison only.
+- *The GPIO header.*  It is not fitted: the production BOM at the tag lists no
+  2x20 header, and the tagged board file marks it DNP.  The note says where
+  pin 1 of the position is and that the pins sit on the Raspberry Pi 40-pin
+  arrangement, which the extractor checks -- 3V3, both 5 V pins, GPIO2, GPIO3
+  and all eight grounds in the Pi's places -- before the note is allowed to
+  say it.
+
+The board file's stackup sums to 1.6458 mm, which the title block prints as
+"PCB, 1.6 nominal"; the README's "1.2mm/1.6mm PCB with JLC04121H-7628 Stackup"
+is an ordering option for someone fabbing their own and is not on the sheet.
+
+**What review found.**  The hole schedule printed KEEPOUT 2.70 against a 2.70
+drill on all four holes.  `tools/kicad_extract.hole` took the largest pad as
+the keep-out whatever it was, which is right for a plated hole -- the pad is
+the annular ring a screw head must not touch, and it is where the demo boards'
+6.4 against a 3.2 drill comes from -- and wrong for an unplated one, where the
+pad is the aperture.  A plate designer reads a keep-out equal to the drill as
+no clearance at all, and the sheet was also drawing a phantom circle exactly on
+top of each hole and carrying a LEGEND row for linework that never showed.  A
+pad no bigger than its drill now reports nothing, and the schedule says "not
+given"; regenerating every family's data module changed those four rows and
+nothing else.
+
+The rest of that round was the sheet asserting what it had not checked: the
+tag was never resolved against the pinned commit, the Pi Zero guard compared
+two insets and never the 58 x 23 span, "LED0 at the left-hand end" was taken
+on trust, one hole's drill spoke for four, and pin 1 of the GPIO position --
+the one thing about that header the boxes cannot catch, since a header turned
+end for end keeps its courtyard -- was not compared between the two commits.
+Each guard was made to fire on a doctored input before it was kept.  The
+README quote was also the wording at the tip rather than at v1.3, where the
+sentence begins "Icepi Zero is an FPGA development board" with no "The".

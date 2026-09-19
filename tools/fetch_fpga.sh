@@ -1,7 +1,7 @@
 #!/bin/sh
 # Fetch the upstream sources for the FPGA development boards into tmp/src.
 #
-# Two are git repositories and are cloned; the extractor checks each board
+# Three are git repositories and are cloned; the extractor checks each board
 # file out at a pinned commit.  Two are vendor downloads:
 #
 #   Digilent's file host answers a plain curl with 403, but serves the same
@@ -16,6 +16,8 @@ UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrom
 test -d tmp/src/ulx3s || git clone --quiet https://github.com/emard/ulx3s tmp/src/ulx3s
 test -d tmp/src/butterstick || git clone --quiet \
     https://github.com/butterstick-fpga/butterstick-hardware tmp/src/butterstick
+test -d tmp/src/icepi-zero || git clone --quiet \
+    https://github.com/cheyao/icepi-zero tmp/src/icepi-zero
 
 f=tmp/src/arty_a7/arty_a7_mechanical_drawing.zip
 test -s "$f" || curl -sSL -A "$UA" -o "$f" \

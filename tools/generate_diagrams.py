@@ -76,9 +76,9 @@ TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.1", "v1.2.2", "v1.2.3",
 RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
 #: In the order they were asked for.  No shared frame: unlike the demo
 #: boards, which register on their Pmod hosts, and the Pis, which share an
-#: outline, these four have nothing in common to hold still, so each sheet
-#: is fitted to its own board.
-FPGA_ORDER = ["arty-a7", "ulx3s", "pynq-z2", "butterstick"]
+#: outline, these have nothing in common to hold still, so each sheet is
+#: fitted to its own board.
+FPGA_ORDER = ["arty-a7", "ulx3s", "pynq-z2", "butterstick", "icepi-zero"]
 
 #: The pitch is dimensioned on the view; what the view cannot say is where
 #: the number comes from and that every revision shares it, which is what
