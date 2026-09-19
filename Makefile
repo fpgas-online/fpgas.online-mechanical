@@ -53,7 +53,7 @@ check: diagrams
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
 
 # Every output/ directory is build product: `make clean && make diagrams`
-# restores all 67 files, every one of them byte for byte, since
+# restores all 70 files, every one of them byte for byte, since
 # tools/reproducible.py pins the clocks and tool version strings the formats
 # would otherwise stamp in.  So remove them outright rather than picking off
 # extensions one at a time.

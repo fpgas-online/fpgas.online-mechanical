@@ -186,8 +186,15 @@ def leader(c: Canvas, tip: tuple[float, float], elbow: tuple[float, float],
 
 def balloon(c: Canvas, tip: tuple[float, float], centre: tuple[float, float],
             label: str, *, radius: float = 3.2, size: float = style.T_LABEL,
-            colour: str = style.C_HIGHLIGHT) -> None:
-    """Numbered balloon: a circled label on a leader with a dot at the feature."""
+            colour: str = style.C_HIGHLIGHT, dash: str | None = None) -> None:
+    """Numbered balloon: a circled label on a leader with a dot at the feature.
+
+    *dash* draws the ring itself broken.  A sheet that superimposes several
+    variants of one part cannot say which variant a balloon means by where
+    its dot is -- the outlines lie on top of each other -- so the ring is
+    drawn in the same line type as the outline it points at, which a
+    monochrome print keeps and a colour alone would not.
+    """
     tx, ty = tip
     bx, by = centre
     ang = math.atan2(by - ty, bx - tx)
@@ -198,7 +205,8 @@ def balloon(c: Canvas, tip: tuple[float, float], centre: tuple[float, float],
     c.circle(tx, ty, 0.65, fill=colour, colour=colour, w=0.05)
     c.line(tx, ty, bx - radius * math.cos(ang), by - radius * math.sin(ang),
            w=style.W_THIN, colour=colour)
-    c.circle(bx, by, radius, fill="#ffffff", colour=colour, w=style.W_THIN)
+    c.circle(bx, by, radius, fill="#ffffff", colour=colour, w=style.W_THIN,
+             dash=dash)
     c.text(bx, by, label, size=size, colour=colour, anchor="middle",
            baseline="middle", bold=True)
 

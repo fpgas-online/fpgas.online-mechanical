@@ -17,6 +17,7 @@ one millimetre on paper and every line weight below is a real pen width.
 | `dims.py` | Dimension primitives: linear, ordinate, leader, balloon, datum, centre mark |
 | `board_sheet.py` | The board drawing: outline, holes, features, schedules, and the balloon placer |
 | `plate_sheet.py` | The mounting plate fabrication drawing and the fitting guide |
+| `rpi_compare_sheet.py` | `RPI-ALL`: the three Raspberry Pi models on the one outline they share |
 | `enclosure_sheet.py` | Three-view envelope drawings, for the PoE splitters |
 | `template_sheet.py` | A4 portrait drill templates, always 1:1 |
 
@@ -67,6 +68,13 @@ outlines of adjacent parts and keep-out envelopes, dashed for hidden detail
 and for a part deliberately not fitted. They are named in `style.py` rather
 than written out at each call site, because a chain-dot and a chain-double-dot
 look nearly alike at A3 and had drifted into six hand-written variants.
+
+One sheet adds three more, and only because none of the three above says what
+it needs to say. `rpi_compare_sheet.py` draws three Raspberry Pi models on one
+outline, where continuous means "shared by all of them" and a long dash, a
+short dash and a dot mean one model each. They are a key, not a feature type;
+they live in that module rather than in `style.py`, they appear on no other
+sheet, and the legend on that sheet names all three.
 
 ## Reserve, then draw
 

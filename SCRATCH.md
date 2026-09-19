@@ -1862,3 +1862,138 @@ outright with a `SystemExit` naming the board and saying what to do: flip
 the callout below the board the way the overall width flips, and reserve it
 there for the balloon placer too. A collision a reader would notice before a
 check does should not be able to go out silently.
+
+## The three Pis on one outline
+
+Asked for a combined Raspberry Pi drawing, like the Tiny Tapeout fitting
+guide is for the demo boards.  The bound `raspberry-pi-sheets.pdf` already
+existed, so what was wanted was the other kind of combined: one view with
+every model on it.
+
+The three Model B sized Pis make that easy in one way and hard in another.
+Easy, because the outline, the four mounting hole centres and the 40-pin
+header really are the same on all three, which is what lets them be drawn
+once, in continuous line, with everything broken meaning "this model only".
+
+**That is less well checked upstream than it looks.** `extract.py` reads the
+40-pin header out of each model's own drawing and requires the three readings
+to agree, because the HAT specification fixes it.
+It does not do the same for the other two. The outline size is declared per
+model in the extractor's `MODELS` table, and `cross_check` says in as many
+words that comparing it would be comparing the file with itself. The holes
+are worse: only the Pi 4B has `holes_from_source`, so its four centres come
+out of its DXF, while the Pi 3B/3B+ and the Pi 5 take theirs from the
+hard-coded `STANDARD_HOLES`, and the read pattern and the constant are never
+compared with each other. A sheet that draws all three once, in the line type
+that means "identical", and then prints a note saying they are identical, was
+asserting two thirds of that. `require_shared()` now checks the outline, the
+four mounting hole centres and the header before anything is drawn and stops
+with what differs; perturbing any of the three by a hundredth of a millimetre
+is caught.
+
+Hard, because what does differ is stacked on top of itself. The Pi 4B's upper
+USB pair overlaps the Pi 3's lower pair on all four sides: inside it on the
+left by 1.20 mm and at the top by 1.32, and past it on the right by 1.00 and
+below it by 1.22. Taken against the Pi 5's lower pair as well, the overhang on
+the right is 0.76 mm. Worse is the Pi 4B's *lower* USB pair, where the widest
+strip not also inside the Pi 3's or the Pi 5's Ethernet jack is 0.562 mm tall,
+along the bottom edge. The Pi 5's RJ45 is within about a millimetre of the
+Pi 3's on all four sides.
+
+That broke the balloon convention rather than the drawing.  A balloon says
+which schedule row a shape belongs to by where its dot sits, and here a dot
+sits on three shapes at once.  Three things were tried:
+
+- **Exclusive dots.**  Search the points that are inside this group's
+  outlines and outside every other group's.  It works for the RJ45 -- the
+  Pi 4B's reaches 2.65 mm further left than the Pi 3's upper USB pair, which is room for a
+  dot -- and is far too tight for the USB pairs: the widest exclusive strip
+  is 1.22 mm for the upper pair and 0.562 for the lower, against the 1.4 mm
+  a dot with `DOT_CLEAR` on each side of it needs.  Kept anyway, as a score
+  rather than a filter: fewest foreign outlines first, then nearest the
+  centre.
+- **Colour.**  Resolves it on screen and loses it in a photocopier, which is
+  what these sheets are for.
+- **The ring's line type.**  `dims.balloon` now takes a dash and
+  `_Ballooned` carries one, so a balloon is drawn in the line type of the
+  outline it points at.  A dashed "3" is the Pi 4B's Ethernet jack, a plain
+  black "3" is the position the Pi 3B/3B+ and the Pi 5 share.  That survives
+  a monochrome print, which the dot position and the colour do not.
+
+Both defaults are the old values, so every other sheet renders byte for byte
+as before; that was checked before anything else was believed.
+
+**The Pmod HAT Adapter is not on it.**  Every individual Pi sheet carries it
+in phantom and should: its host positions are the reason those sheets exist.
+On this one it would say nothing -- it is identical on all three models, so
+it is not part of what the sheet compares -- and it would cost a great deal,
+because host JC overhangs the lower edge, where all three power connectors
+are, and the pin fields of JA and JB sit over the right-hand connectors.
+Those are the two places this drawing exists to show.  A note says so and
+sends the reader to RPI-3B, RPI-4B, RPI-5 and ACC-HAT-PMOD.
+
+Three smaller decisions.  The keep-out circles drawn are the HAT
+specification's 6.2 mm rather than any one model's, because a plate is
+designed to the figure that satisfies all three; the three the drawings
+actually show are in the hole schedule, as a triple whose order is in the
+column heading rather than in a note.  The sheet asserts no manufacturing
+tolerance: two of the three drawings disagree about the mounting hole
+diameter, so the title block says "reference only" and names the sheets that
+govern.  And the notes band came out at 156 mm against the 104 mm the other
+three Pi sheets share, so RPI-ALL's view sits 26.00 mm higher
+than theirs, measured off the mounting holes in the four finished SVGs -- it
+is a different kind of sheet, as TT-MP-FIT is, and the alternative
+was cutting the sources to fit.  The sources were cut anyway, to one line per
+drawing: most models cite their own file twice and the second entry carries a
+paragraph about which circle on which layer was read, which across the three
+models is five URLs in seven entries with three such derivations.  A
+derivation belongs to the model it was made for, and a note sends the reader
+to its sheet.  Even so the last source line spills into the annotation column
+under "SOURCES
+(continued)". This is the first sheet in the repository to need that spill;
+the seven others that carry a "(continued)" heading continue into the second
+column of the notes band, which is the step before it.
+
+One note is there for a place the sheet's own scheme cannot be read.  The
+three power connectors come within 0.025 mm of each other on their nearest
+faces, so at 1:1 the corner where they sit is not three line types but one
+printed three times, and the sheet would otherwise be claiming a distinction
+it cannot draw there.  A 2:1 detail view would have shown it properly and
+cost the notes band its last twenty millimetres, for figures the feature
+schedule already gives exactly; the note was the cheaper honesty.
+
+## Naming a sheet that is not a board
+
+The sheet is named from its own file stem like every other, through the
+family's rule: `drawing_name` of `raspberry_pi/output/rpi-models-compared.svg`
+is RPI-ALL.  The Pi family had no rule -- a model sheet's stem leaves only
+the model behind `rpi`, and RPI-5 wants no shortening -- and this sheet is
+why it has one: what its stem leaves is `models-compared`, a title, and the
+owner's bound is four or five characters behind the prefix.  `RPI_NAMES` has
+one row, ALL, for the models superimposed; `rpi_name` passes a model through
+and refuses anything else, so a sheet added to this family without a row
+stops the render instead of carrying a stem-shaped name.  That it is not a
+board key turned out not to matter,
+which is the point of naming a sheet after itself: the other three Pi sheets
+are named from a key in `RPI_ORDER` by way of `slug`, and this one has no key
+at all, only a file it is written to.  Nothing in the generator had to learn
+that a family can hold a sheet that is not a board; it does need its own
+entry beside `rpi_sheets()`, because it has no single board spec for the
+bound copy's outline to take a title and a subtitle from, which is exactly
+the shape `plate_sheets()` already had.
+
+Five references to a drawing name are written on this branch, and two of them
+are on the drawing rather than beside it: the note explaining why the Pmod
+HAT Adapter is left off, and the GENERAL TOLERANCE field, which says which
+sheets govern the dimensions this one only reports.  Both are built from
+`MODEL_SHEETS`, derived from the same stems the generator writes those sheets
+to, so neither can drift from the title block it points at.  The other three
+are prose: the family README, the drafting library's index and TODO.md.
+
+Deriving them cost the tolerance field its first wording.  "reference only -
+RPI-3B, RPI-4B and RPI-5 govern every dimension" is 115.0 mm of lettering in
+a 105.7 mm cell; `_title_cell` refuses to draw a value that will not fit
+rather than overprinting the next field, which is how it was found.  The
+field reads "reference only - governed by" and the three names, 94.7 mm.  It
+is the GENERAL TOLERANCE cell, so "every dimension" was the part that could
+go, and the sheets it names are still the ones that govern.

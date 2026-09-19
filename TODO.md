@@ -140,3 +140,22 @@ checker that measures the finished PDFs rather than trusting them.
 - [ ] Measure how far in front of the demoboard's front edge the Raspmod's
       faces sit when mated: the plug pin length and the host socket depth
       are footprint figures, not measured ones
+
+## 13. The three Raspberry Pis on one outline  -- DONE
+- [x] `RPI-ALL`: the Pi 3B/3B+, 4B and 5 superimposed on the
+      85 x 56 outline they share, everything common drawn once in continuous
+      line and everything that moves once per model in that model's own line
+      type
+- [x] A balloon ring carries its model's line type, because three outlines on
+      top of one another leave nowhere for a leader's dot that belongs to one
+      of them alone
+- [x] Per-model feature and hole schedules, the connector swap stated in
+      words, and the union envelope, 88.00 x 57.32 mm
+- [x] `tools/check_balloons.py` watches the new sheet: it takes a renderer
+      rather than a board spec, so a sheet drawn by its own module is no
+      longer invisible to it
+- [ ] Ask whether the Pmod HAT Adapter belongs on it after all. It is left
+      off because its host positions say nothing about how the models differ
+      and its pin fields fall exactly where they do differ; if a plate
+      designer wants the two questions answered on one page, a second view
+      on the same sheet would be the way rather than an overlay
