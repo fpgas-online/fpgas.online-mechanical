@@ -45,10 +45,15 @@ class View:
             margin_right: float | None = None) -> "View":
         """Place *bbox* in *rect*, reserving margins for annotation.
 
-        The margins are asymmetric on purpose: dimensions stack up below and to
-        the left of a view, while above it only balloons need room.  Reserving
-        the same generous margin on all four sides wastes a third of the sheet
-        height for nothing.
+        The margins are asymmetric on purpose: dimensions stack up to the left
+        of a view and on one of its horizontal edges, while on the other only
+        balloons need room.  Reserving the same generous margin on all four
+        sides wastes a third of the sheet height for nothing.
+
+        Which horizontal edge takes the dimensions is the caller's business --
+        ``board_sheet`` puts the ordinate chain on the edge its features are
+        nearest and passes the deep margin to match -- so *margin_top* and
+        *margin_bottom* are given, not assumed.
         """
         x0, y0, x1, y1 = bbox
         top = margin if margin_top is None else margin_top

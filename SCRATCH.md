@@ -1780,3 +1780,85 @@ sheets were still numbered, none of them broke a sheet number; with the names,
 at 838, and the plate's Sheet column has not been re-measured since its names
 were shortened.  That is this same squeeze turning up somewhere else, on
 tables this branch does not touch; it is noted here rather than fixed here.
+
+## The Arty's ordinate chain, and which edge a chain belongs on
+
+The X ordinate chain went below the view on every sheet, and the overall
+width went above it, because that is where a drafter puts them and because
+the first boards drawn here had their Pmod hosts and most of their holes
+along the bottom edge. The Arty A7 has neither. Its four Pmod hosts sit
+11.75 mm from the TOP edge, and it has no mounting holes at all, so every
+value in the chain belonged to a feature at the top of the board and every
+witness line was drawn 90.88 mm long, the height of the board and then some
+to reach a chain underneath; one of the four was broken into four pieces on
+the way by the Ethernet jack and both LED rows. Four lines the height of the
+drawing, to carry four numbers that describe a strip along the top edge.
+Issue #4.
+
+So the chain now goes on the horizontal edge its own features are nearest.
+Every feature that puts a value into the chain votes -- each mounting hole,
+and each host on a horizontal edge, the phantom HAT's included -- and the
+majority wins; a tie keeps the chain below. The overall width goes on the
+other edge, and with it go the Pmod spacing dimension's lane, the balloon
+bounds, the witness lines' reserved extent, the reserved band for the
+overall dimension, and the deeper of the two view margins, so the view
+itself shifts ten millimetres down the page to pay for the room.
+
+The votes are counted per feature and not per distinct X, which is the
+whole reason only one sheet moves. A board with holes at both edges has an
+equal claim from each, and there are three of them: the ULX3S and the
+PYNQ-Z2 tie 2-2 on four holes each and the ButterStick 4-4 on eight, and all
+three stay where they were. The Raspberry Pi 3B and 4B are 3-2 below -- the
+two lower mounting holes and the phantom Pmod HAT Adapter's host JC against
+the two upper holes -- and the Pi 5, which carries six holes rather than
+four, is 4-3. Both stay below. The demo boards are 4-1, 4-2 or 5-2 below,
+the Pmod HAT Adapter 3-2, the Raspmod 3-0. The Arty is 4-0 above. Counting
+instead by distinct X, or by summed distance, moves the ULX3S and all three
+Pi sheets as well, which is a bigger change than anyone asked for and, on
+the ULX3S, the wrong fix: its witness lines are long because
+`_ordinate_values` anchors them at the top pair of a symmetric set of four
+holes, not because the chain is in the wrong place. That tie-break is a
+separate question and was left alone.
+
+Proved rather than assumed: every `<text>` element of all 21 sheets,
+attributes and content, compared against the branch this one sits on with the
+VERSION stamp masked. Twenty are byte for byte identical and only
+`fpga/output/arty-a7.svg` differs, in 14 of its 177 text elements. The same
+comparison over the whole file, geometry included, says the same thing. The
+sheet is FPGA-ARTY-A7 and no line of this branch says so: the name comes from
+the file stem the generator was already writing to.
+
+What the Arty sheet gains, measured rather than eyeballed: each of the four
+host witness lines is 27.38 mm where it was 90.88 mm, and all four are now a
+single clean run instead of one of them being chopped into four by the parts
+it crossed. The zero ordinate's own line is 18.30 mm either way. The 22.80
+TYP spacing sits between the hosts and the chain, the 109.00 overall width
+sits just under the bottom edge with short extension lines, and the 11.75
+pin-field depth still writes its value inboard of its host, which is now the
+side away from the chain rather than towards it.
+
+The balloons are a mixed result, and the eye gets it backwards: it reads
+balloons 4 and 5 as having moved above their LED rows on shorter leaders, and
+neither half of that survives a measurement. Leader lengths, tip to balloon
+rim: balloon 1, the micro-USB, 7.80 mm down to 5.80, having dropped
+10.6 mm relative to the board to sit level with its connector rather than
+above it; balloon 3, the Ethernet jack, 14.30 mm unchanged, barely moved;
+balloon 4, LD4-LD7, 5.80 mm unchanged, mirrored 9 mm across its own tip at
+exactly the same height, so it did not move vertically at all; and balloon
+5, LD0-LD3, 14.30 mm up to 17.80 -- it moved 14.2 mm up and 35.4 mm right,
+from below-left of its tip to above-right of it, and paid 3.5 mm of leader
+for the room. The whole view sits ten millimetres lower on the page, which
+is the swapped margin; the figures above are relative to the board, not to
+the sheet.
+
+One interaction this leaves open: the corner-radius callout is drawn five
+millimetres above the board, where a top chain's spacing dimension now sits
+six millimetres above it. Nothing in the set has both -- the Arty's outline
+has no corner radius -- but this is nearer than it sounds, not a
+hypothetical for some future board. Twelve of the fifteen board sheets here
+carry a corner radius, and the Raspberry Pi 5 is 4-3 below, one mounting
+hole away from a top chain. So `render_board` now refuses the combination
+outright with a `SystemExit` naming the board and saying what to do: flip
+the callout below the board the way the overall width flips, and reserve it
+there for the balloon placer too. A collision a reader would notice before a
+check does should not be able to go out silently.
