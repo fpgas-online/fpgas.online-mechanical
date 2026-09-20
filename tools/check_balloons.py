@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import math
 import sys
+from functools import partial
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -49,7 +50,7 @@ def _spy_balloon(c, tip, centre, label, **kw):
 bs.place_balloons = _spy_place
 dims.balloon = _spy_balloon
 
-from accessories.parts import ACCESSORIES, PMOD_HAT        # noqa: E402
+from accessories.parts import ACCESSORIES, PMOD_HAT   # noqa: E402
 from fpga.boards import BOARDS as FPGA               # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI        # noqa: E402
 from tinytapeout.boards import BOARDS as TT          # noqa: E402
@@ -128,13 +129,17 @@ def _on_a_feature(items, placed, obstacles) -> set[str]:
     return out
 
 
-def check(name: str, spec, overlay=None) -> tuple[set[str], set[str]]:
+def check(name: str, draw) -> tuple[set[str], set[str]]:
     """Draw one sheet and report which balloons cross a hard obstacle.
+
+    *draw* renders it.  A callable rather than a spec, so that a sheet which
+    needs more than a spec and an overlay -- another keyword argument, or a
+    renderer of its own -- is watched the same way as the rest.
 
     Returns the crossings that were not expected and the expected ones that no
     longer happen; both mean the sheet and ACCEPTED have drifted apart.
     """
-    bs.render_board(spec, drawing_no="-", version="-", overlay=overlay)
+    draw()
     obstacles = _state["obstacles"]
     accepted = ACCEPTED.get(name, set())
     crossing = set()
@@ -153,18 +158,24 @@ def check(name: str, spec, overlay=None) -> tuple[set[str], set[str]]:
     return (crossing - accepted) | on_feature, accepted - crossing
 
 
+def board(spec, overlay=None):
+    return partial(bs.render_board, spec, drawing_no="-", version="-",
+                   overlay=overlay)
+
+
 def main() -> int:
-    sheets = [(f"tinytapeout/{k}", v, None) for k, v in TT.items()]
-    sheets += [(f"raspberry-pi/{k}", v, PMOD_HAT) for k, v in RPI.items()]
-    sheets += [(f"fpga/{k}", v, None) for k, v in FPGA.items()]
-    sheets.append(("accessories/pmod-hat", PMOD_HAT, None))
-    sheets += [(f"accessories/{k}", v, None) for k, v in ACCESSORIES.items()
+    sheets = [(f"tinytapeout/{k}", board(v)) for k, v in TT.items()]
+    sheets += [(f"raspberry-pi/{k}", board(v, PMOD_HAT))
+               for k, v in RPI.items()]
+    sheets += [(f"fpga/{k}", board(v)) for k, v in FPGA.items()]
+    sheets.append(("accessories/pmod-hat", board(PMOD_HAT)))
+    sheets += [(f"accessories/{k}", board(v)) for k, v in ACCESSORIES.items()
                if v is not PMOD_HAT]
 
     unexpected: dict[str, set[str]] = {}
     stale: dict[str, set[str]] = {}
-    for name, spec, overlay in sheets:
-        new, gone = check(name, spec, overlay)
+    for name, draw in sheets:
+        new, gone = check(name, draw)
         if new:
             unexpected[name] = new
         if gone:
