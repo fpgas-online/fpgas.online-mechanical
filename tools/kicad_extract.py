@@ -184,9 +184,16 @@ def hole(key: str, fp, to_xy) -> dict:
     # The largest drill, not the only one: ButterStick's M3 footprint rings
     # its 3.2 mm hole with four 0.5 mm vias, and those are pads too.
     dia = max(drills)
+    # The annular ring is a keep-out only where there is one.  A plated
+    # footprint rings its drill with copper a fastener head must not touch,
+    # and that pad is the figure a plate designer needs; an unplated hole is
+    # a pad the same size as the drill, and reporting that as the keep-out
+    # prints a clearance of zero on the schedule, which reads as "no room for
+    # a screw head" rather than as "the source does not say".
     pad_dia = max(max(p.size) for p in pads)
+    keepout = round(pad_dia, 3) if pad_dia > dia + 0.01 else None
     return dict(x=round(x, 3), y=round(y, 3), dia=round(dia, 3),
-                label=fp.reference, kind="mount", keepout_dia=round(pad_dia, 3))
+                label=fp.reference, kind="mount", keepout_dia=keepout)
 
 
 def pmod(fp, to_xy, to_box, *, key: str, label: str, edge: str = "bottom"
