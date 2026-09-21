@@ -265,6 +265,14 @@ colliding on a sheet to a mounting hole no M3 screw actually fits.
 [`tools/README.md`](tools/README.md) says what each one does and what it
 found.
 
+GitHub Actions runs `make check` on every push to `main` and on every pull
+request, from [`.github/workflows/check.yml`](.github/workflows/check.yml). It
+runs in a Debian 13 container, not on the runner's own Ubuntu, because
+`check_pdfs.py` holds each committed PDF against a fresh render of the SVG
+committed beside it, byte for byte, and the committed PDFs were drawn by
+Debian 13's Inkscape 1.4 on cairo 1.18.4 with DejaVu 2.37. It needs none of
+the upstream sources, so it runs no `make fetch`.
+
 ## Licence
 
 Apache 2.0; see [`LICENSE`](LICENSE). The upstream sources these drawings are
