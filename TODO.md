@@ -125,7 +125,7 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] ULX3S from KiCad at the four tags sold, required to agree
 - [x] PYNQ-Z2 from TUL's STEP assembly; LEDs not in the model, said in words
 - [x] ButterStick from KiCad r1.0a, SYZYGY standoff holes in the schedule
-- [x] `fpga-sheets.pdf`, the four bound into one document
+- [x] `fpga-sheets.pdf`, every FPGA sheet bound into one document
 - [ ] PYNQ-Z2 LED positions, by photogrammetry from TUL's product photo if
       no vector source turns up
 - [ ] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
