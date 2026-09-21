@@ -5,7 +5,7 @@ up in the same assemblies.
 
 | | |
 |---|---|
-| `parts.py` | Hand-curated, with per-value provenance: the Pmod HAT Adapter, its pin map, and the PoE splitters |
+| `parts.py` | Hand-curated, with per-value provenance: every part here that has no machine-readable source, and the Pmod HAT Adapter's pin map |
 | `measure_pmod_hat.py` | Photogrammetry for the Pmod HAT Adapter |
 | `raspmod.py` | **Generated.** The Raspmod's geometry and pin map |
 | `extract.py` | Reads the Raspmod's KiCad board file and writes `raspmod.py` |
