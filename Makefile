@@ -1,9 +1,9 @@
 # Regenerate everything from the sources.
 #
-# The repository groups by subject: tinytapeout/, raspberry_pi/, fpga/ and
-# accessories/ each own their data, their extractor and their sheets, the
-# mounting plate sits under tinytapeout/, and tools/ holds the machinery that
-# belongs to no subject.
+# The repository groups by subject: each family's directory owns its data,
+# its extractor and its sheets, the mounting plate sits under tinytapeout/,
+# and tools/ holds the machinery that belongs to no subject.  README.md says
+# which families there are.
 #
 # The upstream inputs live under tmp/ and are not committed: run `make fetch`
 # once to get them, then `make` to rebuild the data and every drawing.

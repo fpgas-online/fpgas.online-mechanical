@@ -1,8 +1,8 @@
 """Where everything lives, and what every sheet is called.
 
-This repository groups by subject: ``tinytapeout``, ``raspberry_pi`` and
-``accessories`` each own their data, their extractor and their rendered
-sheets, and the mounting plate is a Tiny Tapeout thing so it sits under
+This repository groups by subject: each family's directory owns its data,
+its extractor and its rendered sheets (``FAMILY_DIRS`` below says where each
+renders to) and the mounting plate is a Tiny Tapeout thing so it sits under
 ``tinytapeout``.  Machinery that belongs to no subject -- the drafting
 library, the schema, the generator and the checks -- lives here in ``tools``.
 
