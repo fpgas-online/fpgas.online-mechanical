@@ -45,7 +45,7 @@ TT_STEM_LEAD = "tt-demo-board"
 #:
 #: A stem names the file, and the sheet's title block already says who makes
 #: the part and what its part number is, so the stem is left to say what the
-#: thing is.  What that drops differs by row, and only two of the four keys
+#: thing is.  What that drops differs by row, and only some of the keys
 #: carry a vendor at all:
 #:
 #: * ``pmod-hat-adapter`` keeps its key and loses ``-adapter``, which the

@@ -11,7 +11,7 @@ up in the same assemblies.
 | `extract.py` | Reads the Raspmod's KiCad board file and writes `raspmod.py` |
 | `compare.py` | Rewrites the tables in `raspmod-vs-pmod-hat.md` from the two data modules |
 | [`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md) | The two ways of putting Pmods on a Raspberry Pi, compared: pin maps and mechanics |
-| `output/` | Four `ACC-…` sheets, as SVG and PDF |
+| `output/` | The `ACC-…` sheets, as SVG and PDF |
 
 `parts.py` is hand-curated because its sources are not machine-readable: a
 product photo, a dimensioned marketing image, and a pinout table on a web
