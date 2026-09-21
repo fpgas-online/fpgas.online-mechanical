@@ -29,7 +29,7 @@ Imported, not run.
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's mechanical drawings into `tmp/` |
 | `fetch_fpga.sh` | Clones the ULX3S, ButterStick and Icepi Zero repositories and downloads the Arty A7 drawing and the PYNQ-Z2 model into `tmp/` |
-| `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the three A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
+| `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
 
 The extractors are not here. Each lives with its subject:
@@ -105,7 +105,7 @@ the tree with nothing wrong.
   `reproducible.py` makes rendering reproducible; it used to compare only page
   content streams, because cairo stamped a clock into every file it wrote.
 
-  It then walks the three bound copies, which have no SVG and so cannot be
+  It then walks the bound copies, which have no SVG and so cannot be
   checked by re-rendering anything. Each is held against the page list
   `generate_diagrams.bundles()` defines -- imported, not retyped, so the two
   cannot drift -- page by page on the content stream and on the page size,
