@@ -1,0 +1,132 @@
+# Run `make check` on every push to main and on every pull request.
+#
+# The job runs in a Debian 13 (trixie) container rather than straight on the
+# runner, and that is the whole design.  tools/check_pdfs.py re-renders each
+# committed SVG with Inkscape and compares the PDF with the committed one byte
+# for byte.  The committed PDFs were drawn by Debian 13's Inkscape 1.4 on cairo
+# 1.18.4 with DejaVu 2.37, and those are the only packages known to write
+# these bytes.  The runner image has no Inkscape of its own; Ubuntu 24.04,
+# which ubuntu-latest is today, offers 1.2.2, which nobody has measured, and
+# ubuntu-latest moves to the next Ubuntu when GitHub says so.  Naming the
+# distribution in the container keeps what draws the sheets from changing
+# under us, so CI draws with the packages the sheets were drawn with.
+
+name: make check
+
+on:
+  push:
+    branches: [main]
+  # No branch filter: a stacked pull request has another pull request's branch
+  # as its base, and it is checked like any other.
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to a pull request supersedes the run before it.  On main
+# nothing is cancelled, only queued: merges land here in quick succession, and
+# every commit on main should get a verdict of its own, or the first red one
+# cannot be told from the ones a later push cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: make check (Debian 13, Inkscape 1.4)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: debian:trixie
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # Before the checkout, because actions/checkout falls back to downloading
+      # a tarball when it finds no git, and a tarball has no history to
+      # describe.  Both DejaVu packages: the condensed faces the sheets letter
+      # in are in -extra, and tools/drafting/style.py opens them by path.
+      - name: Install Inkscape, the DejaVu fonts, git and make
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends \
+            ca-certificates git make \
+            inkscape fonts-dejavu-core fonts-dejavu-extra
+
+      # Full history and the tags, and on a pull request the branch's own head
+      # rather than GitHub's merge of it into the base.  Every sheet is stamped
+      # with `git describe` of the last commit that touched a source file (see
+      # tools/reproducible.py).  A shallow clone has no tag to describe from,
+      # and the merge commit is one nobody has, so either would draw sheets
+      # carrying a VERSION that no checkout of the branch reproduces -- and
+      # those sheets are what a failed run hands back as its evidence.
+      - name: Check out the commit that was pushed, with history and tags
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      # The container runs as root and the workspace belongs to the runner's
+      # user, so git refuses it as "dubious ownership" unless told otherwise,
+      # and what actions/checkout tells it does not outlast that step.
+      # reproducible._git turns a git failure into the stamp "no-git" without a
+      # word, so this step fails aloud instead: `git describe --tags` with no
+      # --always exits non-zero when git, the history or the tag is missing.
+      # Each answer is assigned before it is echoed, because an assignment
+      # passes the command's exit status on to `bash -e` and an echo with the
+      # command inside it does not: echo succeeds, and prints a blank.
+      - name: Let git read the workspace, and prove that it can
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git log -1 --format='HEAD is %H %s'
+          source="$(git log -1 --format=%H -- . ':(exclude)*/output/*')"
+          test -n "$source"
+          echo "last source commit is $source"
+          stamp="$(git describe --tags "$source")"
+          echo "the sheets will be stamped $stamp"
+
+      # The release this was proved with.  No cache: there is no lock file to
+      # key one on, and the few wheels `uv run --with` fetches take seconds.
+      - name: Install uv
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          version: "0.12.10"
+          enable-cache: false
+
+      # When a PDF stops matching, the first question is what drew it.
+      - name: Say what is drawing
+        run: |
+          inkscape --version
+          dpkg-query --show inkscape libcairo2 libpango-1.0-0 libharfbuzz0b \
+            libfreetype6 libfontconfig1 fonts-dejavu-core fonts-dejavu-extra
+          fc-match 'DejaVu Sans'
+          fc-match 'DejaVu Sans Condensed:bold'
+          uv --version
+          uv run --no-project python --version
+
+      - name: make check
+        run: make check
+
+      # The output directories as the run left them: freshly rendered if it
+      # got as far as make check, and only the committed files if an earlier
+      # step is what failed.  tools/check_pdfs.py clears tmp/check-pdfs on its
+      # way out, pass or fail, so that path is listed for the day it stops
+      # doing so and is normally not there to upload.
+      - name: Keep what was rendered, if anything failed
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: rendered-output
+          path: |
+            accessories/output/
+            fpga/output/
+            raspberry_pi/output/
+            tinytapeout/output/
+            tinytapeout/mounting_plate/output/
+            tmp/check-pdfs/
+          if-no-files-found: warn
+          retention-days: 14
