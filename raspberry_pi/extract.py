@@ -58,7 +58,7 @@ STANDARD_HOLES = [(3.5, 3.5), (61.5, 3.5), (3.5, 52.5), (61.5, 52.5)]
 # figure to design a plate to, and it is quoted in the notes rather than being
 # passed off as a dimension from the Pi's own drawing.
 #: Said on every model, whatever that model's own drawing gives, so one plate
-#: can be designed for all five.
+#: can be designed for all of them.
 KEEPOUT_DESIGN_NOTE = (
     "Design keep-outs to 6.2 mm diameter around every mounting hole, per the "
     "Raspberry Pi HAT specification; KEEPOUT gives what this model's own "
