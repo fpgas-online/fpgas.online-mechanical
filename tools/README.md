@@ -33,10 +33,12 @@ Imported, not run.
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
 
 The extractors are not here. Each lives with its subject:
-[`tinytapeout/extract.py`](../tinytapeout/README.md),
-[`raspberry_pi/extract.py`](../raspberry_pi/README.md),
-[`fpga/extract.py`](../fpga/README.md), and
-[`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md).
+
+- [`accessories/extract.py`](../accessories/README.md)
+- [`fpga/extract.py`](../fpga/README.md)
+- [`raspberry_pi/extract.py`](../raspberry_pi/README.md)
+- [`tinytapeout/extract.py`](../tinytapeout/README.md)
+- [`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md)
 
 ## Checks
 
