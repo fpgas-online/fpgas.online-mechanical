@@ -85,7 +85,7 @@ class Sheet:
     #: of its file stem, seven of the nineteen sheets with a title block
     #: overran that, the longest of them by 23.70 mm at the ISO 3098 floor.
     #: The demo boards, the accessories and the mounting plate are named by a
-    #: rule now, and none of the nineteen overruns the quarter: the widest is
+    #: rule now, and no sheet overruns the quarter: the widest is
     #: ``FPGA-BUTTERSTICK`` at 34.33 mm, 3.72 mm clear of 38.05 mm.  The
     #: quarter is not restored all the same.  The sheets waiting on other
     #: branches are longer than anything here --
