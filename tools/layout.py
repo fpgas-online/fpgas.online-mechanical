@@ -309,18 +309,21 @@ def plate_name(stem_tail: str) -> str:
 
 
 #: How a family cuts what is left of a stem down to a drawing name, for the
-#: three families that need it.  A separate table rather than a third column
+#: families that need it.  A separate table rather than a third column
 #: of FAMILY_PREFIXES: several branches are open at once each adding a row to
 #: that table, and changing its shape would conflict with every one of them,
 #: where a new table beside it conflicts with nothing.
 #:
 #: A family with no rule here is named for its stem, which is the ordinary
 #: case and wants no table: RPI-3B and FPGA-ARTY-A7 are already as short as
-#: their sheets can honestly be said to be.  The three families here are the
-#: ones where the stem is not: a demo board's carries every revision the sheet
-#: covers, an accessory's says in words what the part is, and a mounting plate
-#: sheet's says its title -- ``chassis-drill-template``.  All three are right
-#: for a file name and too long for a drawing number.
+#: their sheets can honestly be said to be.  The families here are the
+#: ones where the stem is not:
+#:
+#: * a demo board's stem carries every revision the sheet covers
+#: * an accessory's says in words what the part is
+#: * a mounting plate sheet's says its title -- ``chassis-drill-template``
+#:
+#: Each is right for a file name and too long for a drawing number.
 FAMILY_NAME_RULES = {
     "tinytapeout": tt_name,
     "accessories": acc_name,

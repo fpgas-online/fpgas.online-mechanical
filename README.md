@@ -32,7 +32,7 @@ prefix: `fpga/output/arty-a7.pdf` is **`FPGA-ARTY-A7`** and
 already says is dropped: the mounting plate's four stems all begin
 `tt-generic-mounting-plate`, which is what `TT-MP` says.
 
-Three families are named by a rule instead, because their file stems say more
+Some families are named by a rule instead, because their file stems say more
 than a drawing number can carry. A file name is read once from a directory
 listing by somebody choosing between files, and can afford to say what a sheet
 covers; a drawing number is read off a title block, quoted in a note on another
