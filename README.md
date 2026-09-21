@@ -279,8 +279,18 @@ the upstream sources, so it runs no `make fetch`.
 ## Licence
 
 Apache 2.0; see [`LICENSE`](LICENSE). The upstream sources these drawings are
-derived from keep their own licences: the Tiny Tapeout board files are Apache
-2.0, the Raspberry Pi mechanical drawings are Raspberry Pi Ltd's, the Arty A7
-drawing is Digilent's, the PYNQ-Z2 model is TUL's, the Icepi Zero board files
-are under the Solderpad Hardware Licence 2.1, and the ULX3S and ButterStick
-board files carry their makers' open hardware licences.
+derived from keep their own licences:
+
+<!-- One row per source, in alphabetical order, so that two pull requests
+     adding different sources put their rows in different places rather than
+     both rewriting one sentence. -->
+
+| Upstream source | Its licence, or whose it is |
+|---|---|
+| Arty A7 drawing | Digilent's |
+| ButterStick board files | Its maker's open hardware licence |
+| Icepi Zero board files | Solderpad Hardware Licence 2.1 |
+| PYNQ-Z2 model | TUL's |
+| Raspberry Pi mechanical drawings | Raspberry Pi Ltd's |
+| Tiny Tapeout board files | Apache 2.0 |
+| ULX3S board files | Its maker's open hardware licence |
