@@ -1597,9 +1597,9 @@ draw a title through its neighbour is still made per sheet.
 
 **Everything that quoted the names.** `README.md` ("What a sheet is called"
 gains the third rule), `tinytapeout/mounting_plate/README.md`, `TODO.md`
-section 7, the docstrings in `layout.py`, `check_sheets.py`, `sheet.py` and
-`template_sheet.py`. The README grids are regenerated. The entries above keep
-the names the sheets carried when they were written.
+under "Drill templates", the docstrings in `layout.py`, `check_sheets.py`,
+`sheet.py` and `template_sheet.py`. The README grids are regenerated. The
+entries above keep the names the sheets carried when they were written.
 
 ## The bound copies were outside the net
 
