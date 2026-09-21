@@ -7,7 +7,7 @@ sheets, and the mounting plate is a Tiny Tapeout thing so it sits under
 library, the schema, the generator and the checks -- lives here in ``tools``.
 
 The one thing that arrangement makes harder is answering "where are all the
-sheets", which the generator, the README builder and the three checks that
+sheets", which the generator, the README builder and the checks that
 walk every sheet all need.  They ask here, so they cannot disagree about the
 set: a family added in one place and forgotten in another is exactly the drift
 these checks exist to catch.
