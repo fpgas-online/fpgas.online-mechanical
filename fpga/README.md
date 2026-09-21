@@ -1,6 +1,6 @@
 # FPGA development boards
 
-Five FPGA boards that turn up in the same racks as the Tiny Tapeout demo
+FPGA boards that turn up in the same racks as the Tiny Tapeout demo
 boards, each drawn on its own sheet with its Pmod hosts, USB ports, Ethernet
 jack and user LEDs marked.
 
