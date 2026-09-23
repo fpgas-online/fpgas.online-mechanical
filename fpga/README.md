@@ -51,6 +51,14 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>FPGA-CYNTHION</b> Cynthion<br>r1.4.0
 </td>
 </tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="output/ultra96-v2.pdf"><img src="output/previews/ultra96-v2.png" width="270" alt="FPGA-ULTRA96-V2 Avnet Ultra96-V2"></a><br>
+<b>FPGA-ULTRA96-V2</b> Avnet Ultra96-V2<br>96Boards CE, 85 x 54 mm
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
+</tr>
 </table>
 
 <!-- sheets:end -->
@@ -117,6 +125,20 @@ and the sheet says which it was.
   hang off the front edge and a peripheral plugs in level with the board --
   which is also why this is the first sheet to state its own assembled
   envelope rather than take the computed one.
+- **Ultra96-V2**: Avnet's "Mechanical and Drill" plot, a vector PDF. Its
+  media box is cropped to the drawing, so the sheet frame and title block are
+  outside it and the only thing on it that can fix the scale is the board
+  outline; the scale is recovered from that, per axis, against the 96Boards
+  Consumer Edition 85 x 54 mm, and then checked -- the four mounting holes
+  land within 13 um of the specification's pattern and the two expansion
+  connectors come out on exactly 2.00 and 0.80 mm. What makes the plot
+  readable is that Altium wrote the pad designators into it as text, so
+  `PAJ501` on a pad says it is pin 1 of J5. There is no component body
+  outline anywhere on it, so every feature is a pad extent. **No Pmod and no
+  Ethernet**: expansion is the 96Boards 40-way low-speed and 60-way
+  high-speed connectors, and the only networking on the board is Wi-Fi and
+  Bluetooth. The hole diameter is the specification's M2.5, because the plot
+  draws each hole as a solid 5.0 mm disc -- the keepout -- and no drill.
 
 The PYNQ-Z1 was looked at and left out: Digilent's 3D model of it has no
 mounting holes and its outline disagrees with their own stated size.
