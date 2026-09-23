@@ -44,6 +44,23 @@ Each has caught a real defect. `make check` runs all but `crosscheck_gerber.py`,
 which needs network. A sixth, `verify.py`, is specific to the mounting plate
 and lives with it.
 
+GitHub Actions runs `make check` on every push to `main` and on every pull
+request: [`.github/workflows/check.yml`](../.github/workflows/check.yml). The
+job runs in a `debian:trixie` container with Inkscape and both DejaVu font
+packages installed from Debian 13, which is what the committed PDFs were drawn
+with; `check_pdfs.py` compares bytes, and only that Inkscape, cairo and font
+are known to write the same ones. The workflow prints the versions it drew
+with, and a run that fails uploads every `output/` directory as the run left
+it.
+
+What that run does not catch is a source changed and no sheet re-rendered.
+`check_pdfs.py` holds the committed PDF against the committed SVG, and the two
+still agree with each other; the other checks read the fresh render, which is
+fine. Only comparing the rebuilt tree with the committed one would say so, and
+the workflow has no such step yet, because a full rebuild restamps every sheet
+that carries an older `VERSION` than the last source commit and so dirties
+the tree with nothing wrong.
+
 - **`check_sheets.py`** re-reads the generated SVGs, recomputes every text
   bounding box from the same font metrics the layout used, and reports text
   that collides, has a line running through it, falls outside the frame, or
