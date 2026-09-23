@@ -26,8 +26,10 @@ from accessories.raspmod import RASPMOD                       # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE                              # noqa: E402
 from fpga.boards import BOARDS as FPGA                        # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
+from raspberry_pi_camera.boards import BOARDS as RPICAM       # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
-from tools.generate_diagrams import FPGA_ORDER, RPI_ORDER, tt_sheets  # noqa: E402
+from tools.generate_diagrams import (FPGA_ORDER, RPICAM_ORDER,  # noqa: E402
+                                     RPI_ORDER, tt_sheets)
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           FITTING_GUIDE_STEM, PLATE_STEM, PMOD_HAT_STEM,
                           acc_stem, drawing_name, rel, slug)
@@ -68,6 +70,10 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
          "raspberry-pi", COLUMNS,
          named("raspberry-pi", [(slug(k), RPI[k].title, RPI[k].subtitle)
                                 for k in RPI_ORDER])),
+        ("Raspberry Pi camera modules", "raspberry-pi-camera", COLUMNS,
+         named("raspberry-pi-camera",
+               [(slug(k), RPICAM[k].title, RPICAM[k].subtitle)
+                for k in RPICAM_ORDER])),
         ("FPGA development boards", "fpga", COLUMNS,
          named("fpga", [(slug(k), FPGA[k].title, FPGA[k].subtitle)
                         for k in FPGA_ORDER])),
@@ -153,6 +159,7 @@ def family_grid(folder: str, base: Path) -> str:
 FAMILY_READMES = {
     "tinytapeout": ROOT / "tinytapeout" / "README.md",
     "raspberry-pi": ROOT / "raspberry_pi" / "README.md",
+    "raspberry-pi-camera": ROOT / "raspberry_pi_camera" / "README.md",
     "fpga": ROOT / "fpga" / "README.md",
     "accessories": ROOT / "accessories" / "README.md",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "README.md",
