@@ -893,6 +893,16 @@ STANDARD_PCB_THICKNESS = (0.6, 0.8, 1.0, 1.2, 1.6, 2.0, 2.4)
 #: as that thickness.  The demo boards are all within 0.04 mm of 1.6.
 NOMINAL_THICKNESS_TOL = 0.05
 
+#: How far a part may reach past the board edge before the sheet calls it an
+#: overhang.  Equality was the test, and the Camera Module 3's connector
+#: cleared the edge by 0.001 mm -- its width is read from one elevation and
+#: its depth from another, so the two need not land on the same last digit --
+#: which printed an "assembled envelope" note giving the outline back.  The
+#: same figure as NOMINAL_THICKNESS_TOL, doing the same job: telling the last
+#: digit of a measurement from a real difference.  Every sheet that carries
+#: the note overhangs by 0.35 mm or more.
+ENVELOPE_TOL = 0.05
+
 
 def _nominal_thickness(o) -> float | None:
     """The finished thickness a board's stackup sum corresponds to, if any.
@@ -1089,7 +1099,7 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         x1 = max([o.width] + [f.x1 for f in fitted])
         y0 = min([0.0] + [f.y0 for f in fitted])
         y1 = max([o.height] + [f.y1 for f in fitted])
-        if (x0, y0, x1, y1) != (0.0, 0.0, o.width, o.height):
+        if max(-x0, -y0, x1 - o.width, y1 - o.height) > ENVELOPE_TOL:
             notes.append(
                 "Assembled envelope, connector overhang included: "
                 f"{x1 - x0:.2f} x {y1 - y0:.2f} mm.")
