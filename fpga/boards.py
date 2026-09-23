@@ -8,11 +8,13 @@ Regenerate with::
 
 Coordinates follow :mod:`tools.schema`: origin at the lower-left corner of the
 board, X right, Y up, top view, millimetres.  Each board is drawn the way its
-maker draws it: the Arty A7 and ULX3S with their Pmod or GPIO edge and USB
-along the top, the PYNQ-Z2 with its Pmod hosts on the right, ButterStick with
-its USB-C and Ethernet on the right, and the Icepi Zero the way Raspberry Pi
-draw a Zero, its GPIO header along the top and its connector edge at the
-bottom.
+maker draws it:
+
+* the Arty A7 and ULX3S with their Pmod or GPIO edge and USB along the top
+* the PYNQ-Z2 with its Pmod hosts on the right
+* ButterStick with its USB-C and Ethernet on the right
+* the Icepi Zero the way Raspberry Pi draw a Zero, its GPIO header along the
+  top and its connector edge at the bottom
 """
 
 from __future__ import annotations

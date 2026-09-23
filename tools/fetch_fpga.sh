@@ -1,8 +1,8 @@
 #!/bin/sh
 # Fetch the upstream sources for the FPGA development boards into tmp/src.
 #
-# Three are git repositories and are cloned; the extractor checks each board
-# file out at a pinned commit.  Two are vendor downloads:
+# Some are git repositories and are cloned; the extractor checks each board
+# file out at a pinned commit.  The rest are vendor downloads:
 #
 #   Digilent's file host answers a plain curl with 403, but serves the same
 #   URL to anything that sends a browser User-Agent.

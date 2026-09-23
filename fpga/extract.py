@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate ``fpga/boards.py`` from each FPGA board's own published source.
 
-Five boards, three kinds of source, one rule: the numbers are machine-read
+Several kinds of source, one rule: the numbers are machine-read
 and the identification is hand-curated.
 
 ===========  =============================================================
@@ -39,8 +39,8 @@ from tools.kicad_extract import one  # noqa: E402
 SRC = ROOT / "tmp" / "src"
 WORK = ROOT / "tmp" / "pcb"
 
-#: The number each feature carries on every sheet of the family.  Five boards
-#: with five different sets of connectors share one schedule, so a reader
+#: The number each feature carries on every sheet of the family.  The boards
+#: carry different sets of connectors and share one schedule, so a reader
 #: flipping between them finds the Ethernet jack at 3 whether the board has
 #: one or not.  Pmod hosts are not features: they have their own table, as
 #: on every other family.
@@ -1064,11 +1064,13 @@ Regenerate with::
 
 Coordinates follow :mod:`tools.schema`: origin at the lower-left corner of the
 board, X right, Y up, top view, millimetres.  Each board is drawn the way its
-maker draws it: the Arty A7 and ULX3S with their Pmod or GPIO edge and USB
-along the top, the PYNQ-Z2 with its Pmod hosts on the right, ButterStick with
-its USB-C and Ethernet on the right, and the Icepi Zero the way Raspberry Pi
-draw a Zero, its GPIO header along the top and its connector edge at the
-bottom.
+maker draws it:
+
+* the Arty A7 and ULX3S with their Pmod or GPIO edge and USB along the top
+* the PYNQ-Z2 with its Pmod hosts on the right
+* ButterStick with its USB-C and Ethernet on the right
+* the Icepi Zero the way Raspberry Pi draw a Zero, its GPIO header along the
+  top and its connector edge at the bottom
 """
 
 from __future__ import annotations

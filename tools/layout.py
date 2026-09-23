@@ -1,13 +1,13 @@
 """Where everything lives, and what every sheet is called.
 
-This repository groups by subject: ``tinytapeout``, ``raspberry_pi`` and
-``accessories`` each own their data, their extractor and their rendered
-sheets, and the mounting plate is a Tiny Tapeout thing so it sits under
+This repository groups by subject: each family's directory owns its data,
+its extractor and its rendered sheets (``FAMILY_DIRS`` below says where each
+renders to) and the mounting plate is a Tiny Tapeout thing so it sits under
 ``tinytapeout``.  Machinery that belongs to no subject -- the drafting
 library, the schema, the generator and the checks -- lives here in ``tools``.
 
 The one thing that arrangement makes harder is answering "where are all the
-sheets", which the generator, the README builder and the three checks that
+sheets", which the generator, the README builder and the checks that
 walk every sheet all need.  They ask here, so they cannot disagree about the
 set: a family added in one place and forgotten in another is exactly the drift
 these checks exist to catch.
@@ -45,7 +45,7 @@ TT_STEM_LEAD = "tt-demo-board"
 #:
 #: A stem names the file, and the sheet's title block already says who makes
 #: the part and what its part number is, so the stem is left to say what the
-#: thing is.  What that drops differs by row, and only two of the four keys
+#: thing is.  What that drops differs by row, and only some of the keys
 #: carry a vendor at all:
 #:
 #: * ``pmod-hat-adapter`` keeps its key and loses ``-adapter``, which the
@@ -309,18 +309,21 @@ def plate_name(stem_tail: str) -> str:
 
 
 #: How a family cuts what is left of a stem down to a drawing name, for the
-#: three families that need it.  A separate table rather than a third column
+#: families that need it.  A separate table rather than a third column
 #: of FAMILY_PREFIXES: several branches are open at once each adding a row to
 #: that table, and changing its shape would conflict with every one of them,
 #: where a new table beside it conflicts with nothing.
 #:
 #: A family with no rule here is named for its stem, which is the ordinary
 #: case and wants no table: RPI-3B and FPGA-ARTY-A7 are already as short as
-#: their sheets can honestly be said to be.  The three families here are the
-#: ones where the stem is not: a demo board's carries every revision the sheet
-#: covers, an accessory's says in words what the part is, and a mounting plate
-#: sheet's says its title -- ``chassis-drill-template``.  All three are right
-#: for a file name and too long for a drawing number.
+#: their sheets can honestly be said to be.  The families here are the
+#: ones where the stem is not:
+#:
+#: * a demo board's stem carries every revision the sheet covers
+#: * an accessory's says in words what the part is
+#: * a mounting plate sheet's says its title -- ``chassis-drill-template``
+#:
+#: Each is right for a file name and too long for a drawing number.
 FAMILY_NAME_RULES = {
     "tinytapeout": tt_name,
     "accessories": acc_name,

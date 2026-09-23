@@ -1,9 +1,9 @@
 # Regenerate everything from the sources.
 #
-# The repository groups by subject: tinytapeout/, raspberry_pi/, fpga/ and
-# accessories/ each own their data, their extractor and their sheets, the
-# mounting plate sits under tinytapeout/, and tools/ holds the machinery that
-# belongs to no subject.
+# The repository groups by subject: each family's directory owns its data,
+# its extractor and its sheets, the mounting plate sits under tinytapeout/,
+# and tools/ holds the machinery that belongs to no subject.  README.md says
+# which families there are.
 #
 # The upstream inputs live under tmp/ and are not committed: run `make fetch`
 # once to get them, then `make` to rebuild the data and every drawing.
@@ -53,7 +53,7 @@ check: diagrams
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
 
 # Every output/ directory is build product: `make clean && make diagrams`
-# restores all 70 files, every one of them byte for byte, since
+# restores every file in them byte for byte, since
 # tools/reproducible.py pins the clocks and tool version strings the formats
 # would otherwise stamp in.  So remove them outright rather than picking off
 # extensions one at a time.

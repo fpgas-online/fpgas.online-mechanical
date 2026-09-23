@@ -16,7 +16,7 @@ Imported, not run.
 |---|---|
 | [`drafting/`](drafting/README.md) | The 2D drawing library: turns a `BoardSpec` into an ISO-style sheet |
 | `schema.py` | `BoardSpec`, `Outline`, `Hole`, `Slot`, `Pmod`, `Feature`, `Source` |
-| `layout.py` | Where the sheets and the bound copies are, what file each sheet is written to and what each is called: one answer, so nothing can disagree about the set, a file stem or a drawing name. A name is the stem in capitals behind the family prefix, unless the family has a rule in `FAMILY_NAME_RULES` that cuts it shorter, which the demo boards and the accessories do. Not what goes *into* a bound copy: that page list is `generate_diagrams.bundles()`, one answer for the same reason |
+| `layout.py` | Where the sheets and the bound copies are, what file each sheet is written to and what each is called: one answer, so nothing can disagree about the set, a file stem or a drawing name. A name is the stem in capitals behind the family prefix, unless the family has a rule in `FAMILY_NAME_RULES` that cuts it shorter. Not what goes *into* a bound copy: that page list is `generate_diagrams.bundles()`, one answer for the same reason |
 | `kicad_pcb.py` | Minimal reader for KiCad `.kicad_pcb` s-expression files |
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
@@ -28,21 +28,23 @@ Imported, not run.
 | | |
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's mechanical drawings into `tmp/` |
-| `fetch_fpga.sh` | Clones the ULX3S, ButterStick and Icepi Zero repositories and downloads the Arty A7 drawing and the PYNQ-Z2 model into `tmp/` |
-| `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the three A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
+| `fetch_fpga.sh` | Clones the repositories and downloads the drawings and models the FPGA boards are read from into `tmp/`; [`fpga/README.md`](../fpga/README.md) says which board is read from what |
+| `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
 
 The extractors are not here. Each lives with its subject:
-[`tinytapeout/extract.py`](../tinytapeout/README.md),
-[`raspberry_pi/extract.py`](../raspberry_pi/README.md),
-[`fpga/extract.py`](../fpga/README.md), and
-[`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md).
+
+- [`accessories/extract.py`](../accessories/README.md)
+- [`fpga/extract.py`](../fpga/README.md)
+- [`raspberry_pi/extract.py`](../raspberry_pi/README.md)
+- [`tinytapeout/extract.py`](../tinytapeout/README.md)
+- [`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md)
 
 ## Checks
 
 Each has caught a real defect. `make check` runs all but `crosscheck_gerber.py`,
-which needs network. A sixth, `verify.py`, is specific to the mounting plate
-and lives with it.
+which needs network. A check specific to one made part is not here: it lives
+with the part, as the mounting plate's `verify.py` does.
 
 GitHub Actions runs `make check` on every push to `main` and on every pull
 request: [`.github/workflows/check.yml`](../.github/workflows/check.yml). The
@@ -105,7 +107,7 @@ the tree with nothing wrong.
   `reproducible.py` makes rendering reproducible; it used to compare only page
   content streams, because cairo stamped a clock into every file it wrote.
 
-  It then walks the three bound copies, which have no SVG and so cannot be
+  It then walks the bound copies, which have no SVG and so cannot be
   checked by re-rendering anything. Each is held against the page list
   `generate_diagrams.bundles()` defines -- imported, not retyped, so the two
   cannot drift -- page by page on the content stream and on the page size,

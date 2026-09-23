@@ -1110,7 +1110,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         # The corner radius callout is drawn above the board, five millimetres
         # off the top edge, and a chain on that edge puts its spacing
         # dimension six millimetres off the same edge.  The two would print on
-        # top of each other.  Not a hypothetical: twelve of the fifteen board
+        # top of each other.  Not a hypothetical: most of the board
         # sheets here have a corner radius, and the Raspberry Pi 5 sits one
         # mounting hole away from a top chain at 4-3.  Loud rather than silent,
         # because the drawing would still render and the collision is the sort

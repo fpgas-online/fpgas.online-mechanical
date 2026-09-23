@@ -47,7 +47,7 @@ from tools import reproducible  # noqa: E402
 VERSION = reproducible.source_version()
 
 #: Every A3 Tiny Tapeout sheet bound into one document, beside the sheets it
-#: is made of: the two mounting plate drawings first, then the six demo
+#: is made of: the two mounting plate drawings first, then the demo
 #: boards.  The plate is what a reader of the set is designing against, and
 #: the fitting guide is the index to the board sheets that follow it.  Not
 #: the drill templates -- those are A4 portrait, and a document that mixes
@@ -58,7 +58,7 @@ VERSION = reproducible.source_version()
 #: own.
 TT_BUNDLE = "tinytapeout-sheets.pdf"
 
-#: The three Raspberry Pi sheets bound the same way, for the same reasons.
+#: The Raspberry Pi sheets bound the same way, for the same reasons.
 RPI_BUNDLE = "raspberry-pi-sheets.pdf"
 
 #: And the FPGA development boards.

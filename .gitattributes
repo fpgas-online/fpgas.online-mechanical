@@ -1,0 +1,24 @@
+# SCRATCH.md is a log that every branch appends an entry to, so any two
+# branches change the same place, the end of the file, and git calls that a
+# conflict although the answer is always "keep both".  `merge=union` makes git
+# give that answer by itself: where both sides changed the same lines it keeps
+# both sides' lines and writes no conflict markers.
+#
+# Three things to know about it.
+#
+# It works for merges, rebases and cherry-picks made by a git that can see
+# this file.  GitHub's merge button does not apply merge drivers from
+# .gitattributes and still reports the conflict, so a branch may have to be
+# merged or rebased locally before GitHub will take it.
+#
+# The blank line that both appended entries begin with comes out once, not
+# twice, so the second entry's `## ` heading arrives with no blank line above
+# it.  Put one back after the merge.
+#
+# And union never asks.  A line that both sides edited is kept in both
+# versions, one after the other, with nothing to say so.  That is why TODO.md
+# is deliberately NOT listed here although branches append to it too: it is
+# also edited in place, a section's status in its heading, a task ticked off,
+# and merged with union each of the nine branches it was tried against came
+# out with one heading doubled.  There a visible conflict is the safer failure.
+SCRATCH.md merge=union

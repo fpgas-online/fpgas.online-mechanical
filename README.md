@@ -19,10 +19,13 @@ it, so a new board is a new directory and does not disturb the others.
 |-----------|------------------------------|
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
-| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Pi 3B/3B+, 4B and 5, each with a Digilent Pmod HAT Adapter overlaid |
-| [`fpga/`](fpga/README.md) | `FPGA-*` -- Digilent Arty A7, ULX3S, TUL PYNQ-Z2, ButterStick and the Icepi Zero, with Pmod, USB, Ethernet and LEDs marked |
-| [`accessories/`](accessories/README.md) | `ACC-*` -- Pmod HAT Adapter, two PoE splitters as envelope drawings, and the Raspmod, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
+| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, each with a Digilent Pmod HAT Adapter overlaid |
+| [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
+| [`accessories/`](accessories/README.md) | `ACC-*` -- Parts that are none of the boards above but turn up in the same assemblies, such as Pi-to-Pmod adapters and PoE splitters, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
+
+Which boards and parts a family holds is in its own README, and every sheet
+is shown [below](#the-sheets).
 
 ## What a sheet is called
 
@@ -32,7 +35,7 @@ prefix: `fpga/output/arty-a7.pdf` is **`FPGA-ARTY-A7`** and
 already says is dropped: the mounting plate's four stems all begin
 `tt-generic-mounting-plate`, which is what `TT-MP` says.
 
-Three families are named by a rule instead, because their file stems say more
+Some families are named by a rule instead, because their file stems say more
 than a drawing number can carry. A file name is read once from a directory
 listing by somebody choosing between files, and can afford to say what a sheet
 covers; a drawing number is read off a title block, quoted in a note on another
@@ -243,7 +246,7 @@ make check     # render every sheet, refresh the grids, then run the checks
 ```
 
 Rebuilding is deterministic, and that is checked rather than hoped for: three
-full `make clean && make diagrams` cycles produce all 70 output files
+full `make clean && make diagrams` cycles produce every output file
 byte-identical, so `git status` is silent after a rebuild unless a drawing
 actually changed. Cairo, pypdf and ezdxf all stamp a clock, cairo, Inkscape
 and pypdf their names and versions, and ezdxf two random GUIDs into what
@@ -260,7 +263,7 @@ never answered the question a reader actually has, which is which version of
 the data the drawing was made from. A `+` on the end means it was rendered
 with uncommitted changes.
 
-Six checks run over the output and each has caught a real defect, from text
+Every check that runs over the output has caught a real defect, from text
 colliding on a sheet to a mounting hole no M3 screw actually fits.
 [`tools/README.md`](tools/README.md) says what each one does and what it
 found.
@@ -276,8 +279,18 @@ the upstream sources, so it runs no `make fetch`.
 ## Licence
 
 Apache 2.0; see [`LICENSE`](LICENSE). The upstream sources these drawings are
-derived from keep their own licences: the Tiny Tapeout board files are Apache
-2.0, the Raspberry Pi mechanical drawings are Raspberry Pi Ltd's, the Arty A7
-drawing is Digilent's, the PYNQ-Z2 model is TUL's, the Icepi Zero board files
-are under the Solderpad Hardware Licence 2.1, and the ULX3S and ButterStick
-board files carry their makers' open hardware licences.
+derived from keep their own licences:
+
+<!-- One row per source, in alphabetical order, so that two pull requests
+     adding different sources put their rows in different places rather than
+     both rewriting one sentence. -->
+
+| Upstream source | Its licence, or whose it is |
+|---|---|
+| Arty A7 drawing | Digilent's |
+| ButterStick board files | Its maker's open hardware licence |
+| Icepi Zero board files | Solderpad Hardware Licence 2.1 |
+| PYNQ-Z2 model | TUL's |
+| Raspberry Pi mechanical drawings | Raspberry Pi Ltd's |
+| Tiny Tapeout board files | Apache 2.0 |
+| ULX3S board files | Its maker's open hardware licence |
