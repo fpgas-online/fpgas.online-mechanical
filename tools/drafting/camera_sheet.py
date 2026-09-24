@@ -23,14 +23,19 @@ picture is the declared angle along each axis, 53.50 across the sensor's long
 side and 41.41 along its short side, and which of the two lies along the
 subject's X depends on which way the camera is turned.  Each elevation draws
 the angle that lies in its own plane, from the lens to the edges of the frame,
-and dimensions the height and the lateral position of the lens.  Only the
-stock 65 degree lens is drawn: the 120 degree lens's declared pair
-contradicts itself, so either of its two cones would be a drawing of one of
-two figures that cannot both be right, and it has no published near limit
-to check a height against.  Its heights are in the table.
+and dimensions the height and the lateral position of the lens.
 
-One sheet per SUBJECT, both lenses in its tables, rather than one per lens:
-the person reading it has one board in front of them.  The frame footprints
+Both lenses are drawn on both elevations, each with its own camera at its
+own height and its own rays, told apart by line type -- solid for the stock
+65 degree lens, long dashes for the 120 -- and keyed in the legend.  The
+autofocus version of the stock camera is not drawn: its angles are the stock
+lens's to within a degree and its cone would lie on top of the stock one.
+Its height is in the table beside theirs, with whether each height is in
+focus.
+
+One sheet per SUBJECT, both lenses on it, rather than one per lens: the
+person reading it has one board in front of them, and wants to see the two
+heights against each other.  The frame footprints
 do not depend on the lens -- a frame is the sensor's own 4:3 round its target,
 which is the shape of the file that comes out -- so a subject has exactly as
 many rectangles as it has things worth framing, and the lens only decides how
@@ -43,7 +48,8 @@ import math
 
 from raspberry_pi_camera import optics
 from raspberry_pi_camera.optics import (LENSES, Subject,  # noqa: E501
-                                        blur, coincident_edges, place)
+                                        coincident_edges, place)
+from tools.schema import Source
 
 from . import dims, style
 from .board_sheet import (draw_feature, draw_holes, draw_legend, draw_pmod,
@@ -51,9 +57,26 @@ from .board_sheet import (draw_feature, draw_holes, draw_legend, draw_pmod,
 from .plate_sheet import draw_slot
 from .sheet import Rect, Sheet, TitleBlock
 from .view import STANDARD_SCALES, View, scale_text
+from tools.layout import LENS_STEM, drawing_name
 
-#: The lens every view draws.  The other is in the tables only.
+#: The lens whose height sets the elevations' extent, and whose camera sits
+#: highest: the stock one.
 DRAWN = "65"
+
+#: The sheet that carries every lens figure, declared and derived, and
+#: where each came from.  These sheets carry the figures they compute with
+#: and send the reader there for the rest.
+LENS_SHEET = drawing_name("raspberry-pi-camera", LENS_STEM)
+
+#: The rays from each drawn lens to the edge of its picture, by lens key:
+#: solid for the stock lens, long dashes for the wide one, both thin and in
+#: frame A's colour.  Solid so the stock lens's are not read as the
+#: chain-double-dot footprint in the plan, which is the same colour; dashed
+#: long enough that the wide lens's are not read as hidden detail.
+RAYS = {
+    "65": ("line", style.W_THIN, style.C_FRAME_A, None),
+    "120": ("line", style.W_THIN, style.C_FRAME_A, "5.0,1.5"),
+}
 
 #: The library's notes band, shrunk to nothing: these sheets put their notes
 #: in the paper the views leave instead.  See ``_note_columns``.
@@ -77,7 +100,7 @@ def _plan_bottom(subject: Subject) -> float:
 ELEV_OUTER = 26.0       # the side the height dimensions stand on
 ELEV_UNDER = 15.0       # the lateral dimension, under the lowest line drawn
 CAPTION = 7.0           # above every view
-GAP = 10.0              # between the two elevations
+GAP = 8.0               # between the two elevations
 
 #: How far above the lens the elevations reach, in model millimetres: room
 #: for the camera module drawn over it.
@@ -85,6 +108,9 @@ ABOVE_LENS = 12.0
 
 #: Radius of the arc that marks the angle at the lens, in sheet millimetres.
 ARC_R = 11.0
+#: The wide lens's arc, smaller: its label goes under it, inside its own
+#: cone, where the stock lens's rays cannot reach it.
+ARC_R_WIDE = 7.0
 
 #: A frame's colour, its legend style and its letter, by its position in the
 #: subject's list.  Two of each, because no subject has three things worth
@@ -95,11 +121,6 @@ FRAME_COLOURS = (style.C_FRAME_A, style.C_FRAME_B)
 FRAME_LEGEND = ("frame_a", "frame_b")
 FRAME_LETTERS = "AB"
 MAX_FRAMES = len(FRAME_COLOURS)
-
-#: The rays from the lens to the edge of frame A: solid, thin, frame A's
-#: colour.  Solid so they are not read as the chain-double-dot footprint in
-#: the plan, which is the same colour.
-RAY = ("line", style.W_THIN, style.C_FRAME_A, None)
 
 #: Radius of the lettered marker that names a frame at its own corner.
 MARKER_R = 3.2
@@ -160,12 +181,23 @@ def _below_plane(subject: Subject) -> list[tuple[str, float, float]]:
 
 
 def _elev_extent(subject: Subject, axis: str) -> tuple[float, float]:
-    """The model range an elevation along *axis* covers, across the page."""
+    """The model range an elevation along *axis* covers, across the page.
+
+    Frame A, the subject where something is drawn under the plane, and
+    wherever a lens's picture reaches past the frame: the wide lens's does,
+    on the axis its height was not set by, and its rays are drawn to where
+    they meet the plane rather than cut off at the frame.
+    """
     fr = subject.frames()[0]
     lo, hi = (fr.x0, fr.x1) if axis == "X" else (fr.y0, fr.y1)
     o = subject.spec.outline
     if _below_plane(subject):
         lo, hi = min(lo, 0.0), max(hi, o.width if axis == "X" else o.height)
+    for lens in LENSES.values():
+        p = place(fr, lens)
+        cu, half = (p.x, p.covers_x / 2) if axis == "X" \
+            else (p.y, p.covers_y / 2)
+        lo, hi = min(lo, cu - half), max(hi, cu + half)
     return lo, hi
 
 
@@ -176,17 +208,19 @@ def _elev_heights(subject: Subject) -> tuple[float, float]:
     return (min([b for _, _, b in below] + [0.0]) - 1.0, p.z + ABOVE_LENS)
 
 
-def _fmt_mod(lens) -> str:
-    if lens.min_object_distance is None:
-        return "not published"
-    return f"{lens.min_object_distance:.0f}"
+def _deg(a: float) -> str:
+    """An angle as its source gives it: 53.50, but 96 rather than 96.00."""
+    return f"{a:.0f}" if abs(a - round(a)) < 1e-9 else f"{a:.2f}"
 
 
-def _focus_verdict(p) -> str:
-    """What the height means against the lens's published near limit."""
-    if p.too_close is None:
-        return "UNKNOWN"
-    return "TOO CLOSE" if p.too_close else "ok"
+def _fmt_near(lens) -> str:
+    return f"{lens.near / 1000:g} m" if lens.near >= 1000 \
+        else f"{lens.near:.0f} mm"
+
+
+def _in_focus(p) -> str:
+    """Whether the height is inside the lens's declared focus range."""
+    return "no" if p.too_close else "yes"
 
 
 def _text(subject: Subject) -> tuple[list[str], list[str]]:
@@ -200,29 +234,30 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     """
     from raspberry_pi_camera import v1
     frames = subject.frames()
-    stock = LENSES["65"]
+    stock, wide, af = (optics.LENS_65, optics.LENS_120, optics.AUTOFOCUS)
     a = place(frames[0], stock)
+    w = place(frames[0], wide)
     notes = [
         "First angle; the end elevation is seen from the right. The camera, "
         "a Camera Module v1.3 from its own data, looks straight down, in a "
         "mode reading the whole sensor. Z is to its entrance pupil, which "
         "nobody locates; ASSUMED behind the lens face by at most the lens's "
         f"{v1.LENS_TOP_Z:.2f} mm, so set the FACE at Z and the picture is up "
-        f"to {100 * v1.LENS_TOP_Z / a.z:.1f}% larger, never smaller.",
+        f"to {100 * v1.LENS_TOP_Z / w.z:.1f}% larger, never smaller.",
         "A frame is the smallest rectangle of the sensor's own 4:3 holding "
         f"its target plus {optics.FRAME_MARGIN:.2f} mm all round, turned "
         "whichever way needs the lower camera; LONG says which. The margin "
-        "is what absorbs where the stand ends up: "
+        "absorbs where the stand ends up -- "
         f"{optics.FRAME_MARGIN:.2f} mm of lateral error, or a lean of "
-        f"{a.aim_tilt:.1f} deg at frame {FRAME_LETTERS[0]}'s Z, not both.",
+        f"{a.aim_tilt:.1f} deg at frame {FRAME_LETTERS[0]}'s {stock.short} Z "
+        f"and {w.aim_tilt:.1f} at its {wide.short} -- and what is not known "
+        "about the lenses, below.",
     ]
 
     # Which plane each frame's height is set from.  One note, because a
     # reader who sets the stand from the wrong face gets a picture that is
     # smaller at the thing they are photographing, and nothing on the drawing
-    # would tell them.
-    # Grouped by plane, not listed per frame: where two frames are set from
-    # one face, naming it for each would print its whole explanation twice.
+    # would tell them.  Grouped by plane, not listed per frame.
     by_plane: dict[tuple[str, str], list[str]] = {}
     for letter, fr in zip(FRAME_LETTERS, frames):
         t = fr.target
@@ -238,82 +273,63 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
         + ". A stand set h mm too low covers only (Z - h) / Z of what is "
         "drawn, so the error always loses the edges.")
 
-    # What stands above the plane the first frame's height was set from, and
-    # how high it may stand before it leaves the picture.
     for label, box in subject.standing:
         reach = ", ".join(
-            f"{place(frames[0], ln).headroom(box):.1f} mm at {ln.key} deg"
+            f"{place(frames[0], ln).headroom(box):.1f} mm at {ln.short}"
             for ln in LENSES.values())
         notes.append(
             f"HEADROOM: {label[0].lower()}{label[1:]} stays in frame "
             f"{FRAME_LETTERS[0]}'s picture up to {reach} above the plane Z is "
             "set from. Higher, raise the camera.")
 
-    # The one thing a reader has to be told before building anything, so it
-    # goes above the derivations.
-    verdicts = {_focus_verdict(place(fr, ln))
-                for fr in frames for ln in LENSES.values()}
-    if "TOO CLOSE" in verdicts:
-        on_sensor, on_subject = blur(a.z)
-        # Against the only close limits anyone publishes for a Raspberry Pi
-        # camera, which are other sensors': the question a reader has once
-        # the stock lens is ruled out is whether a focusable module would do.
-        reach = []
-        for quote, mm in optics.near_limits():
-            ins = [FRAME_LETTERS[i] for i, fr in enumerate(frames)
-                   if place(fr, stock).z >= mm]
-            said = ("every Z here inside it" if len(ins) == len(frames)
-                    else "no Z here inside it" if not ins
-                    else "/".join(ins) + " inside it")
-            reach.append(f'"{quote}", {said}')
-        af = optics.AUTOFOCUS
-        notes.append(
-            f"FOCUS: {stock.mod_note} Every Z here is nearer, so on a stock "
-            "OV5647 the board is OUT OF FOCUS: at frame "
-            f"{FRAME_LETTERS[0]}'s Z a point spreads to "
-            f"{on_sensor / optics.PIXEL_PITCH:.0f} pixels, about "
-            f"{on_subject:.1f} mm on the board (DERIVED, thin lens ASSUMED "
-            f"set at the {optics.FIXED_FOCUS_DISTANCE / 1000:.0f} m that "
-            "implies). "
-            "Raspberry Pi's focusable modules, other sensors: "
-            + "; ".join(reach) + f". The OV5647 that focuses is Arducam's "
-            f"B0176, {af.fov_h:.0f} x {af.fov_v:.0f} deg. {af.mod_note}")
-
-    # The wide lens's declared pair does not agree with the sensor's shape,
-    # so the picture runs over the rectangle drawn -- on the axis the height
-    # was NOT set from, which depends on how the camera is turned.  Both are
-    # read off the model rather than worded by hand, because a camera turned
-    # through ninety degrees runs over in Y rather than across.
-    for lens in LENSES.values():
-        if lens.consistent:
+    # Focus, before the derivations: the one thing a reader has to be told
+    # before building anything.
+    s_sensor, s_subject = stock.blur(a.z)
+    w_sensor, w_subject = wide.blur(w.z)
+    af_z = place(frames[0], af)
+    near, far = optics.dof(af_z.z, af.focal_length, af.f_number)
+    notes.append(
+        f'FOCUS. Both fixed lenses are declared "{stock.near_quote}" (Raspberry'
+        f' Pi) and "{wide.near_quote}" (Arducam), and every Z here is nearer:'
+        " on either the board is OUT OF FOCUS. At frame "
+        f"{FRAME_LETTERS[0]}'s Z a point spreads to "
+        f"{s_sensor / optics.PIXEL_PITCH:.0f} px, {s_subject:.1f} mm on the "
+        f"board, at {stock.short}, and {w_sensor / optics.PIXEL_PITCH:.0f} px,"
+        f" {w_subject:.1f} mm, at {wide.short} (DERIVED, thin lens ASSUMED set"
+        f" at {stock.focus_at / 1000:g} m). The autofocus {af.short}, "
+        f'Arducam\'s B0176, is declared "{af.near_quote}": every Z of '
+        f"{af.near:.0f} or more is in focus once it has focused, and at frame "
+        f"{FRAME_LETTERS[0]}'s its depth of field is {near:.1f} to "
+        f"{far:.1f} (DERIVED, F{af.f_number:g} ASSUMED). No 120 deg OV5647 "
+        "with a motorised lens is sold.")
+    # The wide lens: where its figures come from and what they are good to.
+    alts = []
+    for alt in wide.alternatives:
+        if alt.h > wide.fov_h and alt.v > wide.fov_v:
             continue
-        runs = []
-        for letter, fr in zip(FRAME_LETTERS, frames):
-            p = place(fr, lens)
-            dx, dy = p.excess
-            axis, over = ("X", dx) if dx >= dy else ("Y", dy)
-            runs.append(f"{letter} by {over:.2f} mm in {axis}")
-        notes.append(
-            f"The {lens.key} deg lens's declared pair is not self-consistent: "
-            f"{lens.fov_h:.0f} across a 4:3 sensor implies "
-            f"{lens.consistent_v:.2f} down it, not {lens.fov_v:.0f}. Z is the "
-            "greater of what the two ask for, so the picture runs OVER the "
-            "rectangle -- " + ", ".join(runs) + " -- which is still covered.")
+        spare = min(_spare(fr, wide, alt) for fr in frames)
+        alts.append(f"{alt.what}, {alt.h:.1f} x {alt.v:.1f}, leaving "
+                    f"{spare:.1f} mm")
+    notes.append(
+        f"The {wide.short} deg lens is a fisheye, {wide.fov_d:.0f} deg on the "
+        f"diagonal: {wide.fov_h:.0f} x {wide.fov_v:.0f} is that diagonal "
+        "split equidistantly. Its barrel distortion bows the picture's edges "
+        "outwards on the board, so the frame's corners are inside it; the "
+        "margin absorbs the narrower lenses the evidence allows, "
+        + "; ".join(alts) + f". See {LENS_SHEET}.")
 
     notes.append(
         f'The "{stock.key} deg" name is the stock lens\'s DIAGONAL, which '
         "no vendor prints: 2 x atan(sqrt("
-        f"{optics.IMAGE_AREA[0]:.2f}^2 + {optics.IMAGE_AREA[1]:.2f}^2) / 2 / "
-        f"{optics.FOCAL_LENGTH:.2f}) = {optics.DIAGONAL_FROM_IMAGE_AREA:.2f} "
-        f"deg from the image area, {optics.DIAGONAL_FROM_ARRAY:.2f} from the "
-        "pixel array. Every Z here is from the declared angle along each "
-        f"axis instead. {optics.NOMINAL_DIAGONAL:.0f} deg across frame "
-        f"{FRAME_LETTERS[0]}'s long side would give Z {a.naive_z:.1f} and "
-        f"lose {a.naive_shortfall:.1f} mm off each end of it.")
+        f"{optics.DATASHEET_IMAGE_AREA[0]:.2f}^2 + "
+        f"{optics.DATASHEET_IMAGE_AREA[1]:.2f}^2) / 2 / "
+        f"{optics.FOCAL_LENGTH:.2f}) = {optics.DIAGONAL_FROM_DATASHEET:.2f} deg "
+        "on OmniVision's image area, "
+        f"{optics.DIAGONAL_FROM_ARRAY:.2f} on the pixel array. Every Z here is "
+        f"from the angle along each axis. {optics.NOMINAL_DIAGONAL:.0f} deg "
+        f"across frame {FRAME_LETTERS[0]}'s long side would give Z "
+        f"{a.naive_z:.1f} and lose {a.naive_shortfall:.1f} mm off each end.")
 
-    # The sheets are lettered in ASCII, and the pages they quote are not.
-    # Nothing here is a character-for-character quote, so say so once rather
-    # than let a reader take "1.4 um x 1.4 um" for what the page prints.
     notes.append(
         "Quotes are transliterated to ASCII: x, um and infinity for the "
         "signs the cached pages print.")
@@ -324,17 +340,29 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
                          f"{fr.target.note}")
     notes += list(subject.notes)
 
-    # Every source the sheet makes a claim from, the autofocus variant's
-    # included: the AUTOFOCUS note above says the B0176 carries a motorised
-    # lens and a close focus setting, and that comes from Arducam's motorized
-    # focus page, not from the catalogue row.  It was cited nowhere.
     seen = []
-    for s in list(subject.sources) + [s for ln in LENSES.values()
-                                      for s in ln.sources] + list(af.sources):
+    lens_src = Source(
+        label="Lens figures and focus", ref=LENS_SHEET,
+        note="Every lens figure on this sheet, declared and derived, with "
+             "the vendor pages it is quoted from.")
+    for s in list(subject.sources) + [lens_src]:
         entry = f"{s.label}: {s.ref}" + (f" - {s.note}" if s.note else "")
         if entry not in seen:
             seen.append(entry)
     return notes, seen
+
+
+def _spare(frame, lens, alt) -> float:
+    """What of the margin is left round *frame*'s target at *lens*'s Z, if
+    the lens's angles are really *alt*'s."""
+    p = place(frame, lens)
+    t = frame.target
+    ax = alt.h if frame.long_axis == "X" else alt.v
+    ay = alt.v if frame.long_axis == "X" else alt.h
+    hx = p.z * math.tan(math.radians(ax / 2))
+    hy = p.z * math.tan(math.radians(ay / 2))
+    return min(t.x0 - (p.x - hx), (p.x + hx) - t.x1,
+               t.y0 - (p.y - hy), (p.y + hy) - t.y1)
 
 
 def _draw_plan(sheet: Sheet, subject: Subject, view: View) -> None:
@@ -490,45 +518,56 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
 
 
 def _tables(sheet: Sheet, subject: Subject) -> None:
-    """Two tables: one row per frame, and one row per lens.
+    """Three tables: the frames, the heights and focus, and the lenses.
 
-    The frames and the heights were two tables, keyed to each other by the
-    frame letter, and a reader answering "where do I put the camera for the
-    LEDs" had to find B in one and then both of B's rows in the other.  One
-    row per frame with a height column per lens says the same thing in a
-    quarter of the column, which the mounting plate sheet needs: its view is
-    the tallest in the set, so its notes band is the shortest, and what the
-    band cannot hold comes out of this column.
-
-    No per-row focus verdict.  It was the same word on every row of every
-    sheet, and what it means is in the FOCUS note and in the LENSES table's
-    own near-limit column, which is where a reader compares lenses anyway.
+    The frames and where their axes are; then one row per frame giving the
+    height for each lens and whether that height is inside the lens's
+    declared focus range -- the stock lens fixed and motorised, and the
+    wide one, for which nobody sells a motorised version; then the lenses
+    themselves, declared figures against the ones used, each value's basis
+    flagged.
     """
     frames = subject.frames()
-    lenses = list(LENSES.values())
+    stock, wide, af = (optics.LENS_65, optics.LENS_120, optics.AUTOFOCUS)
+
+    rows = [[FRAME_LETTERS[i], fr.target.label,
+             f"{fr.width:.2f} x {fr.height:.2f}", fr.long_axis,
+             f"{fr.cx:.2f}", f"{fr.cy:.2f}"] for i, fr in enumerate(frames)]
+    title = "FRAMES, mm"
+    block = sheet.column_block(sheet.table_height(title, len(rows)))
+    sheet.table(block, title,
+                ["", "FRAME", "RECTANGLE", "LONG", "AXIS X", "AXIS Y"], rows,
+                ["middle", "start", "end", "middle", "end", "end"])
 
     rows = []
     for i, fr in enumerate(frames):
-        row = [FRAME_LETTERS[i], fr.target.label,
-               f"{fr.width:.2f} x {fr.height:.2f}", fr.long_axis,
-               f"{fr.cx:.2f}", f"{fr.cy:.2f}"]
-        row += [f"{place(fr, ln).z:.1f}" for ln in lenses]
-        rows.append(row)
-    headers = ["", "FRAME", "RECTANGLE mm", "LONG", "AXIS X", "AXIS Y"]
-    headers += [f"Z {ln.key}" for ln in lenses]
-    aligns = ["middle", "start", "end", "middle", "end", "end"] \
-        + ["end"] * len(lenses)
-    title = "FRAMES, AND Z ABOVE THE FRAME PLANE, mm"
+        a, m, w = place(fr, stock), place(fr, af), place(fr, wide)
+        rows.append([FRAME_LETTERS[i], f"{a.z:.1f}", _in_focus(a),
+                     f"{m.z:.1f}", _in_focus(m), f"{w.z:.1f}", _in_focus(w),
+                     "none sold"])
+    title = "Z ABOVE THE FRAME PLANE, mm, AND IN FOCUS THERE?"
     block = sheet.column_block(sheet.table_height(title, len(rows)))
-    sheet.table(block, title, headers, rows, aligns)
+    sheet.table(block, title,
+                ["", f"Z {stock.short}", "FIXED", f"Z {af.short}", "MOTOR",
+                 f"Z {wide.short}", "FIXED", "MOTOR"], rows,
+                ["middle", "end", "middle", "end", "middle", "end", "middle",
+                 "middle"])
 
-    rows = [[ln.name, f"{ln.fov_h:.2f}", f"{ln.fov_v:.2f}", ln.focus,
-             _fmt_mod(ln)]
-            for ln in lenses + [optics.AUTOFOCUS]]
-    block = sheet.column_block(sheet.table_height("LENSES", len(rows)))
-    sheet.table(block, "LENSES",
-                ["LENS", "H deg", "V deg", "FOCUS", "NEAR mm"], rows,
-                ["start", "end", "end", "start", "end"])
+    rows = []
+    for lens in (stock, af, wide):
+        rows.append([
+            lens.short, lens.product.split(",")[0],
+            _deg(lens.fov_h), _deg(lens.fov_v), f"{lens.fov_d:.1f} D",
+            f"{lens.focal_length:.2f} {lens.focal_basis[0]}",
+            f"F{lens.f_number:g} {lens.f_basis[0]}",
+            f"{lens.focus}, {_fmt_near(lens)} to inf"])
+    title = f"LENSES, deg, AS USED: SEE {LENS_SHEET}"
+    block = sheet.column_block(sheet.table_height(title, len(rows) + 1))
+    sheet.table(block, title,
+                ["", "MODULE", "H", "V", "DIAG", "f mm", "F", "FOCUS"],
+                rows + [["", "D DERIVED, A ASSUMED", "", "", "", "", "", ""]],
+                ["start", "start", "end", "end", "end", "end", "start",
+                 "start"])
 
 
 def _note_columns(sheet: Sheet, subject: Subject, end: View, front: View,
@@ -548,9 +587,14 @@ def _note_columns(sheet: Sheet, subject: Subject, end: View, front: View,
     plan_bottom = plan.rect.y - _plan_bottom(subject)
     cols = []
     beside = plan.rect.x1 + 10.0
-    if elev_bottom - plan_bottom >= 20.0:
-        cols.append(Rect(beside, plan_bottom, x1 - beside,
-                         elev_bottom - plan_bottom))
+    # Where the plan carries a leader to two coincident frame edges, its
+    # text runs out to the right under the plan, into the paper beside it:
+    # the column beside the plan stops above it.
+    beside_bottom = (plan.rect.y - 3.0 if any(coincident_edges(
+        subject.frames())) else plan_bottom)
+    if elev_bottom - beside_bottom >= 20.0:
+        cols.append(Rect(beside, beside_bottom, x1 - beside,
+                         elev_bottom - beside_bottom))
     gutter = 8.0
     w = (x1 - x0 - gutter) / 2
     cols += [Rect(x0 + i * (w + gutter), base, w, plan_bottom - base)
@@ -590,15 +634,16 @@ def _place_text(sheet: Sheet, subject: Subject, notes: list[str],
 # the elevations
 # ---------------------------------------------------------------------------
 
-def _along(subject: Subject, axis: str):
-    """Frame A, its target, the lens and the subject, along one axis.
+def _along(subject: Subject, axis: str, lens=None):
+    """Frame A, its target, a lens and the subject, along one axis.
 
     Returns (frame lo, frame hi, target lo, target hi, lens position, the
-    declared angle in this plane and which one it is, the subject's size).
+    lens's declared angle in this plane and which one it is, the subject's
+    size).
     """
     fr = subject.frames()[0]
     t = fr.target
-    lens = LENSES[DRAWN]
+    lens = lens or LENSES[DRAWN]
     p = place(fr, lens)
     o = subject.spec.outline
     if axis == "X":
@@ -611,16 +656,15 @@ def _along(subject: Subject, axis: str):
 
 
 def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
-                    axis: str) -> float:
-    """One elevation: the subject edge on, the lens over it, and its rays.
+                    axis: str) -> dict[str, float]:
+    """One elevation: the subject edge on, and each lens and its rays.
 
-    Returns the sheet position of the lens axis, which the caller
-    dimensions from the datum.
+    Returns the sheet position of each lens's apex by lens key; the lens
+    axis is the same for both, over frame A's centre, and the caller
+    dimensions it from the datum.
     """
     c = sheet.canvas
     f_lo, f_hi, t_lo, t_hi, cu, angle, which, size = _along(subject, axis)
-    p = place(subject.frames()[0], LENSES[DRAWN])
-    z = p.z
 
     # Under the plane: only what has a published or specified height.
     for what, top, bottom in _below_plane(subject):
@@ -636,9 +680,8 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
         c.rect(a[0], a[1], b[0] - a[0], b[1] - a[1], **kw)
 
     # The plane Z is measured from, a little past everything on it, and the
-    # target lying in it.
-    # Clipped to the view: a frame over part of a board leaves the rest of
-    # the board to run on across the other elevation.
+    # target lying in it.  Clipped to the view: a frame over part of a board
+    # leaves the rest of the board to run on across the other elevation.
     span_lo = max(min(f_lo, 0.0) - 3.0, v.model_x0)
     span_hi = min(max(f_hi, size) + 3.0, v.model_x1)
     c.line(*v.pt(span_lo, 0.0), *v.pt(span_hi, 0.0), w=style.W_THIN,
@@ -646,13 +689,6 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
     c.line(*v.pt(t_lo, 0.0), *v.pt(t_hi, 0.0), w=style.W_OUTLINE + 0.2,
            colour=style.C_HIGHLIGHT)
 
-    # The rays, from the lens to the edges of the frame.
-    apex = v.pt(cu, z)
-    for edge in (f_lo, f_hi):
-        c.line(*apex, *v.pt(edge, 0.0), w=RAY[1], colour=RAY[2])
-    # The optical axis.
-    c.line(*v.pt(cu, -1.5), *v.pt(cu, z + ABOVE_LENS - 3.0),
-           w=style.W_CENTRE, colour=style.C_LINE, dash=style.D_CENTRE)
     long_x = subject.frames()[0].long_axis == "X"
     # ASSUMED, as on the holder: the long image axis along the board's
     # width.  Lens down, the board's width runs against X; a quarter turn
@@ -661,18 +697,57 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
         along, sign = ("u", -1) if axis == "X" else ("v", 1)
     else:
         along, sign = ("v", -1) if axis == "X" else ("u", -1)
-    _draw_camera(c, v, cu, z, along, sign)
 
-    # The angle, at the lens, and its value outside the cone on the left,
-    # where neither elevation has anything else: the heights are dimensioned
-    # on the front elevation's right.
-    half = math.radians(angle / 2)
-    left = (apex[0] - ARC_R * math.sin(half), apex[1] - ARC_R * math.cos(half))
-    right = (apex[0] + ARC_R * math.sin(half), apex[1] - ARC_R * math.cos(half))
-    c.arc(*left, *right, ARC_R, sweep=1, w=style.W_THIN, colour=style.C_DIM)
-    c.text(left[0] - 1.5, left[1] + 1.0, f"{angle:.2f} deg, {which}",
-           size=style.T_DIM, colour=style.C_DIM, anchor="end")
-    return apex[0]
+    apexes = {}
+    wide_label = None
+    for lens in LENSES.values():
+        *_, angle, which, _ = _along(subject, axis, lens)
+        z = place(subject.frames()[0], lens).z
+        apex = v.pt(cu, z)
+        apexes[lens.key] = apex[0]
+        # The rays, from the lens to where the picture's edge meets the
+        # plane: the frame's edge on the axis that set the height, past it
+        # on the other.
+        half = math.radians(angle / 2)
+        reach = z * math.tan(half)
+        shape, wgt, colour, dash = RAYS[lens.key]
+        for edge in (cu - reach, cu + reach):
+            c.line(*apex, *v.pt(edge, 0.0), w=wgt, colour=colour, dash=dash)
+        _draw_camera(c, v, cu, z, along, sign)
+        # The angle, at the lens.  The stock lens's value goes outside its
+        # cone on the left, where nothing else is; the wide lens sits inside
+        # the stock lens's cone, so its value goes under its own arc, inside
+        # its own cone, which the stock lens's rays cannot cross.
+        r = ARC_R if lens.key == DRAWN else ARC_R_WIDE
+        left = (apex[0] - r * math.sin(half), apex[1] - r * math.cos(half))
+        right = (apex[0] + r * math.sin(half), apex[1] - r * math.cos(half))
+        c.arc(*left, *right, r, sweep=1, w=style.W_THIN, colour=style.C_DIM)
+        if lens.key == DRAWN:
+            c.text(left[0] - 1.5, left[1] + 1.0,
+                   f"{angle:.2f} deg, {which}", size=style.T_DIM,
+                   colour=style.C_DIM, anchor="end")
+        else:
+            wide_label = (apex[0], apex[1] - r - 1.5 - style.T_DIM,
+                          f"{angle:.0f} deg, {which}")
+            c.text(*wide_label, size=style.T_DIM, colour=style.C_DIM,
+                   anchor="middle")
+
+    # The optical axis, one line for both lenses, broken where the wide
+    # lens's value sits across it.
+    top = v.pt(cu, place(subject.frames()[0], LENSES[DRAWN]).z
+               + ABOVE_LENS - 3.0)
+    bottom = v.pt(cu, -1.5)
+    if wide_label:
+        gap_hi = wide_label[1] + style.T_DIM + 0.8
+        gap_lo = wide_label[1] - 1.2
+        c.line(bottom[0], bottom[1], bottom[0], gap_lo, w=style.W_CENTRE,
+               colour=style.C_LINE, dash=style.D_CENTRE)
+        c.line(top[0], gap_hi, top[0], top[1], w=style.W_CENTRE,
+               colour=style.C_LINE, dash=style.D_CENTRE)
+    else:
+        c.line(*bottom, *top, w=style.W_CENTRE, colour=style.C_LINE,
+               dash=style.D_CENTRE)
+    return apexes
 
 
 def _draw_camera(c, v: View, cu: float, z: float, along: str,
@@ -716,25 +791,36 @@ def _draw_camera(c, v: View, cu: float, z: float, along: str,
 
 def _dimension_front(sheet: Sheet, subject: Subject, v: View,
                      lens_x: float) -> None:
-    """Z, up the right-hand side, and X, under the view.
+    """Z for each lens, up the right-hand side, and X, under the view.
 
     Z is dimensioned here and not again on the end elevation: it is one
-    height, seen twice.  On the mounting plate the plate face gets a second
-    figure, because the plate is what a stand is built on and the plane Z
-    is measured from is a board standing on it.
+    height, seen twice.  The wide lens's, which is lower, is on the inner
+    lane.  On the mounting plate the plate face gets a second figure for
+    each, outside those, because the plate is what a stand is built on and
+    the plane Z is measured from is a board standing on it.
     """
     c = sheet.canvas
     f_lo, f_hi, t_lo, t_hi, cu, angle, which, size = _along(subject, "X")
-    p = place(subject.frames()[0], LENSES[DRAWN])
     right = v.pt(v.model_x1, 0.0)
-    dims.linear(c, right, v.pt(cu, p.z), 8.0, horizontal=False,
-                value=p.z, places=1)
+    order = sorted(LENSES.values(),
+                   key=lambda ln: place(subject.frames()[0], ln).z)
     below = _below_plane(subject)
-    if subject.key == "tt-mounting-plate":
-        plate_top = below[-1][1]
-        dims.linear(c, v.pt(size, plate_top), v.pt(cu, p.z),
-                    8.0 + style.DIM_STEP + (v.x(v.model_x1) - v.x(size)),
-                    horizontal=False, value=p.z - plate_top, places=1)
+    plate = subject.key == "tt-mounting-plate"
+    # Lens by lens, lowest first, each lens's figures side by side: an
+    # extension line from the higher lens then runs out past the lower
+    # lens's lanes, whose values sit at half the lower height, clear of it.
+    lane = 8.0
+    for lens in order:
+        z = place(subject.frames()[0], lens).z
+        dims.linear(c, right, v.pt(cu, z), lane, horizontal=False, value=z,
+                    places=1)
+        lane += style.DIM_STEP
+        if plate:
+            plate_top = below[-1][1]
+            dims.linear(c, v.pt(size, plate_top), v.pt(cu, z),
+                        lane + (v.x(v.model_x1) - v.x(size)),
+                        horizontal=False, value=z - plate_top, places=1)
+            lane += style.DIM_STEP
     # X of the lens, from the datum, under the lowest thing drawn.
     bottom = min([b for _, _, b in below] + [0.0])
     dims.linear(c, v.pt(0.0, bottom), (lens_x, v.y(0.0)),
@@ -789,8 +875,9 @@ def _layout(subject: Subject, scale: float, sp: float, area: Rect):
     front_w = (ex_hi - ex_lo) * s
     elev_h = (w_hi - w_lo) * s
     plan_w, plan_h = (px1 - px0) * sp, (py1 - py0) * sp
+    lanes = len(LENSES) * (2 if subject.key == "tt-mounting-plate" else 1)
     width = LEFT + max(end_w, plan_w) + GAP + front_w + ELEV_OUTER \
-        + (style.DIM_STEP if subject.key == "tt-mounting-plate" else 0.0)
+        + (lanes - 1) * style.DIM_STEP
     height = (CAPTION + elev_h + ELEV_UNDER + CAPTION + plan_h
               + _plan_bottom(subject))
     if width > area.w or height > area.h:
@@ -820,8 +907,11 @@ def _legend(subject: Subject) -> list:
     legend.append((("line", style.W_OUTLINE + 0.2, style.C_HIGHLIGHT, None),
                    f"Frame {FRAME_LETTERS[0]}'s target, on the plane Z is "
                    "measured from"))
-    legend.append((RAY, f"The {DRAWN} deg lens's field of view, to frame "
-                        f"{FRAME_LETTERS[0]}'s edges"))
+    for lens in LENSES.values():
+        legend.append((RAYS[lens.key],
+                       f"The {lens.short} deg lens's field of view, "
+                       f"{_deg(lens.fov_h)} x {_deg(lens.fov_v)}, to its "
+                       "picture's edge"))
     for i in range(len(subject.targets)):
         legend.append((FRAME_LEGEND[i],
                        f"Frame {FRAME_LETTERS[i]}, the rectangle the picture "
@@ -871,8 +961,8 @@ def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
     sheet.draw_frame()
     c = sheet.canvas
 
-    lens_x = _draw_elevation(sheet, subject, front, "X")
-    lens_y = _draw_elevation(sheet, subject, end, "Y")
+    lens_x = _draw_elevation(sheet, subject, front, "X")[DRAWN]
+    lens_y = _draw_elevation(sheet, subject, end, "Y")[DRAWN]
     _dimension_front(sheet, subject, front, lens_x)
     _dimension_end(sheet, subject, end, lens_y)
 

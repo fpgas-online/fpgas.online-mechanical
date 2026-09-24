@@ -342,12 +342,18 @@ def holder_name(stem: str) -> str:
             "on the plate for")
 
 
-#: The camera position sheets, by file stem.  A camera module's own sheet
-#: needs no row: ``cm3`` leaves ``3`` behind the lead and the name is
+#: The OV5647's lens sheet: every lens option's field of view and focus,
+#: declared and derived, which the position sheets compute with and cite.
+#: Its stem says what it is of; its name, RPICAM-LENS, says which sheet.
+LENS_STEM = "ov5647-lenses"
+
+#: The camera family's other sheets, by file stem.  A camera module's own
+#: sheet needs no row: ``cm3`` leaves ``3`` behind the lead and the name is
 #: RPICAM-3.  A position sheet's stem is ``over-`` and its subject's key,
 #: which says the subject in full -- ``over-tt-mounting-plate`` -- where
 #: the drawing number wants OVER and one word for which subject.
 RPICAM_NAMES = {
+    LENS_STEM: "lens",                         # the OV5647's lens options
     "over-tt-mounting-plate": "over-plate",    # the TT mounting plate
     "over-arty-a7": "over-arty",               # the Arty A7
 }
