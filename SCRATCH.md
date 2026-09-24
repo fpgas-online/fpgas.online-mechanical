@@ -2057,3 +2057,201 @@ Schedule 11 was renamed "Status LEDs, debug controller" as well.  The name is
 printed on the five sheets that do not carry the row, and "driven by the
 debug controller" pushed every FPGA feature schedule from 140 to 154 mm wide,
 for a row that on five of the six says only that the board has none.
+
+## The Zybo Z7, and a drawing that names nothing
+
+Digilent publish the Zybo Z7's mechanical drawing as the same pair as the
+Arty A7's -- `ZYBO_Z7_DXF.DXF` and `Mechanical_ZYBO_Z7.pdf`, in a zip the
+Resource Center links as "Zybo Z7 Mechanical Drawings" -- and the two files
+are dated a day apart in September 2020, out of the same Altium job.  So the
+Arty's reader became a shared one and the Zybo's numbers came out of it,
+with two differences the drawing itself forced:
+
+- **No keep-out layer.**  The Arty's outline is the whole of its
+  `KeepOutLayer`; the Zybo drawing has no such layer and keeps its edge on
+  `Mechanical1`, among the dimension lines.  Those run past whatever they
+  measure and their ends do not meet, so the edge is picked out as the one
+  closed rectangle of whole segments that every plated hole sits inside:
+  121.92 x 83.82, exactly 4.8 x 3.3 in.
+- **Notched Pmod sockets.**  The plot draws each 2x6 host as a rectangle
+  with a keying notch cut into both long edges, so it closes no rectangle at
+  all and `rectangles()` cannot see it -- all six hosts were invisible.
+  `outlines()` walks the segment graph and returns the extent of each
+  connected run, which finds any closed body whatever shape it is drawn as.
+  It over-reaches in exactly one place on this sheet: a dimension's extension
+  line leaves the USB-A's own front corner and carries the run 1.5 mm past
+  the back of the shell, so that one body is read from the rectangles.
+
+Nothing in either file is named.  What identifies the parts is Digilent's own
+STEP assembly, `Zybo_Z7.step`: every solid in it carries its reference
+designator and it is placed in the drawing's frame, origin on the board's
+lower-left corner, so its boxes can be used as they are.  That is the role
+the Arty Rev C model plays there, but far stronger -- the Arty model only
+told two LED rows apart by package size, and this one names JA to JF, J3,
+J11, J12 and LD0 to LD13 outright.  Every body the plot supplies is then
+required to land on the model's box and, where the DXF has the same feature,
+on the DXF's own figure: each host on its pin field, the RJ45 on its two
+3.25 mm locating pegs, the micro-USB on its four shell pads, the USB-A on its
+two 2.4 mm shield legs.  All agree to about 0.01 mm, the micro-USB
+furthest out at 0.0105.
+
+Three things the sheet says that the drawing cannot:
+
+- **The host pitch is 23.00 mm, not 22.86.**  The four hosts along the lower
+  edge are on a round metric pitch, so a plate cut to the 0.9 in grid the
+  Tiny Tapeout plate uses does not fit them.  The pin rows are 2.50 apart
+  rather than 2.54, the same metric-grid drawing as the Arty's.
+- **Which variant.**  The Z7-10 and the Z7-20 are one PCB; the -10 leaves
+  Pmod JB and one of the two tri-colour LEDs unfitted, which the reference
+  manual says and the Resource Center's own table counts ("Pmod Connectors
+  6 (5*)", "2 RGB LEDs (1*)").  The drawing is of the fully fitted board.
+- **What hangs below.**  J10, a micro-AB USB socket sharing the OTG signals
+  with the USB-A, is fitted on the UNDERSIDE directly below it and projects
+  2.72 mm below the laminate and 0.82 past the left edge.  It is not the
+  figure a plate has to clear, though: C250, a bottom-side capacitor inside
+  the Ethernet jack's footprint, reaches 3.10 mm in Digilent's model, and a
+  note quoting an underside projection has to quote the governing one.  The
+  sheet gives 3.10 and names both.
+
+Pin 1 came out checkable for once.  The family's rule -- top right looking
+into the socket, fed by the row of holes farther from the board edge -- puts
+pins 5 and 6, GND and VCC, at the far end of every host.  Digilent's top view
+of the board has 3V3 and GND silkscreened at exactly that end of all six,
+across all three edges they sit on.  The XADC host JA is the clearest: its
+six labels read AD14, AD7, AD15, AD6, GND, 3V3 down the column the rule
+picks, which is pins 1 to 6 in order.
+
+Getting at any of this took a detour.  Digilent's wiki pages answer a script
+with a Cloudflare challenge, and the browser could not pass it either; the
+`_media` and `files.digilent.com` URLs are served normally to a browser
+User-Agent, but nothing says what they are called.  The filename came out of
+a Wayback Machine snapshot of the Resource Center, which is also where the
+"Width 3.3 in (88 mm)" quote on the sheet comes from -- a figure that
+contradicts its own 3.3 in, and which the drawing settles at 83.82.
+
+Four sources, four vintages, and a drawing that does not say which board it
+is of.  The reference manual is revised 2018-02-21 and says it applies to
+rev. B; the schematic is revision D.1; the drawing files are dated
+2020-09-03; the STEP is an OpenCascade export of 2023-03-07.  Nothing in the
+DXF or the plot carries a revision, and the zip's stale Altium previews are
+dated 2017, so the drawing is most likely of the same rev B the manual is.
+What ties them together is not their dates but that they are checked against
+each other on the board itself: the model's outline is the DXF's to a
+millionth of a millimetre, its connector boxes land on the DXF's pads and
+pegs to a hundredth, and the designators it supplies are the ones
+silkscreened in Digilent's own photograph of the board.  A revision that had
+moved any of that would have failed one of those checks rather than passed
+all of them.
+
+## The Zybo Z7's ordinate lane, and the room a chain actually needs
+
+The first cut of the sheet put a digit through a rule.  The datum's 0 and the
+mounting holes' 3.81 are closer together along the lower ordinate chain than
+a label is tall, so 3.81 staggers out to a second lane -- and that lane ended
+inside the stroke of the rule under NOTES, with the whole "3" glyph below it.
+
+`VIEW_MARGIN_BOTTOM` was the culprit: a flat 30 mm, which is about what a
+chain needs when its labels all fit in one lane and nothing like enough for
+two.  Measuring every sheet in the repository with `dims.ordinate_reach`, the
+new function that runs the chain's own lane assignment without drawing it,
+fourteen of the seventeen board sheets `render_board` draws want more than
+30 -- the ULX3S, the Icepi Zero and the Pmod HAT Adapter, all at 19.83, do
+not -- and twelve of them stagger a label into a second lane.  The Tiny
+Tapeout sheets want 42.76, as does this one.  They do not collide because a
+view is centred in what its margins leave, so half of whatever height the
+sheet has spare already falls below the board.  One sheet is left short by
+that centring and no other: this one, by 9.17 mm, because it is the sheet
+whose notes band is capped by its own view.
+
+Reserving the full figure in `_view_height_needed`, which is what decides how
+tall the notes band may be, was tried first and rejected: it pays for the
+chain out of the notes band, which is not this decision's to spend.
+So the reservation happens after the band is fixed instead, in
+`_view_margins`: a sheet the centring leaves short has its bottom margin
+raised by twice the shortfall, which puts all of the spare height below the
+board rather than half, and its top margin cut to `_view_room_free_edge`, the
+room the one dimension up there actually occupies.  Only a short sheet moves,
+which is this one and nothing else: its margins go from (20.00, 30.00) to
+(17.21, 39.97).
+
+That is worth 6.38 mm here -- the board rises by exactly the difference --
+and it is the whole of the fix.  The label now clears the rule by 6.3 mm,
+measured on the render at 2400 px rather than computed, where before it ran
+into the stroke.
+
+There was nothing left to win in the text, because the text had already been
+cut once.  The board size and the board photograph are two facts on one
+Resource Center page and were folded into a single citation when the sheet
+was written, not here: spelled out separately they cost a hundred and ninety
+characters and a whole URL, and the notes band wants 52 mm of the annotation
+column against the 45 there are, which is not a blemish but a sheet that
+cannot be drawn at all.
+
+One thing the measuring turned up on the way.  `ordinate_reach` decides that
+two values crowd each other by comparing their gap with the height of a
+label, and a label's height is a sheet figure that does not grow with the
+view, so the gap has to be a sheet figure too.  Feeding it model millimetres
+reads a 2:1 sheet as crowded when it is not: the Pmod HAT Adapter and the
+Icepi Zero, two of the three sheets drawn at 2:1, were each asking for
+30.30 mm of margin for a chain that wants 19.83.  `_chain_room` takes the
+view's scale and multiplies the positions by it.  Neither sheet was short at
+either figure, so nothing moved; it was wrong by 10.47 mm in the direction
+that happens not to show.
+
+Two things worth writing down, both of which the first draft of this section
+got wrong.
+
+Why 39.97 mm of margin beats a 42.76 mm reach is not that the text metrics
+are loose.  `text_width("3.81", T_DIM)` is 6.867 mm -- the 9.42 in the first
+draft was that call made with `em(T_DIM)`, the SVG font size, where a cap
+height belongs -- and 6.867 is an advance width containing 6.34 mm of ink,
+which is what an advance width is for.  Taking the library at its own word
+the label's run ends 5.91 mm above the rule; measured on the render it is
+6.30.  The margin is the smaller number because `_chain_room` measures
+to the floor of the drawing area, and the first thing drawn in the notes
+band is 8.70 mm below that floor: 4 mm of gap between the area and the band,
+and 4.70 mm of heading above the band's first rule.  A chain may reach a
+little past the margin and still land on blank paper.
+
+And the annotation column is not narrow.  At this band's three columns it is
+165 mm against their 65, two and a half times as wide; at two columns it is
+still a little over one and a half.  What makes a millimetre of band height
+cost more than a millimetre of column is that the band is two or three
+columns, so a millimetre of it is two or three millimetres of text, and the
+tail that moves carries a repeated SOURCES heading with it.  The column is
+what makes this sheet tight all the same -- six hosts, five features, an
+eight-row feature schedule and a legend leave 32 mm of it -- which is why
+folding two citations into one was worth more than any amount of rewording.
+
+Three edges of the mechanism worth having closed even though none of them
+bites today.  A sheet drawn on a family's shared view frame is not biased at
+all: the bias is a per-sheet decision, and one member of a family moving
+alone would break the frame as surely as a taller notes band would, so a
+family that comes to need it should take the largest of its members' margins
+the way it already takes the tallest of their bands.  The pair of margins is
+applied when either has moved, not only when the bottom has, or a sheet
+wanting the top margin's give without wanting the bottom raised past its
+floor -- a shortfall between 30.00 and 32.79 -- would have had it computed
+and thrown away.  And `_chain_room` counts only the spacing dimensions
+`render_board` actually draws: a pair of hosts sharing a coordinate, as the
+Pmod HAT Adapter's JA and JB do, gets no dimension and must not be reserved
+paper for one.
+
+## The Zybo Z7's ordinate lane, rebased onto the Cynthion
+
+The Cynthion merged while this branch was open, and it is the second sheet
+the centring leaves short.  Its lower ordinate chain staggers into a second
+lane and wants 40.80 mm; a centred view gives it 37.47, so it is 3.33 short,
+and `_view_margins` moves it the way it moves the Zybo Z7: from (20.00,
+30.00) to (17.21, 33.87).  Nothing on the sheet collided before -- the checks
+passed on main -- so this is the rule applied as written, not a fault
+repaired, and no board is made an exception to it.  The sheet is re-rendered
+here and rebound into `fpga-sheets.pdf` with the Zybo Z7.
+
+The counts in the section above were taken before the Cynthion was in the
+set and stand as the record of that measurement.  The comments in
+`board_sheet.py` and the item in TODO.md say what is true now, naming the
+sheets rather than counting them: every board sheet `render_board` draws
+wants more than 30 mm except the ULX3S, the Icepi Zero and the Pmod HAT
+Adapter, and the Zybo Z7 and the Cynthion are the two the centring leaves
+short.

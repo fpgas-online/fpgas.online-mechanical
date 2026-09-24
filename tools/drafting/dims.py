@@ -336,38 +336,24 @@ def _outside_own(pos: float, from_pos: float, out: int, horizontal: bool,
     return edge + out * style.EXT_GAP
 
 
-def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
-                   horizontal: bool, colour: str = style.C_DIM,
-                   size: float = style.T_DIM, text_gap: float = 2.0,
-                   stagger: float | None = None, zero_label: str = "0",
-                   zero_pos: float | None = None,
-                   zero_from: float | None = None,
-                   blockers=()) -> float:
-    """Ordinate dimensions: every value measured from one datum, no chains.
+def _lane_plan(values, base: float, *, size: float, text_gap: float,
+               stagger: float | None, zero_label: str,
+               zero_pos: float | None, zero_from: float | None):
+    """Which lane each ordinate label goes in, and how far a lane steps.
 
-    *values* are ``(pos, label, from_pos)`` triples: where the feature sits
-    along the chain's axis, what to print, and where it sits on the other axis
-    so the witness line can start **at the feature**.  A witness line that
-    starts at the board edge instead tells the reader nothing about which
-    feature the number belongs to, which is the usual failing of a generated
-    ordinate chain.
+    Split out of :func:`ordinate_chain` so that a sheet can ask how far the
+    chain will reach before it decides how much room to leave for it, and get
+    the answer from the code that will place the labels rather than from a
+    second guess at the same arithmetic.
 
-    Labels that would land on top of each other are pushed out to a further
-    lane, with the witness line extended to match.  A zero ordinate is drawn at
-    the datum so the origin of the chain is explicit.
-
-    Returns the outermost extent used, so the caller can place the overall
-    dimensions clear of it.
+    Two labels closer along the chain than a label is tall would overprint, so
+    the second goes to the next lane out.  A lane is a label's WIDTH further
+    out on either kind of chain: on a horizontal chain the labels are turned
+    on their side and run outward by their width; on a vertical chain they
+    read normally and again run outward by their width.  The horizontal case
+    used the height, which put ButterStick's 18.09 and 18.50 on top of each
+    other.
     """
-    out = 1 if line_pos > base else -1
-
-    # Two labels closer along the chain than a label is tall would overprint,
-    # so the second goes to the next lane out.  A lane is a label's WIDTH
-    # further out on either kind of chain: on a horizontal chain the labels
-    # are turned on their side and run outward by their width; on a vertical
-    # chain they read normally and again run outward by their width.  The
-    # horizontal case used the height, which put ButterStick's 18.09 and
-    # 18.50 on top of each other.
     labels = [v[1] for v in values] + [zero_label]
     widest = max((style.text_width(t, size) for t in labels), default=0.0)
     tall = style.text_height(size) + style.descender(size)
@@ -394,6 +380,57 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
         else:
             lanes[lane] = pos
         placed.append((pos, label, from_pos, lane))
+    return stagger, placed
+
+
+def ordinate_reach(values, base: float = 0.0, *, size: float = style.T_DIM,
+                   text_gap: float = 2.0, stagger: float | None = None,
+                   zero_label: str = "0", zero_pos: float | None = None,
+                   zero_from: float | None = None) -> float:
+    """How far outward :func:`ordinate_chain` reaches from its own line.
+
+    The chain's line sits a fixed distance from the view; what varies is how
+    many lanes its labels need and how long the outermost one is, and that is
+    what decides how much paper the view has to leave beyond it.  Nothing is
+    drawn: the lane assignment is the one the chain will use, so a sheet
+    planned against this figure and the chain drawn on it cannot disagree
+    about where the last label ends.
+    """
+    stagger, placed = _lane_plan(values, base, size=size, text_gap=text_gap,
+                                 stagger=stagger, zero_label=zero_label,
+                                 zero_pos=zero_pos, zero_from=zero_from)
+    return max((lane * stagger + text_gap + style.text_width(label, size)
+                for _, label, _, lane in placed), default=0.0)
+
+
+def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
+                   horizontal: bool, colour: str = style.C_DIM,
+                   size: float = style.T_DIM, text_gap: float = 2.0,
+                   stagger: float | None = None, zero_label: str = "0",
+                   zero_pos: float | None = None,
+                   zero_from: float | None = None,
+                   blockers=()) -> float:
+    """Ordinate dimensions: every value measured from one datum, no chains.
+
+    *values* are ``(pos, label, from_pos)`` triples: where the feature sits
+    along the chain's axis, what to print, and where it sits on the other axis
+    so the witness line can start **at the feature**.  A witness line that
+    starts at the board edge instead tells the reader nothing about which
+    feature the number belongs to, which is the usual failing of a generated
+    ordinate chain.
+
+    Labels that would land on top of each other are pushed out to a further
+    lane, with the witness line extended to match.  A zero ordinate is drawn at
+    the datum so the origin of the chain is explicit.
+
+    Returns the outermost extent used, so the caller can place the overall
+    dimensions clear of it.
+    """
+    out = 1 if line_pos > base else -1
+    stagger, placed = _lane_plan(values, base, size=size, text_gap=text_gap,
+                                 stagger=stagger, zero_label=zero_label,
+                                 zero_pos=zero_pos, zero_from=zero_from)
+    tall = style.text_height(size) + style.descender(size)
 
     # Two passes: every label's box is known before any witness line is
     # drawn, so a line to an outer lane can break where it passes a label in

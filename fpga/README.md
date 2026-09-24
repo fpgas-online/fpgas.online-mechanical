@@ -51,6 +51,14 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>FPGA-CYNTHION</b> Cynthion<br>r1.4.0
 </td>
 </tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="output/zybo-z7.pdf"><img src="output/previews/zybo-z7.png" width="270" alt="FPGA-ZYBO-Z7 Digilent Zybo Z7"></a><br>
+<b>FPGA-ZYBO-Z7</b> Digilent Zybo Z7<br>Z7-10 and Z7-20
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
+</tr>
 </table>
 
 <!-- sheets:end -->
@@ -117,6 +125,22 @@ and the sheet says which it was.
   hang off the front edge and a peripheral plugs in level with the board --
   which is also why this is the first sheet to state its own assembled
   envelope rather than take the computed one.
+- **Zybo Z7**: the same mechanical drawing the Arty A7 has, a DXF and a PDF
+  plot, published the day after it and read by the same code. It has no
+  keep-out layer, so the board edge is the one closed rectangle of whole
+  segments on `Mechanical1` that every plated hole sits inside; and its Pmod
+  sockets are plotted with a keying notch in both long edges, so they close
+  no rectangle and are read as runs of segments instead. Nothing in the
+  drawing is named, so which outline is which comes from Digilent's STEP
+  assembly, whose every solid carries its reference designator and which is
+  placed in the drawing's own frame. **Six Pmod hosts**: JA, the XADC port,
+  on the right edge, JF, the MIO port, on the left, and JB to JE along the
+  lower edge on a 23.00 mm pitch -- not the specification's 22.86. The
+  drawing is of the fully fitted board, which is the Zybo Z7-20; the Z7-10
+  leaves JB and one of the two tri-colour LEDs off the same PCB. Nothing in
+  the drawing says which board revision it is of, and its four sources are
+  four vintages; what ties them together is that each is checked against the
+  others on the board rather than on its date.
 
 The PYNQ-Z1 was looked at and left out: Digilent's 3D model of it has no
 mounting holes and its outline disagrees with their own stated size.
@@ -147,4 +171,8 @@ the edge port that slot holds on the other sheets.
 Pin 1 of every Pmod host follows the Pmod convention, top right looking into
 the socket, fed by the row of holes farther from the board edge. The Tiny
 Tapeout board files number theirs the same way and the PYNQ-Z2 manual draws
-it. Neither Digilent's DXF nor TUL's model names a pin.
+it. Neither Digilent's DXF nor TUL's model names a pin. On the Zybo Z7 the
+rule can be checked against the board itself: Digilent's top view has 3V3
+and GND silkscreened at the end of every host farthest from the pin the rule
+picks, which is where pins 5 and 6 belong, on all six hosts and on all three
+edges they sit on.

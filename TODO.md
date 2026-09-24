@@ -129,9 +129,16 @@ checker that measures the finished PDFs rather than trusting them.
       ports took two new numbers at the end of the family schedule and the
       status LED row a third, and its mezzanine receptacle J5 took the
       family's first expansion slot
+- [x] Zybo Z7 from the same drawing pair as the Arty A7, with Digilent's STEP
+      assembly naming which of the plot's outlines is which
 - [x] `fpga-sheets.pdf`, every FPGA sheet bound into one document
 - [ ] PYNQ-Z2 LED positions, by photogrammetry from TUL's product photo if
       no vector source turns up
+- [x] `dims.ordinate_reach` and `_view_margins`: a view whose ordinate chain
+      staggers a label into a second lane is given the room out of the height
+      the sheet has spare, instead of a flat 30 mm on the chain's edge. Only
+      a sheet the centring leaves short moves: the Zybo Z7, short by 9.17 mm,
+      and the Cynthion, short by 3.33; no other sheet changes
 - [ ] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
       silkscreen; `accessories/parts.py` has it opposite the Pmod convention
 - [ ] Cynthion's three side buttons and its two SWD connectors are not drawn.
