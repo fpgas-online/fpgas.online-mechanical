@@ -340,6 +340,14 @@ def _on_a_feature() -> list[tuple[str, str]]:
 #:
 #: The micro-HDMI connectors on the Pi 4B and Pi 5, which sat underneath the
 #: Pmod HAT Adapter's host JC, used to be here too; they are no longer drawn.
+#:
+#: The Orange Pi PC's microSD socket (9) and power button (10) are two of
+#: three parts on its left edge, inboard of which the adapter's hosts JA and
+#: JB stand, with the Y ordinate chain to their left and the X chain below.
+#: Their leaders share one way out, up the strip between the edge and the
+#: hosts, and above it the overall width's extension line; the micro-USB's
+#: leader takes the strip, and these two cross a host.  The microSD socket is
+#: partly under JB in plan in any case.
 ACCEPTED: dict[str, set[tuple[str, str]]] = {
     name: {(f'callout "R{r} (4 places), board outline"', "dimension")}
     for name, r in (("TT-DB-V121", "3.00"), ("TT-DB-V201", "3.00"),
@@ -351,6 +359,7 @@ ACCEPTED: dict[str, set[tuple[str, str]]] = {
 ACCEPTED["RPI-4B"].add(("balloon 5", "dimension"))
 ACCEPTED["FPGA-BUTTERSTICK"].add(("balloon 1", "dimension"))
 ACCEPTED["FPGA-CYNTHION"].add(("balloon 9", "dimension"))
+ACCEPTED["RPI-OPIPC"] = {("balloon 9", "hard"), ("balloon 10", "hard")}
 
 KINDS = (("leader", _leader_crossings),
          ("hard", _hard_crossings),
