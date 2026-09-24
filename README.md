@@ -63,6 +63,10 @@ are, and only the name is cut:
   left of these stems once `TT-MP` has said `tt-generic-mounting-plate` is the
   sheet's title (`chassis-drill-template`), which the sheet already carries in
   full, so that one is a table as well, `PLATE_NAMES`.
+- a Raspberry Pi family sheet is its model number, which is short already --
+  `RPI-5` -- unless the board is not a Raspberry Pi, when its stem says whose
+  it is and a table, `RPI_NAMES`, cuts that down: `orangepi-pc.pdf` is
+  `RPI-OPIPC`.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
