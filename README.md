@@ -165,6 +165,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/ov5647-lenses.pdf"><img src="raspberry_pi_camera/output/previews/ov5647-lenses.png" width="270" alt="RPICAM-LENS OV5647 Lenses and Focus"></a><br>
+<b>RPICAM-LENS</b> OV5647 Lenses and Focus<br>Camera Module v1: stock, autofocus and 120 degree lenses
+</td>
+<td width="33%" valign="top" align="center">
 <a href="raspberry_pi_camera/output/over-tt-mounting-plate.pdf"><img src="raspberry_pi_camera/output/previews/over-tt-mounting-plate.png" width="270" alt="RPICAM-OVER-PLATE Camera over the TT Mounting Plate"></a><br>
 <b>RPICAM-OVER-PLATE</b> Camera over the TT Mounting Plate<br>Camera Module OV5647, 65 and 120 degree lenses
 </td>
@@ -172,7 +176,6 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="raspberry_pi_camera/output/over-arty-a7.pdf"><img src="raspberry_pi_camera/output/previews/over-arty-a7.png" width="270" alt="RPICAM-OVER-ARTY Camera over the Arty A7"></a><br>
 <b>RPICAM-OVER-ARTY</b> Camera over the Arty A7<br>Camera Module OV5647, 65 and 120 degree lenses
 </td>
-<td width="33%"></td>
 </tr>
 </table>
 
@@ -266,10 +269,13 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-<a href="tinytapeout/camera_holder/output/tt-camera-holder.pdf"><img src="tinytapeout/camera_holder/output/previews/tt-camera-holder.png" width="270" alt="TT-MP-CAMERA Camera Holder, TT Mounting Plate"></a><br>
-<b>TT-MP-CAMERA</b> Camera Holder, TT Mounting Plate<br>Holds a Camera Module over every demo board revision
+<a href="tinytapeout/camera_holder/output/tt-camera-holder-65.pdf"><img src="tinytapeout/camera_holder/output/previews/tt-camera-holder-65.png" width="270" alt="TT-MP-CAM65 Camera Holder, 65 deg Lens"></a><br>
+<b>TT-MP-CAM65</b> Camera Holder, 65 deg Lens<br>Holds a Camera Module over every demo board revision
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="tinytapeout/camera_holder/output/tt-camera-holder-120.pdf"><img src="tinytapeout/camera_holder/output/previews/tt-camera-holder-120.png" width="270" alt="TT-MP-CAM120 Camera Holder, 120 deg Lens"></a><br>
+<b>TT-MP-CAM120</b> Camera Holder, 120 deg Lens<br>Holds a Camera Module over every demo board revision
+</td>
 <td width="33%"></td>
 </tr>
 </table>

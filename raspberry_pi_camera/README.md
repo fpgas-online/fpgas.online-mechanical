@@ -63,6 +63,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </tr>
 <tr>
 <td width="33%" valign="top" align="center">
+<a href="output/ov5647-lenses.pdf"><img src="output/previews/ov5647-lenses.png" width="270" alt="RPICAM-LENS OV5647 Lenses and Focus"></a><br>
+<b>RPICAM-LENS</b> OV5647 Lenses and Focus<br>Camera Module v1: stock, autofocus and 120 degree lenses
+</td>
+<td width="33%" valign="top" align="center">
 <a href="output/over-tt-mounting-plate.pdf"><img src="output/previews/over-tt-mounting-plate.png" width="270" alt="RPICAM-OVER-PLATE Camera over the TT Mounting Plate"></a><br>
 <b>RPICAM-OVER-PLATE</b> Camera over the TT Mounting Plate<br>Camera Module OV5647, 65 and 120 degree lenses
 </td>
@@ -70,7 +74,6 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="output/over-arty-a7.pdf"><img src="output/previews/over-arty-a7.png" width="270" alt="RPICAM-OVER-ARTY Camera over the Arty A7"></a><br>
 <b>RPICAM-OVER-ARTY</b> Camera over the Arty A7<br>Camera Module OV5647, 65 and 120 degree lenses
 </td>
-<td width="33%"></td>
 </tr>
 </table>
 
