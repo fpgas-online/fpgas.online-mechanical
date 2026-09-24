@@ -66,6 +66,11 @@ with its family, and not every one of those has caught something yet.
   touches no board, standoff or cable, and that every fastener fits; and
   that the holders share their beam and carrier.  Newer than anything it
   could have caught.
+- [`raspberry_pi/verify_orangepi_pc.py`](../raspberry_pi/README.md)
+  holds the Orange Pi PC's figures, measured off photographs, to checks the
+  measurement was not fitted to: the sizes of standard parts on other
+  vendors' drawings, and Xunlong's drawing and other people's models and
+  cases of the board.
 - [`raspberry_pi_camera/verify_optics.py`](../raspberry_pi_camera/README.md)
   has not caught one yet -- it is newer than the sheets it checks. It proves
   that every figure quoted in `raspberry_pi_camera/optics.py` is in the

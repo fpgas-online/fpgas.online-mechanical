@@ -56,6 +56,7 @@ check: diagrams
 	$(UV) python tinytapeout/mounting_plate/verify.py
 	$(UV) --with pypdf python raspberry_pi_camera/verify_optics.py
 	$(UV) python tinytapeout/camera_holder/verify.py
+	$(UV) python raspberry_pi/verify_orangepi_pc.py
 	$(DRAW) python tools/check_balloons.py
 	$(UV) --with pdfplumber --with pillow python tools/check_drill_template.py
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
