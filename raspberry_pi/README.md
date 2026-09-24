@@ -80,7 +80,7 @@ Feature numbers are fixed across the family: GPIO header is 1, power input is
 2 whether it is micro-USB, USB-C or a barrel jack, Ethernet is 3.
 
 HDMI, micro-HDMI and the 3.5 mm audio jack are deliberately not drawn on the
-Pi sheets. The Orange Pi PC's sheet draws them, from 6 up, because nobody else
+Pi sheets. The Orange Pi PC's sheet draws them, numbered from 6, because nobody else
 has drawn that board at all and a case round it has to clear them.
 
 ## Orange Pi PC (`RPI-OPIPC`)
@@ -100,13 +100,20 @@ that point and the lens's distance too, its pin tips in the top view against
 its joints in the bottom view of the same board, and each top face is put
 back where it stands.
 
-The sheet quotes **+/-0.4 mm** for holes and header and **+/-1.1 mm** for the
-parts, each the worst disagreement between two photographs of one thing or
-with a check the fit did not use. `verify_orangepi_pc.py` recomputes both and
-holds the figures to:
+The header was meant as a check, and it failed: fitted to the board's edges,
+both bottom views put pin 1 to pin 39 0.5 to 0.7 % longer than 48.26 mm, and
+the hole pattern with it, where most cases and Xunlong's PC Plus drawing put
+the holes nearer together. So the scale across the board is taken from the
+header, the most exactly known length on it; the scale up the board, where
+its two rows are too short a ruler, is left as the edges give it.
 
-- the header, which must come out 48.26 mm from pin 1 to pin 39 on a 2.54 mm
-  pitch with its rows 2.54 mm apart;
+The sheet quotes **+/-0.4 mm** for holes and header and **+/-1.1 mm** for the
+parts: no photograph's reading, and no check on the holes and header, lies
+further than that from what is drawn. `verify_orangepi_pc.py` recomputes both
+and holds the figures to:
+
+- the header: the two photographs against each other, its rows 2.54 mm
+  apart, and the board's edges on its scale;
 - the board's own proportions in the photographs, which say 56 mm, not the
   55 mm of Xunlong's manual;
 - the network jack, USB pair and micro-USB, whose widths must match the same
@@ -115,8 +122,9 @@ holds the figures to:
 - the standoffs of every 3D-printable case fetched, Roman Gachin's model of
   the board, landroo's case cut-outs, and Xunlong's assembly drawing of the
   Orange Pi PC Plus, a sibling board said to be the same size. That last is
-  the closest thing to a drawing Xunlong have published, and it centres every
-  part the PC shares within half a millimetre of where the photographs do.
+  the closest thing to a drawing Xunlong have published: its holes are within
+  0.1 mm of where the photographs put them, and it centres every part the PC
+  shares within 0.4 mm.
 
 ```sh
 tools/fetch_orangepi_pc.sh                            # once, needs network
@@ -129,7 +137,10 @@ uv run --no-project python raspberry_pi/verify_orangepi_pc.py
 ```
 
 The connector edges are read by eye off a 1 mm grid ruled on the rectified
-photographs; `--grids` writes them, so any reading can be checked.
+photographs; `--grids` writes them, so any reading can be checked. The debug
+UART header and the camera connector are measured and checked but not drawn:
+both are well inside the outline, and their balloons could only reach them
+across the adapter's phantom hosts.
 
 ## A fitting warning
 
@@ -138,7 +149,7 @@ these boards carry their HDMI and power connectors. Digilent's manual says to
 fit the two standoffs opposite the 40-pin connector so JC's pins cannot touch
 the HDMI shell. Each Pi sheet repeats that.
 
-On the Orange Pi PC that advice cannot be taken. Its header sits 1.34 mm
+On the Orange Pi PC that advice cannot be taken. Its header sits 1.52 mm
 right of and 0.15 mm below a Pi's and the adapter goes with it, so the
 adapter's holes miss the board's by 2 mm or more and no standoff joins the
 two: the header carries it alone. What clears the adapter's underside is not
