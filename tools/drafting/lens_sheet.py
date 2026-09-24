@@ -117,10 +117,12 @@ def _section(sheet: Sheet, v: View, axis: str) -> None:
         wide_half = math.radians((wide.fov_h if axis == "H"
                                   else wide.fov_v) / 2)
         if stock:
-            y = left[1] + 1.0
-            x = apex[0] - (apex[1] - y) * math.tan(wide_half) - 1.5
-            c.text(x, y, label, size=style.T_DIM, colour=style.C_DIM,
-                   anchor="end")
+            # Past the wide lens's ray, and led back to its own arc so it
+            # cannot be read as that ray's.
+            y = left[1] - 4.0
+            x = apex[0] - (apex[1] - y) * math.tan(wide_half) - 3.0
+            dims.leader(c, (left[0] - 0.3, left[1] - 0.3), (x, y + 1.0),
+                        label, colour=style.C_DIM)
         else:
             c.text(right[0] + 1.5, right[1] - 1.0, label, size=style.T_DIM,
                    colour=style.C_DIM, anchor="start")
@@ -173,28 +175,37 @@ def _plan(sheet: Sheet, v: View) -> None:
 # text
 # ---------------------------------------------------------------------------
 
+#: How a figure's basis reads in the tables.
+KINDS = {"DECLARED": "DECL", "DERIVED": "DERI", "ASSUMED": "ASSU",
+         "RELABELLED": "DECL, relabelled"}
+
+
 def _rows_fov() -> list[list[str]]:
     """Every field of view figure for every lens, and what became of it.
 
-    The pair a lens is computed with is marked USED on the row it is, rather
-    than repeated: for the wide lens that is the catalogue's own 96 x 72 and
-    the equidistant split of the diagonal, which are one pair.
+    The pair a lens is computed with is marked USED on the first row that
+    gives it, rather than repeated; a later row giving the same pair
+    "agrees", which for the wide lens's rows is no more than that -- the
+    catalogue's 96 x 72 is the equidistant split by construction.
     """
     rows = []
     for lens in optics.ALL_LENSES.values():
         first = True
+        used = False
         for fg in lens.figures:
             if fg.rejected:
                 use = "REJECTED"
             elif (fg.h is not None and fg.v is not None
                   and abs(fg.h - lens.fov_h) < 0.005
                   and abs(fg.v - lens.fov_v) < 0.005):
-                use = "USED"
+                use = "agrees" if used else "USED"
+                used = True
             elif any(a.what == fg.what for a in lens.alternatives):
                 use = "margin"
             else:
                 use = ""
-            rows.append([lens.short if first else "", fg.what, fg.kind[:4],
+            rows.append([lens.short if first else "", fg.what,
+                         KINDS[fg.kind],
                          "--" if fg.h is None else _deg(round(fg.h, 2)),
                          "--" if fg.v is None else _deg(round(fg.v, 2)),
                          "--" if fg.d is None else _deg(round(fg.d, 2)),
@@ -211,13 +222,13 @@ def _rows_focus() -> list[list[str]]:
                                optics.PIXEL_PITCH)
         rows.append([
             lens.short,
-            f"{lens.focal_length:.2f} {lens.focal_basis[0]}",
-            f"F{lens.f_number:g} {lens.f_basis[0]}", lens.focus,
+            f"{lens.focal_length:.2f} {KINDS[lens.focal_basis]}",
+            f"F{lens.f_number:g} {KINDS[lens.f_basis]}", lens.focus,
             f"{lens.near:.0f} to inf",
             f"{h2 / 1000:.2f} / {h1 / 1000:.2f}",
             f"{h2 / 2000:.2f} / {h1 / 2000:.2f}"])
-    rows.append(["WS G", "3.15", "F2.35", "Adjustable", "100 to inf", "--",
-                 "--"])
+    rows.append(["WS G", "3.15 DECL", "F2.35 DECL", "Adjustable",
+                 "100 to inf", "--", "--"])
     return rows
 
 
@@ -251,10 +262,10 @@ def _text() -> tuple[list[str], list[str]]:
         "the 35 mm equivalent over the 43.27 mm full-frame diagonal.",
         f"120: the page's {wide.fov_d:.0f} is the DIAGONAL, so the "
         "catalogue's 120 x 90 is REJECTED: no lens sees as far across as to "
-        "the corner. Its 96 x 72 for the same camera without IR filter is "
-        "that diagonal split equidistantly, r = f theta, as Commonlands find"
-        " for a real fisheye; rectilinear is the widest a lens can be. Every"
-        " position sheet's margin is checked to absorb those marked margin.",
+        "the corner. Its 96 x 72, for the camera without IR filter, is the "
+        "diagonal x 0.8 and 0.6 like its neighbours: an equidistant split, "
+        "not a measurement. YXF print D as H, H as V, V as D. The margin "
+        "absorbs every row marked margin.",
         f"DISTORTION: a ray A/2 off the axis meets a board Z below at "
         "Z tan(A/2) whatever the lens did to it. The dashed outline is the "
         "sensor's edge walked onto the board equidistantly: its sides bow "
@@ -270,16 +281,21 @@ def _text() -> tuple[list[str], list[str]]:
         "f^2 / (N c) + f, sharp from half of it to infinity focused there. "
         "Raspberry Pi's \"Approx 1 m to infinity\" is a "
         f"{optics.IMPLIED_COC / optics.PIXEL_PITCH:.1f} px circle.",
-        f"FIXED FOCUS, ASSUMED at {stock.focus_at / 1000:g} m, twice the "
-        f"declared 1 m. At {Z_REF:.0f} mm a point spreads to "
-        f"{on_sensor / optics.PIXEL_PITCH:.0f} px, {on_subject:.1f} mm on "
-        f"the board, at {stock.short}, {w_sensor / optics.PIXEL_PITCH:.0f} "
-        f"px, {w_subject:.1f} mm, at {wide.short}: out of focus.",
+        f"FIXED FOCUS, ASSUMED at {stock.focus_at / 1000:g} m, the stock "
+        f"lens's hyperfocal distance; the {wide.short}'s is "
+        f"{wide.hyperfocal / 1000:.2f} m, so its 1 m reads copied. At "
+        f"{Z_REF:.0f} mm a point spreads to "
+        f"{on_sensor / optics.PIXEL_PITCH:.0f} px ({on_subject:.1f} mm on "
+        f"the board) at {stock.short} and "
+        f"{w_sensor / optics.PIXEL_PITCH:.0f} px ({w_subject:.1f} mm) at "
+        f"{wide.short}: out of focus, and within two pixels the same set at "
+        "infinity.",
         "AF: \"80mm to infinity\", the B0121 \"4 cm\"; the 80 is used. "
-        "No 120 deg motorised OV5647 is sold.",
-        f"WS G, Waveshare's RPi Camera (G), is sold as 160 deg diagonal and"
-        f" 120 across; its 3.15 mm gives {ws.d:.1f} diagonal equidistantly,"
-        " so its figures do not hold together and it is not drawn.",
+        "Arducam's catalogue lists no 120 deg motorised OV5647.",
+        "WS G, Waveshare's RPi Camera (G): 160 deg diagonal on Waveshare's "
+        f"page, 120 across on The Pi Hut's; its 3.15 mm gives {ws.d:.1f} "
+        "diagonal equidistantly, so it does not hold together and is not "
+        "drawn.",
     ]
     # The pages by name, and where their addresses are: pinned Internet
     # Archive captures a hundred and more characters long each, which wrapped
@@ -398,7 +414,7 @@ def _render(scale: float, *, title: str, subtitle: str, drawing_no: str,
         rev="A", version=version, drawn_by="generated",
         scale=_label(scale), projection="first angle",
         material="OV5647 lenses", material_label="SUBJECT",
-        tolerance="angles as declared, D and A as flagged"),
+        tolerance="angles as declared, DERI and ASSU as flagged"),
         notes_band_height=NO_BAND)
     got = _layout(scale, sheet.area)
     if got is None:
@@ -408,7 +424,7 @@ def _render(scale: float, *, title: str, subtitle: str, drawing_no: str,
     c = sheet.canvas
     _section(sheet, hsec, "H")
     _plan(sheet, plan)
-    for v, name in ((hsec, "SECTION ACROSS THE LONG SIDE"),
+    for v, name in ((hsec, "ELEVATION ACROSS THE LONG SIDE"),
                     (plan, f"PLAN: THE PICTURE ON A BOARD {Z_REF:.0f} "
                            "BELOW")):
         c.text(v.rect.cx, v.rect.y1 + 3.0, name, size=style.T_LABEL,
