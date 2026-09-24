@@ -30,6 +30,7 @@ reservation half of "reserve, then draw" is how that pair comes apart.
 
 from __future__ import annotations
 
+import math
 from dataclasses import replace
 
 from raspberry_pi.boards import BOARDS, FEATURE_NUMBERS
@@ -37,9 +38,10 @@ from tools.layout import PMOD_HAT_SHEET, drawing_name, slug
 
 from . import board_sheet as bs
 from . import dims, style
-from .board_sheet import (HARD, VIEW_MARGIN_BOTTOM, VIEW_MARGIN_SIDE,
-                          VIEW_MARGIN_TOP, Obstacles, _Ballooned,
-                          draw_holes, draw_outline_frame, note_blocks,
+from .board_sheet import (BALLOON_R, HARD, OVERALL_GAP, VIEW_MARGIN_BOTTOM,
+                          VIEW_MARGIN_SIDE, VIEW_MARGIN_TOP, Obstacles,
+                          _Ballooned, draw_holes, draw_outline_frame,
+                          note_blocks,
                           outline_path, place_legend_and_notes,
                           reserve_overall_dimensions, reserve_radius_callout)
 from .canvas import Canvas
@@ -72,8 +74,8 @@ MODEL_NAME = {"rpi3b": "Pi 3B/3B+", "rpi4b": "Pi 4B", "rpi5": "Pi 5"}
 #: and is therefore what carries the distinction -- a long dash, a short dash
 #: and a dot, which stay apart at 0.35 mm on A3 where two chain types would
 #: not.  The colour is a convenience on screen, and every one of them is dark
-#: enough to photocopy and distinct from the black of the shared geometry and
-#: from the red the balloons are drawn in.
+#: enough to photocopy, and distinct from the black of the shared geometry
+#: and from the blue of the dimensions.
 MODEL_LINE = {
     "rpi3b": ("#005c2e", "5.0,2.0"),
     "rpi4b": ("#7a4a00", "2.0,1.6"),
@@ -90,9 +92,10 @@ HAT_KEEPOUT = 6.2
 #: drawn once in the shared style rather than three times in three.
 SHARED_NUMBERS = (1,)
 
-#: What a balloon is drawn in when the position it points at is one that more
-#: than one model puts the part in.  Continuous and black, like everything
-#: else on this sheet that more than one model shares.
+#: What the header's balloon is drawn in, and every leader: the header is
+#: the same part on all three models, and a leader goes to a place all three
+#: put a part in.  Continuous and black, like everything else on this sheet
+#: that the models share.
 SHARED_LINE = (style.C_LINE, None)
 
 
@@ -163,29 +166,42 @@ def require_shared() -> None:
                     "them per model and take the claim out of the notes")
 
 
-def _clusters(number: int) -> list[list[tuple[str, object]]]:
-    """The positions *number* is found in, each with the models that use it.
+def _places() -> list[list[tuple[str, object]]]:
+    """Where the models put their unshared parts, and what each puts there.
 
-    A number means the same part on every sheet of this family, so it is the
-    balloon label here too.  On this sheet it can be in two places: the RJ45
-    is in the lower right corner of a Pi 3 and a Pi 5 and in the upper right
-    corner of a Pi 4B.  Models whose boxes overlap are one balloon; models
-    whose boxes do not are separate ones, and the number is ballooned twice.
+    A place is a set of feature outlines that overlap one another, taken
+    across every model and every number not drawn once as shared, and
+    joined transitively.  On these boards that is the power corner and the
+    bays down the right-hand edge, and each holds one part from each model
+    -- not always the same part, because the Pi 4B swapped its Ethernet jack
+    and its USB ports round.  So a place is what gets a leader, and each
+    model's part in it gets a balloon on that leader; see _balloon_groups.
 
-    One pass, and groups are never merged afterwards: a model that overlaps
-    two existing groups joins the first of them rather than joining the two
-    together.  Three models cannot produce that -- the third either overlaps
-    a group or starts its own -- so it is not worth the union-find; a fourth
-    Model B sized Pi would make it worth writing.
+    The members come back in model order, and a place holding anything but
+    exactly one part from each model stops the render: the balloons on its
+    leader are read by position, left to right in model order, and a place
+    with a model missing or doubled would put a number in the wrong column
+    without anything on the sheet showing it.
     """
     groups: list[list[tuple[str, object]]] = []
-    for key, f in _features(number):
-        for g in groups:
-            if any(_overlaps(_box(f), _box(other)) for _, other in g):
-                g.append((key, f))
-                break
-        else:
-            groups.append([(key, f)])
+    for number in sorted(FEATURE_NUMBERS):
+        if number in SHARED_NUMBERS:
+            continue
+        for key, f in _features(number):
+            touching = [g for g in groups
+                        if any(_overlaps(_box(f), _box(o)) for _, o in g)]
+            groups = [g for g in groups if all(g is not t for t in touching)]
+            groups.append([(key, f)] + [m for g in touching for m in g])
+    for g in groups:
+        g.sort(key=lambda m: MODELS.index(m[0]))
+        keys = tuple(k for k, _ in g)
+        if keys != MODELS:
+            raise SystemExit(
+                f"{STEM}: the parts at {_union([_box(f) for _, f in g])} "
+                f"belong to {', '.join(MODEL_NAME[k] for k in keys)}, not "
+                "to one each of " + ", ".join(MODEL_NAME[k] for k in MODELS)
+                + "; a leader there cannot carry one balloon per model in "
+                "model order, so this sheet has to balloon them another way")
     return groups
 
 
@@ -194,45 +210,125 @@ def _union(boxes) -> tuple[float, float, float, float]:
             max(b[2] for b in boxes), max(b[3] for b in boxes))
 
 
-def _area(box) -> float:
-    return (box[2] - box[0]) * (box[3] - box[1])
+def _common(boxes) -> tuple[float, float, float, float]:
+    """Where every one of *boxes* overlaps: the part of a place a dot owns."""
+    return (max(b[0] for b in boxes), max(b[1] for b in boxes),
+            min(b[2] for b in boxes), min(b[3] for b in boxes))
 
 
-#: How far inside its own outline a leader's dot sits, and how far outside a
-#: foreign one it is worth trying to keep it.
+#: How far inside every outline of its place a leader's dot must sit.  A dot
+#: on or beside an edge of one of three superimposed outlines reads as
+#: pointing at that one outline.
 DOT_CLEAR = 0.7
 
+#: How far a leader leans off the horizontal (or, below the board, off the
+#: vertical).  ISO 128-22 wants a leader at an angle to the lines it meets
+#: rather than parallel to them; square to the connector edges, a leader
+#: would run parallel to the outlines above and below it.  Fifteen degrees
+#: says it is deliberate and keeps the top row's ring clear of the corner
+#: radius callout above it.
+LEADER_LEAN = math.tan(math.radians(15.0))
 
-def _anchors(view: View, mine, foreign, steps: int = 61
-             ) -> tuple[tuple[float, float], ...]:
-    """Where a leader may touch this group of outlines, best first.
+#: Clear paper between the furthest connector outline on a side and the
+#: first ring there: enough leader outside the connector to see which way
+#: it goes, and no more.
+LEADER_OUT = 7.0
 
-    The connectors on the right of this drawing lie across one another.  The
-    Pi 4B's lower USB pair is the worst of them: the widest strip of it that
-    is not also inside the Pi 3's or the Pi 5's Ethernet jack is 0.562 mm
-    tall, along its bottom edge, and a dot with DOT_CLEAR either side of it
-    wants 1.4 mm.  So the outlines a dot avoids are scored rather than forbidden
-    -- the fewer it lands in, the better -- and where nothing can be avoided
-    the ring's own line type is what says which model the number belongs to.
+
+def _dot(view: View, boxes, lean: float = 0.0) -> tuple[float, float]:
+    """A leader's dot for a place, in sheet millimetres.
+
+    The centre of the region every outline in the place covers, moved *lean*
+    sheet millimetres down, so that a leaning leader can straddle the middle
+    of its place: dot half the rise below it, ring half the rise above.
+    Stops the render if that point is not DOT_CLEAR inside every outline.
     """
-    ux0, uy0, ux1, uy1 = _union(mine)
-    cx, cy = (ux0 + ux1) / 2, (uy0 + uy1) / 2
-    out = []
-    for i in range(steps):
-        px = ux0 + (ux1 - ux0) * (i + 0.5) / steps
-        for j in range(steps):
-            py = uy0 + (uy1 - uy0) * (j + 0.5) / steps
-            if not any(b[0] + DOT_CLEAR <= px <= b[2] - DOT_CLEAR
-                       and b[1] + DOT_CLEAR <= py <= b[3] - DOT_CLEAR
-                       for b in mine):
-                continue
-            hits = sum(1 for b in foreign
-                       if _overlaps((px, py, px, py), b, DOT_CLEAR))
-            out.append((hits, (px - cx) ** 2 + (py - cy) ** 2, px, py))
-    if not out:
-        return (view.pt(cx, cy),)
-    out.sort()
-    return tuple(view.pt(px, py) for _, _, px, py in out[:12])
+    x0, y0, x1, y1 = _common(boxes)
+    cx, cy = view.pt((x0 + x1) / 2, (y0 + y1) / 2)
+    cy -= lean
+    mx, my = (cx - view.x(0)) / view.scale, (cy - view.y(0)) / view.scale
+    if not (x0 + DOT_CLEAR <= mx <= x1 - DOT_CLEAR
+            and y0 + DOT_CLEAR <= my <= y1 - DOT_CLEAR):
+        raise SystemExit(
+            f"{STEM}: the outlines at {_union(boxes)} have no point "
+            f"{DOT_CLEAR} mm inside all of them where the leader's dot "
+            "should go, so one dot cannot stand for the whole place")
+    return cx, cy
+
+
+def _balloon_groups(view: View, board: Rect, places, shared
+                    ) -> list[tuple[list, _Ballooned]]:
+    """The balloons, one leader to each place, and the boxes each points at.
+
+    A place holds one part from each model, so its leader carries a balloon
+    for each: ISO 6433's part references grouped on one leader, ring against
+    ring, left to right in model order, each drawn in its model's line type.
+    Where two models put the same part in a place the number repeats; where
+    the Pi 4B puts a different part there, its column says so.  That is the
+    whole comparison in one row, and nothing about it depends on which
+    outline a dot lands in, which on this sheet nothing could tell apart.
+
+    The places on the right-hand edge have their rows in one column outside
+    the board, each straddling the middle of its place with its leader, so
+    the leaders are short and parallel and cannot cross.  A place on the bottom edge has its
+    row below the board, and the header, which is one part on all three,
+    has a single plain balloon in the lane between the board and the overall
+    width above it, leaning away from the width's value.  *shared* is that
+    part's number and box.
+    """
+    out: list[tuple[list, _Ballooned]] = []
+    width = BOARDS[MODELS[0]].outline.width
+    right = [g for g in places if max(f.x1 for _, f in g) >= width]
+    below = [g for g in places if all(g is not r for r in right)
+             and min(f.y0 for _, f in g) <= 0.0]
+    stray = [g for g in places if all(g is not o for o in right + below)]
+    if stray:
+        raise SystemExit(
+            f"{STEM}: the parts at {_union([_box(f) for _, f in stray[0]])} "
+            "reach neither the right-hand edge nor the bottom one, and those "
+            "are the only two sides this sheet has a column of balloons on")
+
+    def group(g, dot, ring):
+        labels = [(str(f.number), *MODEL_LINE[k]) for k, f in g]
+        first, rest = labels[0], tuple(labels[1:])
+        return ([_box(f) for _, f in g],
+                _Ballooned(first[0], dot, (dot,), colour=first[1],
+                           dash=first[2], at=ring, also=rest,
+                           leader_colour=SHARED_LINE[0]))
+
+    if right:
+        ring_x = (view.x(max(f.x1 for g in right for _, f in g))
+                  + LEADER_OUT + BALLOON_R)
+        for g in right:
+            boxes = [_box(f) for _, f in g]
+            c0 = _common(boxes)
+            mid_x = view.x((c0[0] + c0[2]) / 2)
+            mid_y = view.y((c0[1] + c0[3]) / 2)
+            rise = LEADER_LEAN * (ring_x - mid_x)
+            dot = _dot(view, boxes, lean=rise / 2)
+            out.append(group(g, dot, (ring_x, mid_y + rise / 2)))
+    if below:
+        ring_y = (view.y(min(f.y0 for g in below for _, f in g))
+                  - LEADER_OUT - BALLOON_R)
+        for g in below:
+            boxes = [_box(f) for _, f in g]
+            dot = _dot(view, boxes)
+            out.append(group(g, dot, (dot[0] - LEADER_LEAN
+                                      * (dot[1] - ring_y), ring_y)))
+
+    number, box = shared
+    dot = view.pt((box[0] + box[2]) / 2, (box[1] + box[3]) / 2)
+    # Halfway up the lane between the outline and the band that
+    # reserve_overall_dimensions holds under the width's dimension line,
+    # which reaches 1.0 mm below the line and is padded 1.2 mm more.  Half
+    # the gap was 0.4 mm into that band, and the placer refused it.
+    ring_y = board.y1 + (OVERALL_GAP - 1.0 - 1.2) / 2
+    away = -1.0 if dot[0] < (board.x + board.x1) / 2 else 1.0
+    colour, dash = SHARED_LINE
+    out.append(([box], _Ballooned(
+        str(number), dot, (dot,), colour=colour, dash=dash,
+        at=(dot[0] + away * LEADER_LEAN * (ring_y - dot[1]), ring_y))))
+    return out
 
 
 def _join(names) -> str:
@@ -366,11 +462,12 @@ def _notes() -> list[str]:
         f"overhang included: {envelope[2] - envelope[0]:.2f} x "
         f"{envelope[3] - envelope[1]:.2f} mm. Each model's own is on its own "
         "sheet.",
-        "A balloon number means the same part on every Raspberry Pi sheet, "
-        "and appears twice here where the part is in two places depending on "
-        "the model. Ring, number and leader are drawn in that model's own "
-        "line type and colour; a plain black balloon is a position more than "
-        "one model shares.",
+        "A balloon number means the same part on every Raspberry Pi sheet. "
+        "Each leader goes to one place and carries a balloon for each model, "
+        f"left to right {', '.join(MODEL_NAME[k] for k in MODELS)}, the ring "
+        "in that model's own line type and colour, so a row reads which part "
+        "each model puts there. The 40-pin header, the same part on all "
+        "three, has one plain balloon.",
         f"Design keep-outs to {HAT_KEEPOUT} mm diameter around every mounting "
         "hole, per the Raspberry Pi HAT specification. The phantom circles "
         "are that figure; KEEPOUT gives what each model's own drawing shows.",
@@ -398,9 +495,17 @@ def _legend() -> list[tuple[object, str]]:
                 if key == "rpi5" else "power input, Ethernet and USB")
         entries.append((("line", style.W_COMPONENT, colour, dash),
                         f"{MODEL_NAME[key]}: {what}"))
-    # Balloons are not in this entry: they are drawn in the line type and
-    # colour of the model they point at, which the entries above already
-    # show, and a blue sample would say they were dimension-coloured.
+    # A row of balloons on one leader is a key of its own: ISO 6433 groups
+    # references on one leader for parts fitted together, and here they are
+    # the alternatives, one per model, which a reader should not have to
+    # find a note to learn.  The rings are drawn in the model line types
+    # above, in the order they stand in on the view.
+    entries.append((("balloons", style.W_THIN,
+                     tuple(MODEL_LINE[k][0] for k in MODELS),
+                     tuple(MODEL_LINE[k][1] for k in MODELS)),
+                    "Balloons on one leader: one per model, "
+                    + ", ".join(MODEL_NAME[k] for k in MODELS)
+                    + ", left to right"))
     entries.append(("dimension", "Dimension, extension and callout leader"))
     return entries
 
@@ -460,24 +565,19 @@ def render_rpi_comparison(*, drawing_no: str, version: str,
     # The per-model connectors first, then the shared geometry over them: the
     # outline is the one line a reader traces first and it must not be broken
     # by a connector that happens to cross it.
-    clusters: list[tuple[int, list, tuple]] = []
-    for number in sorted(FEATURE_NUMBERS):
-        if number in SHARED_NUMBERS:
-            continue
-        for group in _clusters(number):
-            for key, f in group:
-                colour, dash = MODEL_LINE[key]
-                _rect(c, view, _box(f), colour, dash)
-            clusters.append((number, [_box(f) for _, f in group],
-                             tuple(k for k, _ in group)))
+    places = _places()
+    for g in places:
+        for key, f in g:
+            colour, dash = MODEL_LINE[key]
+            _rect(c, view, _box(f), colour, dash)
 
-    for number in SHARED_NUMBERS:
-        # require_shared has already proved the three are the same box, so
-        # the first model's is drawn rather than a union of them, which
-        # would have quietly widened to cover a disagreement.
-        shared_box = _box(_features(number)[0][1])
-        _rect(c, view, shared_box, style.C_LINE, None)
-        clusters.append((number, [shared_box], MODELS))
+    # SHARED_NUMBERS is the header alone, and one balloon is drawn for it.
+    (shared_number,) = SHARED_NUMBERS
+    # require_shared has already proved the three are the same box, so the
+    # first model's is drawn rather than a union of them, which would have
+    # quietly widened to cover a disagreement.
+    shared_box = _box(_features(shared_number)[0][1])
+    _rect(c, view, shared_box, style.C_LINE, None)
 
     aux = [h for h in BOARDS["rpi5"].holes if h.kind == "aux"]
     aux_colour, aux_dash = MODEL_LINE["rpi5"]
@@ -515,12 +615,15 @@ def render_rpi_comparison(*, drawing_no: str, version: str,
         obstacles.add_rect(lo, py - style.T_LABEL, lo + w,
                            py + style.T_LABEL, pad=1.0, weight=HARD)
 
-    cluster_rect: dict[int, int] = {}
-    for n, (_, boxes, _) in enumerate(clusters):
+    groups = _balloon_groups(view, board, places,
+                             (shared_number, shared_box))
+    items: list[_Ballooned] = []
+    for boxes, item in groups:
         u = _union(boxes)
         obstacles.add_rect(*view.pt(u[0], u[1]), *view.pt(u[2], u[3]),
                            pad=0.8)
-        cluster_rect[n] = len(obstacles.rects) - 1
+        item.own = len(obstacles.rects) - 1
+        items.append(item)
     for h in list(base.holes) + list(aux):
         obstacles.add_circle(*view.pt(h.x, h.y),
                              view.d(max(h.dia, HAT_KEEPOUT) / 2) + 1.0)
@@ -533,28 +636,18 @@ def render_rpi_comparison(*, drawing_no: str, version: str,
     # The three model sheets keep their X chain on the bottom edge (every
     # Pi votes for it under _x_chain_edge), so this sheet says so rather
     # than take the default, and lines up with them by construction.
+    # The overall height goes up the left, not the right as on a board
+    # sheet: the left is where a board sheet's ordinate chain is, and this
+    # sheet has none, while the right is where the balloon rows are.
     reserve_overall_dimensions(sheet, view, base, board, obstacles, edge_only,
-                               chain_edge="bottom")
+                               chain_edge="bottom", height_edge="left")
 
-    items: list[_Ballooned] = []
-    # Largest first, as on a board sheet: the big boxes have the least
-    # freedom and placing them early stops a small one taking the only spot.
-    order = sorted(range(len(clusters)),
-                   key=lambda n: -_area(_union(clusters[n][1])))
-    for n in order:
-        number, boxes, keys = clusters[n]
-        foreign = [b for m, other in enumerate(clusters) if m != n
-                   for b in other[1]]
-        tips = _anchors(view, boxes, foreign)
-        colour, dash = (MODEL_LINE[keys[0]] if len(keys) == 1
-                        else SHARED_LINE)
-        items.append(_Ballooned(str(number), tips[0], tips, cluster_rect[n],
-                                colour=colour, dash=dash))
     bounds = sheet.area.inset(4.0)
-    # Through the module, not through a name bound at import:
-    # tools/check_balloons.py replaces board_sheet.place_balloons to watch
-    # where every leader ends up, and a direct import would leave this sheet
-    # the only one it could not see.
+    # Every balloon here has its place already, from _balloon_groups, so the
+    # placer moves none of them; it draws them, and it is called at all so
+    # that tools/check_balloons.py, which watches it, sees this sheet's
+    # leaders against the same obstacles as every other sheet's.  Through the
+    # module, not through a name bound at import, or the check could not.
     bs.place_balloons(items, obstacles, bounds, c, position_only=edge_only)
 
     # --- dimensions ---------------------------------------------------------
@@ -562,7 +655,8 @@ def render_rpi_comparison(*, drawing_no: str, version: str,
     # outline they are all drawn on is one and the same.  Hole and connector
     # positions are dimensioned there and tabulated here, so this sheet
     # carries the library's outline frame and nothing else.
-    draw_outline_frame(sheet, view, base, board, chain_edge="bottom")
+    draw_outline_frame(sheet, view, base, board, chain_edge="bottom",
+                       height_edge="left")
 
     # --- annotation column --------------------------------------------------
     rows = _feature_rows()
