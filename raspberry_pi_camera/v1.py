@@ -277,6 +277,6 @@ CM1 = BoardSpec(
         f"{_fmt(TAIL[1])} from the lower edge. Other small parts are not "
         "measured.",
     ),
-    tolerance=f"holes +/-{HOLE_TOL:.1f}  lens +/-{LENS_TOL:.1f}  "
+    tolerance=f"edge, holes +/-{HOLE_TOL:.1f}  lens +/-{LENS_TOL:.1f}  "
               f"FFC +/-{SCALED_TOL:.2f}",
 )
