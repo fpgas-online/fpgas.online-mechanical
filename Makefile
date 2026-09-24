@@ -25,6 +25,7 @@ fetch:
 	@test -d tmp/src/tt123-demo-pcb || git clone --quiet \
 		https://github.com/TinyTapeout/tt123-demo-pcb tmp/src/tt123-demo-pcb
 	tools/fetch_fpga.sh
+	tools/fetch_orangepi_pc.sh
 	@test -d tmp/src/tinytapeout-demoboard-to-raspi || git clone --quiet \
 		https://github.com/psychogenic/tinytapeout-demoboard-to-raspi \
 		tmp/src/tinytapeout-demoboard-to-raspi
