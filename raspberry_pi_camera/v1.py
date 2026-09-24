@@ -1,4 +1,7 @@
-"""The original Raspberry Pi Camera Module, the OV5647 board silkscreened v1.3.
+"""The original Raspberry Pi Camera Module, the OV5647 board lettered Rev 1.3.
+
+Lettered "Raspberry Pi Camera Rev 1.3" on its lens side, and known as the
+v1.3.
 
 Hand-curated, with per-value provenance, because there is nothing to
 generate it from.  Raspberry Pi never published a mechanical drawing for this
@@ -36,6 +39,10 @@ Sources, all cached by ``tools/fetch_raspberry_pi_camera.sh``:
           board, and not the source of any figure here; it corroborates the
           hole pattern and hole size, and disagrees about the lens.
 
+``verify.py`` checks that each quoted figure is on its source.  It cannot
+check what the figure dimensions; that is read off the drawing, by eye, and
+said beside each figure here.
+
 Frame
 -----
 The family's, :mod:`tools.schema`: origin at the lower-left corner, X across
@@ -50,9 +57,10 @@ toward the lens.  The underside is at ``-BOARD_THICKNESS`` and everything on
 it is below that.
 
 What a camera holder needs is at module level: ``BOARD_WIDTH``,
-``BOARD_HEIGHT``, ``BOARD_THICKNESS``, ``HOLES`` and ``HOLE_DIA``,
-``OPTICAL_AXIS``, ``LENS``, ``LENS_PROFILE``, ``TAIL``, ``FFC``, the
-``*_Z`` heights, and the ``*_TOL`` error bars.  ``CM1`` is the same data as a
+``BOARD_HEIGHT``, ``BOARD_THICKNESS``, ``CORNER_RADIUS``, ``HOLES`` and
+``HOLE_DIA``, ``OPTICAL_AXIS``, ``LENS``, ``LENS_PROFILE``, ``TAIL``,
+``FFC`` and ``FFC_BODY``, ``FFC_CABLE`` and ``FFC_CABLE_WIDTH``, the
+``*_Z`` heights with ``OVERALL_HEIGHT``, and the ``*_TOL`` error bars.  ``CM1`` is the same data as a
 :class:`tools.schema.BoardSpec` for the drawing.
 """
 
@@ -64,19 +72,27 @@ from tools.schema import BoardSpec, Feature, Hole, Outline, Source
 # Error bars.  Each figure below says which one it carries.
 # ---------------------------------------------------------------------------
 
-#: Outline and holes.  GVL prints them to 0.05 and claims about 0.05; the
-#: hole pattern it prints agrees with Raspberry Pi's own Camera Module 2
-#: drawing to 0.03 (``verify.py`` holds it to that), and SPY and B0033 both
-#: give the same 21 x 12.5 rectangle 2 mm in from the edges.
+#: Outline and hole positions.  GVL prints them to 0.05 and claims about
+#: 0.05; the hole centres it prints agree with Raspberry Pi's own Camera
+#: Module 2 drawing to 0.03 (``verify.py`` holds it to that), and SPY and
+#: B0033 both give the same 21 x 12.5 rectangle 2 mm in from the edges.
 HOLE_TOL = 0.1
 
+#: Hole diameter.  Every source says 2, and none says it finer: GVL prints
+#: "ø 2" with no decimal, SPY "~2mm", the clone "R=1.00mm".  The Camera
+#: Module 2's are 2.2 on the same centres, and nothing here rules that out
+#: for this board, so the diameter carries enough to include it.
+HOLE_DIA_TOL = 0.2
+
 #: The lens and sensor module.  GVL puts its near side 5.1 from the connector
-#: edge, SPY 5.5: the two hand measurements are 0.4 apart, and the module is
-#: stuck to the board with adhesive rather than located by anything (GVL's
-#: thread, towolf, 11 June 2013: "the camera housing itself is stuck to the
-#: board with a patch of adhesive and comes off fairly easily"), so no single
-#: board is known better than that.
-LENS_TOL = 0.4
+#: edge, SPY 5.5, and SPY reads to the half millimetre, so its 5.5 is
+#: anything from 5.25 to 5.75: the two could be as much as 0.65 apart.  The
+#: module is stuck to the board with adhesive rather than located by
+#: anything (GVL's thread, towolf, 11 June 2013: "the camera housing itself
+#: is stuck to the board with a patch of adhesive and comes off fairly
+#: easily"), so neither is wrong for the board it measured, and no board is
+#: known better than the whole of that spread.
+LENS_TOL = 0.65
 
 #: Anything ``measure_cm1.py`` scales off GVL rather than reads from it: the
 #: worst residual of its checks, 0.09, plus GVL's own 0.05, rounded up.
@@ -103,10 +119,11 @@ CORNER_RADIUS = 0.0
 # Mounting holes
 # ---------------------------------------------------------------------------
 
-#: GVL, "ø 2".  SPY "~2mm hole", B0033 "R=1.00mm".  **Not** CM2's 2.2: both
-#: measurements of this board say 2, the clone's drawing agrees, and SPY adds
-#: that the holes "will accept a 2mm machine screw".  A reader who mounts a v2 on the same
-#: holder is looking at 2.2 mm holes on the same centres.
+#: GVL, "ø 2".  SPY "~2mm hole", B0033 "R=1.00mm".  SPY also says "The
+#: mounting holes will accept a 2mm machine screw according to various posts
+#: and photos I have seen", which is hearsay, and true of a 2.2 hole as well.
+#: Both measurements of this board say 2, where CM2's drawing says 2.2 on the
+#: same centres; see HOLE_DIA_TOL.
 HOLE_DIA = 2.0
 
 #: GVL: 9.35 and 21.85 from the connector edge, 2 and 23 up from the lower
@@ -125,18 +142,22 @@ HOLES = {
 # ---------------------------------------------------------------------------
 
 #: The module's square body, (x0, y0, x1, y1).  Across: SPY, "8.5mm" in from
-#: each side of an "8mm" module; GVL draws it at 8.53 to 16.52, which is the
-#: same place, and B0033 puts its centre "12.50 mm" from the side.  Up: GVL,
-#: "5.1" from the connector edge to an "8" module, so y1 = 23.9 - 5.1.  SPY
-#: gives 5.5 for the same distance; see LENS_TOL.
+#: each side of an "8mm" module -- GVL draws it, undimensioned, at 8.53 to
+#: 16.52, which is the same place, and B0033 puts its centre "12.50 mm" from
+#: the side.  Up: GVL, "5.1" from the connector edge to a module "8.0" deep
+#: in elevation, so y1 = 23.9 - 5.1.  SPY gives 5.5 for the same distance;
+#: see LENS_TOL.
 LENS = (8.5, round(BOARD_HEIGHT - 5.1 - 8.0, 2), 16.5,
         round(BOARD_HEIGHT - 5.1, 2))
 
 #: The optical axis: the centre of LENS, which GVL draws the lens barrel
 #: circles on.  It is 0.25 off the line of the upper holes, toward the
-#: connector -- the thread's RaspISteve, 11 June 2013: "the lens axis is
-#: just off line from the adjacent mounting holes".  SPY puts it on that line;
-#: CM2 puts its own 0.12 the other side.  Within LENS_TOL of all of them.
+#: connector.  A reader of GVL's sheet in the same thread said as much --
+#: RaspISteve, 11 June 2013: "from the drawing it would appear that the lens
+#: axis is just off line from the adjacent mounting holes" -- which is a
+#: reading of the same sheet, not a second measurement.  SPY puts the axis
+#: on that line and CM2 its own 0.12 the other side, both within LENS_TOL;
+#: B0033, the clone, puts it 1.15 away, which is not.
 OPTICAL_AXIS = ((LENS[0] + LENS[2]) / 2, (LENS[1] + LENS[3]) / 2)
 
 #: GVL, "5.2": the top of the lens above the board.  SPY: "The distance
@@ -144,16 +165,17 @@ OPTICAL_AXIS = ((LENS[0] + LENS[2]) / 2, (LENS[1] + LENS[3]) / 2)
 #: which GVL makes 5.2 + 0.95 = 6.15.
 LENS_TOP_Z = 5.2
 
-#: The lens stack in elevation, from the board up: (top of the step above the
-#: board, the step's size across, its shape in plan).  GVL-scaled: the sheet draws three steps
-#: and dimensions only the tip.  The square module body, 8.0 across (GVL,
+#: The lens stack in elevation, from the board up, every step centred on
+#: OPTICAL_AXIS: (top of the step above the board, the step's size across,
+#: its shape in plan).  GVL-scaled: the sheet draws three steps and
+#: dimensions only the tip.  The square module body, 8.0 across (GVL,
 #: "8.0"); a round holder, which the plan view draws as the larger of two
-#: circles, 7.48 there and 7.55 in elevation; a thin ring at the tip, 5.63.
+#: circles, 7.48 there and 7.44 in elevation; a thin ring at the tip, 5.52.
 #: The top step is LENS_TOP_Z, as printed, rather than its scaled 5.11.
 LENS_PROFILE = (
     (3.15, 8.0, "square"),
     (4.81, 7.5, "round"),
-    (LENS_TOP_Z, 5.6, "round"),
+    (LENS_TOP_Z, 5.5, "round"),
 )
 
 #: The sensor's flex tail, which runs from the module's far side to the
@@ -173,23 +195,37 @@ TAIL_TOP_Z = 1.18
 # FFC connector, on the underside
 # ---------------------------------------------------------------------------
 
-#: (x0, y0, x1, y1).  Depth in from the edge: GVL, "5.6"; CM2 draws its
-#: connector 5.52 and Camera Module 3's 5.71.  Along the edge: GVL-scaled,
-#: 2.79 to 22.24, 19.45 long and centred -- GVL draws the connector dashed
-#: and never dimensions it.  The Camera Module 2 and 3 connector bodies are
-#: both 19.61 on Raspberry Pi's drawings, 0.16 from this.
-FFC = (2.79, round(BOARD_HEIGHT - 5.6, 2), 22.24, BOARD_HEIGHT)
+#: The connector as a holder has to clear it, (x0, y0, x1, y1): the envelope
+#: of its body and the face it presents at the board edge.  Depth in from
+#: the edge: GVL, "5.6" -- lettered under the elevation, below where the
+#: cached page image is cropped, so which distance it dimensions is read
+#: from where the text layer puts it, and the dashed body in plan measures
+#: 5.63; CM2 draws its connector 5.52 and Camera Module 3's 5.71.  Along the
+#: edge: GVL-scaled, never dimensioned.  GVL draws the body dashed, and the
+#: face on the edge as a heavy line that runs past it at each end, 2.19 to
+#: 22.92, 20.73 long -- the latch ears, which CM2's drawing also draws, and
+#: whose envelope with the body is the 20.88 its sheet schedules.
+FFC = (2.19, round(BOARD_HEIGHT - 5.6, 2), 22.92, BOARD_HEIGHT)
+
+#: The body alone, GVL-scaled: 2.79 to 22.24, 19.45 long.  The Camera Module
+#: 2 and 3 connector bodies are both 19.61 on Raspberry Pi's drawings.
+FFC_BODY = (2.79, round(BOARD_HEIGHT - 5.6, 2), 22.24, BOARD_HEIGHT)
 
 #: GVL, "2.8": the connector's foot below the underside.  CM3 prints 2.75
 #: for its own.
 FFC_BOTTOM_Z = round(-BOARD_THICKNESS - 2.8, 2)
 
-#: GVL, "1.27": where the cable leaves the connector, below the underside,
-#: running off the upper edge.
+#: GVL, "1.27": from the underside to the upper face of the cable where it
+#: leaves the connector, running off the upper edge.
 FFC_CABLE_Z = round(-BOARD_THICKNESS - 1.27, 2)
 
 #: GVL, "16.2": the 15-way cable's width.  SPY: "16mm".
 FFC_CABLE_WIDTH = 16.2
+
+#: Where the cable crosses the upper edge, (x0, x1).  GVL-scaled: 4.43 to
+#: 20.68, which is the printed 16.2 to within the scaling, and centred on the
+#: board to 0.06.
+FFC_CABLE = (4.43, 20.68)
 
 #: The highest and lowest points of the board as assembled, and the whole.
 #: 5.2 + 0.95 + 2.8 = 8.95, against RPI's "Around 25 × 24 × 9 mm".
@@ -237,7 +273,7 @@ CM1 = BoardSpec(
     outline=Outline(width=BOARD_WIDTH, height=BOARD_HEIGHT,
                     corner_radius=CORNER_RADIUS, thickness=BOARD_THICKNESS),
     holes=tuple(Hole(x=x, y=y, dia=HOLE_DIA, label=label, kind="mount",
-                     keepout_dia=None)
+                     keepout_dia=None, tol=HOLE_DIA_TOL)
                 for label, (x, y) in HOLES.items()),
     features=(
         Feature(key="lens", label="Lens and sensor module", kind="lens",
@@ -261,14 +297,17 @@ CM1 = BoardSpec(
     ),
     notes=(
         "Raspberry Pi publish no drawing for this board. Figures are the "
-        "hand-measured source's as printed; the connector's length is scaled "
-        f"off it, good to +/-{SCALED_TOL:.2f}.",
+        "hand-measured source's as printed, but feature 1's X extent, the "
+        "second measurement's; the connector's length and the flex are "
+        f"scaled off the first, +/-{SCALED_TOL:.2f}.",
         "Hole centres, from the connector edge, agree with Raspberry Pi's "
         "Camera Module 2 drawing to 0.03; the second measurement gives the "
-        "same 21 x 12.5. Holes are o2.0 here, the Camera Module 2's o2.2.",
+        "same 21 x 12.5. Both measure the holes o2, not finer; the Camera "
+        "Module 2's are o2.2.",
         f"Optical axis at X {_fmt(OPTICAL_AXIS[0])}, Y "
-        f"{_fmt(OPTICAL_AXIS[1])}, the centre of feature 1, +/-{LENS_TOL:.1f}: "
-        "the two measurements disagree by that, and the module is glued on.",
+        f"{_fmt(OPTICAL_AXIS[1])}, the centre of feature 1, "
+        f"+/-{LENS_TOL:.2f}: the two measurements are that far apart at most, "
+        "and the module is glued on.",
         f"Heights: lens {LENS_TOP_Z:.2f} above the board, board "
         f"{BOARD_THICKNESS:.2f}, connector {-FFC_BOTTOM_Z - BOARD_THICKNESS:.2f} "
         f"below; {OVERALL_HEIGHT:.2f} overall.",
@@ -277,6 +316,6 @@ CM1 = BoardSpec(
         f"{_fmt(TAIL[1])} from the lower edge. Other small parts are not "
         "measured.",
     ),
-    tolerance=f"edge, holes +/-{HOLE_TOL:.1f}  lens +/-{LENS_TOL:.1f}  "
-              f"FFC +/-{SCALED_TOL:.2f}",
+    tolerance=f"edge, hole pos +/-{HOLE_TOL:.1f}  hole dia per schedule  "
+              f"lens +/-{LENS_TOL:.2f}  FFC +/-{SCALED_TOL:.2f}",
 )
