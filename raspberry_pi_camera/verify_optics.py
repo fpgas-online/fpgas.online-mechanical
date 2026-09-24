@@ -16,7 +16,14 @@ Four things, from the data modules rather than from the drawings:
 * every target whose plane is not the subject's own top face says so, because
   a height set at the wrong plane covers less at the right one;
 * every height is compared against the lens's published near limit, and the
-  answer the sheet prints is the answer the arithmetic gives.
+  answer the sheet prints is the answer the arithmetic gives;
+* what the elevations draw and print: that the declared angle each one
+  shows is the one lying along its axis, that it reaches the frame's edge
+  from the lens, that the camera is turned the way that needs the lower
+  camera, the height above the plate face on the mounting plate sheet, and
+  the figures the notes derive -- the diagonal's mistake, how far the stand
+  may lean, how soft a stock lens is at these heights, and which published
+  close limits each height is inside.
 
 That last one passes while reporting TOO CLOSE on every row.  It has to: a
 stock Camera Module OV5647 is fixed at "Approx 1 m to infinity" and every
@@ -29,6 +36,7 @@ Run: uv run --no-project python raspberry_pi_camera/verify_optics.py
 from __future__ import annotations
 
 import html
+import math
 import re
 import sys
 from pathlib import Path
@@ -57,6 +65,7 @@ QUOTES = {
         "3.76 × 2.74 mm",
         "1.4 µm × 1.4 µm",
         "3.60 mm +/- 0.01",
+        "F2.9",
         "53.50 +/- 0.13 degrees",
         "41.41 +/- 0.11 degrees",
         "Focus Fixed Adjustable Motorized Motorized",
@@ -281,6 +290,123 @@ def check_frames() -> int:
     return bad
 
 
+def _z_turned(frame, lens, long_axis: str) -> float:
+    """The height *frame*'s rectangle needs with the sensor's long side
+    along *long_axis*, worked from the declared angles directly."""
+    along_x = lens.fov_h if long_axis == "X" else lens.fov_v
+    along_y = lens.fov_v if long_axis == "X" else lens.fov_h
+    return max(frame.width / 2 / math.tan(math.radians(along_x / 2)),
+               frame.height / 2 / math.tan(math.radians(along_y / 2)))
+
+
+def check_elevations() -> int:
+    """The figures the elevations and the notes under them print.
+
+    Worked from the declared angles and the vendor's own lens figures, not
+    through the properties that print them, so that a wrong property is a
+    disagreement here rather than two copies of one mistake.
+    """
+    bad = 0
+    stock = LENSES["65"]
+    print("Elevations, at the stock lens")
+    for subject in subjects().values():
+        frame = subject.frames()[0]
+        p = place(frame, stock)
+        # 1. The angle each elevation labels is the one along its axis, and
+        #    from the lens at Z it reaches frame A's edge on that axis.
+        want_x = stock.fov_h if frame.long_axis == "X" else stock.fov_v
+        want_y = stock.fov_v if frame.long_axis == "X" else stock.fov_h
+        reach_x = 2 * p.z * math.tan(math.radians(want_x / 2))
+        reach_y = 2 * p.z * math.tan(math.radians(want_y / 2))
+        ok = (p.angle_x == want_x and p.angle_y == want_y
+              and reach_x >= frame.width - 1e-6
+              and reach_y >= frame.height - 1e-6)
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {subject.key:<20} front "
+              f"{p.angle_x:.2f}, end {p.angle_y:.2f}: from Z {p.z:.1f} they "
+              f"reach {reach_x:.2f} x {reach_y:.2f} over a frame "
+              f"{frame.width:.2f} x {frame.height:.2f}")
+        # 2. Turned the other way the camera would have to go higher: the
+        #    sheet says the frame is turned whichever way needs the lower
+        #    camera.
+        other = "Y" if frame.long_axis == "X" else "X"
+        # The frame for the other turn is the target plus the margin made
+        # 4:3 the other way up, which is a different rectangle.
+        t = frame.target
+        m = FRAME_MARGIN
+        w0, h0 = t.width + 2 * m, t.height + 2 * m
+        ratio = ASPECT if other == "X" else 1 / ASPECT
+        w = max(w0, h0 * ratio)
+        h = max(h0, w / ratio)
+        z_other = _z_turned(type("F", (), {"width": w, "height": h})(),
+                            stock, other)
+        ok = z_other >= p.z - 1e-6
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} long side along "
+              f"{frame.long_axis} needs Z {p.z:.1f}; along {other} it would "
+              f"need {z_other:.1f}")
+        # 3. The diagonal read as the angle across the long side.
+        long_side = max(frame.width, frame.height)
+        naive = long_side / 2 / math.tan(math.radians(65.0 / 2))
+        short = (long_side - 2 * naive * math.tan(
+            math.radians(stock.fov_h / 2))) / 2
+        ok = (abs(naive - p.naive_z) < 1e-9
+              and abs(short - p.naive_shortfall) < 1e-9 and short > 0)
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} 65 deg across the "
+              f"long side: Z {naive:.1f}, {short:.1f} mm lost off each end")
+        # 4. How far the stand may lean before the margin is used up.
+        tilt = math.degrees(math.atan(FRAME_MARGIN / p.z))
+        ok = abs(tilt - p.aim_tilt) < 1e-9
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} a lean of {tilt:.2f} "
+              f"deg moves the picture {FRAME_MARGIN:.2f} mm at Z")
+        # 5. How soft a stock lens is at Z: the depth of field formula,
+        #    f^2 |s - u| / (N u (s - f)), against the thin lens optics.blur
+        #    works the other way round, and against a lens set at infinity,
+        #    which is the other reading of "1 m to infinity".
+        f, n = optics.FOCAL_LENGTH, float(optics.FOCAL_RATIO.lstrip("F"))
+        s, u = optics.FIXED_FOCUS_DISTANCE, p.z
+        b = f * f * abs(s - u) / (n * u * (s - f))
+        b_inf = f * f / (n * u)
+        on_sensor, on_subject = optics.blur(u)
+        ok = abs(b - on_sensor) < 1e-12 and n == optics.F_NUMBER
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} stock lens at Z: a "
+              f"point spreads to {b * 1000:.1f} um, {b / optics.PIXEL_PITCH:.0f}"
+              f" px, {on_subject:.2f} mm on the board")
+        print(f"   --   {'':<20} set at infinity instead: {b_inf * 1000:.1f} "
+              f"um, {b_inf / optics.PIXEL_PITCH:.0f} px, "
+              f"{b_inf * (u - f) / f:.2f} mm on the board")
+        # 6. Which published close limits each frame's height is inside.
+        for quote, mm in optics.near_limits():
+            cm = float(re.search(r"(\d+) cm", quote).group(1))
+            ins = [f"{letter} {place(fr, stock).z:.1f}"
+                   for letter, fr in zip("AB", subject.frames())
+                   if place(fr, stock).z >= cm * 10]
+            ok = abs(mm - cm * 10) < 1e-9
+            bad += not ok
+            print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} inside {quote!r}, "
+                  f"{cm * 10:.0f} mm: {', '.join(ins) or 'none'}")
+        # 7. The plate's second height: the plate face to the lens, which
+        #    is Z plus the standoff and the thickest board.
+        if subject.key == "tt-mounting-plate":
+            from tinytapeout.boards import BOARDS as TT
+            from tinytapeout.mounting_plate.plate import (PLACEMENTS,
+                                                          STANDOFF_HEIGHT)
+            thick = max(TT[r].outline.thickness for pl in PLACEMENTS.values()
+                        for r in pl["revisions"])
+            plane = STANDOFF_HEIGHT + thick
+            ok = abs(frame.target.plane_above_subject - plane) < 1e-9
+            bad += not ok
+            print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} board face "
+                  f"{STANDOFF_HEIGHT:g} + {thick:.2f} = {plane:.2f} above the "
+                  f"plate, so the lens is {p.z + plane:.1f} above the plate "
+                  "face")
+    print()
+    return bad
+
+
 def main() -> None:
     problems = 0
     bad, _ = check_quotes()
@@ -288,6 +414,7 @@ def main() -> None:
     problems += check_model()
     problems += check_lenses()
     problems += check_frames()
+    problems += check_elevations()
 
     close = sum(1 for s in subjects().values() for f in s.frames()
                 for ln in LENSES.values() if place(f, ln).too_close)
