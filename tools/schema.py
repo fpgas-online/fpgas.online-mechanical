@@ -124,6 +124,9 @@ class Feature:
     #: bare board, where the plan view says everything.
     z0: float | None = None
     z1: float | None = None
+    #: Pin 1 of a header or connector whose orientation matters, where the
+    #: drawing marks it with a dot.  None for a part drawn by its body alone.
+    pin1: tuple[float, float] | None = None
 
     @property
     def width(self) -> float:

@@ -209,6 +209,11 @@ def draw_feature(c: Canvas, view: View, f: Feature) -> None:
     if f.kind == "led":
         c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
                weight=0.05, colour=colour, fill=colour)
+    if f.pin1 is not None:
+        # A filled dot, the size of a pin, on pin 1: which way round a header
+        # goes is the one thing its body outline cannot say.
+        px, py = view.pt(*f.pin1)
+        c.circle(px, py, view.d(0.5), w=0.05, colour=colour, fill=colour)
 
 
 def draw_pmod(c: Canvas, view: View, p, spec: BoardSpec) -> None:
@@ -1043,9 +1048,10 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         if misses and max(misses) < 0.05:
             holes = "its mounting holes coincide with this board's"
         else:
+            # Rounded down, so that "or more" is true of every hole.
             holes = (f"its mounting holes miss this board's by "
-                     f"{min(misses):.1f} mm or more, so no standoff can "
-                     "join the two")
+                     f"{math.floor(min(misses) * 10) / 10:.1f} mm or more, so "
+                     "no standoff can join the two")
         notes.append(f"Phantom outline is the {overlay.title} fitted on the "
                      f"40-pin GPIO header; {holes}.")
     if spec.kits:
