@@ -29,11 +29,12 @@ from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from raspberry_pi_camera.boards import BOARDS as RPICAM       # noqa: E402
 from raspberry_pi_camera.optics import subjects as RPICAM_SUBJECTS  # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
-from tools.generate_diagrams import (FPGA_ORDER, RPICAM_ORDER,  # noqa: E402
+from tools.generate_diagrams import (FPGA_ORDER, LENS_SUBTITLE,  # noqa: E402
+                                     LENS_TITLE, RPICAM_ORDER,
                                      RPICAM_POSITION_ORDER, RPI_ORDER,
                                      holder_title, position_stem, tt_sheets)
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
-                          FITTING_GUIDE_STEM, PLATE_STEM,
+                          FITTING_GUIDE_STEM, LENS_STEM, PLATE_STEM,
                           holder_stem,
                           PMOD_HAT_STEM,
                           acc_stem, drawing_name, rel, slug)
@@ -84,6 +85,7 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
          named("raspberry-pi-camera",
                [(slug(k), RPICAM[k].title, RPICAM[k].subtitle)
                 for k in RPICAM_ORDER]
+               + [(LENS_STEM, LENS_TITLE, LENS_SUBTITLE)]
                + [(position_stem(k), _SUBJECTS[k].title,
                    _SUBJECTS[k].subtitle)
                   for k in RPICAM_POSITION_ORDER])),

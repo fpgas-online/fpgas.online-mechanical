@@ -35,12 +35,13 @@ from tools.drafting.board_sheet import (planned_band_height,  # noqa: E402
 from tools.drafting.camera_sheet import render_camera_position  # noqa: E402
 from tools.drafting.enclosure_sheet import render_enclosure  # noqa: E402
 from tools.drafting.holder_sheet import render_holder  # noqa: E402
+from tools.drafting.lens_sheet import render_lenses  # noqa: E402
 from tools.drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           FITTING_GUIDE_SHEET, FITTING_GUIDE_STEM,
-                          holder_stem,
+                          LENS_STEM, holder_stem,
                           PLATE_SHEET, PLATE_STEM, PMOD_HAT_SHEET,
                           PMOD_HAT_STEM, acc_stem, drawing_name,
                           preview_for, rel, slug, tt_stem)
@@ -518,6 +519,22 @@ def holder_sheets() -> list[tuple[str, Path, str, "Holder"]]:
     return out
 
 
+#: The lens sheet's title and subtitle, which the README grid prints too.
+LENS_TITLE = "OV5647 Lenses and Focus"
+LENS_SUBTITLE = "Camera Module v1: stock, autofocus and 120 degree lenses"
+
+
+def lens_sheet() -> tuple[str, Path, str]:
+    """The lens sheet: drawing name, path, outline entry.
+
+    Bound after the camera board sheets and before the position sheets
+    that compute with its figures.
+    """
+    name = drawing_name("raspberry-pi-camera", LENS_STEM)
+    return (name, FAMILY_DIRS["raspberry-pi-camera"] / f"{LENS_STEM}.svg",
+            f"{name}  {LENS_TITLE}  -  {LENS_SUBTITLE}")
+
+
 def bundles() -> list[Bundle]:
     """Every bound copy the generator writes, without rendering anything.
 
@@ -531,10 +548,13 @@ def bundles() -> list[Bundle]:
                  for _, path, label, _ in holder_sheets()]
     tt_pages += [(path.with_suffix(".pdf"), _label(name, spec))
                  for name, _, path, spec in tt_board_sheets()]
-    # The board sheets, then the ones that say where to put the camera once
-    # it is on something: the order RPICAM_POSITION_ORDER explains.
+    # The board sheets, the lenses, then the ones that say where to put the
+    # camera once it is on something: the order RPICAM_POSITION_ORDER
+    # explains.
     cam_pages = [(path.with_suffix(".pdf"), _label(name, spec))
                  for name, path, spec in rpicam_sheets()]
+    _, lens_path, lens_label = lens_sheet()
+    cam_pages.append((lens_path.with_suffix(".pdf"), lens_label))
     cam_pages += [(path.with_suffix(".pdf"), _label(name, subject))
                   for name, path, subject in rpicam_position_sheets()]
     return [
@@ -642,6 +662,13 @@ def main() -> None:
                              family_numbers=RPICAM_NUMBERS,
                              view_bbox=cam_frame, band_height=cam_band)
         save(sheet, path, f"{name} ({spec.title})")
+
+    # The lens sheet, from the same module: every lens figure the position
+    # sheets compute with, and where it came from.
+    l_name, l_path, _ = lens_sheet()
+    sheet = render_lenses(title=LENS_TITLE, subtitle=LENS_SUBTITLE,
+                          drawing_no=l_name, version=VERSION)
+    save(sheet, l_path, f"{l_name} ({LENS_TITLE})")
 
     # The camera position sheets, drawn from the same family's optics module
     # rather than from a BoardSpec: they are not drawings of a part.  No
