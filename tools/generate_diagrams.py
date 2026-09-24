@@ -40,7 +40,7 @@ from tinytapeout.mounting_plate.plate import PLATE  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           FITTING_GUIDE_SHEET, FITTING_GUIDE_STEM,
-                          HOLDER_STEM,
+                          holder_stem,
                           PLATE_SHEET, PLATE_STEM, PMOD_HAT_SHEET,
                           PMOD_HAT_STEM, acc_stem, drawing_name,
                           preview_for, rel, slug, tt_stem)
@@ -493,22 +493,29 @@ def plate_sheets() -> list[tuple[str, Path, str]]:
     ]
 
 
-#: The camera holder's sheet's title and subtitle, which the README grid
-#: prints too.
-HOLDER_TITLE = "Camera Holder, TT Mounting Plate"
-HOLDER_SUBTITLE = "Holds a Camera Module over every demo board revision"
+def holder_title(lens) -> tuple[str, str]:
+    """A camera holder sheet's title and subtitle, which the README grid
+    prints too."""
+    return (f"Camera Holder, {lens.short} deg Lens",
+            "Holds a Camera Module over every demo board revision")
 
 
-def holder_sheet() -> tuple[str, Path, str]:
-    """The camera holder's sheet: drawing name, path, outline entry.
+def holder_sheets() -> list[tuple[str, Path, str, "Holder"]]:
+    """The camera holders' sheets: drawing name, path, outline entry, holder.
 
-    A made part on the plate, so it binds with the plate's own A3 sheets,
-    after them: a reader meets the plate, which boards go on it, and then
-    what stands over them.
+    One per lens.  A made part on the plate, so they bind with the plate's
+    own A3 sheets, after them: a reader meets the plate, which boards go on
+    it, and then what stands over them.
     """
-    name = drawing_name("camera-holder", HOLDER_STEM)
-    return (name, FAMILY_DIRS["camera-holder"] / f"{HOLDER_STEM}.svg",
-            f"{name}  {HOLDER_TITLE}  -  {HOLDER_SUBTITLE}")
+    from tinytapeout.camera_holder.holder import VARIANTS
+    out = []
+    for key, h in VARIANTS.items():
+        stem = holder_stem(key)
+        name = drawing_name("camera-holder", stem)
+        title, sub = holder_title(h.LENS)
+        out.append((name, FAMILY_DIRS["camera-holder"] / f"{stem}.svg",
+                    f"{name}  {title}  -  {sub}", h))
+    return out
 
 
 def bundles() -> list[Bundle]:
@@ -520,8 +527,8 @@ def bundles() -> list[Bundle]:
     """
     tt_pages = [(path.with_suffix(".pdf"), label)
                 for _, path, label in plate_sheets()]
-    _, holder_path, holder_label = holder_sheet()
-    tt_pages.append((holder_path.with_suffix(".pdf"), holder_label))
+    tt_pages += [(path.with_suffix(".pdf"), label)
+                 for _, path, label, _ in holder_sheets()]
     tt_pages += [(path.with_suffix(".pdf"), _label(name, spec))
                  for name, _, path, spec in tt_board_sheets()]
     # The board sheets, then the ones that say where to put the camera once
@@ -703,10 +710,11 @@ def main() -> None:
     # rather than from a BoardSpec.
     holder_dir = FAMILY_DIRS["camera-holder"]
     holder_dir.mkdir(parents=True, exist_ok=True)
-    h_name, h_path, _ = holder_sheet()
-    sheet = render_holder(title=HOLDER_TITLE, subtitle=HOLDER_SUBTITLE,
-                          drawing_no=h_name, version=VERSION)
-    save(sheet, h_path, f"{h_name} ({HOLDER_TITLE})")
+    for h_name, h_path, _, h in holder_sheets():
+        title, sub = holder_title(h.LENS)
+        sheet = render_holder(h, title=title, subtitle=sub,
+                              drawing_no=h_name, version=VERSION)
+        save(sheet, h_path, f"{h_name} ({title})")
 
     for path in made:
         print(f"  {rel(path)}")

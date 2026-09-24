@@ -323,11 +323,21 @@ def plate_name(stem_tail: str) -> str:
             "sheet itself already carries in full")
 
 
-#: The camera holder's sheet, by file stem: the stem says what it is and
-#: what it is on, where the prefix has already said the plate.
+#: The camera holders' sheets, one per lens, by file stem: the stem says
+#: what it is, what it is on and for which lens, where the prefix has already
+#: said the plate.  CAM and the lens's own angle: CAMERA with a lens after
+#: it would have made the holder for one lens a prefix of the other's.
 HOLDER_STEM = "tt-camera-holder"
+
+
+def holder_stem(lens_key: str) -> str:
+    """The file stem of the holder sheet for the lens keyed *lens_key*."""
+    return f"{HOLDER_STEM}-{lens_key}"
+
+
 HOLDER_NAMES = {
-    HOLDER_STEM: "camera",       # the camera holder on the TT plate
+    holder_stem("65"): "cam65",     # the holder for the stock 65 deg lens
+    holder_stem("120"): "cam120",   # the holder for the 120 deg lens
 }
 
 

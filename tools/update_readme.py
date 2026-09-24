@@ -29,14 +29,17 @@ from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from raspberry_pi_camera.boards import BOARDS as RPICAM       # noqa: E402
 from raspberry_pi_camera.optics import subjects as RPICAM_SUBJECTS  # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
-from tools.generate_diagrams import (FPGA_ORDER, HOLDER_SUBTITLE,  # noqa: E402
-                                     HOLDER_TITLE, RPICAM_ORDER,
+from tools.generate_diagrams import (FPGA_ORDER, RPICAM_ORDER,  # noqa: E402
                                      RPICAM_POSITION_ORDER, RPI_ORDER,
-                                     position_stem, tt_sheets)
+                                     holder_title, position_stem, tt_sheets)
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
-                          FITTING_GUIDE_STEM, HOLDER_STEM, PLATE_STEM,
+                          FITTING_GUIDE_STEM, PLATE_STEM,
+                          holder_stem,
                           PMOD_HAT_STEM,
                           acc_stem, drawing_name, rel, slug)
+
+from tinytapeout.camera_holder.holder import (  # noqa: E402
+    VARIANTS as HOLDER_VARIANTS)
 
 #: Built once: each subject walks another family's data modules.
 _SUBJECTS = RPICAM_SUBJECTS()
@@ -107,8 +110,8 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
                  "A4 at 1:1 - the six M4 fixings in the box the plate bolts "
                  "to")])),
         ("Camera holder", "camera-holder", COLUMNS,
-         named("camera-holder", [(HOLDER_STEM, HOLDER_TITLE,
-                                  HOLDER_SUBTITLE)])),
+         named("camera-holder", [(holder_stem(k), *holder_title(h.LENS))
+                                 for k, h in HOLDER_VARIANTS.items()])),
     ]
 
 
