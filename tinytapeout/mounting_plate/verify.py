@@ -9,7 +9,9 @@ modules rather than from the drawing:
   enough clearance for an M3 fastener;
 * every Pmod host pin field lands on one of the three plate positions;
 * no board overhangs the plate;
-* the Pmod connector bodies clear the plate's front edge.
+* the Pmod connector bodies clear the plate's front edge;
+* the standoff the plate specifies stands a board no lower than Tiny
+  Tapeout's own printed base does, read back from that base's source.
 
 Run: uv run --no-project python tinytapeout/mounting_plate/verify.py
 """
@@ -23,7 +25,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tinytapeout.mounting_plate.plate import PLACEMENTS, PLATE, PMOD_ROW_Y, PMOD_SLOT_X  # noqa: E402
+import re  # noqa: E402
+
+from tinytapeout.mounting_plate.plate import (  # noqa: E402
+    PLACEMENTS, PLATE, PMOD_ROW_Y, PMOD_SLOT_X, STANDOFF_HEIGHT,
+    UPSTREAM_BASE_REF, UPSTREAM_BASE_STUD)
 from tinytapeout.boards import BOARDS  # noqa: E402
 
 M3_DIA = 3.0
@@ -56,6 +62,41 @@ def fastener_clearance(x: float, y: float) -> tuple[float, str]:
         if c > best:
             best, why = c, f"slot {s.label}"
     return best, why
+
+
+#: Where ``make fetch`` leaves Tiny Tapeout's printed base.
+UPSTREAM_BASE = ROOT / "tmp" / "src" / "tt-demo-pcb" / "case" / \
+    "tt06_demo_base.scad"
+
+
+def check_standoff() -> int:
+    """The standoff against the stud of Tiny Tapeout's own base.
+
+    ``plate.py`` records that stud as 6.4 mm; this reads the base's own
+    source for the two numbers it comes from -- ``Height = 8`` and the PCB
+    thickness it lets into the top, ``pcb_base(99.5, 78, 1.6, ...)`` -- so
+    the figure the standoff is chosen against is not taken on trust.
+    """
+    if not UPSTREAM_BASE.exists():
+        print(f"standoff: {UPSTREAM_BASE.relative_to(ROOT)} is not there; "
+              "run `make fetch` to check it against the base\n")
+        return 0
+    text = UPSTREAM_BASE.read_text()
+    height = float(re.search(r"^Height\s*=\s*([\d.]+)", text, re.M).group(1))
+    pcb = float(re.search(r"pcb_base\([\d.]+,\s*[\d.]+,\s*([\d.]+)",
+                          text).group(1))
+    stud = height - pcb
+    bad = 0
+    ok = abs(stud - UPSTREAM_BASE_STUD) < 1e-9
+    bad += not ok
+    print(f"   {'ok  ' if ok else 'FAIL'} upstream base stud {height:g} - "
+          f"{pcb:g} = {stud:.2f} mm, plate.py records {UPSTREAM_BASE_STUD}")
+    ok = STANDOFF_HEIGHT >= stud
+    bad += not ok
+    print(f"   {'ok  ' if ok else 'FAIL'} the plate's {STANDOFF_HEIGHT:g} mm standoff "
+          f"stands the board {STANDOFF_HEIGHT - stud:+.2f} mm against it "
+          f"({UPSTREAM_BASE_REF.rsplit('/', 1)[-1]})\n")
+    return bad
 
 
 def main() -> None:
@@ -104,6 +145,7 @@ def main() -> None:
               f"y = {front:+.3f}, {abs(front):.3f} mm "
               f"{'beyond' if clears else 'short of'} the plate front edge\n")
 
+    problems += check_standoff()
     print("PASS: the plate accepts every revision" if not problems
           else f"FAIL: {problems} problem(s)")
     sys.exit(1 if problems else 0)
