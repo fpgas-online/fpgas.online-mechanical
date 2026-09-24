@@ -316,6 +316,8 @@ CM1 = BoardSpec(
         f"{_fmt(TAIL[1])} from the lower edge. Other small parts are not "
         "measured.",
     ),
-    tolerance=f"edge, hole pos +/-{HOLE_TOL:.1f}  hole dia per schedule  "
+    # Hole positions and the edge, then the diameter, which the schedule
+    # also prints beside each hole: "hole dia per schedule" did not fit.
+    tolerance=f"edge, holes +/-{HOLE_TOL:.1f}  dia +/-{HOLE_DIA_TOL:.1f}  "
               f"lens +/-{LENS_TOL:.2f}  FFC +/-{SCALED_TOL:.2f}",
 )
