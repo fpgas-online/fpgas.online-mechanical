@@ -20,6 +20,7 @@ Imported, not run.
 | `kicad_pcb.py` | Minimal reader for KiCad `.kicad_pcb` s-expression files |
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
+| `photo_frame.py` | Measuring a board off a square-on photograph: its edges, a homography onto its known size, and circles, blobs and ruled grids in that frame |
 | `render_svg.py` | SVG to PDF and PNG via Inkscape, text exported as paths |
 | `reproducible.py` | Pins the clocks, tool version strings and GUIDs that cairo, Inkscape, pypdf and ezdxf stamp into their output |
 
