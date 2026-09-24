@@ -775,6 +775,15 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
             edge_only.add_rect(lo, board.y, hi, board.y1, pad=1.2, weight=HARD)
             obstacles.add_rect(lo, mid - half, hi, mid + half,
                                pad=1.2, weight=HARD)
+    # Their extension lines too, position only like the outline: a balloon
+    # parked on one reads as part of the dimension.  On the Orange Pi PC one
+    # sat squarely on the width's left extension line, where nothing had
+    # reserved it.
+    for x in (board.x, board.x1):
+        edge_only.add_segment(x, edge_y, x, overall_y, weight=HARD)
+    for y in (board.y, board.y1):
+        edge_only.add_segment(board.x1, y, board.x1 + OVERALL_GAP, y,
+                              weight=HARD)
 
 
 def draw_outline_frame(sheet: Sheet, view: View, spec: BoardSpec,
