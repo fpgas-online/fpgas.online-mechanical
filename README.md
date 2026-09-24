@@ -133,7 +133,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </tr>
 </table>
 
-### Raspberry Pi
+### Raspberry Pi, and boards that take its HATs
 
 <table>
 <tr>
@@ -155,7 +155,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="raspberry_pi/output/rpi-models-compared.pdf"><img src="raspberry_pi/output/previews/rpi-models-compared.png" width="270" alt="RPI-ALL Raspberry Pi 3B/3B+, 4B and 5 compared"></a><br>
 <b>RPI-ALL</b> Raspberry Pi 3B/3B+, 4B and 5 compared<br>One 85 x 56 outline: what is shared and what moves
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi/output/orangepi-pc.pdf"><img src="raspberry_pi/output/previews/orangepi-pc.png" width="270" alt="RPI-OPIPC Xunlong Orange Pi PC"></a><br>
+<b>RPI-OPIPC</b> Xunlong Orange Pi PC<br>Allwinner H3, v1.2 and v1.3, 85 x 56 mm
+</td>
 <td width="33%"></td>
 </tr>
 </table>
