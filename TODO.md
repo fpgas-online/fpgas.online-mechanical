@@ -159,11 +159,16 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] A balloon ring carries its model's line type, because three outlines on
       top of one another leave nowhere for a leader's dot that belongs to one
       of them alone
+- [x] One leader to each place, with a balloon per model on it in model
+      order (ISO 6433 grouped references), the rows in a column outside the
+      board; the overall height moved to the left to leave the right to
+      them
 - [x] Per-model feature and hole schedules, the connector swap stated in
       words, and the union envelope, 88.00 x 57.32 mm
-- [x] `tools/check_balloons.py` watches the new sheet: it takes a renderer
-      rather than a board spec, so a sheet drawn by its own module is no
-      longer invisible to it
+- [x] `tools/check_balloons.py` watches the new sheet, and every other: it
+      walks `generate_diagrams.draw_sheets()`, and reports a leader crossing
+      another leader or a ring, a feature it does not point at, or a
+      dimension line
 - [ ] Ask whether the Pmod HAT Adapter belongs on it after all. It is left
       off because its host positions say nothing about how the models differ
       and its pin fields fall exactly where they do differ; if a plate

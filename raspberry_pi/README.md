@@ -92,9 +92,11 @@ to draw rather than assert something it has not compared. What it is for is
 the union envelope, 88.00 x 57.32 mm; the fact that the Ethernet jack and the
 USB type A ports swap places between the Pi 3 and the Pi 4, so a chassis cut
 for one will not take the other; and the two extra 3.00 mm holes the Pi 5
-adds. Feature numbers are the family's, so a number appears twice where the
-part is in two places, and the balloon's ring is drawn in the line type of
-the model it belongs to.
+adds. Feature numbers are the family's. Each place the models put a
+connector gets one leader with a balloon for each model on it, left to right
+Pi 3B/3B+, Pi 4B, Pi 5, each ring in that model's line type, so the bay in
+the upper right corner reads 4 3 4: two models' USB ports and the Pi 4B's
+Ethernet jack.
 
 The Pmod HAT Adapter is not on it. It is the same on all three models, so it
 says nothing about how they differ, and its phantom pin fields fall exactly

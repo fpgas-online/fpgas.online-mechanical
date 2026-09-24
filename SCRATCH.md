@@ -2192,3 +2192,37 @@ rather than overprinting the next field, which is how it was found.  The
 field reads "reference only - governed by" and the three names, 94.7 mm.  It
 is the GENERAL TOLERANCE cell, so "every dimension" was the part that could
 go, and the sheets it names are still the ones that govern.
+
+## RPI-ALL's balloons, the second time
+
+"The balloons are all over the place."  They were: eight balloons, each
+placed on its own by the placer wherever it scored cheapest, so the three
+bays on the right sent leaders to the far right, below the board and back
+inside it.  check_balloons passed the sheet throughout, and working out why
+was the first job.  It sampled each leader against hard obstacles only, so
+a leader ruled through a connector it did not point at, or across the
+56.00, was nothing to it; it threw away a crossing shorter than 2 mm, which
+is every crossing at a steep angle; and the placed balloons live in a scene
+the placer builds per balloon and discards, so a leader through another
+ring was invisible.  Rewritten to test exactly, against everything, on
+every sheet as the generator draws it, it found on this sheet one leader
+through two connector bodies, three across the height and the corner
+callout across an extension line -- and, it should be said, no two leaders
+actually crossing: the ones that looked crossed ran close and nearly
+parallel.  Everywhere else it found only leaders across an overall
+dimension, which the placer allows on purpose; those went into ACCEPTED.
+
+The layout was the wrong question.  Each bay holds one connector from each
+model, not always the same connector, and three leaders into one bay are
+three dots in the same few millimetres whatever the placer does.  Pointing
+at the place instead, with every model's number on the one leader, is what
+ISO 6433 does for items that share a location.  The other way round -- one
+balloon per place, the models only in the schedule -- would have given the
+place a number, and a number on these sheets is a part.
+
+Two details took a render each.  The leader first came out in the first
+model's colour, which says the leader is the Pi 3's; it is black now, like
+the rest of what the models share.  And the Pi 3's long-dash ring met its
+leader in a gap, because SVG starts a circle's dashes at three o'clock, so
+a broken ring is now drawn from half a dash before the point its leader
+touches.

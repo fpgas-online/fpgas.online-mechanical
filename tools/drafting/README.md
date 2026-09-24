@@ -36,7 +36,9 @@ of the dimensioned features sit on the top edge, as the Arty A7's Pmod hosts
 do); schedules go in the right-hand column; notes and sources flow into a band
 across the bottom, plus whatever is left at the foot of the column. Balloons
 are placed inside the view against an obstacle list, so a leader is never
-routed through a neighbouring feature.
+routed through a neighbouring feature. A sheet that knows better where its
+balloons belong can hand the placer a balloon already placed, and several
+balloons on one leader; `RPI-ALL` does both.
 
 Text is sized by ISO 3098 character height, not by font em. Nothing is smaller
 than 2.5 mm capitals, which is 3.43 mm of font size for these faces. Long hole
