@@ -4,6 +4,12 @@ The Raspberry Pi boards a Tiny Tapeout demo board is usually paired with, each
 drawn with a [Digilent Pmod HAT Adapter](../accessories/README.md) overlaid so
 the Pmod host positions can be read off directly.
 
+The Pi 5 is drawn a second time, with a different part on it, on
+[`ACC-HAT-M2POE`](../accessories/README.md): an Acorn CLE-215+ in a Waveshare
+PoE M.2 HAT+ (B). That sheet is filed with the accessories because what is new
+on it is the accessory, and because the data behind it is hand-curated where
+everything in this directory is generated.
+
 | | |
 |---|---|
 | `boards.py` | **Generated.** Every Raspberry Pi drawn here |

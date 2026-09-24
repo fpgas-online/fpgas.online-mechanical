@@ -21,13 +21,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from accessories.parts import GENERIC_POE, PMOD_HAT, WAVESHARE_POE  # noqa: E402
+from accessories.parts import (GENERIC_POE, PMOD_HAT,  # noqa: E402
+                               POE_M2_HAT_WITH_ACORN, WAVESHARE_POE)
 from accessories.raspmod import RASPMOD                       # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE                              # noqa: E402
 from fpga.boards import BOARDS as FPGA                        # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
-from tools.generate_diagrams import FPGA_ORDER, RPI_ORDER, tt_sheets  # noqa: E402
+from tools.generate_diagrams import (ACC_M2_HAT_SUBTITLE,  # noqa: E402
+                                     ACC_M2_HAT_TITLE, FPGA_ORDER,
+                                     RPI_ORDER, tt_sheets)
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           FITTING_GUIDE_STEM, PLATE_STEM, PMOD_HAT_STEM,
                           acc_stem, drawing_name, rel, slug)
@@ -78,7 +81,9 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
                  WAVESHARE_POE.subtitle),
                 (acc_stem(GENERIC_POE.key), GENERIC_POE.title,
                  GENERIC_POE.subtitle),
-                (acc_stem(RASPMOD.key), RASPMOD.title, RASPMOD.subtitle)])),
+                (acc_stem(RASPMOD.key), RASPMOD.title, RASPMOD.subtitle),
+                (acc_stem(POE_M2_HAT_WITH_ACORN.key), ACC_M2_HAT_TITLE,
+                 ACC_M2_HAT_SUBTITLE)])),
         ("Mounting plate", "mounting-plate", 2,
          named("mounting-plate",
                [(PLATE_STEM, PLATE.title, PLATE.subtitle),

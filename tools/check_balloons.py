@@ -7,12 +7,10 @@ from, and reports every leader whose final route crosses a *hard* obstacle: a
 phantom Pmod host, another balloon, another leader, or an ordinate witness
 line.  Those are the things a reader cannot afford to have a line ruled over.
 
-Two crossings are unavoidable and are listed in ACCEPTED below: on the
-Raspberry Pi 4B and Pi 5 the micro-HDMI connectors sit directly beneath the
-Pmod HAT Adapter's host JC, so a leader from those connectors has to cross the
-host whichever way it leaves.  That physical overlap is the subject of a note
-on both sheets.  Anything else fails, so a regression cannot pass unremarked
-just because the total happens to look familiar.
+A crossing that no placement can avoid is listed in ACCEPTED below, with what
+physically overlaps what.  Anything else fails, so a regression cannot pass
+unremarked just because the total happens to look familiar; ACCEPTED is empty
+at present.
 
 Run with::
 
@@ -23,6 +21,7 @@ from __future__ import annotations
 
 import math
 import sys
+from functools import partial
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -49,7 +48,9 @@ def _spy_balloon(c, tip, centre, label, **kw):
 bs.place_balloons = _spy_place
 dims.balloon = _spy_balloon
 
-from accessories.parts import ACCESSORIES, PMOD_HAT        # noqa: E402
+from accessories.parts import (ACCESSORIES, PMOD_HAT,  # noqa: E402
+                               POE_M2_HAT_WITH_ACORN)
+from accessories.raspmod import RASPMOD              # noqa: E402
 from fpga.boards import BOARDS as FPGA               # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI        # noqa: E402
 from tinytapeout.boards import BOARDS as TT          # noqa: E402
@@ -102,7 +103,7 @@ def _crossed(tip, centre, obstacles, samples: int = 200) -> list[str]:
 #: on the same sheet is still caught.
 #:
 #: Empty at present.  The two entries that used to be here were the micro-HDMI
-#: connectors on the Pi 4B and Pi 5, which sit underneath the Pmod HAT
+#: connectors on the Pi 4B and Pi 5, which sat underneath the Pmod HAT
 #: Adapter's host JC; those connectors are no longer drawn, so the crossing
 #: they forced is gone with them.
 ACCEPTED: dict[str, set[str]] = {}
@@ -128,13 +129,17 @@ def _on_a_feature(items, placed, obstacles) -> set[str]:
     return out
 
 
-def check(name: str, spec, overlay=None) -> tuple[set[str], set[str]]:
+def check(name: str, draw) -> tuple[set[str], set[str]]:
     """Draw one sheet and report which balloons cross a hard obstacle.
+
+    *draw* renders it.  A callable rather than a spec, so that a sheet which
+    needs more than a spec and an overlay -- another keyword argument, or a
+    renderer of its own -- is watched the same way as the rest.
 
     Returns the crossings that were not expected and the expected ones that no
     longer happen; both mean the sheet and ACCEPTED have drifted apart.
     """
-    bs.render_board(spec, drawing_no="-", version="-", overlay=overlay)
+    draw()
     obstacles = _state["obstacles"]
     accepted = ACCEPTED.get(name, set())
     crossing = set()
@@ -153,18 +158,40 @@ def check(name: str, spec, overlay=None) -> tuple[set[str], set[str]]:
     return (crossing - accepted) | on_feature, accepted - crossing
 
 
+def board(spec, overlay=None, **kw):
+    return partial(bs.render_board, spec, drawing_no="-", version="-",
+                   overlay=overlay, **kw)
+
+
 def main() -> int:
-    sheets = [(f"tinytapeout/{k}", v, None) for k, v in TT.items()]
-    sheets += [(f"raspberry-pi/{k}", v, PMOD_HAT) for k, v in RPI.items()]
-    sheets += [(f"fpga/{k}", v, None) for k, v in FPGA.items()]
-    sheets.append(("accessories/pmod-hat", PMOD_HAT, None))
-    sheets += [(f"accessories/{k}", v, None) for k, v in ACCESSORIES.items()
+    sheets = [(f"tinytapeout/{k}", board(v)) for k, v in TT.items()]
+    sheets += [(f"raspberry-pi/{k}", board(v, PMOD_HAT))
+               for k, v in RPI.items()]
+    sheets += [(f"fpga/{k}", board(v)) for k, v in FPGA.items()]
+    sheets.append(("accessories/pmod-hat", board(PMOD_HAT)))
+    sheets += [(f"accessories/{k}", board(v)) for k, v in ACCESSORIES.items()
                if v is not PMOD_HAT]
+    # The Raspmod is an accessory sheet whose data lives in its own
+    # generated module rather than in ACCESSORIES, so walking that dict alone
+    # left its sheet unchecked.
+    sheets.append((f"accessories/{RASPMOD.key}", board(RASPMOD)))
+    # The M.2 HAT assembly: the board drawn is the Pi 5 with the phantom part
+    # drawn in detail, because its bodies and standoffs are obstacles the
+    # placer has to work round and leaving the flag off would check a sheet
+    # with none of them on it.  Not the generator's call, though: the notes,
+    # the sources and the family numbering are left off, so the notes band
+    # here is shorter and the whole view sits 40.00 mm lower down the sheet.
+    # That is a rigid shift and the five balloons land on the same points of
+    # the board either way, which is what this file reads; the sheet as
+    # issued is check_sheets.py's business.
+    sheets.append(("accessories/poe-m2-hat-acorn",
+                   board(RPI["rpi5"], POE_M2_HAT_WITH_ACORN,
+                         overlay_detail=True)))
 
     unexpected: dict[str, set[str]] = {}
     stale: dict[str, set[str]] = {}
-    for name, spec, overlay in sheets:
-        new, gone = check(name, spec, overlay)
+    for name, draw in sheets:
+        new, gone = check(name, draw)
         if new:
             unexpected[name] = new
         if gone:

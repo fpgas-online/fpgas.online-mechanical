@@ -18,7 +18,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from accessories.parts import (ACCESSORIES, GENERIC_POE,  # noqa: E402
+from accessories.parts import (ACCESSORIES, ACORN_WIDTH,  # noqa: E402
+                               GENERIC_POE,
+                               M2_CARD_WIDTH, M2_LENGTHS,
+                               M2_STANDOFF_THREAD,
+                               POE_M2_BOSS_DIA, POE_M2_DATUM_X,
+                               POE_M2_HAT_TOL, POE_M2_HAT_WIDTH,
+                               POE_M2_HAT_WITH_ACORN, POE_M2_SOCKET_TOL,
+                               POE_M2_STANDOFF_OVERHANG,
                                PMOD_HAT, PMOD_HAT_TOL, WAVESHARE_POE)
 from accessories.raspmod import RASPMOD  # noqa: E402
 from fpga.boards import BOARDS as FPGA_BOARDS  # noqa: E402
@@ -99,6 +106,53 @@ RPI_NOTES = (
     # a copied "0.75", so the two sheets cannot drift apart.
     "Pmod HAT Adapter host positions are DERIVED, good to about "
     f"+/-{PMOD_HAT_TOL} mm; drawing {PMOD_HAT_SHEET} has the derivation.",
+)
+
+#: The M.2 HAT assembly sheet's own title and subtitle.  Named here rather
+#: than written into the render call because the README grid has to print the
+#: same words, and a sheet whose caption and title block disagree is exactly
+#: the drift tools/update_readme.py exists to stop.
+ACC_M2_HAT_TITLE = "Acorn CLE-215+ in a PoE M.2 HAT+ on a Pi 5"
+ACC_M2_HAT_SUBTITLE = ("Plan envelope of the assembly; the Raspberry Pi 5 is "
+                       "the board drawn")
+
+#: Where the card's far end lands, which is where its retention screw is:
+#: the M.2 specification puts the half-moon cutout on the module's far edge.
+_ACORN_END = POE_M2_DATUM_X + M2_LENGTHS["2280"]
+
+#: What this sheet has to say that neither the Pi's own data nor the HAT's
+#: says on its own: it is the assembly, not either part, that projects past
+#: the Pi and that has to be given room.
+#:
+#: Every figure here is interpolated from accessories/parts.py rather than
+#: typed again, for the reason RPI_NOTES gives above: a note and the data it
+#: describes that are two copies of one number drift apart silently, and the
+#: note is the copy nobody rebuilds.
+ACC_M2_HAT_NOTES = (
+    f"The card's far end and its retention screw land at X {_ACORN_END:.2f}, "
+    f"just past the Pi's Ethernet-end edge, and the standoff's "
+    f"{POE_M2_BOSS_DIA:.2f} mm boss reaches "
+    f"{_ACORN_END + POE_M2_BOSS_DIA / 2:.2f}: allow "
+    f"{POE_M2_STANDOFF_OVERHANG:.2f} mm past the {POE_M2_HAT_WIDTH:.0f} mm "
+    "board, on the edge the RJ45 and USB already overhang.",
+    f"The Acorn is {ACORN_WIDTH:.0f} mm wide, a millimetre over the M.2 "
+    f"specification's {M2_CARD_WIDTH:.0f} +/-0.15; SQRL say to make sure of "
+    "the clearance.",
+    "PLAN ONLY, no Z anywhere: neither Waveshare nor SQRL publish a height "
+    "for the HAT, its standoffs, the card, or the heatsink the CLE-215+ "
+    "carries, which is therefore not drawn.",
+    # Which figures are NOT derived is as much a provenance question as which
+    # are, and the phantom schedule's four 2.75s are the only ones on the
+    # sheet that come from neither Raspberry Pi Ltd's drawing nor Waveshare's.
+    "Waveshare dimension nothing of the M.2 system but the standoff's "
+    f"{POE_M2_STANDOFF_OVERHANG:.2f} mm overhang, so the socket, the "
+    "standoffs and the card are DERIVED from their drawing by "
+    f"accessories/measure_poe_m2_hat.py, to +/-{POE_M2_HAT_TOL} mm and the "
+    f"socket to +/-{POE_M2_SOCKET_TOL:.0f} mm; the standoffs' DIA is the "
+    f"{M2_STANDOFF_THREAD} tapped thread, not a clearance hole, and BOSS is "
+    "what they occupy. MT1 to MT4 are not derived at all: their 2.75 mm is "
+    "the Raspberry Pi HAT specification's DECLARED M2.5 clearance, which "
+    "Waveshare do not dimension.",
 )
 
 
@@ -510,6 +564,36 @@ def main() -> None:
     raspmod_name = drawing_name("accessories", raspmod_stem)
     sheet = render_board(RASPMOD, version=VERSION, drawing_no=raspmod_name)
     save(sheet, acc_dir / f"{raspmod_stem}.svg", raspmod_name)
+
+    # An assembly rather than a part.  The board drawn is the Pi 5, whose
+    # geometry is Raspberry Pi Ltd's and is already on that model's own
+    # sheet; what is new is the phantom part on top of it, and that is an
+    # accessory, curated by hand from a dimensioned vendor image the way
+    # everything else in accessories/parts.py is.  So the sheet is named and
+    # filed with the accessories even though the outline on it belongs to a
+    # Raspberry Pi.
+    m2_stem = acc_stem(POE_M2_HAT_WITH_ACORN.key)
+    m2_name = drawing_name("accessories", m2_stem)
+    sheet = render_board(
+        replace(RPI_BOARDS["rpi5"],
+                key=POE_M2_HAT_WITH_ACORN.key,
+                title=ACC_M2_HAT_TITLE,
+                subtitle=ACC_M2_HAT_SUBTITLE,
+                # Not the Pi 5 sheet's notes: those are about where that
+                # family's numbers come from and about the Pmod HAT Adapter,
+                # and the Pi 5's own sheet is where a reader goes for
+                # them.  This sheet says what the assembly does, which is all
+                # it is for.
+                notes=ACC_M2_HAT_NOTES,
+                # The Pi's own drawing, then the HAT's and the card's, all
+                # of them: a figure on this sheet that no line under SOURCES
+                # accounts for is the one thing these drawings are for.
+                sources=RPI_BOARDS["rpi5"].sources[:1]
+                + POE_M2_HAT_WITH_ACORN.sources),
+        drawing_no=m2_name, version=VERSION,
+        overlay=POE_M2_HAT_WITH_ACORN, overlay_detail=True,
+        family_numbers=RPI_NUMBERS)
+    save(sheet, acc_dir / f"{m2_stem}.svg", m2_name)
 
     plate_dir = FAMILY_DIRS["mounting-plate"]
     plate_dir.mkdir(parents=True, exist_ok=True)

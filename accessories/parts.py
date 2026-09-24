@@ -8,6 +8,8 @@ than published, an explicit uncertainty.
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from tools.schema import BoardSpec, Feature, Hole, Outline, PmodHeader, Source
 
 # ---------------------------------------------------------------------------
@@ -312,6 +314,259 @@ GENERIC_POE = BoardSpec(
     ),
 )
 
+# ---------------------------------------------------------------------------
+# PCI Express M.2 Specification, Revision 1.0, 1 November 2013
+# ---------------------------------------------------------------------------
+
+M2_CARD_WIDTH = 22.00             # section 2.3.4.3, figure 13: 22 +/-0.15
+M2_2280_LENGTH = 80.00            # section 2.3.4.3, figure 13: 80 +/-0.15
+
+#: The stand-off's tapped hole, section 2.5.4.2 and figure 73: "M2X0.4 Tapped
+#: Hole-Thru".  It is what the retention screw goes into, so on a drawing of
+#: the host board it is the hole there is to draw; it is not a clearance hole
+#: and nothing passes through it but the screw.
+M2_STANDOFF_THREAD = "M2 x 0.4"
+M2_STANDOFF_TAP_DIA = 2.00
+
+#: Distance from the connector datum to a module's retention screw, which is
+#: that module's own length: the half-moon cutout is centred on the module's
+#: far end edge, so the card ends where the screw is.
+M2_LENGTHS = {"2230": 30.00, "2242": 42.00, "2260": 60.00, "2280": 80.00}
+
+M2_SPEC_SOURCE = Source(
+    label="PCI Express M.2 Specification",
+    ref="PCI-SIG, Revision 1.0, 1 November 2013",
+    note="Section 2.3.4.3 and figure 13: a Type 2280 module is 22 +/-0.15 by "
+         "80 +/-0.15 mm, its retention screw's half-moon cutout centred on "
+         "the far end edge. Section 2.5.4.2 and figure 73: an M2 x 0.4 "
+         "shouldered stand-off.",
+)
+
+# ---------------------------------------------------------------------------
+# Waveshare PoE M.2 HAT+ (B), on a Raspberry Pi 5
+# ---------------------------------------------------------------------------
+#
+# Waveshare sell three PoE-plus-M.2 HATs for the Pi 5 and only this one takes
+# a 2280 card.  Each wiki's feature list, quoted as each one writes it:
+#
+#     PoE M.2 HAT+        "Compatible with M.2 hard drives of 2230/2242 sizes"
+#     PoE M.2 HAT+ (B)    "Compatible with M.2 hard drives of
+#                          2230 / 2242 / 2260 / 2280 sizes"
+#     PoE M.2 HAT+ (C)    "Compatible with M.2 hard drives of 2230 / 2242
+#                          sizes"
+#
+# The (B) is also the only one the size of a Pi: 85.00 x 56.00 against the
+# plain one's 70.00 x 56.50 and the (C)'s 65.00 x 56.50, both of which those
+# boards' own dimension drawings state.
+#
+# Everything below in the RASPBERRY PI's frame: origin at the Pi's lower-left
+# corner, X right, Y up, viewed from the component side.  Waveshare draw this
+# HAT with its 40-pin header along the lower edge, which is the assembly seen
+# from above and turned through 180 degrees.  accessories/measure_poe_m2_hat.py
+# undoes that rotation and then proves it, by requiring the board's own
+# lower-left corner to land on the origin: the mounting holes sit 3.50 in from
+# one end of an 85 mm board and 23.50 in from the other, so a view read the
+# wrong way round puts that corner twenty millimetres out.
+#
+# DECLARED, printed on Waveshare's dimension drawing with "Unit: mm":
+#     85.00 and 56.00    the outline
+#     58.00 and 49.00    the mounting hole rectangle
+#     3.50               hole centre to the board edge at the M.2 socket end
+#     3.00               how far the 2280 standoff projects past the far edge
+#
+# DERIVED, by accessories/measure_poe_m2_hat.py from the same drawing, because
+# Waveshare dimension no part of the M.2 system but that 3.00: scale and
+# origin from the mounting holes, then the three standoffs that sit clear of
+# the board edge.  Each gives the connector datum independently, through the
+# M.2 specification's 30 / 42 / 60 mm module lengths, and the three agree to
+# 0.04 mm.  The board's own edges then come out 84.88 x 55.88 against the
+# declared 85.00 x 56.00, and the 2280 standoff -- predicted at 80 mm from
+# that datum and never measured -- reaches exactly the 88.00 mm the declared
+# 3.00 puts it at.  The worst of those three residuals is 0.12 mm, which is
+# the board's own width and height.
+#
+# A fourth check is the board's lower-left corner, which has to come back at
+# the origin once the fit is made on the holes: it reads (0.17, 0.23), and
+# 0.23 mm is therefore the widest residual on any check the fit did not use.
+# It is an orientation check rather than a measurement -- a view read the
+# wrong way round misses the origin by twenty millimetres -- so it is allowed
+# a whole millimetre, but it is still a residual and the tolerance below is
+# taken from it.
+
+POE_M2_HAT_WIDTH = 85.00
+POE_M2_HAT_HEIGHT = 56.00
+POE_M2_STANDOFF_OVERHANG = 3.00
+
+# The drawing's other two declared figures, 58.00 x 49.00 and 3.50, are not
+# constants here: they name the Raspberry Pi's own hole pattern, so the holes
+# below are built from HAT_HOLES and the figures are what CHECK that, in
+# accessories/measure_poe_m2_hat.py, which carries its own copy of them
+# because it has to be able to disagree with this file.
+
+#: Where a seated card's mating edge sits, and the axis it sits on.
+POE_M2_DATUM_X = 5.07
+POE_M2_AXIS_Y = 18.26
+
+#: Outside diameter of the standoff bosses.  Measured on the THREE that sit
+#: clear of the board edge, which all read the same, and 0.37 mm over the M.2
+#: specification's guideline Ø5.50 shouldered stand-off; the fourth is not
+#: measured at all, because it is the 2280 one, and that whole standoff --
+#: position and boss together -- is predicted and then checked against
+#: Waveshare's declared 3.00 mm overhang.  It is the boss, not the screw, that
+#: decides how far the assembly reaches past the Pi's edge, so it is the boss
+#: that is drawn.
+POE_M2_BOSS_DIA = 5.87
+
+#: Everything derived from the drawing, to the worst residual on a check that
+#: was not used to make the fit: 0.23 mm, the corner, rounded to one decimal
+#: as measure_poe_m2_hat.py prints it.
+POE_M2_HAT_TOL = 0.2
+
+#: The M.2 socket's own footprint, from the same drawing but read off the
+#: moulding rather than off a circle, so an order of magnitude looser.  Its
+#: length is taken from the end the search window did not clip and mirrored
+#: about the axis the standoffs define, which is the axis a socket for a
+#: 22 mm module is symmetric about.
+POE_M2_SOCKET_TOL = 1.0
+
+_STANDOFF_Y = POE_M2_AXIS_Y
+
+POE_M2_HAT = BoardSpec(
+    key="waveshare-poe-m2-hat-b",
+    title="Waveshare PoE M.2 HAT+ (B)",
+    # BoardSpec requires a subtitle and no title block ever carries this
+    # one: the part is never a sheet's subject.  It is here for a reader of
+    # this module, and because the field has no default.
+    subtitle="PoE M.2 HAT+ (B), fitted on a Raspberry Pi 5 40-pin header",
+    family="accessory",
+    front_edge="top",
+    outline=Outline(width=POE_M2_HAT_WIDTH, height=POE_M2_HAT_HEIGHT,
+                    corner_radius=HAT_CORNER_RADIUS),
+    # The board's own eight holes: four to bolt it to the Pi and four to
+    # retain a card.  The mounting four are at the Pi's own centres, which is
+    # what the drawing's 58.00 x 49.00 and 3.50 say, and on a sheet that also
+    # draws the Pi the renderer draws each of them once rather than putting a
+    # dashed circle a fortieth of a millimetre outside a solid one.  They stay
+    # in the data because they are this board's geometry and its schedule is
+    # not complete without them.  Waveshare do not dimension the hole itself;
+    # HAT_HOLE_DIA is the Raspberry Pi HAT specification's M2.5 clearance.
+    holes=tuple(
+        Hole(x=x, y=y, dia=HAT_HOLE_DIA, label=f"MT{i + 1}", kind="mount")
+        for i, (x, y) in enumerate(sorted(HAT_HOLES, key=lambda p: (p[1], p[0])))
+    ) + tuple(
+        Hole(x=POE_M2_DATUM_X + M2_LENGTHS[n], y=_STANDOFF_Y,
+             dia=M2_STANDOFF_TAP_DIA, label=n, kind="aux",
+             keepout_dia=POE_M2_BOSS_DIA, tol=POE_M2_HAT_TOL)
+        for n in ("2230", "2242", "2260", "2280")
+    ),
+    features=(
+        Feature(key="m2_socket", label="M.2 M-key socket", kind="connector",
+                x0=1.02, y0=POE_M2_AXIS_Y - 11.07,
+                x1=10.20, y1=POE_M2_AXIS_Y + 11.07,
+                note="Moulding, end posts and solder tails together. Read off "
+                     "Waveshare's drawing, +/-1 mm; they dimension none of it.",
+                tol=POE_M2_SOCKET_TOL),
+    ),
+    sources=(
+        Source(label="Dimension drawing",
+               ref="https://www.waveshare.com/w/upload/d/d9/"
+                   "PoE-M.2-HAT-Plus-B-details-size.jpg",
+               note='Annotated 85.00, 56.00, 58.00, 49.00, 3.50 and 3.00, '
+                    '"Unit: mm". The 3.00 is the 2280 standoff\'s projection '
+                    "past the board edge."),
+        Source(label="Product wiki",
+               ref="https://www.waveshare.com/wiki/PoE_M.2_HAT%2B_(B)",
+               note='"Compatible with M.2 hard drives of 2230 / 2242 / 2260 / '
+                    '2280 sizes", which of their three PoE M.2 HATs only this '
+                    'one is. Its "Product size: 56.5mm x 70.0mm" is the plain '
+                    "HAT+'s and contradicts this board's own drawing."),
+        # Not HAT_SPEC_SOURCE, which is the same document read for what a
+        # standard 65 x 56.0/56.5 HAT is; this board is 85 x 56 and takes
+        # from it only the hole, which is all its sheet should say it takes.
+        Source(label="Raspberry Pi HAT mechanical specification",
+               ref="https://github.com/raspberrypi/hats  "
+                   "hat-board-mechanical.pdf",
+               note="Waveshare dimension the hole CENTRES and not the holes: "
+                    "MT1 to MT4's 2.75 mm is this specification's declared "
+                    "M2.5 clearance. Its 58 x 49 mm rectangle 3.5 mm in from "
+                    "the edges is what their 58.00, 49.00 and 3.50 agree "
+                    "with."),
+        M2_SPEC_SOURCE,
+    ),
+    # No notes.  A sheet's notes are its SUBJECT's: tools/drafting/
+    # board_sheet.py's _sheet_text reads spec.notes and never the overlay's,
+    # so anything written here would be a provenance note no drawing prints.
+    # What this part's figures are and how good they are is said on the sheet
+    # that draws it, by ACC_M2_HAT_NOTES in tools/generate_diagrams.py.
+    #
+    # No tolerance override either.  This part has never been the subject of a
+    # drawing -- it is only ever the phantom one on the assembly sheet, where
+    # the title block's general tolerance belongs to the board that IS the
+    # subject -- so a field only the subject's title block can show would be a
+    # figure nothing prints.  What the reader needs is in that sheet's notes
+    # and in the headings of the phantom schedules, which name this part.
+)
+
+# ---------------------------------------------------------------------------
+# SQRL Acorn CLE-215+ in that HAT
+# ---------------------------------------------------------------------------
+#
+# SQRL published no mechanical drawing and the company's site is gone; what
+# they did publish, and what the Internet Archive still has, is the sentence
+# below.  So the card is drawn as the M.2 specification's 2280 outline with
+# SQRL's own one millimetre added to the width, and the sheet says that the
+# heatsink the CLE-215+ carries is not published and is not drawn.
+
+ACORN_WIDTH = M2_CARD_WIDTH + 1.00
+ACORN_LENGTH = M2_2280_LENGTH
+
+ACORN_SOURCE = Source(
+    label="SQRL Acorn CLE-215+ product page",
+    ref="https://web.archive.org/web/2020/"
+        "http://www.squirrelsresearch.com/acorn-cle-215-plus/",
+    note='Squirrels Research Labs, captured 2020; the site is gone. "An M.2 '
+         "2280 M-Key (PCIe) slot is required to use Acorn ... it is one "
+         "millimeter wider than the official specifications. Ensure you have "
+         'clearance."',
+)
+
+ACORN_CARD = Feature(
+    key="acorn",
+    label="SQRL Acorn CLE-215+, M.2 2280 M-key",
+    # What goes on the view, where the clear paper inside the card's own
+    # outline runs from the socket to the mounting hole column's witness
+    # line and the full name does not fit between them.
+    designator="Acorn CLE-215+",
+    kind="outline",
+    x0=POE_M2_DATUM_X, y0=POE_M2_AXIS_Y - ACORN_WIDTH / 2,
+    x1=POE_M2_DATUM_X + ACORN_LENGTH, y1=POE_M2_AXIS_Y + ACORN_WIDTH / 2,
+    note="Seated: the mating edge is at the connector datum and the far end "
+         "edge passes through the 2280 retention screw. 23 mm wide, which is "
+         "SQRL's one millimetre over the specification's 22. The heatsink is "
+         "not published and is not drawn.",
+    tol=POE_M2_HAT_TOL,
+)
+
+#: The overlay the assembly sheet draws: the HAT with a card in it.  One
+#: phantom part rather than two, because the card's position is the HAT's
+#: geometry -- the socket and the standoff put it where it is -- and a nested
+#: overlay would have to carry that relationship somewhere else.
+POE_M2_HAT_WITH_ACORN = replace(
+    POE_M2_HAT,
+    key="waveshare-poe-m2-hat-b-acorn",
+    # Unread, like the one it replaces, and required for the same reason.
+    subtitle="PoE M.2 HAT+ (B) with an Acorn CLE-215+, on a Raspberry Pi 5",
+    features=POE_M2_HAT.features + (ACORN_CARD,),
+    sources=POE_M2_HAT.sources + (ACORN_SOURCE,),
+)
+
+#: The accessories that are drawn as the SUBJECT of a sheet of their own.
+#: tools/check_balloons.py walks this to redraw each one and inspect where its
+#: balloons went, so a part in here that no generator call renders would have
+#: the checker reporting on a drawing nobody can look at.  POE_M2_HAT is
+#: therefore not here: it is only ever the phantom part on the assembly
+#: sheet, and the checker draws that sheet itself, the Pi with the overlay
+#: on it.
 ACCESSORIES: dict[str, BoardSpec] = {
     PMOD_HAT.key: PMOD_HAT,
     WAVESHARE_POE.key: WAVESHARE_POE,
