@@ -187,7 +187,29 @@ checker that measures the finished PDFs rather than trusting them.
       `RP-008155-DS-1`, true 1:1, one sheet after the two were read separately
       and required to agree
 - [x] A `lens` feature kind, drawn with a centre mark at the optical axis
-- [x] `raspberry-pi-camera-sheets.pdf`, the two bound into one document
+- [x] `raspberry-pi-camera-sheets.pdf`, the sheets bound into one document
+- [x] `RPICAM-1`, the Camera Module 1, the OV5647 board lettered v1.3.
+      Raspberry Pi never drew it, so it is hand-curated in `v1.py` from Gert
+      van Loo's hand-measured sheet of 21 May 2013, with Raspberry Pi Spy's
+      caliper measurement as a second opinion; kept in this family, not
+      moved to `accessories/`, because the family is the subject
+- [x] `measure_cm1.py` scales what that sheet draws and does not dimension,
+      the scale checked against every figure it prints: worst 0.09 mm
+- [x] `verify.py` holds `v1.py` to its cached sources, and its hole pattern
+      to Raspberry Pi's Camera Module 2 and 3 drawings, 0.023 and 0.008 apart
+- [ ] Measure a v1.3 board in hand to close what the sources leave open:
+  - [ ] The lens module's near side from the connector edge, which the two
+        measurements give as 5.1 and 5.5; that 0.4 is the optical axis's
+        error bar, and several boards measured would say whether it is
+        glue or error
+  - [ ] The hole diameter with pin gauges: both measurements say 2.0, the
+        Camera Module 2 drawing 2.2
+  - [ ] The FFC connector's length along the edge, scaled at 19.45
+  - [ ] The height of the sensor flex over J2, scaled at 1.18, and of D1, R9
+        and every other part on the lens side, which no source gives
+  - [ ] Whether anything but the connector is on the underside, and how
+        tall it stands
+  - [ ] The lens's clear aperture
 - [ ] The High Quality Camera, `RP-008200-DS-1`: needs a round feature and a
       profiled outline before `render_board` can draw its ø36 C/CS mount and
       its tripod boss honestly, and its FFC connector is in no plan view
