@@ -4,10 +4,11 @@ Not generated, unlike ``boards.py``: Xunlong publish no drawing to generate it
 from -- SCRATCH.md has the search -- so every figure here is either theirs,
 and says so, or was measured off a photograph by ``measure_orangepi_pc.py``
 and is recorded below as it was printed, photograph by photograph.  The
-figures the sheet draws are worked out from those records here, in the open,
-and so is the tolerance the sheet quotes: the largest disagreement between
-two independent measurements of the same thing, or between a measurement and
-a check it was not fitted to.  ``verify_orangepi_pc.py`` recomputes both.
+figures the sheet draws are worked out from those records here, in the open:
+a mean of every reading, put on the 40-pin header's scale across the board.
+So is the tolerance the sheet quotes, the furthest any reading, or any check
+the fit did not use, lies from what is drawn.  ``verify_orangepi_pc.py``
+recomputes both.
 
 Photographs, fetched by tools/fetch_orangepi_pc.sh:
 
@@ -93,6 +94,12 @@ OVERHANG_SEEN = {
 #: The microSD socket, on the underside and seen square on from below.
 MICROSD_SEEN = {"v13b": (-0.6, 16.8, 13.9, 31.2), "xb": (-0.8, 16.5, 13.9, 31.0)}
 
+#: The board's corner radius, fitted where the edge finder sees each corner:
+#: lower left, lower right, upper left, upper right.  None where it cannot,
+#: which is behind the single USB port in Xunlong's top view.
+CORNER_SEEN = {"v13t": (2.27, 2.36, 2.14, 1.96), "v13b": (1.74, 2.10, 2.01, 2.30),
+               "xt": (2.28, 2.31, 2.39, None), "xb": (2.32, 2.30, 2.24, 1.96)}
+
 #: Which edge each part overhangs, so which of its sides the bottom views see.
 EDGE = {"power": "bottom", "hdmi": "bottom", "audio": "bottom",
         "usb_a_1": "right", "ethernet": "right", "usb_a_2": "right",
@@ -103,8 +110,29 @@ EDGE = {"power": "bottom", "hdmi": "bottom", "audio": "bottom",
 # ---------------------------------------------------------------------------
 
 
+#: The scale across the board.  Fitted to the board's edges alone, the
+#: header comes out long in both bottom views, pin 1 to pin 39 48.58 and
+#: 48.48 mm where it is 19 x 2.54 = 48.26, and so does everything else
+#: measured across the board: the holes came out 79.40 apart, where the
+#: cases and Xunlong's PC Plus drawing put them 78.96 to 79.15.  The likeliest
+#: cause is the edge finder landing a little inside the routed edge.  So
+#: every X is scaled about the board's centre line by the header's own pitch,
+#: the most exactly known length on the board; Y, where the header's two rows
+#: are too short a ruler, is left as the edges give it.
+HEADER_SPAN = mean(h["span"] for h in HEADER_SEEN.values())
+X_SCALE = 19 * 2.54 / HEADER_SPAN
+
+
+def fix_x(x: float) -> float:
+    """An X read in the edges' frame, put on the header's scale."""
+    return WIDTH / 2 + (x - WIDTH / 2) * X_SCALE
+
+
 def side_readings(part: str) -> list[list[float]]:
-    """Every independent reading of each side of *part*: x0, y0, x1, y1."""
+    """Every independent reading of each side of *part*: x0, y0, x1, y1.
+
+    X readings on the header's scale, see X_SCALE.
+    """
     sides = [[seen[part][i] for seen in TOP_SEEN.values()] for i in range(4)]
     # Which side each of an overhang's three readings is: its two ends along
     # the edge, and how far it reaches past it.
@@ -113,7 +141,8 @@ def side_readings(part: str) -> list[list[float]]:
         for seen in OVERHANG_SEEN.values():
             for side, value in zip(lo_hi_reach[EDGE[part]], seen[part]):
                 sides[side].append(value)
-    return sides
+    return [[fix_x(v) for v in vs] if i in (0, 2) else vs
+            for i, vs in enumerate(sides)]
 
 
 def adopted(part: str) -> tuple[float, float, float, float]:
@@ -128,14 +157,18 @@ def adopted(part: str) -> tuple[float, float, float, float]:
 #: Xunlong's included, puts them on a rectangle.
 _SHARE = {"MT1": ("MT3", "MT2"), "MT2": ("MT4", "MT1"),
           "MT3": ("MT1", "MT4"), "MT4": ("MT2", "MT3")}
-HOLES_AT = {k: (round(mean(p[0] for h in (k, sx) for p in HOLES_SEEN[h].values()), 2),
+HOLES_AT = {k: (round(fix_x(mean(p[0] for h in (k, sx) for p in HOLES_SEEN[h].values())), 2),
                 round(mean(p[1] for h in (k, sy) for p in HOLES_SEEN[h].values()), 2))
             for k, (sx, sy) in _SHARE.items()}
 HOLE_DIA = round(mean(HOLE_DIA_SEEN), 2)
 RING_DIA = round(mean(RING_DIA_SEEN), 2)
-PIN1 = (round(mean(h["pin1"][0] for h in HEADER_SEEN.values()), 2),
+PIN1 = (round(fix_x(mean(h["pin1"][0] for h in HEADER_SEEN.values())), 2),
         round(mean(h["pin1"][1] for h in HEADER_SEEN.values()), 2))
-MICROSD = tuple(round(mean(b[i] for b in MICROSD_SEEN.values()), 2) for i in range(4))
+MICROSD = tuple(round((fix_x if i % 2 == 0 else float)(
+    mean(b[i] for b in MICROSD_SEEN.values())), 2) for i in range(4))
+#: The median of every corner the edge finder could see.
+CORNERS = sorted(r for rs in CORNER_SEEN.values() for r in rs if r is not None)
+CORNER_RADIUS = round(CORNERS[len(CORNERS) // 2], 1)
 
 
 def board_residuals() -> dict[str, float]:
@@ -143,13 +176,20 @@ def board_residuals() -> dict[str, float]:
     out = {}
     for label, seen in HOLES_SEEN.items():
         ax, ay = HOLES_AT[label]
-        out[f"{label}, photo to photo"] = max(max(abs(x - ax), abs(y - ay))
+        out[f"{label}, photo to photo"] = max(max(abs(fix_x(x) - ax), abs(y - ay))
                                               for x, y in seen.values())
     for name, h in HEADER_SEEN.items():
-        out[f"header pin 1 to pin 39, {name}"] = abs(h["span"] - 19 * 2.54)
+        out[f"header pin 1 to pin 39 on the header's scale, {name}"] = abs(
+            h["span"] * X_SCALE - 19 * 2.54)
         out[f"header rows, {name}"] = abs(h["rows"] - 2.54)
-        out[f"header pin 1, {name}"] = max(abs(h["pin1"][0] - PIN1[0]),
+        out[f"header pin 1, {name}"] = max(abs(fix_x(h["pin1"][0]) - PIN1[0]),
                                           abs(h["pin1"][1] - PIN1[1]))
+        # Where the edges are, against the header's scale.  The board is
+        # drawn 85 wide; a photograph whose board is narrower than that on
+        # the header's scale has each edge half the difference from where
+        # the drawing puts it, relative to everything inside the board.
+        out[f"board edge on the header's scale, {name}"] = abs(
+            WIDTH - WIDTH * 19 * 2.54 / h["span"]) / 2
     return out
 
 
@@ -163,9 +203,13 @@ def part_residuals() -> dict[str, float]:
     return out
 
 
-#: The tolerances the sheet quotes, the worst residual above rounded up.
-#: verify_orangepi_pc.py fails if either is less than the worst residual,
-#: and holds every third-party model to them as well.
+#: The tolerances the sheet quotes.  The parts' is their worst residual,
+#: 1.04, rounded up.  The holes' and header's worst is 0.28, the v1.3 board's
+#: edges on the header's scale; it is quoted as 0.4 rather than 0.3 because
+#: Xunlong's PC Plus drawing puts pin 1 0.31 from here, and a sibling board's
+#: drawing is the nearest thing to the board's own.  verify_orangepi_pc.py
+#: fails if either is less than the worst residual, and holds every
+#: third-party model to them as well.
 BOARD_TOL = 0.4
 PARTS_TOL = 1.1
 #: The drilled hole's spread over the sixteen readings, rounded up.
@@ -178,14 +222,15 @@ HEADER_BOX = (round(PIN1[0] - 1.27, 2), round(PIN1[1] - 1.27, 2),
 
 #: Balloon numbers.  One to five mean what they mean on every Raspberry Pi
 #: sheet; the rest are this board's own, for the parts a Pi sheet does not
-#: draw and a case round this board has to clear.  The debug UART header J3
-#: is measured and checked like the rest but not drawn: it is three pins well
-#: inside the outline, and on the sheet its balloon had nowhere to go but
-#: across the adapter's host JC.
+#: draw and a case round this board has to clear.  Two parts are measured and
+#: checked like the rest but not drawn, because both are well inside the
+#: outline and on the sheet their balloons had nowhere to go but across one
+#: of the adapter's hosts: the debug UART header J3, across JC, and the camera
+#: connector CON1, which left the microSD socket's and the power button's
+#: balloons only JB to cross.
 FEATURE_NUMBERS = {
     6: "HDMI", 7: "3.5 mm audio and video jack", 8: "Micro-USB OTG",
     9: "MicroSD socket", 10: "Power button", 11: "IR receiver",
-    12: "Camera connector",
 }
 
 _PARTS = (
@@ -199,7 +244,6 @@ _PARTS = (
     ("usb_otg", 8, "Micro-USB OTG", "connector", "CN1"),
     ("button", 10, "Power button", "switch", "SW4"),
     ("ir", 11, "IR receiver", "connector", "U22"),
-    ("camera", 12, "Camera connector, 24-way FPC", "connector", "CON1"),
 )
 
 ORANGEPI_PC = BoardSpec(
@@ -208,14 +252,17 @@ ORANGEPI_PC = BoardSpec(
     subtitle="Allwinner H3, v1.2 and v1.3, 85 x 56 mm",
     family="raspberrypi",
     front_edge="top",
-    outline=Outline(width=WIDTH, height=HEIGHT),
+    outline=Outline(
+        width=WIDTH, height=HEIGHT, corner_radius=CORNER_RADIUS,
+        profile_note=f"Corner radius measured {CORNERS[0]:.1f} to "
+                     f"{CORNERS[-1]:.1f} mm, drawn at the median."),
     holes=tuple(Hole(x=x, y=y, dia=HOLE_DIA, label=label, kind="mount",
                      keepout_dia=RING_DIA, tol=HOLE_DIA_TOL)
                 for label, (x, y) in HOLES_AT.items()),
     features=(
         (Feature(key="gpio40", label="40-pin GPIO header", kind="header",
                  x0=HEADER_BOX[0], y0=HEADER_BOX[1], x1=HEADER_BOX[2],
-                 y1=HEADER_BOX[3], number=1, designator="CON3"),)
+                 y1=HEADER_BOX[3], number=1, designator="CON3", pin1=PIN1),)
         + tuple(Feature(key=key, label=label, kind=kind, designator=ref,
                         number=number, x0=b[0], y0=b[1], x1=b[2], y1=b[3])
                 for key, number, label, kind, ref in _PARTS
@@ -249,14 +296,20 @@ ORANGEPI_PC = BoardSpec(
         "Xunlong publish no drawing of this board. Everything but its size is "
         "MEASURED from the photographs listed, good to "
         f"+/-{BOARD_TOL} mm for holes and header and +/-{PARTS_TOL} mm for the "
-        "parts: the worst disagreement between two photographs, or with a "
-        "check not used to take the measurement.",
+        "parts: no photograph's reading, and no check on the holes and "
+        "header, is further than that from what is drawn.",
+        "Across the board the scale is the 40-pin header's 2.54 mm pitch. "
+        "Fitted to the board's edges alone, the photographs came out "
+        f"{(HEADER_SPAN / (19 * 2.54) - 1) * 100:.1f} % wide.",
         "Xunlong's manual and specification table give 85 x 55 mm. The "
         "photographs measure 55.7 to 57.1 mm, and Xunlong's own dimensioned "
         "photograph and drawing of the PC Plus say 56.",
         "Each part is the mean of every photograph that shows it, top face "
         "from above and overhang from below; raspberry_pi/orangepi_pc.py "
         "records every reading.",
-        "KEEPOUT is the copper ring round each hole.",
+        "The dot is pin 1 of the 40-pin header. KEEPOUT is the copper ring "
+        "round each hole.",
+        "Plan only: no height is measured, nor how far a microSD card "
+        "stands out of its socket.",
     ),
 )
