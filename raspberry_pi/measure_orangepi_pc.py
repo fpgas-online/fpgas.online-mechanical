@@ -44,8 +44,11 @@ What is measured where:
 Checks not used in the fit are printed for each: the header must be 48.26 mm
 from pin 1 to pin 39 on a 2.54 mm pitch with its rows 2.54 mm apart, the four
 views must agree on every hole, and the board's aspect in each photograph
-must say 56 rather than 55.  raspberry_pi/verify_orangepi_pc.py holds the
-adopted figures against the same checks and against third-party models.
+must say 56 rather than 55.  The first of those fails: both bottom views put
+the header 0.5 to 0.7 % long, and everything else across the board with it,
+so ``orangepi_pc.py`` takes the scale across the board from the header when
+it adopts the figures.  raspberry_pi/verify_orangepi_pc.py holds the adopted
+figures against what checks are left and against third-party models.
 
 The connector edges are read by eye off a 1 mm grid drawn on the rectified
 photograph, at 40 pixels to the millimetre; ``--grids DIR`` writes those
@@ -67,8 +70,9 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tools.photo_frame import (Frame, blob, fit_board, grid_image,  # noqa: E402
-                               photographed_height, ring)
+from tools.photo_frame import (Frame, blob, corner_radius,  # noqa: E402
+                               fit_board, grid_image, photographed_height,
+                               ring)
 
 SRC = ROOT / "tmp" / "src" / "orangepi_pc" / "photos"
 
@@ -105,7 +109,7 @@ CORNER = 3.5            # the rounded corners are not edge
 TIP_HEIGHT = 8.5
 
 #: Each part's height above the board, for the parallax correction only; a
-#: 2 mm error here moves a corrected edge by at most 0.4 mm on these views.
+#: 2 mm error here moves a corrected edge by at most 0.5 mm on these views.
 Z = {"usb_a_1": 13.5, "ethernet": 13.5, "usb_a_2": 15.5, "hdmi": 6.5,
      "power": 6.5, "audio": 6.0, "usb_otg": 3.0, "button": 3.5,
      "ir": 7.0, "camera": 2.5, "uart": 2.5}
@@ -266,6 +270,16 @@ def main() -> None:
               f"pitch {f['pitch']:.3f}  pin 1-39 {f['span']:6.2f} "
               f"({f['span'] - 48.26:+.2f})  rows {f['rows']:.2f} "
               f"({f['rows'] - 2.54:+.2f})  rms {f['rms']:.2f}")
+        print(f"  {'':18s} in the header's scale the board is "
+              f"{FRAME.width * 48.26 / f['span']:.2f} wide")
+
+    print("\n--- board corners: radius, where the edge finder can see all of it ---")
+    for name in PHOTOS:
+        radii = []
+        for corner in [(0, 0), (FRAME.width, 0), (0, FRAME.height),
+                       (FRAME.width, FRAME.height)]:
+            radii.append(corner_radius(rect[name], FRAME, corner)[2])
+        print(f"  {name:18s} " + "  ".join(f"{r:4.2f}" for r in radii))
 
     print("\n--- connectors, top face read and corrected for parallax ---")
     for top, bottom in PAIRS.items():
