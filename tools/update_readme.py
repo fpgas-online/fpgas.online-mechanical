@@ -27,7 +27,8 @@ from tinytapeout.mounting_plate.plate import PLATE                              
 from fpga.boards import BOARDS as FPGA                        # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
-from tools.generate_diagrams import FPGA_ORDER, RPI_ORDER, tt_sheets  # noqa: E402
+from tools.generate_diagrams import (FPGA_ORDER, RPI_ORDER,  # noqa: E402
+                                     RPI_OTHERS, tt_sheets)
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           FITTING_GUIDE_STEM, PLATE_STEM, PMOD_HAT_STEM,
                           acc_stem, drawing_name, rel, slug)
@@ -64,10 +65,13 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
         ("Tiny Tapeout demo boards", "tinytapeout", COLUMNS,
          named("tinytapeout", [(stem, spec.title, spec.subtitle)
                                for stem, spec in tt_sheets()])),
-        ("Raspberry Pi, with a Digilent Pmod HAT Adapter overlaid",
+        ("Raspberry Pi, and boards that take its HATs, with a Digilent Pmod "
+         "HAT Adapter overlaid",
          "raspberry-pi", COLUMNS,
          named("raspberry-pi", [(slug(k), RPI[k].title, RPI[k].subtitle)
-                                for k in RPI_ORDER])),
+                                for k in RPI_ORDER]
+               + [(slug(k), v.title, v.subtitle)
+                  for k, v in RPI_OTHERS.items()])),
         ("FPGA development boards", "fpga", COLUMNS,
          named("fpga", [(slug(k), FPGA[k].title, FPGA[k].subtitle)
                         for k in FPGA_ORDER])),

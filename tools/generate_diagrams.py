@@ -25,6 +25,8 @@ from fpga.boards import BOARDS as FPGA_BOARDS  # noqa: E402
 from fpga.boards import FEATURE_NUMBERS as FPGA_NUMBERS  # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI_BOARDS  # noqa: E402
 from raspberry_pi.boards import FEATURE_NUMBERS as RPI_NUMBERS  # noqa: E402
+from raspberry_pi.orangepi_pc import FEATURE_NUMBERS as OPI_NUMBERS  # noqa: E402
+from raspberry_pi.orangepi_pc import ORANGEPI_PC  # noqa: E402
 from tinytapeout.boards import BOARDS as TT_BOARDS  # noqa: E402
 from tinytapeout.boards import FEATURE_NUMBERS as TT_NUMBERS  # noqa: E402
 from tools.drafting.board_sheet import (planned_band_height,  # noqa: E402
@@ -40,6 +42,7 @@ from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           preview_for, rel, slug, tt_stem)
 from tools.render_svg import combine_pdfs  # noqa: E402
 from tools import reproducible  # noqa: E402
+from tools.schema import moved  # noqa: E402
 
 #: Stamped into every sheet's title block where a render date used to go.
 #: See tools/reproducible.py: a date changed every sheet whenever anyone
@@ -71,6 +74,12 @@ FPGA_BUNDLE = "fpga-sheets.pdf"
 TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.1", "v1.2.2", "v1.2.3",
             "v2.0.1", "v2.1.0", "v2.1.2", "v3.2", "v3.3"]
 RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
+#: Boards in the Raspberry Pi family that are not Raspberry Pis, read after
+#: them.  They take the Pis' HATs, which is why they are here, but their
+#: outlines and hole patterns are their own: they are left out of the Pis'
+#: shared view frame, and the adapter drawn over each goes where its 40-pin
+#: header is rather than where a Pi's would be.
+RPI_OTHERS = {"orangepi_pc": ORANGEPI_PC}
 #: In the order they were asked for.  No shared frame: unlike the demo
 #: boards, which register on their Pmod hosts, and the Pis, which share an
 #: outline, these have nothing in common to hold still, so each sheet is
@@ -100,6 +109,39 @@ RPI_NOTES = (
     "Pmod HAT Adapter host positions are DERIVED, good to about "
     f"+/-{PMOD_HAT_TOL} mm; drawing {PMOD_HAT_SHEET} has the derivation.",
 )
+
+
+def hat_on(spec) -> "BoardSpec":
+    """The Pmod HAT Adapter, moved onto *spec*'s 40-pin header.
+
+    The adapter is specified in a Raspberry Pi's frame, where it bolts
+    through the Pi's holes; on a board whose header is somewhere else it
+    goes where the header goes.  The shift is between the two headers'
+    centres, the Pi's taken from the Pi data rather than restated.
+    """
+    pi = next(f for f in RPI_BOARDS[RPI_ORDER[0]].features if f.key == "gpio40")
+    here = next(f for f in spec.features if f.key == "gpio40")
+    return moved(PMOD_HAT, here.cx - pi.cx, here.cy - pi.cy)
+
+
+def other_notes(spec) -> tuple[str, ...]:
+    """The notes a non-Pi board in the Raspberry Pi family carries.
+
+    Not RPI_NOTES: the first of those tells the reader to fit the adapter's
+    standoffs, which on a board whose holes it misses is advice nobody can
+    take.  The derivation note is the same one.
+    """
+    pi = next(f for f in RPI_BOARDS[RPI_ORDER[0]].features if f.key == "gpio40")
+    here = next(f for f in spec.features if f.key == "gpio40")
+    dx, dy = here.cx - pi.cx, here.cy - pi.cy
+    across = f"{abs(dx):.2f} mm {'right' if dx > 0 else 'left'} of"
+    down = f"{abs(dy):.2f} mm {'above' if dy > 0 else 'below'}"
+    return (
+        f"The 40-pin header is {across} and {down} a Raspberry Pi's, and the "
+        "Pmod HAT Adapter moves with it. Which parts clear the adapter's "
+        "underside is not established: no heights are measured.",
+        RPI_NOTES[1],
+    )
 
 
 def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
@@ -352,11 +394,11 @@ def tt_board_sheets() -> list[tuple[str, str, Path, "BoardSpec"]]:
 
 
 def rpi_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
-    """The Raspberry Pi sheets: drawing name, path, spec."""
+    """The Raspberry Pi family's sheets, the Pis first: name, path, spec."""
     rpi_dir = FAMILY_DIRS["raspberry-pi"]
-    return [(drawing_name("raspberry-pi", slug(key)),
-             rpi_dir / f"{slug(key)}.svg", RPI_BOARDS[key])
-            for key in RPI_ORDER]
+    boards = [RPI_BOARDS[key] for key in RPI_ORDER] + list(RPI_OTHERS.values())
+    return [(drawing_name("raspberry-pi", slug(spec.key)),
+             rpi_dir / f"{slug(spec.key)}.svg", spec) for spec in boards]
 
 
 def fpga_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
@@ -480,10 +522,16 @@ def main() -> None:
                                        overlay=PMOD_HAT, view_bbox=rpi_frame)
                    for k in RPI_ORDER)
     for name, path, spec in rpi_sheets():
-        sheet = render_board(spec, drawing_no=name, version=VERSION,
-                             overlay=PMOD_HAT, extra_notes=RPI_NOTES,
-                             family_numbers=RPI_NUMBERS, view_bbox=rpi_frame,
-                             band_height=rpi_band)
+        if spec.key in RPI_OTHERS:
+            sheet = render_board(spec, drawing_no=name, version=VERSION,
+                                 overlay=hat_on(spec),
+                                 extra_notes=other_notes(spec),
+                                 family_numbers={**RPI_NUMBERS, **OPI_NUMBERS})
+        else:
+            sheet = render_board(spec, drawing_no=name, version=VERSION,
+                                 overlay=PMOD_HAT, extra_notes=RPI_NOTES,
+                                 family_numbers=RPI_NUMBERS,
+                                 view_bbox=rpi_frame, band_height=rpi_band)
         save(sheet, path, f"{name} ({spec.title})")
 
     fpga_dir = FAMILY_DIRS["fpga"]
