@@ -7,13 +7,18 @@ camera FFC connector on the underside.
 
 | | |
 |---|---|
-| `boards.py` | **Generated.** Camera Module 2, and Camera Module 3 standard and wide |
+| `boards.py` | **Generated.** Camera Module 2, and Camera Module 3 standard and wide; the Camera Module 1 is imported into it from `v1.py` |
 | `extract.py` | Reads Raspberry Pi Ltd's own drawings and writes `boards.py` |
-| `output/` | `RPICAM-2` and `RPICAM-3`, as SVG and PDF, and `raspberry-pi-camera-sheets.pdf`, the two bound into one document |
+| `v1.py` | **Hand-curated**, with per-value provenance: the Camera Module 1, the OV5647 board lettered v1.3, which Raspberry Pi never drew |
+| `measure_cm1.py` | Scales what the v1.3's hand-measured drawing draws and does not dimension, and checks the scale |
+| `verify.py` | Holds `v1.py` against its cached sources and the checks its error bars rest on |
+| `output/` | The `RPICAM-` sheets, as SVG and PDF, and `raspberry-pi-camera-sheets.pdf`, all of them bound into one document |
 
 ```sh
 tools/fetch_raspberry_pi_camera.sh                    # once, needs network
 uv run --no-project --with pdfplumber python raspberry_pi_camera/extract.py
+uv run --no-project --with pdfplumber --with pillow --with numpy \
+    python raspberry_pi_camera/verify.py
 ```
 
 ## The sheets
@@ -40,13 +45,128 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 
 ## Where the numbers come from
 
-Three PDFs, all Raspberry Pi Ltd's, all vector, none of them a DXF:
+For the Camera Module 2 and 3, three PDFs, all Raspberry Pi Ltd's, all
+vector, none of them a DXF:
 
 | Sheet | Drawing | Published |
 |---|---|---|
 | `RPICAM-2` | [`camera-module-2-mechanical-drawing.pdf`](https://datasheets.raspberrypi.com/camera/camera-module-2-mechanical-drawing.pdf), title block **RASPBERRY PI CAMERA MODULE V2.1**, ref `RPI-CAM-V2_1` | dated 12/11/2015, drawn Mike Stimson, approved James Adams |
 | `RPICAM-3` | [`camera-module-3-standard-mechanical-drawing.pdf`](https://datasheets.raspberrypi.com/camera/camera-module-3-standard-mechanical-drawing.pdf), `RP-008153-DS-1` | on the Product Information Portal, [Camera Module 3 design files](https://pip.raspberrypi.com/categories/1207-design-files) |
 | `RPICAM-3` | [`camera-module-3-wide-mechanical-drawing.pdf`](https://datasheets.raspberrypi.com/camera/camera-module-3-wide-mechanical-drawing.pdf), `RP-008155-DS-1` | the same place |
+
+For the Camera Module 1, no drawing of Raspberry Pi's at all; `RPICAM-1` is
+drawn from a hand measurement instead, and has
+[a section of its own](#the-camera-module-1-v13-drawn-without-a-drawing).
+
+## The Camera Module 1, v1.3, drawn without a drawing
+
+The original camera, the 5 megapixel OmniVision OV5647 board, lettered
+"Raspberry Pi Camera Rev 1.3" on its lens side. It was left out of the set at
+first, for a reason that still stands: Raspberry Pi have never published a
+mechanical drawing for it. It has no category on the Product Information
+Portal, `datasheets.raspberrypi.com/camera/` has never served one, the
+archived `raspberrypi.org/documentation/hardware/camera/mechanical/`
+directory held the Camera Module 2 and the HQ Camera only, and the
+documentation's one figure is "Around 25 × 24 × 9 mm" in a product table.
+
+It is drawn anyway because it is the board most of the hardware here uses,
+and because a source for it does exist that is honest about what it is. It is
+drawn the way `accessories/parts.py` draws the Pmod HAT Adapter: by hand,
+every figure with its provenance, and an error bar that rests on a check the
+figures were not used to make. `v1.py` holds it, and `verify.py` holds `v1.py`
+to its sources.
+
+It stays in this family rather than going to `accessories/`: the family is
+the subject, Raspberry Pi's cameras, and not the method by which a sheet's
+numbers were got. The sheet says in its title block that it is hand measured.
+
+### The sources
+
+| | What it is | What it gives |
+|---|---|---|
+| [Gert van Loo's sheet](https://www.scribd.com/doc/142718448/Raspberry-Pi-Camera-Mechanical-Data) | One page, "Rev 1.0 : 21 May 2013, All sizes in mm, scale 5:1", "Best effort, manually measured, no guarantees!", posted the same day in the Raspberry Pi forum's camera board thread [Mechanical data](https://forums.raspberrypi.com/viewtopic.php?t=44466): "hand measured, accuracy about 0.05 mm no guarantees" | **The primary source.** Plan and elevation, to scale: 25 x 23.9 board, 0.95 thick; four ø2 holes, 9.35 and 21.85 from the connector edge, 2 and 23 up; the 8 mm lens module 5.1 from the connector edge and 5.2 tall; the connector 5.6 deep and 2.8 below the board; the cable 16.2 wide, leaving 1.27 below the board |
+| [Raspberry Pi Spy](https://www.raspberrypi-spy.co.uk/2013/05/pi-camera-module-mechanical-dimensions/) | A Rev 1.3 board measured "using a set of plastic calipers", 17 May 2013, every figure a whole or half millimetre | A second opinion: 25 x 24; holes 21 x 12.5, 2 in from the far edge, "~2mm"; the 8 mm lens module 8.5 in from each side and 5.5 from the connector edge; "approximately 1mm thick"; 6 mm from the board's underside to the lens face |
+| [Raspberry Pi's documentation](https://www.raspberrypi.com/documentation/accessories/camera.html) | The camera comparison table | "Around 25 × 24 × 9 mm" |
+| [Arducam B0033](https://www.uctronics.com/download/Amazon/B0033.pdf) | A clone's datasheet, sold as "fully compatible with official one" | Nothing drawn here. It agrees about the holes, 21.00 x 12.50, 2.00 in, R=1.00, and disagrees about the lens, printing its centre 10.25 from the edge where the two measurements of the Raspberry Pi board give 9.1 and 9.5 |
+
+`tools/fetch_raspberry_pi_camera.sh` caches all of them, the forum thread,
+the Arducam PDF and the documentation as pinned Wayback Machine captures.
+Gert van Loo's sheet is on Scribd, and Scribd serves its page as an image with
+the printed figures in a separate text layer, so both are fetched: the image
+to measure, the text layer to check each quoted figure against.
+
+### Printed, scaled, and checked
+
+Everything the sheet prints is taken as printed. What it draws and never
+dimensions -- the FFC connector's length along the edge, the sensor's flex
+tail and how high it stands, the steps of the lens stack -- is scaled off it
+by `measure_cm1.py`. The drawing says "scale 5:1", and that is checked rather
+than trusted: the scale comes from the two overall dimensions, 25 and 23.9,
+which agree on it to 0.02 %, and then every other figure the sheet prints is
+measured off the drawing and compared. **The worst is 0.09 mm**, the lens
+tip, drawn 5.11 against 5.2 printed. Added to Gert's own 0.05, that is the
++/-0.15 the sheet gives everything scaled.
+
+The error bars the sheet quotes rest on checks the figures were not used to
+make:
+
+- **The holes, against Raspberry Pi's own drawings.** If the Camera Module
+  2 kept the Camera Module 1's hole pattern, Raspberry Pi did draw it after
+  all, on the later board. Gert's hand-measured centres, taken from the
+  connector edge, agree with the Camera Module 2 drawing to **0.023 mm** and
+  the Camera Module 3's to **0.008 mm**, so it did, as closely as a hand
+  measurement can say. Measured from the far edge they are 0.05 apart,
+  because his board is 23.9 and theirs 23.862. The hole and outline figures
+  carry +/-0.1.
+- **The heights, against Raspberry Pi's one figure.** Lens 5.2 above the
+  board, board 0.95, connector 2.8 below: **8.95**, against "Around ... 9 mm".
+  Raspberry Pi Spy's 6 mm from the underside to the lens face is 6.15 by
+  Gert's figures.
+- **The lens, against a second measurement.** Here the two hand
+  measurements disagree: Gert has the module 5.1 from the connector edge,
+  Raspberry Pi Spy 5.5. The module is glued to the board -- the same thread:
+  "the camera housing itself is stuck to the board with a patch of adhesive
+  and comes off fairly easily" -- and nothing locates it, so that 0.4 mm is
+  not a mistake to resolve but the honest error bar on the optical axis. The
+  sheet puts the axis where Gert measured it, at X 12.50, Y 14.80, 0.25 above
+  the upper holes, which a reader in the same thread noticed too: "the lens
+  axis is just off line from the adjacent mounting holes". It carries
+  +/-0.4.
+- **The connector, for information.** 19.45 along the edge, scaled. The
+  Camera Module 2 and 3 connector bodies are 19.61 on Raspberry Pi's
+  drawings, 0.16 away; not the same board, so not held to anything.
+
+Two things this board does differently from the Camera Module 2, and a
+holder has to know both. Its **holes are ø2.0**: Gert and Raspberry Pi Spy
+both measure 2, and the clone's drawing agrees, where the Camera Module 2's
+are ø2.2 on the same centres. And its **corners are square**, not R2.0.
+
+### What is not known
+
+Not guessed, and each wants only a board and calipers; `TODO.md` says which
+measurement settles which.
+
+- The small parts on the lens side other than the module and the sensor's
+  connector J2: Raspberry Pi Spy's photograph shows an LED, D1, and a
+  resistor, R9, in the corner by MT1, and neither source dimensions them.
+- Anything on the underside but the FFC connector. Gert's elevation draws
+  nothing else there, and nothing else says.
+- The lens's clear aperture. Gert draws the holder and its tip ring, ø7.5
+  and ø5.6 scaled, not the glass.
+- The flex tail and J2 are in `v1.py` -- 0.85 from the lower edge to the
+  module, about 1.2 high -- but scaled, and not a scheduled feature, for the
+  same reason the Camera Module 2 and 3 modules' lower bodies are not: a
+  bounding box of a shape that narrows is wrong at its corners.
+
+### For a camera holder
+
+`v1.py` is importable and has at module level what a holder is designed
+round: `BOARD_WIDTH`, `BOARD_HEIGHT`, `BOARD_THICKNESS`, `HOLES`,
+`HOLE_DIA`, `OPTICAL_AXIS`, `LENS`, `LENS_PROFILE`, `TAIL`, `TAIL_TOP_Z`,
+`FFC`, `FFC_BOTTOM_Z`, `FFC_CABLE_Z`, `TOP_Z`, `BOTTOM_Z`, and the error bars
+`HOLE_TOL`, `LENS_TOL` and `SCALED_TOL`. Plan positions are in this family's
+frame, lens side up and connector edge at the top; heights are from the
+board's lens-side face, positive toward the lens.
 
 ## Neither plot is assumed to be 1:1
 
@@ -133,18 +253,11 @@ number.
 
 ## What is not here, and why
 
-**Camera Module 1, the OV5647 board.** There is no official Raspberry Pi
-mechanical drawing for it, and there never was. It has no category on the
-Product Information Portal -- the peripherals index lists Camera Module 2,
-Camera Module 3, the High Quality Camera and the Global Shutter Camera and
-nothing earlier -- `datasheets.raspberrypi.com/camera/` has never served one,
-and the archived `raspberrypi.org/documentation/hardware/camera/mechanical/`
-directory held drawings for the v2 camera and the HQ camera only. The
-documentation gives "around 25 × 24 × 9 mm" in a product table, which is a
-product table and not a drawing. Rather than draw a sheet from a specification
-table, the board is left out. Third-party OV5647 modules in 65 and 120 degree
-lenses are a different matter: they are somebody else's part with somebody
-else's drawing, and belong to whoever draws them.
+**Other people's OV5647 boards.** Third-party OV5647 modules in 65 and 120
+degree lenses are somebody else's part with somebody else's drawing, and
+belong to whoever draws them. `RPICAM-1` is the Raspberry Pi board; the one
+clone drawing consulted for it, Arducam's B0033, is named as a clone and
+supplies none of its figures.
 
 **The High Quality Camera.** Its drawing *does* exist and was read --
 [`RP-008200-DS-1`, hq-camera-cs-mechanical-drawing](https://pip.raspberrypi.com/documents/RP-008200-DS),
