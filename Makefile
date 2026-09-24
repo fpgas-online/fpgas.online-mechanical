@@ -20,6 +20,7 @@ all: check
 ## fetch: download the upstream sources into tmp/ (needs network)
 fetch:
 	tools/fetch_raspberry_pi.sh
+	tools/fetch_raspberry_pi_camera.sh
 	@test -d tmp/src/tt-demo-pcb || git clone --quiet \
 		https://github.com/TinyTapeout/tt-demo-pcb tmp/src/tt-demo-pcb
 	@test -d tmp/src/tt123-demo-pcb || git clone --quiet \
@@ -33,6 +34,7 @@ fetch:
 data:
 	$(UV) python tinytapeout/extract.py
 	$(EXTRACT) python raspberry_pi/extract.py
+	$(UV) --with pdfplumber python raspberry_pi_camera/extract.py
 	$(EXTRACT) --with cadquery python fpga/extract.py
 	$(UV) python accessories/extract.py
 	$(UV) python tinytapeout/mounting_plate/design.py
@@ -59,4 +61,5 @@ check: diagrams
 # extensions one at a time.
 clean:
 	rm -rf accessories/output raspberry_pi/output fpga/output \
+	       raspberry_pi_camera/output \
 	       tinytapeout/output tinytapeout/mounting_plate/output

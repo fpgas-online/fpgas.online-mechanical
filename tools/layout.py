@@ -28,6 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FAMILY_DIRS = {
     "tinytapeout": ROOT / "tinytapeout" / "output",
     "raspberry-pi": ROOT / "raspberry_pi" / "output",
+    "raspberry-pi-camera": ROOT / "raspberry_pi_camera" / "output",
     "fpga": ROOT / "fpga" / "output",
     "accessories": ROOT / "accessories" / "output",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "output",
@@ -141,6 +142,11 @@ PLATE_NAMES = {
 FAMILY_PREFIXES = {
     "tinytapeout": ("TT-DB", TT_STEM_LEAD),
     "raspberry-pi": ("RPI", "rpi"),
+    # The camera stems are cm2 and cm3, the module numbers, and the prefix
+    # already says what kind of module: RPICAM-2 and RPICAM-3, exactly as
+    # the Pi family's rpi5 is RPI-5.  The lead is "cm" and not "" so that a
+    # name does not say camera twice.
+    "raspberry-pi-camera": ("RPICAM", "cm"),
     "fpga": ("FPGA", ""),
     "accessories": ("ACC", ""),
     "mounting-plate": ("TT-MP", PLATE_STEM),

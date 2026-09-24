@@ -209,6 +209,13 @@ def draw_feature(c: Canvas, view: View, f: Feature) -> None:
     if f.kind == "led":
         c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
                weight=0.05, colour=colour, fill=colour)
+    if f.kind == "lens":
+        # The one feature whose centre is the point of it.  A camera board is
+        # mounted to put the optical axis somewhere, and the housing outline
+        # alone leaves the reader to halve two ordinates to find it; the hole
+        # schedule marks every hole centre for the same reason.
+        cx, cy = view.pt(f.cx, f.cy)
+        dims.centre_mark(c, cx, cy, view.d(min(f.width, f.height)) / 4)
 
 
 def draw_pmod(c: Canvas, view: View, p, spec: BoardSpec) -> None:
@@ -886,6 +893,16 @@ STANDARD_PCB_THICKNESS = (0.6, 0.8, 1.0, 1.2, 1.6, 2.0, 2.4)
 #: as that thickness.  The demo boards are all within 0.04 mm of 1.6.
 NOMINAL_THICKNESS_TOL = 0.05
 
+#: How far a part may reach past the board edge before the sheet calls it an
+#: overhang.  Equality was the test, and the Camera Module 3's connector
+#: cleared the edge by 0.001 mm -- its width is read from one elevation and
+#: its depth from another, so the two need not land on the same last digit --
+#: which printed an "assembled envelope" note giving the outline back.  The
+#: same figure as NOMINAL_THICKNESS_TOL, doing the same job: telling the last
+#: digit of a measurement from a real difference.  Every sheet that carries
+#: the note overhangs by 0.35 mm or more.
+ENVELOPE_TOL = 0.05
+
 
 def _nominal_thickness(o) -> float | None:
     """The finished thickness a board's stackup sum corresponds to, if any.
@@ -912,7 +929,12 @@ def _pcb_material(o) -> str:
     nominal = _nominal_thickness(o)
     if nominal is not None:
         return f"PCB, {nominal:.1f} nominal"
-    return f"PCB, {o.thickness:.3f} stackup sum"
+    # Not every thickness comes from a board file: the Camera Module 3 is
+    # dimensioned 1.12 on its own drawing, which is a finished thickness and
+    # not a stackup sum, and calling it one would be a claim about a source
+    # this function never sees.  No sheet reached this branch before that
+    # board arrived; every other thickness here is within 0.05 mm of 1.6.
+    return f"PCB, {o.thickness:.3f} as given"
 
 
 #: How tall one legend row is, and how long its line sample is.
@@ -1049,8 +1071,9 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         # prints the raw figure, and an unexplained number on a drawing is
         # worse than a line of prose.
         notes.append(
-            f"MATERIAL gives the KiCad stackup sum, {o.thickness:.3f} mm, "
-            "which is within 0.05 mm of no standard finished thickness.")
+            "MATERIAL gives the thickness the source states, "
+            f"{o.thickness:.3f} mm, which is within 0.05 mm of no standard "
+            "finished thickness.")
     fitted = [f for f in spec.features if is_fitted(f)]
     if spec.envelope_note:
         # A board whose envelope the computation below gets badly wrong states
@@ -1076,7 +1099,7 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         x1 = max([o.width] + [f.x1 for f in fitted])
         y0 = min([0.0] + [f.y0 for f in fitted])
         y1 = max([o.height] + [f.y1 for f in fitted])
-        if (x0, y0, x1, y1) != (0.0, 0.0, o.width, o.height):
+        if max(-x0, -y0, x1 - o.width, y1 - o.height) > ENVELOPE_TOL:
             notes.append(
                 "Assembled envelope, connector overhang included: "
                 f"{x1 - x0:.2f} x {y1 - y0:.2f} mm.")
