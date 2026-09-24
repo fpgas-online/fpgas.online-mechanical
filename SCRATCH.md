@@ -2222,3 +2222,10 @@ number is.
 - **The corners are rounded, radius measured**: 1.7 to 2.4 mm over the
   fifteen corners the edge finder could see, drawn at the median, 2.3. The
   PC Plus drawing says 2.
+- **Two leaders cross JB, and are accepted.** With the pin 1 dot and the
+  radius on, `check_sheets.py` found a balloon parked on the overall width's
+  extension line, which nothing reserved; reserving it left the microSD
+  socket's and power button's leaders no way out but across the adapter's
+  hosts. They are in `check_balloons.py`'s ACCEPTED with the reason: three
+  parts on the left edge, hosts inboard, a chain on each other side, and one
+  strip out, which the micro-USB takes.
