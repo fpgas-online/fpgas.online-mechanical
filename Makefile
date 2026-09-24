@@ -35,6 +35,7 @@ data:
 	$(UV) python tinytapeout/extract.py
 	$(EXTRACT) python raspberry_pi/extract.py
 	$(UV) --with pdfplumber python raspberry_pi_camera/extract.py
+	$(UV) --with pdfplumber --with pillow --with numpy python raspberry_pi_camera/verify.py
 	$(EXTRACT) --with cadquery python fpga/extract.py
 	$(UV) python accessories/extract.py
 	$(UV) python tinytapeout/mounting_plate/design.py

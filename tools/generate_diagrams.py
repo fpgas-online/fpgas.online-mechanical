@@ -63,8 +63,8 @@ TT_BUNDLE = "tinytapeout-sheets.pdf"
 #: The Raspberry Pi sheets bound the same way, for the same reasons.
 RPI_BUNDLE = "raspberry-pi-sheets.pdf"
 
-#: And the two camera sheets, which are a pair: the same board twice, with
-#: the lens module the only thing that moves between them.
+#: And the camera sheets, which are a set: boards on one hole pattern, with
+#: the lens module the thing that moves between them.
 RPICAM_BUNDLE = "raspberry-pi-camera-sheets.pdf"
 
 #: And the FPGA development boards.
@@ -77,11 +77,12 @@ FPGA_BUNDLE = "fpga-sheets.pdf"
 TT_ORDER = ["tt123-v2.2.5", "tt123-v2.2.6", "v1.2.1", "v1.2.2", "v1.2.3",
             "v2.0.1", "v2.1.0", "v2.1.2", "v3.2", "v3.3"]
 RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
-#: Oldest first, as the Pi sheets are.  Both camera boards are the same
-#: 25 x 23.862 mm outline on the same hole pattern, so the two sheets share
-#: one view frame and one notes band and the board holds still between them:
-#: what moves is the lens module, which is the whole point of the pair.
-RPICAM_ORDER = ["cm2", "cm3"]
+#: Oldest first, as the Pi sheets are.  Every camera board is 25 mm across
+#: on the same hole pattern -- the Camera Module 2 and 3 are 23.862 mm up,
+#: and the v1.3 measures 23.9 -- so the sheets share one view frame and one
+#: notes band and the board holds still between them: what moves is the
+#: lens module, which is the whole point of drawing them as a set.
+RPICAM_ORDER = ["cm1", "cm2", "cm3"]
 #: In the order they were asked for.  No shared frame: unlike the demo
 #: boards, which register on their Pmod hosts, and the Pis, which share an
 #: outline, these have nothing in common to hold still, so each sheet is
@@ -112,7 +113,7 @@ RPI_NOTES = (
     f"+/-{PMOD_HAT_TOL} mm; drawing {PMOD_HAT_SHEET} has the derivation.",
 )
 
-#: Both camera sheets say which face is being looked at.  The generic note is
+#: Every camera sheet says which face is being looked at.  The generic note is
 #: "Viewed from the component side", which on a board with its lens on one
 #: face and its connector on the other leaves the reader to work out which
 #: side that is, and it is the side the light goes in.
@@ -282,10 +283,10 @@ def shared_view_frame(specs, overlay) -> tuple[float, float, float, float]:
     Two families use it.  Every Model B sized Pi is 85 x 56 with the same
     hole pattern and the 40-pin header in the same place; each sheet used to
     be fitted to its own connectors, and the Pi 5's USB ports reach further
-    than the Pi 3B's, so the board itself moved between pages.  Both camera
-    boards are 25 x 23.862 on one hole pattern, and holding that still is the
-    point of drawing them as a pair: what moves between the two sheets is
-    the lens module.
+    than the Pi 3B's, so the board itself moved between pages.  Every camera
+    board is 25 across on one hole pattern, and holding that still is the
+    point of drawing them as a set: what moves between the sheets is the
+    lens module.
 
     It was ``rpi_view_frame`` while the Pi sheets were the only caller;
     nothing in it was ever particular to a Raspberry Pi.
@@ -390,8 +391,8 @@ def rpi_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
 def rpicam_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
     """The Raspberry Pi camera sheets: drawing name, path, spec.
 
-    A family of its own rather than two more Pi sheets: a 25 x 23.862 mm
-    camera shares nothing with an 85 x 56 mm Pi but the company that made it,
+    A family of its own rather than more Pi sheets: a 25 mm camera
+    shares nothing with an 85 x 56 mm Pi but the company that made it,
     and the Pi sheets are drawn with the Pmod HAT Adapter overlaid on a frame
     a 25 mm board would be lost in.
     """
@@ -537,9 +538,9 @@ def main() -> None:
     cam_dir = FAMILY_DIRS["raspberry-pi-camera"]
     cam_dir.mkdir(parents=True, exist_ok=True)
     cam_specs = [RPICAM_BOARDS[k] for k in RPICAM_ORDER]
-    # One frame and one band for the two, for the reason RPICAM_ORDER gives:
-    # the two boards are the same outline on the same hole pattern, so the
-    # board holds still between the pages and what moves is the lens module.
+    # One frame and one band for them all, for the reason RPICAM_ORDER
+    # gives: the boards share a hole pattern, so the board holds still
+    # between the pages and what moves is the lens module.
     cam_frame = shared_view_frame(cam_specs, None)
     cam_band = max(planned_band_height(spec, extra_notes=RPICAM_NOTES,
                                        view_bbox=cam_frame)

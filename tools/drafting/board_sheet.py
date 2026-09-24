@@ -890,7 +890,11 @@ STANDARD_PCB_THICKNESS = (0.6, 0.8, 1.0, 1.2, 1.6, 2.0, 2.4)
 
 
 #: How far a stackup sum may sit from a standard thickness and still be taken
-#: as that thickness.  The demo boards are all within 0.04 mm of 1.6.
+#: as that thickness: strictly less than this.  The demo boards are all
+#: within 0.04 mm of 1.6.  The Camera Module v1.3 is 0.95 thick as measured,
+#: exactly this far from 1.0, and is not a stackup sum; the comparison is
+#: made on the difference rounded to a micrometre, so which side of the line
+#: it falls is the rule's doing and not floating point's.
 NOMINAL_THICKNESS_TOL = 0.05
 
 #: How far a part may reach past the board edge before the sheet calls it an
@@ -913,8 +917,8 @@ def _nominal_thickness(o) -> float | None:
     if not o.thickness:
         return None
     nominal = min(STANDARD_PCB_THICKNESS, key=lambda t: abs(t - o.thickness))
-    return nominal if abs(nominal - o.thickness) <= NOMINAL_THICKNESS_TOL \
-        else None
+    return nominal if round(abs(nominal - o.thickness), 3) \
+        < NOMINAL_THICKNESS_TOL else None
 
 
 def _pcb_material(o) -> str:
@@ -930,11 +934,11 @@ def _pcb_material(o) -> str:
     if nominal is not None:
         return f"PCB, {nominal:.1f} nominal"
     # Not every thickness comes from a board file: the Camera Module 3 is
-    # dimensioned 1.12 on its own drawing, which is a finished thickness and
-    # not a stackup sum, and calling it one would be a claim about a source
-    # this function never sees.  No sheet reached this branch before that
-    # board arrived; every other thickness here is within 0.05 mm of 1.6.
-    return f"PCB, {o.thickness:.3f} as given"
+    # dimensioned 1.12 on its own drawing, and the v1.3 measured 0.95 by
+    # hand, which are finished thicknesses and not stackup sums, and calling
+    # either one would be a claim about a source this function never sees.
+    # Printed to the figures the source gives, not padded to three places.
+    return f"PCB, {o.thickness:g} as given"
 
 
 #: How tall one legend row is, and how long its line sample is.
@@ -1072,8 +1076,8 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         # worse than a line of prose.
         notes.append(
             "MATERIAL gives the thickness the source states, "
-            f"{o.thickness:.3f} mm, which is within 0.05 mm of no standard "
-            "finished thickness.")
+            f"{o.thickness:g} mm, not rounded to a standard finished "
+            "thickness.")
     fitted = [f for f in spec.features if is_fitted(f)]
     if spec.envelope_note:
         # A board whose envelope the computation below gets badly wrong states
