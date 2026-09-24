@@ -2,28 +2,46 @@
 """Report balloon leaders that run across something they should not.
 
 ``check_sheets.py`` reads the finished SVG and catches text collisions.  This
-looks one level down instead, at the obstacle model the balloon placer works
-from, and reports every leader whose final route crosses a *hard* obstacle: a
-phantom Pmod host, another balloon, another leader, or an ordinate witness
-line.  Those are the things a reader cannot afford to have a line ruled over.
+looks one level down instead, at what the drafting library was asked to draw,
+and holds every leader on every sheet against four things:
 
-Two crossings are unavoidable and are listed in ACCEPTED below: on the
-Raspberry Pi 4B and Pi 5 the micro-HDMI connectors sit directly beneath the
-Pmod HAT Adapter's host JC, so a leader from those connectors has to cross the
-host whichever way it leaves.  That physical overlap is the subject of a note
-on both sheets.  Anything else fails, so a regression cannot pass unremarked
-just because the total happens to look familiar.
+* another leader.  Two leaders that cross make a reader trace both to find
+  out which balloon points where, which is the one question a balloon exists
+  to answer.  Every leader counts: a balloon's, and a callout's such as the
+  corner radius.  Tested as an exact segment intersection, because two lines
+  meeting at a steep angle share less than a millimetre of paper and a
+  sampled test steps straight over them.
+* a *hard* obstacle in the balloon placer's model: a phantom Pmod host,
+  another balloon, an ordinate witness line.
+* the body of a feature it does not point at, which is what makes a leader
+  look as though it belongs to the wrong part.  A body that also contains
+  the leader's own dot is exempt: where outlines overlap, as the three
+  Raspberry Pi models' connectors do on RPI-ALL, the dot has to sit inside
+  more than one of them.
+* a dimension line or an extension line drawn by ``dims.linear``.
+
+It also reports a balloon that sits on a feature outline, which hides what
+its own leader was followed to see.
+
+Every sheet the generator writes is walked, drawn by the generator itself
+through ``generate_diagrams.draw_sheets``, so what is judged here is what is
+on the page: the same view frames, notes bands and family numbers.  A sheet
+with no leaders is listed as such, so a sheet cannot drop out of the check
+without it showing.
+
+Anything found fails unless it is listed in ACCEPTED below, per sheet and per
+balloon, so a new crossing on a sheet that already has an accepted one is
+still caught.
 
 Run with::
 
-    uv run --no-project --with pillow python tools/check_balloons.py
+    uv run --no-project --with pillow --with pypdf python tools/check_balloons.py
 """
 
 from __future__ import annotations
 
 import math
 import sys
-from functools import partial
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -31,30 +49,84 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from tools.drafting import board_sheet as bs           # noqa: E402
 from tools.drafting import dims                        # noqa: E402
 
-# What the placer was given, and where every leader ended up.
-_state: dict = {"obstacles": None, "leaders": []}
-_place, _balloon = bs.place_balloons, dims.balloon
+#: What the current sheet drew.  ``placed`` is one entry per balloon the
+#: placer put down: its label, its leader as drawn, and the index of its own
+#: feature's rectangle in the placer's obstacle model.  ``leaders`` is every
+#: leader segment on the sheet, balloons' and callouts' alike, and
+#: ``dimensions`` every dimension and extension line.
+_state: dict = {}
+_place, _balloon, _leader, _linear = (bs.place_balloons, dims.balloon,
+                                      dims.leader, dims.linear)
+
+
+def _reset() -> None:
+    _state.update(obstacles=[], placed=[], leaders=[], dimensions=[],
+                  rings=[], pending=None, ids=0)
+
+
+def _next_id() -> int:
+    """A leader's identity: two balloons can carry the same number."""
+    _state["ids"] += 1
+    return _state["ids"]
 
 
 def _spy_place(items, obstacles, bounds, c, passes=12, position_only=None):
-    _state["obstacles"] = obstacles
-    _state["leaders"] = []
-    return _place(items, obstacles, bounds, c, passes, position_only)
+    _state["pending"] = []
+    out = _place(items, obstacles, bounds, c, passes, position_only)
+    # place_balloons draws its balloons in the order of *items*, so the n-th
+    # balloon drawn during this call is items[n].
+    for item, (label, tip, end, centre) in zip(items, _state["pending"]):
+        _state["placed"].append((obstacles, label, tip, end, centre,
+                                 item.own))
+    _state["obstacles"].append(obstacles)
+    _state["pending"] = None
+    return out
 
 
 def _spy_balloon(c, tip, centre, label, **kw):
-    _state["leaders"].append((label, tip, centre))
+    r = kw.get("radius", 3.2)
+    ang = math.atan2(centre[1] - tip[1], centre[0] - tip[0])
+    end = (centre[0] - r * math.cos(ang), centre[1] - r * math.sin(ang))
+    n = _next_id()
+    _state["leaders"].append((n, f"balloon {label}", tip, end))
+    _state["rings"].append((n, f"balloon {label}", centre, r))
+    if _state["pending"] is not None:
+        _state["pending"].append((label, tip, end, centre))
     return _balloon(c, tip, centre, label, **kw)
+
+
+def _spy_leader(c, tip, elbow, text, **kw):
+    end = _leader(c, tip, elbow, text, **kw)
+    what, n = f'callout "{text}"', _next_id()
+    _state["leaders"].append((n, what, tip, elbow))
+    _state["leaders"].append((n, what, elbow, end))
+    return end
+
+
+def _spy_linear(c, p1, p2, offset, **kw):
+    g = _linear(c, p1, p2, offset, **kw)
+    what = f"dimension {g.label}"
+    if g.horizontal:
+        _state["dimensions"].append((what, (g.lo, g.line), (g.hi, g.line)))
+        if kw.get("extension", True):
+            for x, y in (p1, p2):
+                _state["dimensions"].append((f"{what} extension", (x, y),
+                                             (x, g.line)))
+    else:
+        _state["dimensions"].append((what, (g.line, g.lo), (g.line, g.hi)))
+        if kw.get("extension", True):
+            for x, y in (p1, p2):
+                _state["dimensions"].append((f"{what} extension", (x, y),
+                                             (g.line, y)))
+    return g
 
 
 bs.place_balloons = _spy_place
 dims.balloon = _spy_balloon
+dims.leader = _spy_leader
+dims.linear = _spy_linear
 
-from accessories.parts import ACCESSORIES, PMOD_HAT   # noqa: E402
-from fpga.boards import BOARDS as FPGA               # noqa: E402
-from raspberry_pi.boards import BOARDS as RPI        # noqa: E402
-from tinytapeout.boards import BOARDS as TT          # noqa: E402
-from tools.drafting import rpi_compare_sheet         # noqa: E402
+from tools.generate_diagrams import draw_sheets      # noqa: E402
 
 
 #: A leader that only grazes an obstacle's clearance band is not worth
@@ -64,18 +136,32 @@ from tools.drafting import rpi_compare_sheet         # noqa: E402
 MIN_RUN_MM = 2.0
 
 
+def _run_lengths(tip, end, rects, samples: int = 200) -> dict[tuple, float]:
+    """How far the segment tip->end runs inside each of *rects*."""
+    length = math.hypot(end[0] - tip[0], end[1] - tip[1])
+    step = length / samples
+    runs: dict[tuple, float] = {}
+    for i in range(1, samples):
+        t = i / samples
+        px = tip[0] + (end[0] - tip[0]) * t
+        py = tip[1] + (end[1] - tip[1]) * t
+        for r in rects:
+            if r[0] < px < r[2] and r[1] < py < r[3]:
+                runs[r] = runs.get(r, 0.0) + step
+    return runs
+
+
 def _crossed(tip, centre, obstacles, samples: int = 200) -> list[str]:
     """Hard obstacles the segment tip->centre runs through, and by how much.
 
-    Sampled finely and reported as a length: this is a report on a handful of
-    sheets, so there is no reason to be as coarse as the placer's own scoring
-    loop, and the length is what separates a leader ruled along a pin field
-    from one that clips the corner of its clearance band.
+    Sampled finely and reported as a length: the length is what separates a
+    leader ruled along a pin field from one that clips the corner of its
+    clearance band.
     """
     hard_rects = [r for r in obstacles.rects if r[4] > bs.SOFT]
     hard_circles = [o for o in obstacles.circles if o[3] > bs.SOFT]
     hard_segs = [s for s in obstacles.segments if s[4] > bs.SOFT]
-    length = ((centre[0] - tip[0]) ** 2 + (centre[1] - tip[1]) ** 2) ** 0.5
+    length = math.hypot(centre[0] - tip[0], centre[1] - tip[1])
     step = length / samples
     runs: dict[str, float] = {}
 
@@ -99,18 +185,103 @@ def _crossed(tip, centre, obstacles, samples: int = 200) -> list[str]:
             if v >= MIN_RUN_MM]
 
 
-#: Crossings that no placement can avoid, as {sheet: {balloon labels}}.
-#: Listed per balloon rather than as a count, so a new crossing somewhere else
-#: on the same sheet is still caught.
-#:
-#: Empty at present.  The two entries that used to be here were the micro-HDMI
-#: connectors on the Pi 4B and Pi 5, which sit underneath the Pmod HAT
-#: Adapter's host JC; those connectors are no longer drawn, so the crossing
-#: they forced is gone with them.
-ACCEPTED: dict[str, set[str]] = {}
+def _cross(a0, a1, b0, b1) -> bool:
+    """Whether two segments cross at a point inside both.
+
+    Proper crossings only.  Segments that merely meet end to end -- the two
+    legs of one callout at its elbow, a witness line stopping on a leader's
+    dot -- are not a crossing a reader has to untangle.
+    """
+    def side(p, q, r):
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+
+    d1, d2 = side(a0, a1, b0), side(a0, a1, b1)
+    d3, d4 = side(b0, b1, a0), side(b0, b1, a1)
+    eps = 1e-9
+    return (((d1 > eps and d2 < -eps) or (d1 < -eps and d2 > eps))
+            and ((d3 > eps and d4 < -eps) or (d3 < -eps and d4 > eps)))
 
 
-def _on_a_feature(items, placed, obstacles) -> set[str]:
+def _at(a0, a1, b0, b1) -> tuple[float, float]:
+    """Where two crossing segments meet."""
+    dx1, dy1 = a1[0] - a0[0], a1[1] - a0[1]
+    dx2, dy2 = b1[0] - b0[0], b1[1] - b0[1]
+    t = ((b0[0] - a0[0]) * dy2 - (b0[1] - a0[1]) * dx2) / (dx1 * dy2
+                                                             - dy1 * dx2)
+    return a0[0] + t * dx1, a0[1] + t * dy1
+
+
+def _leader_crossings() -> list[tuple[str, str]]:
+    """Every pair of leaders that cross, and every leader through a balloon.
+
+    A leader ruled across another balloon's ring reads as ending there, which
+    is as bad as crossing that balloon's leader, and the placer's own model
+    cannot report it: the placed balloons are added to a scene built per
+    balloon and thrown away, so the obstacles it is handed never hold them.
+    """
+    out = []
+    leaders = _state["leaders"]
+    for na, wa, a0, a1 in leaders:
+        for nb, wb, (cx, cy), r in _state["rings"]:
+            if na != nb and bs._point_segment_distance(
+                    cx, cy, a0[0], a0[1], a1[0], a1[1]) < r:
+                out.append((wa, f"runs through the ring of {wb} at "
+                                f"({cx:.1f},{cy:.1f})"))
+    for i, (na, wa, a0, a1) in enumerate(leaders):
+        for nb, wb, b0, b1 in leaders[i + 1:]:
+            if na == nb:
+                continue
+            if _cross(a0, a1, b0, b1):
+                x, y = _at(a0, a1, b0, b1)
+                out.append((wa, f"crosses the leader of {wb} at "
+                                f"({x:.1f},{y:.1f})"))
+                out.append((wb, f"crosses the leader of {wa} at "
+                                f"({x:.1f},{y:.1f})"))
+    return out
+
+
+def _dimension_crossings() -> list[tuple[str, str]]:
+    out = []
+    for _, wa, a0, a1 in _state["leaders"]:
+        for wb, b0, b1 in _state["dimensions"]:
+            if _cross(a0, a1, b0, b1):
+                x, y = _at(a0, a1, b0, b1)
+                out.append((wa, f"crosses {wb} line at ({x:.1f},{y:.1f})"))
+    return out
+
+
+def _body_crossings() -> list[tuple[str, str]]:
+    """Balloon leaders run through a feature body they do not point at.
+
+    A feature body is a *soft* rectangle in the placer's model: that is how
+    ``render_board`` and the comparison sheet enter a connector or a Pmod
+    body, and the only thing either enters soft.  The leader's own feature
+    is exempt, and so is any body its dot sits in.
+    """
+    out = []
+    for obstacles, label, tip, end, _centre, own in _state["placed"]:
+        bodies = [r for i, r in enumerate(obstacles.rects)
+                  if r[4] <= bs.SOFT and i != own
+                  and not (r[0] <= tip[0] <= r[2] and r[1] <= tip[1] <= r[3])]
+        for r, run in sorted(_run_lengths(tip, end, bodies).items()):
+            if run >= MIN_RUN_MM:
+                out.append((f"balloon {label}",
+                            f"runs {run:.1f} mm through the feature at "
+                            f"({r[0]:.1f},{r[1]:.1f})-({r[2]:.1f},{r[3]:.1f})"))
+    return out
+
+
+def _hard_crossings() -> list[tuple[str, str]]:
+    out = []
+    for obstacles, label, tip, _end, centre, _own in _state["placed"]:
+        hit = _crossed(tip, centre, obstacles)
+        if hit:
+            out.append((f"balloon {label}", "leader crosses a hard obstacle: "
+                        + "; ".join(hit)))
+    return out
+
+
+def _on_a_feature() -> list[tuple[str, str]]:
     """Balloons whose circle overlaps a drawn feature outline.
 
     A balloon covers whatever it sits on, so one sitting on a feature hides
@@ -118,85 +289,101 @@ def _on_a_feature(items, placed, obstacles) -> set[str]:
     that, but pricing is not proof: on the Raspberry Pi 3A+ a balloon covered
     a neighbouring connector because every other position cost more still.
     """
-    out = set()
-    for label, tip, centre in placed:
+    out = []
+    for obstacles, label, _tip, _end, centre, _own in _state["placed"]:
         for x0, y0, x1, y1, _ in obstacles.rects:
             nx = max(x0, min(centre[0], x1))
             ny = max(y0, min(centre[1], y1))
             if math.hypot(centre[0] - nx, centre[1] - ny) < bs.BALLOON_R:
-                out.add(label)
+                out.append((f"balloon {label}", "sits on a feature outline"))
                 break
-    del items
     return out
 
 
-def check(name: str, draw) -> tuple[set[str], set[str]]:
-    """Draw one sheet and report which balloons cross a hard obstacle.
+#: Findings that are known and deliberately left, as {drawing name: {(what,
+#: kind)}}, where *what* is the leader as the report names it and *kind* is
+#: the name its test has in KINDS.  Listed per leader rather than as a
+#: count, so a new finding somewhere else on the same sheet is still caught,
+#: and an entry that stops happening is reported so it can be trimmed.
+#:
+#: All of them are a leader across an overall dimension, and none is the
+#: placer's to fix.  The corner radius callout leaves its corner up and to
+#: the right, across the extension line that the overall dimension on that
+#: corner runs out from; ``_radius_callout`` draws it there on every board
+#: sheet, and where the extension line and the callout miss each other it
+#: is because the width dimension is on the other edge.  The three balloons
+#: are ruled across an overall dimension or its extension line because
+#: ``reserve_overall_dimensions`` holds those lines against where a balloon
+#: sits and not against where a leader runs: reserving them against leaders
+#: as well boxed the balloons into the board's interior.
+#:
+#: The micro-HDMI connectors on the Pi 4B and Pi 5, which sat underneath the
+#: Pmod HAT Adapter's host JC, used to be here too; they are no longer drawn.
+ACCEPTED: dict[str, set[tuple[str, str]]] = {
+    name: {(f'callout "R{r} (4 places), board outline"', "dimension")}
+    for name, r in (("TT-DB-V121", "3.00"), ("TT-DB-V201", "3.00"),
+                    ("TT-DB-V212", "3.00"), ("TT-DB-V32", "3.20"),
+                    ("TT-DB-V33", "3.20"), ("RPI-3B", "3.00"),
+                    ("RPI-4B", "3.00"), ("RPI-5", "3.00"),
+                    ("FPGA-BUTTERSTICK", "3.00"), ("FPGA-CYNTHION", "3.00"))
+}
+ACCEPTED["RPI-4B"].add(("balloon 5", "dimension"))
+ACCEPTED["FPGA-BUTTERSTICK"].add(("balloon 1", "dimension"))
+ACCEPTED["FPGA-CYNTHION"].add(("balloon 9", "dimension"))
 
-    *draw* renders it.  A callable rather than a spec, because the Raspberry
-    Pi comparison sheet is drawn by its own renderer and balloons the same
-    way; leaving it out meant the one sheet whose leaders have the least room
-    was the one sheet nothing watched.
+KINDS = (("leader", _leader_crossings),
+         ("hard", _hard_crossings),
+         ("body", _body_crossings),
+         ("dimension", _dimension_crossings),
+         ("sits", _on_a_feature))
 
-    Returns the crossings that were not expected and the expected ones that no
-    longer happen; both mean the sheet and ACCEPTED have drifted apart.
-    """
-    draw()
-    obstacles = _state["obstacles"]
+
+def check(name: str) -> tuple[set, set]:
+    """Report one sheet's findings; return the unexpected and the stale."""
     accepted = ACCEPTED.get(name, set())
-    crossing = set()
-    for label, tip, centre in _state["leaders"]:
-        hit = _crossed(tip, centre, obstacles)
-        if hit:
-            crossing.add(label)
-            mark = "accepted" if label in accepted else "UNEXPECTED"
-            print(f"  balloon {label} ({mark}): leader crosses "
-                  + "; ".join(hit))
-    on_feature = _on_a_feature(None, _state["leaders"], obstacles)
-    for label in sorted(on_feature):
-        print(f"  balloon {label} (UNEXPECTED): sits on a feature outline")
-    print(f"{name}: {len(crossing)} leader(s) crossing a hard obstacle "
-          f"of {len(_state['leaders'])}")
-    return (crossing - accepted) | on_feature, accepted - crossing
-
-
-def board(spec, overlay=None):
-    return partial(bs.render_board, spec, drawing_no="-", version="-",
-                   overlay=overlay)
+    found, lines = set(), []
+    for kind, test in KINDS:
+        for what, why in test():
+            found.add((what, kind))
+            mark = "accepted" if (what, kind) in accepted else "UNEXPECTED"
+            lines.append(f"  {what} ({mark}, {kind}): {why}")
+    leaders = len({n for n, *_ in _state['leaders']})
+    print(f"{name}: {leaders} leader(s), "
+          f"{len({w for w, _ in found})} with a finding")
+    for line in lines:
+        print(line)
+    return found - accepted, accepted - found
 
 
 def main() -> int:
-    sheets = [(f"tinytapeout/{k}", board(v)) for k, v in TT.items()]
-    sheets += [(f"raspberry-pi/{k}", board(v, PMOD_HAT))
-               for k, v in RPI.items()]
-    sheets.append((f"raspberry-pi/{rpi_compare_sheet.STEM}",
-                   partial(rpi_compare_sheet.render_rpi_comparison,
-                           drawing_no="-", version="-")))
-    sheets += [(f"fpga/{k}", board(v)) for k, v in FPGA.items()]
-    sheets.append(("accessories/pmod-hat", board(PMOD_HAT)))
-    sheets += [(f"accessories/{k}", board(v)) for k, v in ACCESSORIES.items()
-               if v is not PMOD_HAT]
-
-    unexpected: dict[str, set[str]] = {}
-    stale: dict[str, set[str]] = {}
-    for name, draw in sheets:
-        new, gone = check(name, draw)
+    unexpected: dict[str, set] = {}
+    stale: dict[str, set] = {}
+    names = []
+    _reset()
+    for _sheet, _path, what in draw_sheets():
+        name = what.split()[0]
+        names.append(name)
+        new, gone = check(name)
         if new:
             unexpected[name] = new
         if gone:
             stale[name] = gone
+        _reset()
 
     print()
-    for name, labels in stale.items():
-        print(f"{name}: balloon(s) {', '.join(sorted(labels))} no longer "
-              "cross anything; trim them from ACCEPTED")
-    if not unexpected:
+    for name, entries in stale.items():
+        for what, kind in sorted(entries):
+            print(f"{name}: {what} no longer has a '{kind}' finding; trim it "
+                  "from ACCEPTED")
+    if not unexpected and not stale:
         print(f"pass: {sum(len(v) for v in ACCEPTED.values())} accepted "
-              f"crossing(s), none unexpected, across {len(sheets)} sheets")
+              f"finding(s), none unexpected, on every sheet the generator "
+              f"writes ({', '.join(names)})")
         return 0
-    for name, labels in unexpected.items():
-        print(f"FAIL {name}: balloon(s) {', '.join(sorted(labels))} cross a "
-              "hard obstacle, or sit on a feature, and are not in ACCEPTED")
+    for name, entries in unexpected.items():
+        print(f"FAIL {name}: "
+              + "; ".join(f"{what} ({kind})" for what, kind in sorted(entries))
+              + " not in ACCEPTED")
     return 1
 
 
