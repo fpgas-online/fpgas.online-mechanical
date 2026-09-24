@@ -46,7 +46,8 @@ The extractors are not here. Each lives with its subject:
 
 Each has caught a real defect. `make check` runs all but `crosscheck_gerber.py`,
 which needs network. A check specific to one made part is not here: it lives
-with the part, as the mounting plate's `verify.py` does.
+with the part, as the mounting plate's `verify.py` and the Orange Pi PC's
+`verify_orangepi_pc.py` do.
 
 GitHub Actions runs `make check` on every push to `main` and on every pull
 request: [`.github/workflows/check.yml`](../.github/workflows/check.yml). The
