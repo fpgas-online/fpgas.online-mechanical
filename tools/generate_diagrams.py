@@ -502,7 +502,7 @@ HOLDER_SUBTITLE = "Holds a Camera Module over every demo board revision"
 def holder_sheet() -> tuple[str, Path, str]:
     """The camera holder's sheet: drawing name, path, outline entry.
 
-    A made part on the plate, so it binds with the plate's own two sheets,
+    A made part on the plate, so it binds with the plate's own A3 sheets,
     after them: a reader meets the plate, which boards go on it, and then
     what stands over them.
     """

@@ -274,7 +274,7 @@ checker that measures the finished PDFs rather than trusting them.
       in the picture and unhidden, clear of every board, standoff and cable,
       every fastener
 - [x] STEP solids, assembled and per part as printed; the beam as a DXF
-- [x] `TT-MP-CAMERA`, bound into the Tiny Tapeout copy after the plate's two
+- [x] `TT-MP-CAMERA`, bound into the Tiny Tapeout copy after the plate's own sheets
 - [ ] Print one and put it on a plate. Nothing here has been built
 - [ ] Check which way the picture's long side runs on a real v1.3 and set
       `QUARTER_TURNS` to it, so the sheet stops saying ASSUMED

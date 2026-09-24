@@ -2591,7 +2591,8 @@ camera's FFC connector and two are centred off the board's edge.
 Lens face 150.00 above the plate face: 139.17 over the highest board face,
 9.60 up, is 148.77, plus a millimetre for the print, rounded up. The stack
 above it is the camera's own 5.20 and 0.95, bosses a millimetre over the
-connector's 2.8, a 4 mm carrier, and the beam on the rails.
+connector's 2.8, a 6 mm carrier with the camera's M2 nuts in pockets in
+its top, and the beam on the rails.
 
 ### What came up while it was being written
 

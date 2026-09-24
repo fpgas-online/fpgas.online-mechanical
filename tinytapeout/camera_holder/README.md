@@ -81,7 +81,7 @@ hangs from the beam's middle.
 three side Pmod positions along their left edge, J12 to J14, not fitted. Their
 connector bodies stand 2.50 mm in from the plate's edge, so the side frame's
 wall is outside that, its inner face 1.00 mm clear of them and mostly off the
-plate, and it is a window: a post at each end, 9 mm long, a rail over the
+plate, and it is a window: a post at each end, 8 mm long, a rail over the
 top, the foot under the bottom, and nothing between. A peripheral in one of
 those positions comes out through the window.
 
@@ -89,7 +89,7 @@ those positions comes out through the window.
 fixings the plate already has along that edge and is clamped by the same
 screws, so the plate needs no new hole and the holder cannot be put on
 anywhere but where it was designed to go. On a plate standing alone that is
-an M4 x 12 button head, washer and nut; on a plate bolted to a chassis, the
+an M4 x 16 button head, washer and nut; on a plate bolted to a chassis, the
 plate's own screws 5 mm longer. The button head is low enough -- 7.20 mm
 above the plate with the 5 mm foot -- to sit under a side Pmod body on a
 board that overhangs it.
@@ -104,10 +104,26 @@ carrier, and the carrier bolts to the beam's pad on a square of four M3
 fixings centred on the lens axis. Turn it a quarter turn and the lens does
 not move. Check the first picture.
 
+**The camera screws up into the carrier.** Four M2 x 10, heads on the lens
+side, through the camera's holes and the carrier's bosses into nuts sitting
+in hex pockets in the carrier's top face, 0.75 mm clear of the beam's pad
+the carrier bolts up against. The camera's holes are ø2.0 as measured and
+carried ±0.2; an M2 goes through them as measured, and a tight one wants
+opening with a 2.0 drill.
+
 **The FFC leaves under the carrier.** The carrier's bosses stand it 3.80 mm
 off the camera's far face, a millimetre over the connector, and the cable
 leaves the connector 1.27 mm down, towards the back, and out from under the
-carrier with 7 mm to the nearest boss or nut. Take it up behind the beam.
+carrier with 7 mm to the nearest boss or nut. Plug it in before the camera
+goes on -- the connector's latch is out of reach in that gap -- and take it
+up and back over the beam: a cable drooping behind the camera would hang
+into the picture.
+
+**How stiff it is.** Not checked, estimated: a 10 mm square PETG post is
+about 1.5 N/mm as a 150 mm cantilever, so the four about 6 N/mm before the
+feet give. A few-gram camera does not load it; a knock moves it and the
+5 mm margin takes a millimetre or two. The weak point is where each foot
+leaves the plate's edge, loaded across its print layers.
 
 **Nothing of it is between the lens and a board.** `verify.py` walks the
 sight lines from the lens face to every revision's envelope and finds them
@@ -121,9 +137,9 @@ perimeters so the screws have wall to bite. Each lies with no overhang:
 
 | Part | Printed | As it lies |
 |---|---|---|
-| Side frame, left and right | on its outer face, the foot standing up from the bed | 163.9 x 92.0 x 18.7 mm |
+| Side frame, left and right | on its outer face, the foot standing up from the bed | 166.0 x 92.0 x 18.7 mm |
 | Beam | flat, on its top face | 152.0 x 46.0 x 6.0 mm |
-| Camera carrier | on its top face, bosses up | 46.0 x 46.0 x 7.8 mm |
+| Camera carrier | on its top face, bosses up, nut pockets on the bed | 46.0 x 46.0 x 9.8 mm |
 
 The right side frame is the left one mirrored, not turned: the foot's
 fixings are not symmetric along the frame, so each has its own file,
@@ -143,7 +159,7 @@ plate. The beam is flat, so it can be cut from 6 mm sheet from
   field of view is right; it cannot make it focus there.
 - **The boards' buttons** are not in `tinytapeout/boards.py`, so nothing
   checks them. They are pressed from above, and above the boards there is
-  nothing but the beam 164 mm up.
+  nothing but the beam 166 mm up.
 - **Heights on the boards.** No board file gives a component a height, so
   `verify.py` keeps the holder out of every revision's envelope at every
   height from the board's underside to the lens.
