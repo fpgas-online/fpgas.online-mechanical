@@ -2057,3 +2057,139 @@ Schedule 11 was renamed "Status LEDs, debug controller" as well.  The name is
 printed on the five sheets that do not carry the row, and "driven by the
 debug controller" pushed every FPGA feature schedule from 140 to 154 mm wide,
 for a row that on five of the six says only that the board has none.
+
+## The Orange Pi PC, measured because nobody has drawn it
+
+Asked for an Orange Pi PC sheet in the `raspberry_pi/` family, as RPI-04 when
+sheets still had numbers. It is `RPI-OPIPC`, from the stem `orangepi-pc`, cut
+short by a row of `RPI_NAMES` in `tools/layout.py`, because
+`RPI-ORANGEPI-PC` is twice as long as a drawing number should be.
+
+The first attempt stopped at "blocked, no source": Xunlong publish no drawing
+of this board, and the entry said a sheet would wait for one. That was the
+wrong conclusion. Nothing published is a reason to measure, not a reason not
+to draw -- the Pmod HAT Adapter was measured off a photograph for the same
+reason -- so the board is measured, from photographs, and the sheet says so
+and how well.
+
+### What Xunlong publish, which is one figure
+
+Kept from the first attempt, so that nobody repeats the search:
+
+- **The official resource page**,
+  `orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-PC.html`,
+  offers five documents, each a Google Drive link, and none of them is a
+  drawing: User Manual, Schematic, Certified, Datasheet, Official Tools.
+- **The user manual** (136 pages, WPS 文字, dated 2021-12-13) gives, in the
+  hardware table in section 1.4, `Product Size 85mm×55mm` and `Weight 43g`.
+  Its "Top and bottom views" and "Interface Details" are annotated
+  photographs; the callouts name the ports and carry no dimension.
+- **The schematic**, 15 A3 sheets whose revision block runs to 2015-05-29, is
+  electrical throughout. **The datasheet** is Allwinner's H3 datasheet.
+  **Certified** is two regulatory certificates.
+- **The wiki** re-types the manual's first chapter, down to the same
+  `Product Size 85mm×55mm`.
+- **The product page** says `85 mm × 55mm` in its specification table -- and
+  56 in the one dimensioned picture on the page, a photograph of the
+  underside with "85mm" and "56mm" ruled across it. It is the second of the
+  Xunlong photographs measured here.
+- **The old download host**, `orangepi.org/download/`, in the Wayback CDX
+  index: four mechanical files, for the Lite, the PC Plus, the Zero and the
+  Plus 2E. None is the PC.
+- **The forum** has asked for this drawing since 2015. The answers are a
+  Thingiverse model, a member's own measurements, and "PC and PC-Plus has
+  the same size", pointing at the PC Plus drawing.
+- **linux-sunxi** gives `Dimensions 85 mm x 55 mm` and no more.
+
+### The photographs
+
+`tools/fetch_orangepi_pc.sh` fetches everything. Two pairs are measured:
+
+- linux-sunxi's `Orange_Pi_PC_v1.3_front.jpg` and `_back.jpg`, a v1.3 board
+  on a Fujifilm X-E2 at 35 mm, 2560 pixels across. linux-sunxi.org answers a
+  script with a Cloudflare block, so they come from the Wayback Machine's
+  January 2026 capture.
+- Xunlong's product page views of a v1.2, `PC40.png` and
+  `PC/Rectangle 641.png`, 700 pixels across the board and sharp.
+
+A third pair, linux-sunxi's `Xunlong_Orange_Pi_PC_top.PNG` and `_bottom.PNG`
+of another v1.2, was measured and dropped: it is shot obliquely, the far half
+of the board is out of focus, and the fitted left edge ran along the side of
+the board rather than its top face, putting MT3 a millimetre off.
+
+### The method
+
+`tools/photo_frame.py` finds the four board edges where no connector hides
+them, fits a line to each and a homography from their corners onto
+85 x 56 mm. `raspberry_pi/measure_orangepi_pc.py` then measures in that frame:
+holes as circles fitted to their copper rings, in all four views; the header
+from its forty solder joints in the bottom views, where they lie in the board
+plane; and each connector's top face, read by eye off a 1 mm grid ruled on the
+rectified top view (`--grids` writes the images) and corrected for parallax.
+
+The parallax is the part that took working out. A USB pair's top face is
+16 mm nearer the lens than the board and is drawn larger, about the point
+under the lens, by D / (D - z) -- 2.5 % in the v1.3 photograph, a millimetre at
+the far end of a USB port. The header gives both unknowns: its pin tips in
+the top view against its solder joints in the bottom view of the same board
+say where that point is and, taking the tips as 8.5 mm up, how far off the
+lens was. Each part's height only sets the size of the correction; a 2 mm
+error in one moves a corrected edge by 0.4 mm at most.
+
+### The board is 56 mm, not 55
+
+Every figure Xunlong print in text says 55; their own dimensioned photograph
+says 56, and so does their PC Plus drawing, whose board outline is
+85.00 x 56.00 with 2 mm corner radii. The homography cannot decide it -- it
+maps the corners onto whatever rectangle it is given -- so each photograph's
+own proportions are read at the board's centre: 55.99, 55.88, 57.09 and
+55.72. The 57.09 is Xunlong's top view, which is out on this and on nothing
+else, and is taken to be shot tilted. The median is 55.94, a millimetre from
+the manual. The sheet is 85 x 56 and says why.
+
+### What the checks found
+
+`raspberry_pi/verify_orangepi_pc.py` holds the result to what it was not fitted
+to. Two things came out of it worth writing down.
+
+**Everything is about 0.4 % wide.** The header's pin 1 to pin 39 comes out
+48.58 and 48.48 mm where it is 48.26, and the holes 79.40 apart where every
+case but two, and the PC Plus, put them 78.96 to 79.15 apart. Across the
+board that is the whole of the holes-and-header tolerance. Most likely the
+edge finder lands a tenth of a millimetre inside the routed edge, on the
+solder mask rather than the laminate -- a bright band a few pixels wide shows
+along the v1.3 board's edge -- which makes every photograph's board narrower
+in pixels than it is and so everything in it wider in millimetres. Fitting
+the scale to the header instead would remove it, and would leave the header
+check proving nothing, so it is left in and quoted.
+
+**Xunlong's PC Plus drawing is the best check there is.** It is two AutoCAD
+2000 DWGs in a RAR that 7-Zip cannot unpack (libarchive can), read with
+`ezdwg` into `ezdxf`. It is a different board -- the PC with eMMC and Wi-Fi
+-- but every part the two share is centred within 0.46 mm of where the
+photographs put it, its holes within 0.15, its header's pin 1 within 0.31.
+
+Roman Gachin's 3MF model agrees on the holes but has the header's rows
+3.19 mm apart and the barrel jack and UART header 1.4 and 1.6 mm right of
+where both the photographs and Xunlong put them; landroo's case cuts its
+microSD and USB pair openings 1.8 and 1.25 mm off centre. The check accepts a
+third-party figure outside the tolerance only when it is outside it against
+Xunlong's drawing too, which all four are.
+
+### Decided on the way
+
+- **The Pmod HAT Adapter is overlaid**, moved onto this board's header, which
+  is 1.34 mm right of and 0.15 mm below a Pi's. The first attempt said not to
+  overlay it unless a source put the header in the Pi's place. The header is
+  measured now, so the adapter can be put where it goes; what cannot be
+  claimed is that it bolts down, and the sheet's note about its holes is now
+  worked out from the geometry for every sheet rather than asserted: here it
+  says they miss by 2.1 mm and no standoff can join the two.
+- **It does not join `rpi_view_frame`.** Every Model B Pi is one outline with
+  one hole pattern, which is what that frame holds still. This board has
+  neither, so it is fitted to its own view, after the Pis in the bound copy.
+- **Parts 6 to 12 are this board's own numbers.** A Pi sheet draws neither
+  HDMI nor audio; a case round this board has to clear them, and nobody else
+  has drawn them.
+- **The debug UART header is not drawn.** Its balloon could only reach it
+  across the adapter's host JC. It is measured and checked with the rest.
