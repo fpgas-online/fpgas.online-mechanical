@@ -55,13 +55,14 @@ from tools.drafting import dims                        # noqa: E402
 #: leader segment on the sheet, balloons' and callouts' alike, and
 #: ``dimensions`` every dimension and extension line.
 _state: dict = {}
-_place, _balloon, _leader, _linear = (bs.place_balloons, dims.balloon,
-                                      dims.leader, dims.linear)
+_place, _balloon, _leader, _linear, _ring = (
+    bs.place_balloons, dims.balloon, dims.leader, dims.linear,
+    dims.balloon_ring)
 
 
 def _reset() -> None:
     _state.update(obstacles=[], placed=[], leaders=[], dimensions=[],
-                  rings=[], pending=None, ids=0)
+                  rings=[], pending=None, ids=0, current=None, placing=None)
 
 
 def _next_id() -> int:
@@ -72,6 +73,7 @@ def _next_id() -> int:
 
 def _spy_place(items, obstacles, bounds, c, passes=12, position_only=None):
     _state["pending"] = []
+    _state["placing"] = obstacles
     out = _place(items, obstacles, bounds, c, passes, position_only)
     # place_balloons draws its balloons in the order of *items*, so the n-th
     # balloon drawn during this call is items[n].
@@ -89,10 +91,26 @@ def _spy_balloon(c, tip, centre, label, **kw):
     end = (centre[0] - r * math.cos(ang), centre[1] - r * math.sin(ang))
     n = _next_id()
     _state["leaders"].append((n, f"balloon {label}", tip, end))
-    _state["rings"].append((n, f"balloon {label}", centre, r))
     if _state["pending"] is not None:
         _state["pending"].append((label, tip, end, centre))
-    return _balloon(c, tip, centre, label, **kw)
+    # dims.balloon draws its own ring through dims.balloon_ring, which is
+    # watched too; this tells that ring whose leader it is on.
+    _state["current"] = n
+    try:
+        return _balloon(c, tip, centre, label, **kw)
+    finally:
+        _state["current"] = None
+
+
+def _spy_ring(c, centre, label, **kw):
+    """Every ring a placed balloon is drawn with, the first on its leader
+    and the others beside it on a row that shares the leader.  A ring drawn
+    outside the placer -- a legend's sample -- is not a balloon."""
+    if _state["pending"] is not None:
+        n = _state["current"] or _next_id()
+        _state["rings"].append((n, f"balloon {label}", centre,
+                                kw.get("radius", 3.2), _state["placing"]))
+    return _ring(c, centre, label, **kw)
 
 
 def _spy_leader(c, tip, elbow, text, **kw):
@@ -110,13 +128,15 @@ def _spy_linear(c, p1, p2, offset, **kw):
         _state["dimensions"].append((what, (g.lo, g.line), (g.hi, g.line)))
         if kw.get("extension", True):
             for x, y in (p1, p2):
-                _state["dimensions"].append((f"{what} extension", (x, y),
+                start = y if kw.get("ext_start") is None else kw["ext_start"]
+                _state["dimensions"].append((f"{what} extension", (x, start),
                                              (x, g.line)))
     else:
         _state["dimensions"].append((what, (g.line, g.lo), (g.line, g.hi)))
         if kw.get("extension", True):
             for x, y in (p1, p2):
-                _state["dimensions"].append((f"{what} extension", (x, y),
+                start = x if kw.get("ext_start") is None else kw["ext_start"]
+                _state["dimensions"].append((f"{what} extension", (start, y),
                                              (g.line, y)))
     return g
 
@@ -125,6 +145,7 @@ bs.place_balloons = _spy_place
 dims.balloon = _spy_balloon
 dims.leader = _spy_leader
 dims.linear = _spy_linear
+dims.balloon_ring = _spy_ring
 
 from tools.generate_diagrams import draw_sheets      # noqa: E402
 
@@ -222,7 +243,7 @@ def _leader_crossings() -> list[tuple[str, str]]:
     out = []
     leaders = _state["leaders"]
     for na, wa, a0, a1 in leaders:
-        for nb, wb, (cx, cy), r in _state["rings"]:
+        for nb, wb, (cx, cy), r, _ in _state["rings"]:
             if na != nb and bs._point_segment_distance(
                     cx, cy, a0[0], a0[1], a1[0], a1[1]) < r:
                 out.append((wa, f"runs through the ring of {wb} at "
@@ -290,12 +311,12 @@ def _on_a_feature() -> list[tuple[str, str]]:
     a neighbouring connector because every other position cost more still.
     """
     out = []
-    for obstacles, label, _tip, _end, centre, _own in _state["placed"]:
+    for _, what, centre, r, obstacles in _state["rings"]:
         for x0, y0, x1, y1, _ in obstacles.rects:
             nx = max(x0, min(centre[0], x1))
             ny = max(y0, min(centre[1], y1))
-            if math.hypot(centre[0] - nx, centre[1] - ny) < bs.BALLOON_R:
-                out.append((f"balloon {label}", "sits on a feature outline"))
+            if math.hypot(centre[0] - nx, centre[1] - ny) < r:
+                out.append((what, "sits on a feature outline"))
                 break
     return out
 
