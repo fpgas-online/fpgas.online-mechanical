@@ -1,0 +1,481 @@
+#!/usr/bin/env python3
+"""Check that the camera holder does what its sheet claims.
+
+Four claims, and nothing else about it matters:
+
+* the camera is where ``RPICAM-OVER-PLATE`` says it has to be: over the
+  centre of frame A, lens down, at least as high as the stock lens needs --
+  and at that height every revision's whole board is in the picture, at its
+  own board plane, with the holder hiding none of it;
+* nothing of the holder is where a board, a standoff or a connector is, or
+  where a cable has to come in: every revision's envelope, its standoffs,
+  its USB-C plug, its Pmod peripherals front and side;
+* every fastener fits: the holes line up through the parts they join, the
+  screws are long enough, the heads and nuts land on material and clear
+  what is next to them, and the camera's own screws and bosses miss its
+  lens and its connector;
+* the plate needs no new hole: the feet sit over fixings it already has.
+
+Proved from ``holder.py`` against the data modules it is built from --
+``tinytapeout/boards.py``, the plate, the camera, the optics -- and wherever
+a figure can be reached two ways it is reached the way ``holder.py`` did not:
+the lens height is summed up the parts rather than read from LENS_FACE_Z,
+the picture is worked from the declared angles rather than through
+``optics.place``.
+
+Run: uv run --no-project python tinytapeout/camera_holder/verify.py
+"""
+
+from __future__ import annotations
+
+import math
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(ROOT))
+
+from raspberry_pi_camera import optics  # noqa: E402
+from tinytapeout.boards import BOARDS as TT  # noqa: E402
+from tinytapeout.camera_holder import holder as H  # noqa: E402
+from tinytapeout.mounting_plate.plate import (PLACEMENTS, PLATE,  # noqa: E402
+                                              STANDOFF_HEIGHT)
+
+results: list[tuple[bool, str, str, bool]] = []
+
+
+def check(ok: bool, what: str, detail: str, *, report: bool = False) -> None:
+    """Record a check, or -- with *report* -- a figure that is only printed."""
+    results.append((bool(ok), what, detail, report))
+
+
+#: Floating point, and the thousandth every plate figure is rounded to.
+EPS = 1e-6
+
+#: The largest an M2 thread can be: ISO 965-2 tolerance class 6g puts the
+#: major diameter 0.019 under the 2.000 basic size for a 0.4 mm pitch.
+M2_MAX_MAJOR = 1.981
+HOLE_TOL_NOTE = "0.1 on the hole"
+
+#: The least air left between the holder and anything it must not touch.
+CLEAR = 0.5
+
+#: An M3 hex standoff, 5.5 mm across flats, as the circle it sweeps.
+STANDOFF_R = 5.5 / math.sqrt(3)
+
+#: What a cable needs in front of a connector.  Not a published figure: a
+#: USB-C plug's overmould and the start of its cable's bend, and the body of
+#: a Pmod peripheral, each taken generously, since the holder stands well
+#: clear of all of them and a tight figure would prove nothing extra.
+USB_REACH, USB_SIDE, USB_TALL = 40.0, 3.0, 10.0
+PMOD_REACH, PMOD_TALL = 30.0, 25.0
+
+
+def boxes(parts=H.ASSEMBLY):
+    """Every box of every printed part, and the round bosses as boxes."""
+    for p in parts:
+        for b in p.boxes:
+            yield p, (b.x0, b.x1, b.y0, b.y1, b.z0, b.z1)
+        for c in p.bosses:
+            r = c.dia / 2
+            yield p, (c.x - r, c.x + r, c.y - r, c.y + r, c.z0, c.z1)
+
+
+def gap_1d(a0, a1, b0, b1) -> float:
+    """Signed gap between two intervals: negative where they overlap."""
+    return max(b0 - a1, a0 - b1)
+
+
+def box_gap(a, b) -> float:
+    """Clear distance between two 3D boxes, negative if they overlap.
+
+    Axis-aligned, so the boxes are apart by the largest of the three
+    one-dimensional gaps; where that is negative they intersect.
+    """
+    return max(gap_1d(a[0], a[1], b[0], b[1]), gap_1d(a[2], a[3], b[2], b[3]),
+               gap_1d(a[4], a[5], b[4], b[5]))
+
+
+def circle_box_gap(cx, cy, r, z0, z1, b) -> float:
+    """Clear distance from a vertical cylinder to a box."""
+    dz = gap_1d(z0, z1, b[4], b[5])
+    dx = max(b[0] - cx, 0.0, cx - b[1])
+    dy = max(b[2] - cy, 0.0, cy - b[3])
+    d = math.hypot(dx, dy) - r if (dx or dy) else -r
+    return max(d, dz)
+
+
+# -- where the camera is ----------------------------------------------------
+
+def the_camera() -> None:
+    lens = optics.LENSES["65"]
+    frame = H.FRAME
+    # The height the stock lens needs over frame A, straight from the
+    # declared angles and the frame's own rectangle.
+    along_x = lens.fov_h if frame.long_axis == "X" else lens.fov_v
+    along_y = lens.fov_v if frame.long_axis == "X" else lens.fov_h
+    z_need = max(frame.width / 2 / math.tan(math.radians(along_x / 2)),
+                 frame.height / 2 / math.tan(math.radians(along_y / 2)))
+    # The lens face, summed up the parts: the rail's top, less the carrier,
+    # the bosses, the camera's board and its lens.
+    rail_top = max(b.z1 for b in H.SIDE_LEFT.boxes)
+    carrier = H.CARRIER.boxes[0]
+    boss = H.CARRIER.bosses[0]
+    face = (rail_top - (carrier.z1 - carrier.z0) - (boss.z1 - boss.z0)
+            - H.CAMERA.thickness - H.CAMERA.lens_height)
+    thick = [TT[r].outline.thickness for pl in PLACEMENTS.values()
+             for r in pl["revisions"]]
+    plane_hi = STANDOFF_HEIGHT + max(thick)
+    check(face - plane_hi >= z_need - EPS,
+          "the lens is high enough over the highest board",
+          f"lens face {face:.2f} above the plate, board face {plane_hi:.2f}: "
+          f"{face - plane_hi:.2f} against the {z_need:.2f} the stock lens "
+          f"needs over frame A, {face - plane_hi - z_need:+.2f} spare")
+    check(abs(face - H.LENS_FACE_Z) < EPS,
+          "the parts stack to the height the sheet prints",
+          f"{face:.2f} summed, {H.LENS_FACE_Z:.2f} printed")
+    # The lens axis over frame A's centre, through the camera's own data.
+    ax, ay = H.camera_to_plate(*H.CAMERA.lens_axis)
+    check(abs(ax - frame.cx) < EPS and abs(ay - frame.cy) < EPS,
+          "the lens axis is over frame A's centre",
+          f"({ax:.2f}, {ay:.2f}) against ({frame.cx:.2f}, {frame.cy:.2f})")
+    # The carrier's fixings are square about that axis, so a quarter turn
+    # of the carrier turns the camera without moving the axis.
+    fix = [(h.x - ax, h.y - ay) for h in H.CARRIER.holes
+           if "carrier fixing" in h.what]
+    turned = {(round(-y, 6), round(x, 6)) for x, y in fix}
+    check(turned == {(round(x, 6), round(y, 6)) for x, y in fix},
+          "a quarter turn of the carrier lands on the same four fixings",
+          f"{len(fix)} fixings at +/-{H.CARRIER_FIX:.2f} about the lens axis")
+    # Turned the wrong way, the short side of the picture lies along frame
+    # A's long side: how much of it that loses, off each end.
+    long_side = max(frame.width, frame.height)
+    wrong = 2 * (face - (STANDOFF_HEIGHT + max(thick))) * math.tan(
+        math.radians(lens.fov_v / 2))
+    check(True, "which way the camera is turned",
+          f"{H.QUARTER_TURNS} quarter turns, ASSUMING the long image axis "
+          "lies along the camera board's 25 mm width; nobody publishes it. "
+          f"Frame A's long side is along {frame.long_axis}. Turned wrong, "
+          f"the picture covers {wrong:.1f} of its {long_side:.1f}, "
+          f"{(long_side - wrong) / 2:.1f} short at each end: turn the "
+          "carrier", report=True)
+    check(abs((long_side - wrong) / 2 - H.turned_wrong()) < EPS,
+          "and the sheet prints that shortfall",
+          f"{H.turned_wrong():.2f} printed, {(long_side - wrong) / 2:.2f} "
+          "worked here")
+
+    spare_by_rev: dict[str, float] = {}
+    # Every revision, whole, at its own board face.  A thinner board is
+    # lower, so it is further from the lens and more of it is covered.
+    for name, pl in PLACEMENTS.items():
+        for rev in pl["revisions"]:
+            spec = TT[rev]
+            plane = STANDOFF_HEIGHT + spec.outline.thickness
+            z = face - plane
+            half_x = z * math.tan(math.radians(along_x / 2))
+            half_y = z * math.tan(math.radians(along_y / 2))
+            e = optics._envelope(spec, pl["dx"], pl["dy"])
+            spare = min(e[0] - (ax - half_x), (ax + half_x) - e[2],
+                        e[1] - (ay - half_y), (ay + half_y) - e[3])
+            spare_by_rev[rev] = spare
+            check(spare >= -EPS, f"all of {rev} is in the picture",
+                  f"its envelope {e[2] - e[0]:.2f} x {e[3] - e[1]:.2f} at "
+                  f"its face {plane:.2f} up, {spare:+.2f} mm to the "
+                  "nearest edge of the picture")
+
+    from raspberry_pi_camera import v1
+    worst = min(spare_by_rev.values())
+    check(worst >= v1.LENS_TOL + v1.HOLE_TOL - EPS,
+          "and with room for where the lens really is",
+          f"{worst:.2f} mm to spare at the tightest, against the "
+          f"{v1.LENS_TOL:.1f} v1.py gives the glued-on lens module and the "
+          f"{v1.HOLE_TOL:.1f} it gives the holes it is located by")
+
+    # Nothing of the holder between the lens and any board.  The picture of
+    # a revision's envelope is a pyramid from the lens; its section shrinks
+    # towards the lens, so a box misses it if it misses the section at the
+    # box's lowest height inside it.
+    hit = []
+    visible = []
+    for p, b in boxes():
+        for name, pl in PLACEMENTS.items():
+            for rev in pl["revisions"]:
+                plane = STANDOFF_HEIGHT + TT[rev].outline.thickness
+                e = optics._envelope(TT[rev], pl["dx"], pl["dy"])
+                for target, into in ((e, hit), (
+                        (frame.x0, frame.y0, frame.x1, frame.y1), visible)):
+                    z0 = max(b[4], plane)
+                    if z0 >= min(b[5], face):
+                        continue
+                    k = (face - z0) / (face - plane)
+                    sx0, sx1 = ax + (target[0] - ax) * k, ax + (target[2] - ax) * k
+                    sy0, sy1 = ay + (target[1] - ay) * k, ay + (target[3] - ay) * k
+                    if gap_1d(b[0], b[1], sx0, sx1) < 0 and \
+                            gap_1d(b[2], b[3], sy0, sy1) < 0:
+                        into.append((p.name, rev))
+    check(not hit, "no part of the holder hides any of any board",
+          "the sight lines from the lens to every point of every revision's "
+          "envelope are clear" if not hit else
+          f"blocked: {sorted(set(hit))}")
+    names = sorted({n for n, _ in visible})
+    check(True, "what of the holder is in the picture",
+          ("the " + " and the ".join(names) + " show in frame A's margin, "
+           "outside every board; how far outside is the clearance to the "
+           "boards below") if names else "nothing", report=True)
+
+
+# -- what it must not touch -------------------------------------------------
+
+def keep_outs():
+    """Every revision's board, standoffs and cable space, as boxes."""
+    out = []
+    for name, pl in PLACEMENTS.items():
+        dx, dy = pl["dx"], pl["dy"]
+        for rev in pl["revisions"]:
+            spec = TT[rev]
+            plane = STANDOFF_HEIGHT + spec.outline.thickness
+            e = optics._envelope(spec, dx, dy)
+            # The board and everything on it, from its underside up to the
+            # lens: nothing on it has a published height.
+            out.append((f"{rev} board and parts", "box",
+                        (e[0], e[2], e[1], e[3], STANDOFF_HEIGHT,
+                         H.LENS_FACE_Z)))
+            for h in spec.holes:
+                out.append((f"{rev} {h.label} standoff", "cyl",
+                            (h.x + dx, h.y + dy, STANDOFF_R, 0.0,
+                             STANDOFF_HEIGHT)))
+            for f in spec.features:
+                if f.kind != "usb_power":
+                    continue
+                x0, x1 = f.x0 + dx - USB_SIDE, f.x1 + dx + USB_SIDE
+                back = (f.y1 + dy) > (dy + spec.outline.height / 2)
+                y0, y1 = ((f.y1 + dy, f.y1 + dy + USB_REACH) if back
+                          else (f.y0 + dy - USB_REACH, f.y0 + dy))
+                out.append((f"{rev} USB-C plug", "box",
+                            (x0, x1, y0, y1, plane - 2.0, plane + USB_TALL)))
+            for p in spec.pmods:
+                if p.body_x1 <= p.body_x0:
+                    continue
+                out.append((f"{rev} Pmod {p.label} peripheral", "box",
+                            (p.body_x0 + dx, p.body_x1 + dx,
+                             p.body_y0 + dy - PMOD_REACH, p.body_y0 + dy,
+                             -PMOD_TALL, plane + PMOD_TALL)))
+            # The side positions, not fitted: a header there takes a
+            # peripheral out through the left edge.
+            for f in spec.features:
+                if f.kind == "header" and f.x0 < 1.0:
+                    out.append((f"{rev} {f.label.split(' (')[0]} peripheral",
+                                "box",
+                                (f.x0 + dx - PMOD_REACH, f.x0 + dx,
+                                 f.y0 + dy, f.y1 + dy, plane - 2.0,
+                                 plane + PMOD_TALL)))
+    return out
+
+
+def clear_of_everything() -> None:
+    worst: dict[str, tuple[float, str]] = {}
+    for label, kind, k in keep_outs():
+        for p, b in boxes():
+            if kind == "box":
+                g = box_gap(b, k)
+            else:
+                g = circle_box_gap(k[0], k[1], k[2], k[3], k[4], b)
+            group = label.split(" ", 1)[1]
+            if group not in worst or g < worst[group][0]:
+                worst[group] = (g, f"{p.name} to {label}")
+    for group, (g, who) in sorted(worst.items()):
+        check(g >= CLEAR - EPS, f"clear of every {group}",
+              f"{g:+.2f} mm at the closest, {who}")
+
+
+# -- the fasteners ----------------------------------------------------------
+
+def fasteners() -> None:
+    # The feet over the plate's own fixings, both sides: the right foot's
+    # holes are the mirror of the left's, and the plate has to have a
+    # fixing there too.
+    plate_fix = [(h.x, h.y, h.dia) for h in PLATE.holes if h.kind == "plate"]
+    for part in (H.SIDE_LEFT, H.SIDE_RIGHT):
+        for h in part.holes:
+            if "plate fixing" not in h.what:
+                continue
+            near = min(plate_fix, key=lambda f: math.dist(f[:2], (h.x, h.y)))
+            off = math.dist(near[:2], (h.x, h.y))
+            check(off < 0.01, f"{part.name}: foot hole on a plate fixing",
+                  f"({h.x:.3f}, {h.y:.3f}) against the plate's "
+                  f"({near[0]:.3f}, {near[1]:.3f}), {off:.3f} apart")
+            check(min(near[2], h.dia) > 4.0 + 0.1,
+                  f"{part.name}: an M4 passes both",
+                  f"plate {near[2]:.2f}, foot {h.dia:.2f}")
+            foot = next(b for b in part.boxes if b.what == "foot")
+            edge = min(h.x - foot.x0, foot.x1 - h.x, h.y - foot.y0,
+                       foot.y1 - h.y)
+            check(edge >= H.M4_HEAD_DIA / 2 - EPS,
+                  f"{part.name}: the M4 head lands on the foot",
+                  f"head radius {H.M4_HEAD_DIA / 2:.2f}, foot edge "
+                  f"{edge:.2f} from the hole")
+            # The head stands on the foot, under whatever overhangs it.
+            head = (h.x, h.y, H.M4_HEAD_DIA / 2, H.FOOT_T,
+                    H.FOOT_T + H.M4_HEAD_H)
+            g = min(circle_box_gap(*head, k) for label, kind, k in
+                    keep_outs() if kind == "box" and "board" in label)
+            clear = min(circle_box_gap(*head, b) for p, b in boxes()
+                        if p is not part)
+            check(g >= CLEAR - EPS and clear >= CLEAR - EPS,
+                  f"{part.name}: the M4 head clears the boards over it",
+                  f"{g:+.2f} mm to the nearest board or part standing on "
+                  f"one, {clear:+.2f} to the other parts of the holder")
+    # Every other screw: its holes line up through both parts it joins, and
+    # its length passes the grip and a whole nut.
+    def holes(part, what):
+        return sorted((round(h.x, 6), round(h.y, 6)) for h in part.holes
+                      if what in h.what)
+    rails = holes(H.SIDE_LEFT, "beam fixing") + \
+        holes(H.SIDE_RIGHT, "beam fixing")
+    check(sorted(rails) == holes(H.BEAM, "beam fixing"),
+          "the beam's fixings are over the rails'",
+          f"{len(rails)} M3 holes, each through both")
+    check(holes(H.BEAM, "carrier fixing") == holes(H.CARRIER,
+                                                   "carrier fixing"),
+          "the carrier's fixings are under the pad's",
+          f"{len(holes(H.CARRIER, 'carrier fixing'))} M3 holes")
+    for key, (thread, grip, washer) in H.GRIPS.items():
+        n = H._screw(key)
+        need = grip + washer + H.NUT_H[thread]
+        check(need <= n, f"the {thread} x {n} is long enough ({key})",
+              f"grip {grip:.2f}{' + washer' if washer else ''} + nut "
+              f"{H.NUT_H[thread]:.1f} = {need:.2f}")
+    # The carrier's nuts, under it, miss the camera however it is turned.
+    for turns in range(4):
+        corners = [H.camera_to_plate(u, v, turns) for u, v in
+                   ((0, 0), (H.CAMERA.width, 0), (0, H.CAMERA.height),
+                    (H.CAMERA.width, H.CAMERA.height))]
+        cam = (min(x for x, _ in corners), max(x for x, _ in corners),
+               min(y for _, y in corners), max(y for _, y in corners),
+               H.PCB_FRONT, H.PCB_BACK)
+        g = min(circle_box_gap(h.x, h.y, H.M3_NUT_AF / math.sqrt(3),
+                               H.CARRIER_Z0 - H.NUT_H["M3"], H.CARRIER_Z0,
+                               cam)
+                for h in H.CARRIER.holes if "carrier fixing" in h.what)
+        check(g >= CLEAR - EPS,
+              f"the carrier's nuts miss the camera, {turns} quarter turns",
+              f"{g:+.2f} mm")
+    # The camera's own screws: through its holes, heads clear of its lens
+    # and of what is beside it, bosses clear of what is on its far face.
+    # An M2's thread is at most 1.981 across (ISO 965-2, 6g: 19 um under
+    # the 2.000 basic size), and v1.py's holes are 2.0, which Raspberry Pi
+    # Spy say "will accept a 2mm machine screw".
+    cam_holes = [(u, v, d) for u, v, d in H.CAMERA.holes]
+    check(all(d > M2_MAX_MAJOR for _, _, d in cam_holes),
+          "an M2 passes the camera's holes",
+          f"holes {', '.join(f'{d:.2f}' for *_, d in cam_holes)} against an "
+          f"M2 thread at most {M2_MAX_MAJOR:.3f}, +/-{HOLE_TOL_NOTE}")
+    au, av = H.CAMERA.lens_axis
+    size = H.CAMERA.lens_profile[0][1]
+    beside = [("lens module", au - size / 2, av - size / 2, au + size / 2,
+               av + size / 2)] + [(label, x0, y0, x1, y1) for
+                                  label, x0, y0, x1, y1, _h in
+                                  H.CAMERA.front_parts]
+    head, who = min((math.hypot(max(x0 - u, 0.0, u - x1),
+                                max(y0 - v, 0.0, v - y1))
+                     - H.M2_HEAD_DIA / 2, label)
+                    for u, v, _ in cam_holes
+                    for label, x0, y0, x1, y1 in beside)
+    check(head >= 0.2 - EPS, "the M2 heads clear the lens and the flex",
+          f"{head:+.2f} mm at the closest, to the {who}")
+    check(True, "what the M2 heads are not checked against",
+          "the small parts on the lens side besides the module and its flex "
+          "-- LED D1 and R9 by MT1 in Raspberry Pi Spy's photograph -- which "
+          "no source dimensions", report=True)
+    worst = min(math.hypot(max(x0 - u, 0.0, u - x1), max(y0 - v, 0.0, v - y1))
+                - H.BOSS_DIA / 2
+                for u, v, _ in cam_holes
+                for _, x0, y0, x1, y1, _h in H.CAMERA.back_parts)
+    check(worst >= 0.2 - EPS, "the bosses clear the camera's far face parts",
+          f"{worst:+.2f} mm at the closest")
+    tallest = max(h for *_, h in H.CAMERA.back_parts)
+    check(H.BOSS_H >= tallest + 0.5 - EPS,
+          "and stand the carrier clear of the tallest of them",
+          f"bosses {H.BOSS_H:.2f}, tallest part {tallest:.2f}")
+
+
+# -- the cable --------------------------------------------------------------
+
+def the_cable() -> None:
+    """The FFC leaves its connector and out from under the carrier clear."""
+    name, x0, y0, x1, y1, h = next(p for p in H.CAMERA.back_parts
+                                   if "FFC" in p[0])
+    edge = H.CAMERA.ffc_edge
+    corners = [H.camera_to_plate(u, v) for u, v in
+               ((x0, y0), (x1, y0), (x0, y1), (x1, y1))]
+    cx0, cx1 = min(x for x, _ in corners), max(x for x, _ in corners)
+    cy0, cy1 = min(y for _, y in corners), max(y for _, y in corners)
+    out_u, out_v = {"top": (0, 1), "bottom": (0, -1), "left": (-1, 0),
+                    "right": (1, 0)}[edge]
+    tip = H.camera_to_plate(H.CAMERA.lens_axis[0] + out_u,
+                            H.CAMERA.lens_axis[1] + out_v)
+    dx, dy = tip[0] - H.AXIS_X, tip[1] - H.AXIS_Y
+    # The cable, as wide as v1.py says, centred on the connector, from the
+    # connector out past the carrier's edge, at the height v1.py says it
+    # leaves the connector: a strip, and the gap it runs in.
+    reach = H.CARRIER_HALF + 5.0
+    half = H.CAMERA.ffc_cable_width / 2
+    mx, my = (cx0 + cx1) / 2, (cy0 + cy1) / 2
+    if abs(dy) > abs(dx):
+        strip = (mx - half, mx + half, cy1 if dy > 0 else H.AXIS_Y - reach,
+                 H.AXIS_Y + reach if dy > 0 else cy0)
+    else:
+        strip = (cx1 if dx > 0 else H.AXIS_X - reach,
+                 H.AXIS_X + reach if dx > 0 else cx0, my - half, my + half)
+    z = H.PCB_BACK + H.CAMERA.ffc_cable_z
+    box = (*strip, z - 0.3, z + 0.3)
+    check(z + 0.3 <= H.CARRIER_Z0 - EPS,
+          "the cable leaves the connector under the carrier",
+          f"at {H.CAMERA.ffc_cable_z:.2f} below the camera's far face, in a "
+          f"{H.CARRIER_Z0 - H.PCB_BACK:.2f} mm gap")
+    g = min([circle_box_gap(c.x, c.y, c.dia / 2, c.z0, c.z1, box)
+             for c in H.CARRIER.bosses]
+            + [circle_box_gap(h.x, h.y, H.M3_NUT_AF / math.sqrt(3),
+                              H.CARRIER_Z0 - H.NUT_H["M3"], H.CARRIER_Z0,
+                              box)
+               for h in H.CARRIER.holes if "carrier fixing" in h.what])
+    toward = {(0, 1): "the back", (0, -1): "the front", (1, 0): "the right",
+              (-1, 0): "the left"}[(round(dx), round(dy))]
+    check(g >= CLEAR - EPS, "and runs out from under it unobstructed",
+          f"towards {toward}, {H.CAMERA.ffc_cable_width:.1f} wide; "
+          f"{g:+.2f} mm to the nearest boss or nut")
+
+
+def the_plate_is_unchanged() -> None:
+    check(all(any(math.dist((h.x, h.y), (p.x, p.y)) < 0.01
+                  for p in PLATE.holes if p.kind == "plate")
+              for part in (H.SIDE_LEFT, H.SIDE_RIGHT)
+              for h in part.holes if "plate fixing" in h.what),
+          "the plate needs no new hole",
+          "all four feet's screws go through fixings the plate already has")
+
+
+def main() -> None:
+    print(f"Camera holder over the {PLATE.title}, carrying the "
+          f"{H.CAMERA.name}\n")
+    the_camera()
+    clear_of_everything()
+    fasteners()
+    the_cable()
+    the_plate_is_unchanged()
+
+    bad = 0
+    for ok, what, detail, report in results:
+        bad += not ok
+        mark = "--  " if report else ("ok  " if ok else "FAIL")
+        print(f"   {mark} {what}\n        {detail}")
+    tested = sum(1 for r in results if not r[3])
+    noted = len(results) - tested
+    print()
+    print(f"PASS: {tested} checks, {noted} figures reported" if not bad
+          else f"FAIL: {bad} of {tested} checks")
+    sys.exit(1 if bad else 0)
+
+
+if __name__ == "__main__":
+    main()
