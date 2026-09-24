@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Check that the camera holder does what its sheet claims.
 
-Four claims, and nothing else about it matters:
+Four claims, for the holder built for each lens, and nothing else about it
+matters:
 
 * the camera is where ``RPICAM-OVER-PLATE`` says it has to be: over the
-  centre of frame A, lens down, at least as high as the stock lens needs --
+  centre of frame A, lens down, at least as high as the lens needs --
   and at that height every revision's whole board is in the picture, at its
   own board plane, with the holder hiding none of it;
 * nothing of the holder is where a board, a standoff or a connector is, or
@@ -15,6 +16,9 @@ Four claims, and nothing else about it matters:
   what is next to them, and the camera's own screws and bosses miss its
   lens and its connector;
 * the plate needs no new hole: the feet sit over fixings it already has.
+
+And one about the two holders together: the beam and the carrier are the
+same parts in both, only moved in Z, so one file of each serves both.
 
 Proved from ``holder.py`` against the data modules it is built from --
 ``tinytapeout/boards.py``, the plate, the camera, the optics -- and wherever
@@ -37,11 +41,15 @@ sys.path.insert(0, str(ROOT))
 
 from raspberry_pi_camera import optics  # noqa: E402
 from tinytapeout.boards import BOARDS as TT  # noqa: E402
-from tinytapeout.camera_holder import holder as H  # noqa: E402
+from tinytapeout.camera_holder import holder  # noqa: E402
 from tinytapeout.mounting_plate.plate import (PLACEMENTS, PLATE,  # noqa: E402
                                               STANDOFF_HEIGHT)
 
 results: list[tuple[bool, str, str, bool]] = []
+
+#: The holder being checked: each of ``holder.VARIANTS`` in turn, set by
+#: ``main``.  Every check reads it as it used to read the module.
+H = holder.VARIANTS[next(iter(holder.VARIANTS))]
 
 
 def check(ok: bool, what: str, detail: str, *, report: bool = False) -> None:
@@ -74,9 +82,9 @@ PMOD_REACH, PMOD_TALL = 30.0, 25.0
 PMOD_SIDE = 2.0
 
 
-def boxes(parts=H.ASSEMBLY):
+def boxes(parts=None):
     """Every box of every printed part, and the round bosses as boxes."""
-    for p in parts:
+    for p in parts or H.ASSEMBLY:
         for b in p.boxes:
             yield p, (b.x0, b.x1, b.y0, b.y1, b.z0, b.z1)
         for c in p.bosses:
@@ -111,7 +119,7 @@ def circle_box_gap(cx, cy, r, z0, z1, b) -> float:
 # -- where the camera is ----------------------------------------------------
 
 def the_camera() -> None:
-    lens = optics.LENSES["65"]
+    lens = H.LENS
     frame = H.FRAME
     # The height the stock lens needs over frame A, straight from the
     # declared angles and the frame's own rectangle.
@@ -132,8 +140,9 @@ def the_camera() -> None:
     check(face - plane_hi >= z_need - EPS,
           "the lens is high enough over the highest board",
           f"lens face {face:.2f} above the plate, board face {plane_hi:.2f}: "
-          f"{face - plane_hi:.2f} against the {z_need:.2f} the stock lens "
-          f"needs over frame A, {face - plane_hi - z_need:+.2f} spare")
+          f"{face - plane_hi:.2f} against the {z_need:.2f} the {lens.short} "
+          f"deg lens needs over frame A, {face - plane_hi - z_need:+.2f} "
+          "spare")
     check(abs(face - H.LENS_FACE_Z) < EPS,
           "the parts stack to the height the sheet prints",
           f"{face:.2f} summed, {H.LENS_FACE_Z:.2f} printed")
@@ -504,26 +513,68 @@ def the_plate_is_unchanged() -> None:
           "all four feet's screws go through fixings the plate already has")
 
 
-def main() -> None:
-    print(f"Camera holder over the {PLATE.title}, carrying the "
-          f"{H.CAMERA.name}\n")
-    the_camera()
-    clear_of_everything()
-    fasteners()
-    the_cable()
-    the_plate_is_unchanged()
+def the_variants_share_parts() -> None:
+    """The beam and the carrier are the same parts in every holder.
 
-    bad = 0
+    Only moved in Z: the design says the side frames are the one part that
+    changes with the lens, and that is what lets one beam and one carrier
+    file serve both.  Checked box by box and hole by hole.
+    """
+    first, *rest = holder.VARIANTS.values()
+
+    def shape(part):
+        z = part.bbox.z0
+        return ([(b.x0, b.x1, b.y0, b.y1, b.z0 - z, b.z1 - z)
+                 for b in part.boxes],
+                [(h.x, h.y, h.dia, h.z0 - z, h.z1 - z, h.hex)
+                 for h in part.holes],
+                [(c.x, c.y, c.dia, c.z0 - z, c.z1 - z) for c in part.bosses])
+    for other in rest:
+        for key in ("BEAM", "CARRIER"):
+            a, b = getattr(first, key), getattr(other, key)
+            same = all(
+                len(x) == len(y) and all(
+                    all(abs(u - v) < EPS for u, v in zip(p, q))
+                    for p, q in zip(x, y))
+                for x, y in zip(shape(a), shape(b)))
+            check(same, f"the {a.name.lower()} is one part for both lenses",
+                  f"{first.LENS.short} and {other.LENS.short} deg: the same "
+                  f"boxes and holes, {a.bbox.z0 - b.bbox.z0:.2f} mm apart "
+                  "in Z")
+
+
+def main() -> None:
+    global H
+    bad = tested = noted = 0
+    for key, variant in holder.VARIANTS.items():
+        H = variant
+        results.clear()
+        print(f"Camera holder over the {PLATE.title}, carrying the "
+              f"{H.CAMERA.name}, for the {H.LENS.name} lens\n")
+        the_camera()
+        clear_of_everything()
+        fasteners()
+        the_cable()
+        the_plate_is_unchanged()
+        bad, tested, noted = _report(bad, tested, noted)
+    results.clear()
+    print("Both holders\n")
+    the_variants_share_parts()
+    bad, tested, noted = _report(bad, tested, noted)
+    print(f"PASS: {tested} checks, {noted} figures reported" if not bad
+          else f"FAIL: {bad} of {tested} checks")
+    sys.exit(1 if bad else 0)
+
+
+def _report(bad: int, tested: int, noted: int) -> tuple[int, int, int]:
     for ok, what, detail, report in results:
         bad += not ok
         mark = "--  " if report else ("ok  " if ok else "FAIL")
         print(f"   {mark} {what}\n        {detail}")
-    tested = sum(1 for r in results if not r[3])
-    noted = len(results) - tested
     print()
-    print(f"PASS: {tested} checks, {noted} figures reported" if not bad
-          else f"FAIL: {bad} of {tested} checks")
-    sys.exit(1 if bad else 0)
+    tested += sum(1 for r in results if not r[3])
+    noted += sum(1 for r in results if r[3])
+    return bad, tested, noted
 
 
 if __name__ == "__main__":

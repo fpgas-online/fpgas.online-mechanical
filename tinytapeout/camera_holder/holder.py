@@ -6,8 +6,9 @@ from what it is built on.
 
 * ``raspberry_pi_camera.optics`` says where the camera has to be: over the
   centre of the frame that holds every demo board revision, at the height
-  the stock 65 degree lens needs to take it all in -- the plate subject of
-  ``RPICAM-OVER-PLATE``, frame A;
+  the lens needs to take it all in -- the plate subject of
+  ``RPICAM-OVER-PLATE``, frame A -- for each of the two lenses drawn there,
+  the stock 65 degree one and the 120;
 * ``tinytapeout.mounting_plate.plate`` says what the holder stands on: the
   plate's outline, its six M4 chassis fixings, and the standoff every board
   stands on;
@@ -33,6 +34,16 @@ way the OV5647's pixel rows run on the module, and the camera's long image
 axis has to lie along the plate's X.  The carrier bolts to the beam on a
 square of four holes centred on the lens axis, so it goes on in any of four
 quarter turns without moving the axis.
+
+Two lenses, one design
+----------------------
+The 120 degree lens takes the same frame in from about half the height, so
+it gets its own holder rather than a slot in one: :class:`Holder` builds the
+design for a lens, and :data:`VARIANTS` holds one per lens.  Everything but
+the side frames' posts is shared -- the beam and the carrier are the same two
+parts, only lower -- and a fixed height is one a rule can check and nobody
+can set wrong, where an adjustable carrier would have to reach across about
+70 mm and be set by eye.
 
 Coordinates
 -----------
@@ -65,25 +76,23 @@ MIRROR_X = PLATE_W / 2
 #: assembled envelope, plus the margin, made 4:3.
 SUBJECT = optics.subjects()["tt-mounting-plate"]
 FRAME = SUBJECT.frames()[0]
-LENS = optics.LENSES["65"]
-REQUIRED = optics.place(FRAME, LENS)
 
 #: The plane Z is measured from on that sheet, above the plate face: the
 #: standoff plus the THICKEST board, since a camera set from the higher
 #: plane covers the lower one by more.
 BOARD_PLANE = FRAME.target.plane_above_subject
 
-#: Where the lens has to be, in plate coordinates.
-AXIS_X = REQUIRED.x
-AXIS_Y = REQUIRED.y
-LENS_FACE_MIN = BOARD_PLANE + REQUIRED.z
+#: Where the lens has to be, in plate coordinates: over frame A's centre,
+#: which is the same point whichever lens is fitted.
+AXIS_X = FRAME.cx
+AXIS_Y = FRAME.cy
 
-#: How much higher than that the lens face is set.  A print comes out a few
-#: tenths off in Z and the parts stack four deep between the plate and the
-#: lens, so the face is set a millimetre above the minimum and then rounded
-#: up to the whole millimetre: the height a reader can check with a rule.
+#: How much higher than the least the lens face is set.  A print comes out a
+#: few tenths off in Z and the parts stack four deep between the plate and
+#: the lens, so the face is set a millimetre above the minimum and then
+#: rounded up to the whole millimetre: the height a reader can check with a
+#: rule.
 PRINT_ALLOWANCE = 1.0
-LENS_FACE_Z = math.ceil(LENS_FACE_MIN + PRINT_ALLOWANCE)
 
 
 # ---------------------------------------------------------------------------
@@ -325,15 +334,6 @@ CARRIER_HALF = CARRIER_FIX + 4.0
 BEAM_T = 6.0
 BEAM_W = 16.0
 
-LENS_FACE = LENS_FACE_Z
-PCB_FRONT = LENS_FACE + CAMERA.lens_height
-PCB_BACK = PCB_FRONT + CAMERA.thickness
-CARRIER_Z0 = PCB_BACK + BOSS_H
-CARRIER_Z1 = CARRIER_Z0 + CARRIER_T
-RAIL_Z1 = CARRIER_Z1                  # the beam sits on the rails' tops
-RAIL_Z0 = RAIL_Z1 - MEMBER
-BEAM_Z0, BEAM_Z1 = RAIL_Z1, RAIL_Z1 + BEAM_T
-
 #: The beam's M3 fixings into each rail: two, across the beam.
 BEAM_FIX_DY = BEAM_W / 4
 
@@ -342,15 +342,6 @@ BEAM_FIX_DY = BEAM_W / 4
 #: lies along the board's 25 mm width, with the connector edge at the back.
 #: Nobody publishes it; the carrier is square so that it can be changed.
 QUARTER_TURNS = 0
-
-
-def turned_wrong() -> float:
-    """What the picture misses off each end of frame A's long side if the
-    camera is a quarter turn out: its short side lies along it instead."""
-    long_side = max(FRAME.width, FRAME.height)
-    covers = 2 * (LENS_FACE - BOARD_PLANE) * math.tan(
-        math.radians(LENS.fov_v / 2))
-    return (long_side - covers) / 2
 
 
 def camera_to_plate(u: float, v: float, turns: int = QUARTER_TURNS):
@@ -367,123 +358,6 @@ def camera_to_plate(u: float, v: float, turns: int = QUARTER_TURNS):
         x, y = -y, x
     return AXIS_X + x, AXIS_Y + y
 
-
-def _side_frame() -> Part:
-    boxes = (
-        Box(WALL_OUTER, FOOT_INNER, FRAME_Y0, FRAME_Y1, 0.0, FOOT_T, "foot"),
-        Box(WALL_OUTER, WALL_INNER, FRAME_Y0, FRAME_Y0 + POST_LEN, FOOT_T,
-            RAIL_Z0, "front post"),
-        Box(WALL_OUTER, WALL_INNER, FRAME_Y1 - POST_LEN, FRAME_Y1, FOOT_T,
-            RAIL_Z0, "back post"),
-        Box(WALL_OUTER, WALL_INNER, FRAME_Y0, FRAME_Y1, RAIL_Z0, RAIL_Z1,
-            "rail"),
-    )
-    xr = (WALL_OUTER + WALL_INNER) / 2
-    holes = tuple(Hole(x, y, M4_CLEAR, 0.0, FOOT_T, "M4 plate fixing")
-                  for x, y in FIXINGS)
-    holes += tuple(Hole(xr, AXIS_Y + s * BEAM_FIX_DY, M3_CLEAR, RAIL_Z0,
-                        RAIL_Z1, "M3 beam fixing") for s in (-1, 1))
-    return Part("side", "Side frame", boxes, holes, count=2,
-                print_note="Print on its outer face: the foot stands up "
-                           "from the bed, and nothing overhangs. Its holes "
-                           "print lying down, so ream them to size.")
-
-
-def _beam() -> Part:
-    x0 = WALL_OUTER
-    x1 = 2 * MIRROR_X - WALL_OUTER
-    boxes = (
-        Box(x0, x1, AXIS_Y - BEAM_W / 2, AXIS_Y + BEAM_W / 2, BEAM_Z0,
-            BEAM_Z1, "beam"),
-        Box(AXIS_X - CARRIER_HALF, AXIS_X + CARRIER_HALF,
-            AXIS_Y - CARRIER_HALF, AXIS_Y + CARRIER_HALF, BEAM_Z0, BEAM_Z1,
-            "pad"),
-    )
-    xr = (WALL_OUTER + WALL_INNER) / 2
-    holes = tuple(Hole(x, AXIS_Y + s * BEAM_FIX_DY, M3_CLEAR, BEAM_Z0,
-                       BEAM_Z1, "M3 beam fixing")
-                  for x in (xr, 2 * MIRROR_X - xr) for s in (-1, 1))
-    holes += _carrier_fixings(BEAM_Z0, BEAM_Z1)
-    return Part("beam", "Beam", boxes, holes,
-                print_note="Print flat, on its top face.")
-
-
-def _carrier_fixings(z0: float, z1: float) -> tuple[Hole, ...]:
-    return tuple(Hole(AXIS_X + sx * CARRIER_FIX, AXIS_Y + sy * CARRIER_FIX,
-                      M3_CLEAR, z0, z1, "M3 carrier fixing")
-                 for sx in (-1, 1) for sy in (-1, 1))
-
-
-def camera_holes(turns: int = QUARTER_TURNS):
-    """The camera's mounting holes in plate X and Y, and their diameters."""
-    return tuple((*camera_to_plate(u, v, turns), d)
-                 for u, v, d in CAMERA.holes)
-
-
-def _plate_box(u0, v0, u1, v1, z0, z1, what) -> Box:
-    """A rectangle of the camera board, as a box in plate coordinates."""
-    xs, ys = zip(*(camera_to_plate(u, v) for u, v in
-                   ((u0, v0), (u1, v0), (u0, v1), (u1, v1))))
-    return Box(min(xs), max(xs), min(ys), max(ys), z0, z1, what)
-
-
-def camera_boxes() -> tuple[Box, ...]:
-    """The camera module itself, as it hangs: board, lens, far face parts.
-
-    Not printed, and not in the STEP: a bought part, drawn on the sheet from
-    its own data so that the lens face the heights are set from is the lens
-    face the camera actually has.
-    """
-    out = [_plate_box(0.0, 0.0, CAMERA.width, CAMERA.height, PCB_FRONT,
-                      PCB_BACK, "camera board")]
-    below = 0.0
-    u, v = CAMERA.lens_axis
-    for z, size in CAMERA.lens_profile:
-        out.append(_plate_box(u - size / 2, v - size / 2, u + size / 2,
-                              v + size / 2, PCB_FRONT - z, PCB_FRONT - below,
-                              "lens"))
-        below = z
-    out += [_plate_box(x0, y0, x1, y1, PCB_FRONT - h, PCB_FRONT, label)
-            for label, x0, y0, x1, y1, h in CAMERA.front_parts]
-    out += [_plate_box(x0, y0, x1, y1, PCB_BACK, PCB_BACK + h, label)
-            for label, x0, y0, x1, y1, h in CAMERA.back_parts]
-    return tuple(out)
-
-
-def _carrier() -> Part:
-    boxes = (Box(AXIS_X - CARRIER_HALF, AXIS_X + CARRIER_HALF,
-                 AXIS_Y - CARRIER_HALF, AXIS_Y + CARRIER_HALF, CARRIER_Z0,
-                 CARRIER_Z1, "carrier"),)
-    bosses = tuple(Cyl(x, y, BOSS_DIA, PCB_BACK, CARRIER_Z0, "boss")
-                   for x, y, _ in camera_holes())
-    holes = tuple(Hole(x, y, M2_CLEAR, PCB_BACK, CARRIER_Z1,
-                       "M2 camera fixing") for x, y, _ in camera_holes())
-    holes += tuple(Hole(x, y, M2_POCKET_AF, CARRIER_Z1 - M2_POCKET_DEPTH,
-                        CARRIER_Z1, "M2 nut pocket", hex=True)
-                   for x, y, _ in camera_holes())
-    holes += _carrier_fixings(CARRIER_Z0, CARRIER_Z1)
-    return Part("carrier", "Camera carrier", boxes, holes, bosses,
-                print_note="Print on its top face, bosses up; the nut "
-                           "pockets open onto the bed.")
-
-
-def _mirror(part: Part) -> Part:
-    return Part(part.key + "-right", part.name + ", right",
-                tuple(b.mirrored() for b in part.boxes),
-                tuple(h.mirrored() for h in part.holes), part.bosses,
-                count=1, print_note=part.print_note)
-
-
-SIDE_LEFT = _side_frame()
-SIDE_RIGHT = _mirror(SIDE_LEFT)
-BEAM = _beam()
-CARRIER = _carrier()
-
-#: The printed parts, as they are assembled.  The side frame is one part
-#: printed twice; the right-hand one is its mirror image, so the STEP gives
-#: the assembly both and the parts list counts it once, twice over.
-ASSEMBLY = (SIDE_LEFT, SIDE_RIGHT, BEAM, CARRIER)
-PARTS = (SIDE_LEFT, BEAM, CARRIER)
 
 #: Nut heights, ISO 4032, and the M4 washer, ISO 7089.
 NUT_H = {"M2": 1.6, "M3": 2.4, "M4": 3.2}
@@ -517,6 +391,32 @@ def _screw(key: str) -> int:
     return screw_length(grip + washer, NUT_H[thread], PITCH[thread])
 
 
+def _carrier_fixings(z0: float, z1: float) -> tuple[Hole, ...]:
+    return tuple(Hole(AXIS_X + sx * CARRIER_FIX, AXIS_Y + sy * CARRIER_FIX,
+                      M3_CLEAR, z0, z1, "M3 carrier fixing")
+                 for sx in (-1, 1) for sy in (-1, 1))
+
+
+def camera_holes(turns: int = QUARTER_TURNS):
+    """The camera's mounting holes in plate X and Y, and their diameters."""
+    return tuple((*camera_to_plate(u, v, turns), d)
+                 for u, v, d in CAMERA.holes)
+
+
+def _plate_box(u0, v0, u1, v1, z0, z1, what) -> Box:
+    """A rectangle of the camera board, as a box in plate coordinates."""
+    xs, ys = zip(*(camera_to_plate(u, v) for u, v in
+                   ((u0, v0), (u1, v0), (u0, v1), (u1, v1))))
+    return Box(min(xs), max(xs), min(ys), max(ys), z0, z1, what)
+
+
+def _mirror(part: Part) -> Part:
+    return Part(part.key + "-right", part.name + ", right",
+                tuple(b.mirrored() for b in part.boxes),
+                tuple(h.mirrored() for h in part.holes), part.bosses,
+                count=1, print_note=part.print_note)
+
+
 #: What the holder is bolted together with.
 FASTENERS = (
     (f"M4 x {_screw('plate')} button head, ISO 7380, washer and nut", 4,
@@ -530,17 +430,169 @@ FASTENERS = (
      "Camera to the carrier, head on the lens side."),
 )
 
-SOURCES = (
-    Source(label="Where the camera goes",
-           ref="raspberry_pi_camera/optics.py",
-           note="The plate subject's frame A and the stock lens: RPICAM-"
-                "OVER-PLATE."),
-    Source(label="What it stands on",
-           ref="tinytapeout/mounting_plate/plate.py",
-           note="Outline, side fixings, standoff; TT-MP-PLATE."),
-    Source(label="What it carries",
-           ref="raspberry_pi_camera/v1.py",
-           note="The Camera Module v1.3: Gert van Loo's hand-measured sheet "
-                "of 21 May 2013, checked against Raspberry Pi Spy's "
-                "calipers."),
-)
+
+def _sources(lens) -> tuple[Source, ...]:
+    """What the holder for *lens* is built from."""
+    return (
+        Source(label="Where the camera goes",
+               ref="raspberry_pi_camera/optics.py",
+               note=f"The plate subject's frame A and the {lens.short} deg "
+                    "lens: RPICAM-OVER-PLATE."),
+        Source(label="What it stands on",
+               ref="tinytapeout/mounting_plate/plate.py",
+               note="Outline, side fixings, standoff; TT-MP-PLATE."),
+        Source(label="What it carries",
+               ref="raspberry_pi_camera/v1.py",
+               note="The Camera Module v1.3: Gert van Loo's hand-measured "
+                    "sheet of 21 May 2013, checked against Raspberry Pi "
+                    "Spy's calipers."),
+    )
+
+
+# ---------------------------------------------------------------------------
+# The holder, for one lens
+# ---------------------------------------------------------------------------
+
+
+class Holder:
+    """The holder built for one lens: everything that depends on its height.
+
+    Two lenses, two heights, one design.  The lens face goes at the height
+    ``RPICAM-OVER-PLATE`` gives for the lens over frame A, and the stack
+    above it -- camera, bosses, carrier, beam -- is the same for both, so
+    the beam and the carrier are the same two parts in both holders, only
+    higher or lower; the side frames are the one part that changes, and
+    only in how long their posts are.
+
+    Every other attribute is the module's own: a holder answers for the
+    fasteners, the camera and the plate as the module does, so code that
+    reads a holder reads it as it would read the module.
+    """
+
+    def __init__(self, lens_key: str):
+        self.KEY = lens_key
+        self.LENS = optics.LENSES[lens_key]
+        self.REQUIRED = optics.place(FRAME, self.LENS)
+        self.LENS_FACE_MIN = BOARD_PLANE + self.REQUIRED.z
+        self.LENS_FACE_Z = math.ceil(self.LENS_FACE_MIN + PRINT_ALLOWANCE)
+        self.LENS_FACE = self.LENS_FACE_Z
+        self.PCB_FRONT = self.LENS_FACE + CAMERA.lens_height
+        self.PCB_BACK = self.PCB_FRONT + CAMERA.thickness
+        self.CARRIER_Z0 = self.PCB_BACK + BOSS_H
+        self.CARRIER_Z1 = self.CARRIER_Z0 + CARRIER_T
+        self.RAIL_Z1 = self.CARRIER_Z1        # the beam sits on the rails
+        self.RAIL_Z0 = self.RAIL_Z1 - MEMBER
+        self.BEAM_Z0, self.BEAM_Z1 = self.RAIL_Z1, self.RAIL_Z1 + BEAM_T
+        self.SIDE_LEFT = self._side_frame()
+        self.SIDE_RIGHT = _mirror(self.SIDE_LEFT)
+        self.BEAM = self._beam()
+        self.CARRIER = self._carrier()
+        # The printed parts, as they are assembled.  The side frame is one
+        # part printed twice; the right-hand one is its mirror image, so the
+        # STEP gives the assembly both and the parts list counts it once,
+        # twice over.
+        self.ASSEMBLY = (self.SIDE_LEFT, self.SIDE_RIGHT, self.BEAM,
+                         self.CARRIER)
+        self.PARTS = (self.SIDE_LEFT, self.BEAM, self.CARRIER)
+        self.SOURCES = _sources(self.LENS)
+
+    def __getattr__(self, name):
+        try:
+            return globals()[name]
+        except KeyError:
+            raise AttributeError(name) from None
+
+    def turned_wrong(self) -> float:
+        """What the picture misses off each end of frame A's long side if the
+        camera is a quarter turn out: its short side lies along it instead."""
+        long_side = max(FRAME.width, FRAME.height)
+        covers = 2 * (self.LENS_FACE - BOARD_PLANE) * math.tan(
+            math.radians(self.LENS.fov_v / 2))
+        return (long_side - covers) / 2
+
+    def _side_frame(self) -> Part:
+        boxes = (
+            Box(WALL_OUTER, FOOT_INNER, FRAME_Y0, FRAME_Y1, 0.0, FOOT_T,
+                "foot"),
+            Box(WALL_OUTER, WALL_INNER, FRAME_Y0, FRAME_Y0 + POST_LEN, FOOT_T,
+                self.RAIL_Z0, "front post"),
+            Box(WALL_OUTER, WALL_INNER, FRAME_Y1 - POST_LEN, FRAME_Y1, FOOT_T,
+                self.RAIL_Z0, "back post"),
+            Box(WALL_OUTER, WALL_INNER, FRAME_Y0, FRAME_Y1, self.RAIL_Z0,
+                self.RAIL_Z1, "rail"),
+        )
+        xr = (WALL_OUTER + WALL_INNER) / 2
+        holes = tuple(Hole(x, y, M4_CLEAR, 0.0, FOOT_T, "M4 plate fixing")
+                      for x, y in FIXINGS)
+        holes += tuple(Hole(xr, AXIS_Y + s * BEAM_FIX_DY, M3_CLEAR,
+                            self.RAIL_Z0, self.RAIL_Z1, "M3 beam fixing")
+                       for s in (-1, 1))
+        return Part("side", "Side frame", boxes, holes, count=2,
+                    print_note="Print on its outer face: the foot stands "
+                               "up from the bed, and nothing overhangs. Its "
+                               "holes print lying down, so ream them to "
+                               "size.")
+
+    def _beam(self) -> Part:
+        x0 = WALL_OUTER
+        x1 = 2 * MIRROR_X - WALL_OUTER
+        boxes = (
+            Box(x0, x1, AXIS_Y - BEAM_W / 2, AXIS_Y + BEAM_W / 2,
+                self.BEAM_Z0, self.BEAM_Z1, "beam"),
+            Box(AXIS_X - CARRIER_HALF, AXIS_X + CARRIER_HALF,
+                AXIS_Y - CARRIER_HALF, AXIS_Y + CARRIER_HALF, self.BEAM_Z0,
+                self.BEAM_Z1, "pad"),
+        )
+        xr = (WALL_OUTER + WALL_INNER) / 2
+        holes = tuple(Hole(x, AXIS_Y + s * BEAM_FIX_DY, M3_CLEAR, self.BEAM_Z0,
+                           self.BEAM_Z1, "M3 beam fixing")
+                      for x in (xr, 2 * MIRROR_X - xr) for s in (-1, 1))
+        holes += _carrier_fixings(self.BEAM_Z0, self.BEAM_Z1)
+        return Part("beam", "Beam", boxes, holes,
+                    print_note="Print flat, on its top face.")
+
+    def camera_boxes(self) -> tuple[Box, ...]:
+        """The camera module itself, as it hangs: board, lens, far face parts.
+
+        Not printed, and not in the STEP: a bought part, drawn on the sheet
+        from its own data so that the lens face the heights are set from is
+        the lens face the camera actually has.
+        """
+        out = [_plate_box(0.0, 0.0, CAMERA.width, CAMERA.height,
+                          self.PCB_FRONT, self.PCB_BACK, "camera board")]
+        below = 0.0
+        u, v = CAMERA.lens_axis
+        for z, size in CAMERA.lens_profile:
+            out.append(_plate_box(u - size / 2, v - size / 2, u + size / 2,
+                                  v + size / 2, self.PCB_FRONT - z,
+                                  self.PCB_FRONT - below, "lens"))
+            below = z
+        out += [_plate_box(x0, y0, x1, y1, self.PCB_FRONT - h,
+                           self.PCB_FRONT, label)
+                for label, x0, y0, x1, y1, h in CAMERA.front_parts]
+        out += [_plate_box(x0, y0, x1, y1, self.PCB_BACK,
+                           self.PCB_BACK + h, label)
+                for label, x0, y0, x1, y1, h in CAMERA.back_parts]
+        return tuple(out)
+
+    def _carrier(self) -> Part:
+        boxes = (Box(AXIS_X - CARRIER_HALF, AXIS_X + CARRIER_HALF,
+                     AXIS_Y - CARRIER_HALF, AXIS_Y + CARRIER_HALF,
+                     self.CARRIER_Z0, self.CARRIER_Z1, "carrier"),)
+        bosses = tuple(Cyl(x, y, BOSS_DIA, self.PCB_BACK, self.CARRIER_Z0,
+                           "boss") for x, y, _ in camera_holes())
+        holes = tuple(Hole(x, y, M2_CLEAR, self.PCB_BACK, self.CARRIER_Z1,
+                           "M2 camera fixing") for x, y, _ in camera_holes())
+        holes += tuple(Hole(x, y, M2_POCKET_AF,
+                            self.CARRIER_Z1 - M2_POCKET_DEPTH,
+                            self.CARRIER_Z1, "M2 nut pocket", hex=True)
+                       for x, y, _ in camera_holes())
+        holes += _carrier_fixings(self.CARRIER_Z0, self.CARRIER_Z1)
+        return Part("carrier", "Camera carrier", boxes, holes, bosses,
+                    print_note="Print on its top face, bosses up; the nut "
+                               "pockets open onto the bed.")
+
+
+#: One holder per drawn lens, by lens key.  Both carry the same camera over
+#: the same point; they differ in height.
+VARIANTS = {key: Holder(key) for key in optics.LENSES}

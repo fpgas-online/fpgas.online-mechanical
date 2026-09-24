@@ -10,7 +10,8 @@ stay printed.
 Geometry only, as the plate's cut file is: the outline and the holes, each
 on its own layer, in the plate's coordinates seen from above, so the file
 lies over the plate's own DXF where the beam goes.  Every figure is
-``holder.py``'s.
+``holder.py``'s.  One file for both lenses' holders: the beam is the same
+part in both, only higher or lower, which ``verify.py`` checks.
 
 Run: uv run --no-project --with ezdxf python \\
          tinytapeout/camera_holder/export_dxf.py
@@ -26,10 +27,13 @@ import ezdxf
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tinytapeout.camera_holder import holder as H  # noqa: E402
+from tinytapeout.camera_holder import holder  # noqa: E402
 from tools import reproducible  # noqa: E402
 
 OUT = Path(__file__).resolve().parent / "output" / "tt-camera-holder-beam.dxf"
+
+#: Either holder's beam: in plan they are one part.
+H = next(iter(holder.VARIANTS.values()))
 
 LAYERS = {
     "BEAM_OUTLINE": 5,

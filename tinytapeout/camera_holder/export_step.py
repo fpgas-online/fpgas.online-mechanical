@@ -5,11 +5,13 @@ The holder's parts are printed, so what a maker needs is a solid model; it
 is built from the same boxes the drawing and ``verify.py`` read, so the three
 cannot drift apart.  Every number below is ``holder.py``'s.
 
-The assembly, every part where it goes over the plate -- the file to check
-a fit in, or to hand to somebody who wants to see the rig.  And one file per
-part to print, each lying the way its print note says, on the bed at Z = 0
-and at the origin, so a slicer takes it as it comes; the two side frames are
-mirror images, so each has its own.
+For each lens's holder, the assembly, every part where it goes over the
+plate -- the file to check a fit in, or to hand to somebody who wants to see
+the rig -- and its side frames, the one part that differs between the two.
+The beam and the carrier are the same two parts in both holders, which
+``verify.py`` checks, so each is one file.  Every part file lies the way its
+print note says, on the bed at Z = 0 and at the origin, so a slicer takes it
+as it comes; the two side frames are mirror images, so each has its own.
 
 Run: uv run --no-project --with cadquery python \\
          tinytapeout/camera_holder/export_step.py
@@ -24,11 +26,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tinytapeout.camera_holder import holder as H  # noqa: E402
+from tinytapeout.camera_holder import holder  # noqa: E402
 from tools import reproducible  # noqa: E402
 
 OUT = Path(__file__).resolve().parent / "output"
-ASSEMBLY = OUT / "tt-camera-holder.step"
+
+#: The file stem every holder file starts with.
+STEM = "tt-camera-holder"
+
+#: The parts that differ between the holders, and so are written once per
+#: lens; the others are written once.
+PER_LENS = ("side", "side-right")
 
 #: How far a cutting tool runs past the material it cuts, so no face is left
 #: coincident with the face it cuts through.
@@ -107,27 +115,43 @@ def write(shape, path: Path) -> None:
     reproducible.normalise_step(path, name=path.stem)
 
 
+def part_path(h, part) -> Path:
+    """Where *part* of holder *h* is written."""
+    name = PRINT_NAME.get(part.key, part.key)
+    if part.key in PER_LENS:
+        return OUT / f"{STEM}-{h.KEY}-{name}.step"
+    return OUT / f"{STEM}-{name}.step"
+
+
 def main() -> None:
     import cadquery as cq
 
     OUT.mkdir(parents=True, exist_ok=True)
-    solids = {p.key: solid(p) for p in H.ASSEMBLY}
-    write(cq.Compound.makeCompound(list(solids.values())), ASSEMBLY)
-    print(f"{ASSEMBLY.relative_to(ROOT)}: the assembly, over the plate")
-    for part in H.ASSEMBLY:
-        path = OUT / f"tt-camera-holder-{PRINT_NAME.get(part.key, part.key)}.step"
-        shape = posed(part, solids[part.key])
-        ok, on_bed, largest = bed_face_is_largest(shape)
-        if not ok:
-            raise SystemExit(f"{part.name} lies on {on_bed:.0f} mm2 of face "
-                             f"where its largest is {largest:.0f}: turn it "
-                             "over in PRINT_POSE")
-        write(shape, path)
-        bb = shape.BoundingBox()
-        vol = shape.Volume() / 1000
-        print(f"{path.relative_to(ROOT)}: {part.name}, "
-              f"{bb.xlen:.1f} x {bb.ylen:.1f} x {bb.zlen:.1f} mm as printed,"
-              f" {vol:.2f} cm3, {vol * 1.27:.1f} g in PETG at 1.27 g/cm3")
+    written = set()
+    for h in holder.VARIANTS.values():
+        solids = {p.key: solid(p) for p in h.ASSEMBLY}
+        assembly = OUT / f"{STEM}-{h.KEY}.step"
+        write(cq.Compound.makeCompound(list(solids.values())), assembly)
+        print(f"{assembly.relative_to(ROOT)}: the {h.LENS.short} deg lens's "
+              "assembly, over the plate")
+        for part in h.ASSEMBLY:
+            path = part_path(h, part)
+            if path in written:
+                continue
+            written.add(path)
+            shape = posed(part, solids[part.key])
+            ok, on_bed, largest = bed_face_is_largest(shape)
+            if not ok:
+                raise SystemExit(f"{part.name} lies on {on_bed:.0f} mm2 of "
+                                 f"face where its largest is {largest:.0f}: "
+                                 "turn it over in PRINT_POSE")
+            write(shape, path)
+            bb = shape.BoundingBox()
+            vol = shape.Volume() / 1000
+            print(f"{path.relative_to(ROOT)}: {part.name}, "
+                  f"{bb.xlen:.1f} x {bb.ylen:.1f} x {bb.zlen:.1f} mm as "
+                  f"printed, {vol:.2f} cm3, {vol * 1.27:.1f} g in PETG at "
+                  "1.27 g/cm3")
 
 
 if __name__ == "__main__":
