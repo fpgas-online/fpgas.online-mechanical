@@ -9,6 +9,7 @@ jack and user LEDs marked.
 | `boards.py` | **Generated.** Every board drawn here |
 | `extract.py` | Reads each board's own published source and writes `boards.py` |
 | `output/` | One `FPGA-…` sheet per board, as SVG and PDF, and `fpga-sheets.pdf`, all of them bound into one document |
+| [`light_pipe/`](light_pipe/README.md) | `FPGA-LP-ARTY`: a printed clip that brings the Arty A7's Ethernet LEDs round to a face you can see from above |
 
 ```sh
 tools/fetch_fpga.sh                                   # once, needs network
@@ -117,6 +118,11 @@ and the sheet says which it was.
   hang off the front edge and a peripheral plugs in level with the board --
   which is also why this is the first sheet to state its own assembled
   envelope rather than take the computed one.
+
+One made part lives here rather than with the boards it is drawn from, the
+way the mounting plate lives under `tinytapeout/`: the Ethernet light pipe in
+[`light_pipe/`](light_pipe/README.md), which clips over the Arty A7's RJ45.
+Its sheet binds into `fpga-sheets.pdf` after the boards.
 
 The PYNQ-Z1 was looked at and left out: Digilent's 3D model of it has no
 mounting holes and its outline disagrees with their own stated size.

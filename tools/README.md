@@ -21,7 +21,7 @@ Imported, not run.
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
 | `render_svg.py` | SVG to PDF and PNG via Inkscape, text exported as paths |
-| `reproducible.py` | Pins the clocks, tool version strings and GUIDs that cairo, Inkscape, pypdf and ezdxf stamp into their output |
+| `reproducible.py` | Pins the clocks, tool version strings and GUIDs that cairo, Inkscape, pypdf and ezdxf stamp into their output, and the export clock, the absolute path and the per-process product counter OpenCascade stamps into a STEP |
 
 ## Build
 
@@ -36,6 +36,7 @@ The extractors are not here. Each lives with its subject:
 
 - [`accessories/extract.py`](../accessories/README.md)
 - [`fpga/extract.py`](../fpga/README.md)
+- [`fpga/light_pipe/design.py`](../fpga/light_pipe/README.md)
 - [`raspberry_pi/extract.py`](../raspberry_pi/README.md)
 - [`tinytapeout/extract.py`](../tinytapeout/README.md)
 - [`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md)
@@ -44,7 +45,8 @@ The extractors are not here. Each lives with its subject:
 
 Each has caught a real defect. `make check` runs all but `crosscheck_gerber.py`,
 which needs network. A check specific to one made part is not here: it lives
-with the part, as the mounting plate's `verify.py` does.
+with the part, as the mounting plate's and the Ethernet light pipe's
+`verify.py` do.
 
 GitHub Actions runs `make check` on every push to `main` and on every pull
 request: [`.github/workflows/check.yml`](../.github/workflows/check.yml). The

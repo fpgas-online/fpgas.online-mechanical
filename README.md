@@ -21,6 +21,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, each with a Digilent Pmod HAT Adapter overlaid |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
+| [`fpga/light_pipe/`](fpga/light_pipe/README.md) | `FPGA-LP-ARTY` -- A printed clip that brings the Arty A7's Ethernet LEDs, which face forwards, round to a face you can see from above |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Parts that are none of the boards above but turn up in the same assemblies, such as Pi-to-Pmod adapters and PoE splitters, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
 
@@ -63,6 +64,9 @@ are, and only the name is cut:
   left of these stems once `TT-MP` has said `tt-generic-mounting-plate` is the
   sheet's title (`chassis-drill-template`), which the sheet already carries in
   full, so that one is a table as well, `PLATE_NAMES`.
+- the light pipe, a made part filed beside the FPGA boards and bound with
+  them, has the set's prefix and its kind, `FPGA-LP`, and a one-row table,
+  `LP_NAMES`, saying which board it clips onto: `FPGA-LP-ARTY`.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
@@ -169,6 +173,19 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </tr>
 </table>
 
+### Arty A7 Ethernet light pipe
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="fpga/light_pipe/output/arty-ethernet-light-pipe.pdf"><img src="fpga/light_pipe/output/previews/arty-ethernet-light-pipe.png" width="270" alt="FPGA-LP-ARTY Arty A7 Ethernet Light Pipe"></a><br>
+<b>FPGA-LP-ARTY</b> Arty A7 Ethernet Light Pipe<br>Clips over J9 and carries its two LEDs to a face you can see from above
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
+</tr>
+</table>
+
 ### Accessories
 
 <table>
@@ -251,9 +268,11 @@ make check     # render every sheet, refresh the grids, then run the checks
 Rebuilding is deterministic, and that is checked rather than hoped for: three
 full `make clean && make diagrams` cycles produce every output file
 byte-identical, so `git status` is silent after a rebuild unless a drawing
-actually changed. Cairo, pypdf and ezdxf all stamp a clock, cairo, Inkscape
-and pypdf their names and versions, and ezdxf two random GUIDs into what
-they write;
+actually changed. (On a branch that has added a sheet, that silence returns
+only once the whole set has been restamped with the new `VERSION`, which is
+one change made on its own rather than a side effect of adding a drawing.)
+Cairo, pypdf and ezdxf all stamp a clock, cairo, Inkscape and pypdf their
+names and versions, and ezdxf two random GUIDs into what they write;
 `tools/reproducible.py` pins all of it. That is what lets a second machine
 reproduce the set: Inkscape 1.4 and 1.4.3 on the same cairo draw identical
 content and differed only in the version string.
@@ -291,10 +310,13 @@ derived from keep their own licences:
 | Upstream source | Its licence, or whose it is |
 |---|---|
 | Arty A7 drawing | Digilent's |
+| Arty A7 schematic | Digilent's |
 | ButterStick board files | Its maker's open hardware licence |
 | Cynthion board file | Great Scott Gadgets' under the CERN-OHL-P v2 |
 | Icepi Zero board files | Solderpad Hardware Licence 2.1 |
+| Light pipe drawing | Bivar's |
 | PYNQ-Z2 model | TUL's |
 | Raspberry Pi mechanical drawings | Raspberry Pi Ltd's |
+| RJ45 drawing | Bel's |
 | Tiny Tapeout board files | Apache 2.0 |
 | ULX3S board files | Its maker's open hardware licence |
