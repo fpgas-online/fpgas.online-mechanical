@@ -20,7 +20,7 @@ header is along the upper edge, matching how Raspberry Pi Ltd draw them.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 
 @dataclass(frozen=True)
@@ -225,6 +225,37 @@ class Outline:
     #: view has to show it.
     constant_section: bool = False
 
+    def extent(self) -> tuple[float, float, float, float]:
+        """x0, y0, x1, y1 of the profile: the exact edges' when there are any.
+
+        Every outline without ``edges`` starts at the origin, so its extent is
+        its width and height.  One with them may not: a part moved onto
+        another board's frame (``moved``) carries its profile as edges
+        wherever it has been put.
+        """
+        if not self.edges:
+            return 0.0, 0.0, self.width, self.height
+        xs = [v for e in self.edges for v in (e[1], e[3])]
+        ys = [v for e in self.edges for v in (e[2], e[4])]
+        return min(xs), min(ys), max(xs), max(ys)
+
+
+def rounded_rect(x0: float, y0: float, w: float, h: float,
+                 r: float) -> tuple[tuple, ...]:
+    """A rounded rectangle as ``Outline.edges``, counter-clockwise."""
+    x1, y1 = x0 + w, y0 + h
+    if r <= 0:
+        return (("line", x0, y0, x1, y0), ("line", x1, y0, x1, y1),
+                ("line", x1, y1, x0, y1), ("line", x0, y1, x0, y0))
+    return (("line", x0 + r, y0, x1 - r, y0),
+            ("arc", x1 - r, y0, x1, y0 + r, r, 0, 1),
+            ("line", x1, y0 + r, x1, y1 - r),
+            ("arc", x1, y1 - r, x1 - r, y1, r, 0, 1),
+            ("line", x1 - r, y1, x0 + r, y1),
+            ("arc", x0 + r, y1, x0, y1 - r, r, 0, 1),
+            ("line", x0, y1 - r, x0, y0 + r),
+            ("arc", x0, y0 + r, x0 + r, y0, r, 0, 1))
+
 
 @dataclass(frozen=True)
 class BoardSpec:
@@ -273,3 +304,35 @@ class BoardSpec:
 PCB_OUTLINE_TOL = 0.20      # mm, routed board edge
 PCB_HOLE_POS_TOL = 0.10     # mm, drilled hole position
 PCB_HOLE_DIA_TOL = 0.08     # mm, plated hole diameter
+
+
+def moved(spec: BoardSpec, dx: float, dy: float) -> BoardSpec:
+    """*spec* with every coordinate in it moved by (dx, dy).
+
+    For a part drawn over another board whose frame is not its own: the Pmod
+    HAT Adapter is specified in a Raspberry Pi's frame, and fitted to a board
+    whose 40-pin header is somewhere else it has to go with the header.  A
+    rounded-rectangle outline becomes explicit edges, since an outline
+    without them is always drawn from the origin.
+    """
+    o = spec.outline
+    x0, y0, x1, y1 = o.extent()
+    edges = o.edges or rounded_rect(x0, y0, x1 - x0, y1 - y0, o.corner_radius)
+
+    def shift(e):
+        return (e[0], e[1] + dx, e[2] + dy, e[3] + dx, e[4] + dy) + tuple(e[5:])
+    return replace(
+        spec,
+        outline=replace(o, edges=tuple(shift(e) for e in edges)),
+        holes=tuple(replace(h, x=h.x + dx, y=h.y + dy) for h in spec.holes),
+        slots=tuple(replace(s, x0=s.x0 + dx, y0=s.y0 + dy, x1=s.x1 + dx,
+                            y1=s.y1 + dy) for s in spec.slots),
+        features=tuple(replace(f, x0=f.x0 + dx, y0=f.y0 + dy, x1=f.x1 + dx,
+                               y1=f.y1 + dy) for f in spec.features),
+        pmods=tuple(replace(p, cx=p.cx + dx, cy=p.cy + dy, pin1_x=p.pin1_x + dx,
+                            pin1_y=p.pin1_y + dy,
+                            **({"body_x0": p.body_x0 + dx, "body_y0": p.body_y0 + dy,
+                                "body_x1": p.body_x1 + dx, "body_y1": p.body_y1 + dy}
+                               if p.body_x1 > p.body_x0 else {}))
+                    for p in spec.pmods),
+    )
