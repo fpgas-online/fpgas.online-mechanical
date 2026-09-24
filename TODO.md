@@ -295,6 +295,8 @@ checker that measures the finished PDFs rather than trusting them.
       150.00 and 83.00, sharing the beam and the carrier; `verify.py` makes
       every check of each and checks the two share those parts
 - [ ] A 120 degree OV5647 on a board this carrier takes. `TT-MP-CAM120`
-      carries a v1.3's board with the wide lens ASSUMED on it; the B006604
-      is a 60 x 11.5 mm Pi Zero board and wants a carrier of its own, from
-      a measured drawing of it
+      carries a v1.3's board with the wide lens ASSUMED 5.20 mm proud of it,
+      and has 1.00 mm to spare; a taller lens, any M12 fisheye, drops the
+      face further than that and cuts the boards' edges off. Either a
+      carrier for the B006604, a Pi Zero spy camera, from a measured drawing
+      of it, or bosses cut to a measured lens

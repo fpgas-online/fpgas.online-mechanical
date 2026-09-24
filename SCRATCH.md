@@ -2711,3 +2711,29 @@ ASSUMED on it. A carrier for the B006604 wants a drawing of that board.
 - Waveshare's RPi Camera (G), sold as 160 diagonal and 120 across, declares
   3.15 mm, which gives 82.5 degrees diagonal even equidistantly. Recorded,
   not drawn.
+
+### What the review of the lens work changed
+
+- 96 x 72 is Arducam's arithmetic, not evidence. Every row in that block
+  of their catalogue is its diagonal times 0.8 and 0.6 -- B006603 72.4 x
+  54.3 from 90.5, B006605 128 x 96 from 160 -- so the equidistant split is
+  how the table was written. It stays the pair used, as the vendor's own and
+  the usual first model of a fisheye, but it is no longer called
+  corroborated; Commonlands' lens, the one independent figure, scaled to 120
+  is 94.4 x 70.8, near the equisolid, and is now an alternative the margin is
+  checked to absorb. YXF's figures are flagged relabelled.
+- The lean the margin allows was atan(margin / Z), which is right on the
+  lens axis only. At the picture's edge a lean moves it sec^2 of the
+  half-angle further, so it is now solved there: 1.82 deg at 65 over the
+  plate, not 2.06, and 2.68 at 120, not 3.95. And the stand's error and the
+  lens's uncertainty come out of one margin, which the sheets now say.
+- The tables' one-letter flags read DECLARED and DERIVED both as D; they
+  are DECL, DERI and ASSU now, and the diagonal's comes from the data.
+- The wide lens's "1 m to infinity" is not what its own optics give (its
+  hyperfocal distance is 0.70 m) and reads copied from the stock lens's;
+  said so, and it changes no verdict.
+- The autofocus note printed a depth of field at frame A's height whether
+  or not the lens can focus there; where it cannot, it now says so.
+- The 120 holder's 1.00 mm is too little for any real M12 fisheye on a
+  v1.3-sized board: with the face 10 mm low the boards' edges are cut off.
+  The README says so plainly and TODO carries the fix.
