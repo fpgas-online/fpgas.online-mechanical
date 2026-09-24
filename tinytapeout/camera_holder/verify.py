@@ -19,9 +19,9 @@ Four claims, and nothing else about it matters:
 Proved from ``holder.py`` against the data modules it is built from --
 ``tinytapeout/boards.py``, the plate, the camera, the optics -- and wherever
 a figure can be reached two ways it is reached the way ``holder.py`` did not:
-the lens height is summed up the parts rather than read from LENS_FACE_Z,
 the picture is worked from the declared angles rather than through
-``optics.place``.
+``optics.place``.  The lens height is summed back up the parts as built,
+which checks the stack's arithmetic rather than offering a second design.
 
 Run: uv run --no-project python tinytapeout/camera_holder/verify.py
 """
@@ -68,6 +68,10 @@ STANDOFF_R = 5.5 / math.sqrt(3)
 #: clear of all of them and a tight figure would prove nothing extra.
 USB_REACH, USB_SIDE, USB_TALL = 40.0, 3.0, 10.0
 PMOD_REACH, PMOD_TALL = 30.0, 25.0
+#: ASSUMED: how far a Pmod peripheral's board stands past its connector's
+#: body on each side.  A peripheral is wider than the 2x6 header it plugs
+#: into, and nothing here gives a figure for how much.
+PMOD_SIDE = 2.0
 
 
 def boxes(parts=H.ASSEMBLY):
@@ -180,20 +184,26 @@ def the_camera() -> None:
             check(spare >= -EPS, f"all of {rev} is in the picture",
                   f"its envelope {e[2] - e[0]:.2f} x {e[3] - e[1]:.2f} at "
                   f"its face {plane:.2f} up, {spare:+.2f} mm to the "
-                  "nearest edge of the picture")
+                  "nearest edge of the picture, the frame's "
+                  f"{optics.FRAME_MARGIN:.2f} margin included")
 
     from raspberry_pi_camera import v1
     worst = min(spare_by_rev.values())
     check(worst >= v1.LENS_TOL + v1.HOLE_TOL - EPS,
           "and with room for where the lens really is",
-          f"{worst:.2f} mm to spare at the tightest, against the "
+          f"{worst:.2f} mm to spare at the tightest, the margin and "
+          f"{worst - optics.FRAME_MARGIN:.2f} over it, against the "
           f"{v1.LENS_TOL:.2f} v1.py gives the glued-on lens module and the "
           f"{v1.HOLE_TOL:.1f} it gives the holes it is located by")
 
     # Nothing of the holder between the lens and any board.  The picture of
     # a revision's envelope is a pyramid from the lens; its section shrinks
     # towards the lens, so a box misses it if it misses the section at the
-    # box's lowest height inside it.
+    # box's lowest height inside it.  The apex is taken at the lens FACE,
+    # the lowest the entrance pupil can be.  A pupil higher up makes the
+    # pyramid slimmer at every height below the face, so it can only miss
+    # more -- and nothing of the holder is below the face but the side
+    # frames, which stand outside every envelope's section at every height.
     hit = []
     visible = []
     for p, b in boxes():
@@ -256,7 +266,8 @@ def keep_outs():
                 if p.body_x1 <= p.body_x0:
                     continue
                 out.append((f"{rev} Pmod {p.label} peripheral", "box",
-                            (p.body_x0 + dx, p.body_x1 + dx,
+                            (p.body_x0 + dx - PMOD_SIDE,
+                             p.body_x1 + dx + PMOD_SIDE,
                              p.body_y0 + dy - PMOD_REACH, p.body_y0 + dy,
                              -PMOD_TALL, plane + PMOD_TALL)))
             # The side positions, not fitted: a header there takes a
@@ -266,7 +277,8 @@ def keep_outs():
                     out.append((f"{rev} {f.label.split(' (')[0]} peripheral",
                                 "box",
                                 (f.x0 + dx - PMOD_REACH, f.x0 + dx,
-                                 f.y0 + dy, f.y1 + dy, plane - 2.0,
+                                 f.y0 + dy - PMOD_SIDE,
+                                 f.y1 + dy + PMOD_SIDE, plane - 2.0,
                                  plane + PMOD_TALL)))
     return out
 
@@ -340,10 +352,36 @@ def fasteners() -> None:
           f"{len(holes(H.CARRIER, 'carrier fixing'))} M3 holes")
     for key, (thread, grip, washer) in H.GRIPS.items():
         n = H._screw(key)
-        need = grip + washer + H.NUT_H[thread]
+        need = grip + washer + H.NUT_H[thread] + 2 * H.PITCH[thread]
         check(need <= n, f"the {thread} x {n} is long enough ({key})",
               f"grip {grip:.2f}{' + washer' if washer else ''} + nut "
-              f"{H.NUT_H[thread]:.1f} = {need:.2f}")
+              f"{H.NUT_H[thread]:.1f} + two threads past it = {need:.2f}")
+    # Where the ends of the screws go.  The camera's M2s come up through
+    # the carrier into nut pockets in its top face; nut and tip have to stay
+    # below the face the beam's pad bears on.
+    pocket = next(h for h in H.CARRIER.holes if h.hex)
+    tip = H.PCB_FRONT + H._screw("camera")
+    nut_top = pocket.z0 + H.NUT_H["M2"]
+    check(pocket.dia > H.M2_NUT_AF and nut_top <= H.CARRIER_Z1 - EPS
+          and tip <= H.CARRIER_Z1 - 0.2,
+          "the camera's M2 nuts and screw ends stay in the carrier",
+          f"pocket {pocket.dia:.2f} across flats for a {H.M2_NUT_AF:.1f} "
+          f"nut; nut top {H.CARRIER_Z1 - nut_top:.2f} and screw end "
+          f"{H.CARRIER_Z1 - tip:.2f} below the pad")
+    # Screw heads on the beam land on it, clear of its edges and of each
+    # other.
+    bar = next(b for b in H.BEAM.boxes if b.what == "beam")
+    pad = next(b for b in H.BEAM.boxes if b.what == "pad")
+    worst = min(min(h.x - b.x0, b.x1 - h.x, h.y - b.y0, b.y1 - h.y)
+                for h in H.BEAM.holes
+                for b in (pad if "carrier" in h.what else bar,))
+    beam_holes = [(h.x, h.y) for h in H.BEAM.holes]
+    apart = min(math.dist(a, b) for i, a in enumerate(beam_holes)
+                for b in beam_holes[i + 1:])
+    check(worst >= H.M3_HEAD_DIA / 2 and apart >= H.M3_HEAD_DIA + 0.5,
+          "the M3 heads sit on the beam",
+          f"{worst:.2f} from the nearest edge for a {H.M3_HEAD_DIA / 2:.2f} "
+          f"head radius, {apart:.2f} between the closest pair")
     # The carrier's nuts, under it, miss the camera however it is turned.
     for turns in range(4):
         corners = [H.camera_to_plate(u, v, turns) for u, v in
@@ -352,12 +390,13 @@ def fasteners() -> None:
         cam = (min(x for x, _ in corners), max(x for x, _ in corners),
                min(y for _, y in corners), max(y for _, y in corners),
                H.PCB_FRONT, H.PCB_BACK)
+        tip = H.BEAM_Z1 - H._screw("carrier")
         g = min(circle_box_gap(h.x, h.y, H.M3_NUT_AF / math.sqrt(3),
-                               H.CARRIER_Z0 - H.NUT_H["M3"], H.CARRIER_Z0,
-                               cam)
+                               tip, H.CARRIER_Z0, cam)
                 for h in H.CARRIER.holes if "carrier fixing" in h.what)
         check(g >= CLEAR - EPS,
-              f"the carrier's nuts miss the camera, {turns} quarter turns",
+              f"the carrier's nuts and screw ends miss the camera, {turns} "
+              "quarter turns",
               f"{g:+.2f} mm")
     # The camera's own screws: through its holes, heads clear of its lens
     # and of what is beside it, bosses clear of what is on its far face.

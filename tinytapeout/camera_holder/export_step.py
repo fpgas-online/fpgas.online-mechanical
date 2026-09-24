@@ -17,6 +17,7 @@ Run: uv run --no-project --with cadquery python \\
 
 from __future__ import annotations
 
+import math
 import sys
 from pathlib import Path
 
@@ -36,8 +37,8 @@ OVER = 1.0
 #: How each part lies to be printed: which face goes on the bed.  A rotation
 #: about a plate axis, in degrees, and then it is set down at the origin.
 PRINT_POSE = {
-    "side": ("Y", 90.0),        # on its outer face: the foot stands up
-    "side-right": ("Y", -90.0),  # the same, mirrored
+    "side": ("Y", -90.0),       # on its outer face: the foot stands up
+    "side-right": ("Y", 90.0),  # the same, mirrored
     "beam": ("X", 180.0),       # on its top face
     "carrier": ("X", 180.0),    # on its top face, bosses up
 }
@@ -59,10 +60,34 @@ def solid(part):
     for s in shapes[1:]:
         out = out.fuse(s)
     for h in part.holes:
-        out = out.cut(cq.Solid.makeCylinder(
-            h.dia / 2, h.z1 - h.z0 + 2 * OVER,
-            cq.Vector(h.x, h.y, h.z0 - OVER)))
+        if h.hex:
+            # A nut pocket: a hexagon *dia* across its flats, from its floor
+            # up through the face it opens on.
+            r = h.dia / math.sqrt(3)
+            cutter = (cq.Workplane("XY", origin=(h.x, h.y, h.z0))
+                      .polygon(6, 2 * r).extrude(h.z1 - h.z0 + OVER).val())
+        else:
+            cutter = cq.Solid.makeCylinder(
+                h.dia / 2, h.z1 - h.z0 + 2 * OVER,
+                cq.Vector(h.x, h.y, h.z0 - OVER))
+        out = out.cut(cutter)
     return out.clean()
+
+
+def bed_face_is_largest(shape) -> tuple[bool, float, float]:
+    """Whether the part lies on its largest flat face, as its note says.
+
+    The review caught the side frames posed the wrong way up: they lay on
+    the 460 mm2 end of the foot, with the whole wall 8.7 mm over the bed.
+    So the pose is checked, not trusted: the face at Z = 0 has to be the
+    largest planar face the solid has.
+    """
+    faces = [f for f in shape.Faces() if f.geomType() == "PLANE"]
+    largest = max(f.Area() for f in faces)
+    on_bed = sum(f.Area() for f in faces
+                 if abs(f.BoundingBox().zmax) < 1e-6
+                 and abs(f.BoundingBox().zmin) < 1e-6)
+    return on_bed >= largest - 1e-6, on_bed, largest
 
 
 def posed(part, shape):
@@ -92,6 +117,11 @@ def main() -> None:
     for part in H.ASSEMBLY:
         path = OUT / f"tt-camera-holder-{PRINT_NAME.get(part.key, part.key)}.step"
         shape = posed(part, solids[part.key])
+        ok, on_bed, largest = bed_face_is_largest(shape)
+        if not ok:
+            raise SystemExit(f"{part.name} lies on {on_bed:.0f} mm2 of face "
+                             f"where its largest is {largest:.0f}: turn it "
+                             "over in PRINT_POSE")
         write(shape, path)
         bb = shape.BoundingBox()
         vol = shape.Volume() / 1000

@@ -193,7 +193,10 @@ class Box:
 
 @dataclass(frozen=True)
 class Hole:
-    """A vertical hole through a part, and what goes in it."""
+    """A vertical hole through a part, and what goes in it.
+
+    A *hex* hole is a nut pocket, *dia* across its flats.
+    """
 
     x: float
     y: float
@@ -201,10 +204,11 @@ class Hole:
     z0: float
     z1: float
     what: str = ""
+    hex: bool = False
 
     def mirrored(self) -> "Hole":
         return Hole(2 * MIRROR_X - self.x, self.y, self.dia, self.z0, self.z1,
-                    self.what)
+                    self.what, self.hex)
 
 
 @dataclass(frozen=True)
@@ -266,9 +270,12 @@ FIXINGS = tuple(sorted(
     if abs(x - min(px for px, _ in _PLATE_FIXINGS)) < 1e-9))
 
 #: Section of every member of a side frame: a post, the rail and the wall
-#: they stand in, 10 mm square.  PETG at 10 mm square over 150 mm is a
-#: portal leg that a finger pushes over by a fraction of a millimetre, and
-#: a camera weighing a few grams does not push at all.
+#: they stand in, 10 mm square.  An estimate, not a check: a 10 mm square
+#: PETG post, E about 2 GPa, is about 1.5 N/mm stiff as a 150 mm cantilever,
+#: so the four together about 6 N/mm before the feet give -- a finger's push
+#: moves the camera by a millimetre or so, and a camera weighing a few grams
+#: does not move it at all.  The weak point is the foot at the plate's edge,
+#: which the posts' bending goes through across the print layers.
 MEMBER = 10.0
 
 #: The inner face of the side frame's wall, from the plate's own edge.
@@ -290,7 +297,7 @@ FOOT_INNER = max(x for x, _ in FIXINGS) + M4_HEAD_DIA / 2 + 1.0
 #: end.  Between them is the window the side Pmods reach through.
 FRAME_Y0 = 1.0
 FRAME_Y1 = 93.0
-POST_LEN = 9.0
+POST_LEN = 8.0
 
 # --- The camera stack, lens face up to the beam ----------------------------
 
@@ -300,7 +307,12 @@ POST_LEN = 9.0
 BOSS_DIA = 5.0
 BOSS_CLEAR = 1.0
 BOSS_H = max(h for *_, h in CAMERA.back_parts) + BOSS_CLEAR
-CARRIER_T = 4.0
+CARRIER_T = 6.0
+#: The camera's M2 nuts sit in hex pockets in the carrier's top face, deep
+#: enough for the nut and the screw's end below the face the beam's pad
+#: bears on.
+M2_POCKET_AF = 4.3
+M2_POCKET_DEPTH = 3.5
 #: The carrier and the pad under the beam are this square, centred on the
 #: lens axis, with a fixing near each corner.  The corners have to be
 #: outside the camera board however it is turned, which is its lens axis's
@@ -373,7 +385,8 @@ def _side_frame() -> Part:
                         RAIL_Z1, "M3 beam fixing") for s in (-1, 1))
     return Part("side", "Side frame", boxes, holes, count=2,
                 print_note="Print on its outer face: the foot stands up "
-                           "from the bed, and nothing overhangs.")
+                           "from the bed, and nothing overhangs. Its holes "
+                           "print lying down, so ream them to size.")
 
 
 def _beam() -> Part:
@@ -445,9 +458,13 @@ def _carrier() -> Part:
                    for x, y, _ in camera_holes())
     holes = tuple(Hole(x, y, M2_CLEAR, PCB_BACK, CARRIER_Z1,
                        "M2 camera fixing") for x, y, _ in camera_holes())
+    holes += tuple(Hole(x, y, M2_POCKET_AF, CARRIER_Z1 - M2_POCKET_DEPTH,
+                        CARRIER_Z1, "M2 nut pocket", hex=True)
+                   for x, y, _ in camera_holes())
     holes += _carrier_fixings(CARRIER_Z0, CARRIER_Z1)
     return Part("carrier", "Camera carrier", boxes, holes, bosses,
-                print_note="Print on its top face, bosses up.")
+                print_note="Print on its top face, bosses up; the nut "
+                           "pockets open onto the bed.")
 
 
 def _mirror(part: Part) -> Part:
@@ -470,15 +487,19 @@ PARTS = (SIDE_LEFT, BEAM, CARRIER)
 
 #: Nut heights, ISO 4032, and the M4 washer, ISO 7089.
 NUT_H = {"M2": 1.6, "M3": 2.4, "M4": 3.2}
+#: Coarse pitches, ISO 261: a screw is long enough when two of them stand
+#: past its nut.
+PITCH = {"M2": 0.4, "M3": 0.5, "M4": 0.7}
 M4_WASHER_T = 0.8
 
 #: Screw lengths that are made, ISO 4762 and ISO 7380 alike, to 30 mm.
 LENGTHS = (4, 5, 6, 8, 10, 12, 16, 20, 25, 30)
 
 
-def screw_length(grip: float, nut: float) -> int:
-    """The shortest length made that passes *grip* and a whole nut."""
-    return next(n for n in LENGTHS if n >= grip + nut)
+def screw_length(grip: float, nut: float, pitch: float) -> int:
+    """The shortest length made that passes *grip*, a whole nut and two
+    threads past it."""
+    return next(n for n in LENGTHS if n >= grip + nut + 2 * pitch)
 
 
 #: What each screw passes through, as (thread, grip, washer).
@@ -486,13 +507,14 @@ GRIPS = {
     "plate": ("M4", FOOT_T + PLATE_T, M4_WASHER_T),
     "beam": ("M3", BEAM_T + MEMBER, 0.0),
     "carrier": ("M3", BEAM_T + CARRIER_T, 0.0),
-    "camera": ("M2", CAMERA.thickness + BOSS_H + CARRIER_T, 0.0),
+    "camera": ("M2", CAMERA.thickness + BOSS_H + CARRIER_T - M2_POCKET_DEPTH,
+               0.0),
 }
 
 
 def _screw(key: str) -> int:
     thread, grip, washer = GRIPS[key]
-    return screw_length(grip + washer, NUT_H[thread])
+    return screw_length(grip + washer, NUT_H[thread], PITCH[thread])
 
 
 #: What the holder is bolted together with.
