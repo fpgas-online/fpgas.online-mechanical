@@ -61,6 +61,7 @@ FOCAL_LENGTH_TOL = 0.01
 
 #: Raspberry Pi: "F2.9".
 FOCAL_RATIO = "F2.9"
+F_NUMBER = 2.9
 
 #: Width and height of the active array, and its aspect ratio.  DERIVED:
 #: 2592 x 0.0014 = 3.6288 and 1944 x 0.0014 = 2.7216, so 4:3 exactly.
@@ -117,10 +118,9 @@ RPI_DOC = Source(
     label="Raspberry Pi camera documentation",
     ref="https://web.archive.org/web/20241230011811/"
         "https://www.raspberrypi.com/documentation/accessories/camera.html",
-    note='Camera Module 1 column: the "OmniVision OV5647", its "2592 x 1944 '
-         'pixels" at "1.4 um x 1.4 um", "3.76 x 2.74 mm", "3.60 mm +/- '
-         '0.01", "53.50 +/- 0.13 degrees", "41.41 +/- 0.11 degrees", focus '
-         '"Fixed", "Approx 1 m to infinity".',
+    note='Camera Module 1 column: OV5647, 2592 x 1944 at 1.4 um, image '
+         'area 3.76 x 2.74, 3.60 mm, 53.50 x 41.41 deg, "Approx 1 m to '
+         'infinity"; the close limits of the other modules.',
 )
 
 ARDUCAM_DOC = Source(
@@ -232,6 +232,38 @@ AUTOFOCUS = Lens(
     sources=(ARDUCAM_DOC, ARDUCAM_AF),
 )
 
+#: The figure the stock lens is sold under, which is its DIAGONAL and which no
+#: vendor prints: see DIAGONAL_FROM_IMAGE_AREA.  Kept as a number only so the
+#: sheets can show what goes wrong if it is used as if it were the angle
+#: across the picture, which is the mistake the name invites.
+NOMINAL_DIAGONAL = 65.0
+
+#: ASSUMED: where the stock fixed-focus lens is focused.  Raspberry Pi give
+#: its depth of field as "Approx 1 m to infinity".  A depth of field whose far
+#: end is infinity is what a lens focused at its hyperfocal distance H gives,
+#: and its near end is then H / 2; so H is taken as twice the published near
+#: limit.  Nobody publishes the figure itself.  It is used for one thing, an
+#: estimate of how soft a board at the heights on these sheets comes out, and
+#: that estimate is labelled as resting on it.
+FIXED_FOCUS_DISTANCE = 2 * LENS_65.min_object_distance
+
+
+def blur(z: float, focus: float = FIXED_FOCUS_DISTANCE) -> tuple[float, float]:
+    """How big a point on a subject Z away comes out, on a lens focused at *focus*.
+
+    DERIVED, thin lens: the subject images at ``v = f z / (z - f)`` behind
+    the lens and the sensor sits where *focus* images, so a point spreads to
+    a disc of the aperture ``f / N`` scaled by how far short of its own image
+    the sensor is.  Returned as (diameter on the sensor, the same disc
+    projected back onto the subject), both in millimetres.
+    """
+    f = FOCAL_LENGTH
+    v_subject = f * z / (z - f)
+    v_sensor = f * focus / (focus - f)
+    on_sensor = (f / F_NUMBER) * abs(v_subject - v_sensor) / v_subject
+    return on_sensor, on_sensor * z / v_subject
+
+
 #: The near limits Raspberry Pi publish for their own focusable modules.
 #: Different sensors -- IMX219 and IMX708, not OV5647 -- so they cannot be
 #: read as an OV5647 figure. They are here because they are the only published
@@ -242,6 +274,22 @@ RPI_NEAR_LIMITS = (
     ("Camera Module 3, IMX708, motorized", "Approx 10 cm to infinity"),
     ("Camera Module 3 Wide, IMX708, motorized", "Approx 5 cm to infinity"),
 )
+
+
+def near_limits() -> list[tuple[str, float]]:
+    """Each distinct published close limit, and its near end in millimetres.
+
+    Read out of the quote rather than typed beside it, so the figure a
+    height is compared against is the one the vendor's words give.
+    """
+    import re
+    out = []
+    for quote in dict.fromkeys(q for _, q in RPI_NEAR_LIMITS):
+        cm = re.fullmatch(r"Approx (\d+) cm to infinity", quote)
+        if not cm:
+            raise SystemExit(f"cannot read a near limit out of {quote!r}")
+        out.append((quote, float(cm.group(1)) * 10))
+    return out
 
 # ---------------------------------------------------------------------------
 # Framing
@@ -439,6 +487,49 @@ class Placement:
         return (self.covers_x - self.frame.width,
                 self.covers_y - self.frame.height)
 
+    @property
+    def angle_x(self) -> float:
+        """The declared full angle that lies along the subject's X axis.
+
+        H if the frame's long side is along X, V if the camera is turned.
+        The front elevation shows this one and the end elevation the other.
+        """
+        return self.lens.fov_h if self.frame.long_axis == "X" \
+            else self.lens.fov_v
+
+    @property
+    def angle_y(self) -> float:
+        """The declared full angle that lies along the subject's Y axis."""
+        return self.lens.fov_v if self.frame.long_axis == "X" \
+            else self.lens.fov_h
+
+    @property
+    def naive_z(self) -> float:
+        """The height the lens's DIAGONAL figure gives across the long side.
+
+        What a reader who takes "65 degrees" for the angle across the picture
+        would set.  It is wrong, and :attr:`naive_shortfall` is by how much.
+        """
+        long_side = max(self.frame.width, self.frame.height)
+        return long_side / 2 / math.tan(math.radians(NOMINAL_DIAGONAL / 2))
+
+    @property
+    def naive_shortfall(self) -> float:
+        """What a stand at :attr:`naive_z` loses off EACH end of the long side."""
+        long_side = max(self.frame.width, self.frame.height)
+        covers = 2 * self.naive_z * math.tan(math.radians(self.lens.fov_h / 2))
+        return (long_side - covers) / 2
+
+    @property
+    def aim_tilt(self) -> float:
+        """How far off vertical the camera may lean, in degrees, and still
+        hold the target: the margin, seen from Z.
+
+        A lateral error of the whole margin, or a tilt of this much, uses it
+        up; the two together use it up sooner.
+        """
+        return math.degrees(math.atan(FRAME_MARGIN / self.z))
+
     def headroom(self, box: tuple[float, float, float, float]) -> float:
         """How far above the frame plane *box* may rise and stay in shot.
 
@@ -523,17 +614,74 @@ def _union(boxes) -> tuple[float, float, float, float]:
     return min(xs), min(ys), max(xs), max(ys)
 
 
+def _envelope(spec: BoardSpec, dx: float = 0.0, dy: float = 0.0):
+    """A board's assembled plan envelope, moved by (dx, dy).
+
+    The outline together with every connector and Pmod body that overhangs
+    it: what "the whole board" means to a camera, which sees the Pmod bodies
+    hanging off the front edge as much as it sees the board.
+    """
+    bx = [(0.0, 0.0, spec.outline.width, spec.outline.height)]
+    bx += [(f.x0, f.y0, f.x1, f.y1) for f in spec.features]
+    bx += [(p.body_x0, p.body_y0, p.body_x1, p.body_y1) for p in spec.pmods
+           if p.body_x1 > p.body_x0]
+    x0, y0, x1, y1 = _union(bx)
+    return x0 + dx, y0 + dy, x1 + dx, y1 + dy
+
+
+def plate_board_plane() -> tuple[float, float]:
+    """How far above the plate face a demo board's top face is: (low, high).
+
+    The standoff the plate specifies plus the board's own thickness, which
+    each revision's board file gives and which is not the same on all of
+    them.  Z is set from the HIGHER, because a camera set from the higher
+    plane covers the lower one by more than its frame.
+    """
+    from tinytapeout.boards import BOARDS as TT
+    from tinytapeout.mounting_plate.plate import PLACEMENTS, STANDOFF_HEIGHT
+    thicks = [TT[rev].outline.thickness for pl in PLACEMENTS.values()
+              for rev in pl["revisions"]]
+    if any(t is None for t in thicks):
+        raise SystemExit("a demo board revision has no thickness in "
+                         "tinytapeout/boards.py, so the plane its top face "
+                         "is in cannot be placed above the plate")
+    return STANDOFF_HEIGHT + min(thicks), STANDOFF_HEIGHT + max(thicks)
+
+
+def plate_standoff() -> float:
+    """What a demo board stands on above the plate: the plate's own figure."""
+    from tinytapeout.mounting_plate.plate import STANDOFF_HEIGHT
+    return STANDOFF_HEIGHT
+
+
+def plate_boards_union() -> tuple[float, float, float, float]:
+    """Every revision's board OUTLINE on the plate, as one box.
+
+    Not the envelope, which adds the connectors that hang off the outline:
+    this is the board itself, which the elevations draw as a slab.
+    """
+    from tinytapeout.boards import BOARDS as TT
+    from tinytapeout.mounting_plate.plate import PLACEMENTS
+    return _union([(pl["dx"], pl["dy"],
+                    pl["dx"] + TT[rev].outline.width,
+                    pl["dy"] + TT[rev].outline.height)
+                   for pl in PLACEMENTS.values() for rev in pl["revisions"]])
+
+
 def _plate_subject() -> Subject:
-    """The Tiny Tapeout generic mounting plate, with every revision's LEDs.
+    """The Tiny Tapeout generic mounting plate, with every revision on it.
 
     The plate is the subject rather than any one demo board, because the plate
     is what the camera rig is built against and the board under it changes.
-    What is drawn in red is therefore not one board's indicators but every
-    place an indicator lands on any revision, in plate coordinates -- which is
-    the honest target for a rig that has to work whatever is bolted on.
+    So the first frame is not one board but every board: the union of every
+    revision's assembled envelope, in plate coordinates, which is the honest
+    target for a camera fixed over a plate that any of them may be bolted
+    to.  What is drawn in red is likewise every place an indicator lands on
+    any revision.
     """
     from tinytapeout.boards import BOARDS as TT
-    from tinytapeout.mounting_plate.plate import PLACEMENTS, PLATE
+    from tinytapeout.mounting_plate.plate import (PLACEMENTS, PLATE,
+                                                  STANDOFF_HEIGHT)
 
     seen: dict[tuple, str] = {}
     boxes = []
@@ -558,23 +706,15 @@ def _plate_subject() -> Subject:
                 designator=f.designator)
         for name, f, box in boxes)
     lx0, ly0, lx1, ly1 = _union([(f.x0, f.y0, f.x1, f.y1) for f in features])
-    # Every revision's board outline in plate coordinates.  Not a target --
-    # nobody frames the board edge -- but it is what stands above the plate
-    # face frame A's height is set from, so it is what the headroom note is
-    # about.
-    boards = _union([(pl["dx"], pl["dy"],
-                      pl["dx"] + TT[pl["revision"]].outline.width,
-                      pl["dy"] + TT[pl["revision"]].outline.height)
-                     for pl in PLACEMENTS.values()])
-    # The thickness every revision's own board file gives, as a range: the
-    # standoff height is the builder's and is written down nowhere here, so
-    # this is the only part of the plate-to-board offset this repository
-    # knows.
-    thicks = sorted({TT[rev].outline.thickness
-                     for pl in PLACEMENTS.values() for rev in pl["revisions"]
-                     if TT[rev].outline.thickness})
-    thick = (f"{thicks[0]:.2f} mm" if len(thicks) == 1
-             else f"{thicks[0]:.2f} to {thicks[-1]:.2f} mm")
+    # Every revision's envelope in plate coordinates, and their union.
+    ex0, ey0, ex1, ey1 = _union([_envelope(TT[rev], pl["dx"], pl["dy"])
+                                 for pl in PLACEMENTS.values()
+                                 for rev in pl["revisions"]])
+    lo, hi = plate_board_plane()
+    plane = "the DEMO BOARD's top face, not the plate's"
+    plane_note = (f"{STANDOFF_HEIGHT:g} mm standoffs and a {lo - STANDOFF_HEIGHT:.2f}"
+                  f" to {hi - STANDOFF_HEIGHT:.2f} mm board put it {lo:.2f} to "
+                  f"{hi:.2f} above the plate face; Z is from the higher")
     o = PLATE.outline
     return Subject(
         key="tt-mounting-plate",
@@ -583,32 +723,35 @@ def _plate_subject() -> Subject:
         spec=replace(PLATE, features=features),
         subject_field="TT Mounting Plate",
         targets=(
-            Target("plate", "Whole plate", 0.0, 0.0, o.width, o.height,
-                   plane_name="the plate's own top face",
-                   plane_above_subject=0.0),
+            Target("boards", "Every board, any revision", ex0, ey0, ex1, ey1,
+                   note="The union of every revision's assembled envelope -- "
+                        "outline, connectors and the Pmod bodies over the "
+                        "front edge -- in plate coordinates. No one board "
+                        "needs all of it; a camera fixed over the plate has "
+                        "to serve every one.",
+                   plane_name=plane, plane_above_subject=hi,
+                   plane_note=plane_note),
             Target("leds", "Every LED and 7-seg", lx0, ly0, lx1, ly1,
-                   plane_name="the DEMO BOARD's top face, not the plate's",
-                   plane_above_subject=None,
-                   plane_note="the standoff height plus the board "
-                              f"thickness, {thick}, above the plate. The "
-                              "standoff height is the builder's and is "
-                              "specified nowhere here, so measure the "
-                              "stack"),
+                   plane_name=plane, plane_above_subject=hi,
+                   plane_note=plane_note),
         ),
-        standing=(("The demo board itself, any revision", boards),),
+        standing=(("A part standing on a board, anywhere in its envelope",
+                   (ex0, ey0, ex1, ey1)),),
         sources=(
             Source(label="Plate geometry",
                    ref="tinytapeout/mounting_plate/plate.py",
-                   note=f"Outline and placements; see {PLATE_SHEET}."),
-            Source(label="Indicator positions", ref="tinytapeout/boards.py",
-                   note="LED and 7-segment footprints, in plate "
-                        "coordinates."),
+                   note=f"Outline, placements and standoff; see "
+                        f"{PLATE_SHEET}."),
+            Source(label="Board and indicator positions",
+                   ref="tinytapeout/boards.py",
+                   note="Outlines, connectors, Pmod bodies, LEDs and "
+                        "7-segment displays, in plate coordinates."),
         ),
         tolerance="plate +/-0.20, LEDs +/-0.10, Z DERIVED",
         notes=(
             "Frame B is the union of every LED and 7-segment over all five "
-            "revision families; no one revision needs all of it. They are "
-            f"not clustered -- {lx1 - lx0:.2f} x {ly1 - ly0:.2f} of a "
+            "revision families. They are not clustered -- "
+            f"{lx1 - lx0:.2f} x {ly1 - ly0:.2f} of a "
             f"{o.width:.0f} x {o.height:.0f} plate -- so frame B buys little "
             "over frame A.",
         ),
@@ -617,10 +760,7 @@ def _plate_subject() -> Subject:
 
 def _arty_targets(spec: BoardSpec) -> dict[str, Target]:
     leds = [f for f in spec.features if f.kind == "led"]
-    bx = [(0.0, 0.0, spec.outline.width, spec.outline.height)]
-    bx += [(f.x0, f.y0, f.x1, f.y1) for f in spec.features]
-    bx += [(p.body_x0, p.body_y0, p.body_x1, p.body_y1) for p in spec.pmods]
-    wx0, wy0, wx1, wy1 = _union(bx)
+    wx0, wy0, wx1, wy1 = _envelope(spec)
     lx0, ly0, lx1, ly1 = _union([(f.x0, f.y0, f.x1, f.y1) for f in leds])
     return {
         "board": Target(
