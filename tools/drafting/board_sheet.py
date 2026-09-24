@@ -1072,8 +1072,8 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
         # worse than a line of prose.
         notes.append(
             "MATERIAL gives the thickness the source states, "
-            f"{o.thickness:.3f} mm, which is within 0.05 mm of no standard "
-            "finished thickness.")
+            f"{o.thickness:.3f} mm, not rounded to a standard finished "
+            "thickness.")
     fitted = [f for f in spec.features if is_fitted(f)]
     if spec.envelope_note:
         # A board whose envelope the computation below gets badly wrong states
