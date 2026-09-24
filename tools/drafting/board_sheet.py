@@ -79,6 +79,9 @@ VIEW_MARGIN_RIGHT_MIN = 24.0
 #: half clear on each side, which is where a drafter would have put it.
 OVERALL_GAP = 12.0
 
+#: The datum marker's diameter, at the board's lower left corner.
+DATUM_SIZE = 4.0
+
 BALLOON_R = 3.2
 #: Clear paper between two balloons.  A candidate is tested as a disc two
 #: millimetres larger than the balloon, which is the right clearance from a
@@ -787,7 +790,8 @@ def reserve_radius_callout(sheet: Sheet, view: View, spec: BoardSpec,
 def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
                                board: Rect, obstacles: "Obstacles",
                                edge_only: "Obstacles",
-                               chain_edge: str = "bottom") -> None:
+                               chain_edge: str = "bottom",
+                               height_edge: str = "right") -> None:
     """Hold the board outline and the two overall dimensions.
 
     The board outline first.  A balloon straddling it breaks the one line on
@@ -802,6 +806,10 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
     it is position only.  Reserving the whole band against leaders as well
     boxed the balloons into the board's interior, because a leader from a part
     near one of those two edges had to cross a band to reach any space at all.
+
+    *height_edge* says which vertical edge the overall height goes up.  The
+    right, on every sheet with an ordinate chain, because the chain has the
+    left; a sheet with no chain may want the right for something else.
     """
     o = spec.outline
     for edge in ((0, 0, o.width, 0), (o.width, 0, o.width, o.height),
@@ -822,14 +830,30 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
                                pad=1.2, weight=HARD)
         else:
             mid = (board.y + board.y1) / 2
-            lo, hi = board.x1 + OVERALL_GAP - band, board.x1 + OVERALL_GAP + 1.0
+            line_x = _height_line(board, height_edge)
+            lo, hi = line_x - band, line_x + 1.0
             edge_only.add_rect(lo, board.y, hi, board.y1, pad=1.2, weight=HARD)
             obstacles.add_rect(lo, mid - half, hi, mid + half,
                                pad=1.2, weight=HARD)
 
 
+def _height_line(board: Rect, height_edge: str) -> float:
+    """Where the overall height's dimension line runs.
+
+    Its value is written on the left of the line either way, which is what
+    ``dims.linear`` does with a vertical dimension, so the band reserved for
+    it runs from the value to just past the line whichever edge it is on.
+    """
+    if height_edge == "right":
+        return board.x1 + OVERALL_GAP
+    if height_edge == "left":
+        return board.x - OVERALL_GAP
+    raise ValueError(f"height_edge is 'left' or 'right', not {height_edge!r}")
+
+
 def draw_outline_frame(sheet: Sheet, view: View, spec: BoardSpec,
-                       board: Rect, chain_edge: str = "bottom") -> None:
+                       board: Rect, chain_edge: str = "bottom",
+                       height_edge: str = "right") -> None:
     """Draw what the two ``reserve_`` functions above held space for.
 
     The overall dimensions go on the edges the ordinate chains do not use:
@@ -854,9 +878,16 @@ def draw_outline_frame(sheet: Sheet, view: View, spec: BoardSpec,
     edge_y, offset = overall_width_line(board, chain_edge)
     dims.linear(c, (board.x, edge_y), (board.x1, edge_y), offset,
                 horizontal=True, value=o.width)
-    dims.linear(c, (board.x1, board.y), (board.x1, board.y1), OVERALL_GAP,
-                horizontal=False, value=o.height)
-    dims.datum_marker(c, board.x, board.y, label="")
+    edge_x = board.x1 if height_edge == "right" else board.x
+    # On the left the height's lower extension line leaves the corner the
+    # datum marker sits on, so both start clear of the marker rather than
+    # running into it.
+    ext_start = (None if height_edge == "right"
+                 else board.x - DATUM_SIZE / 2 - style.EXT_GAP)
+    dims.linear(c, (edge_x, board.y), (edge_x, board.y1),
+                _height_line(board, height_edge) - edge_x,
+                horizontal=False, value=o.height, ext_start=ext_start)
+    dims.datum_marker(c, board.x, board.y, size=DATUM_SIZE, label="")
     if o.corner_radius:
         r = o.corner_radius
         tip = view.pt(o.width - r * 0.3, o.height - r * 0.3)
