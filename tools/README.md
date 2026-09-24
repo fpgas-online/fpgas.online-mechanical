@@ -28,7 +28,7 @@ Imported, not run.
 | | |
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's board mechanical drawings into `tmp/` |
-| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/`, what stands in for a drawing of the Camera Module 1, and the vendor pages the camera position sheets quote their optics from |
+| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/`, what stands in for a drawing of the Camera Module 1, and every vendor page and datasheet the lens and camera position sheets quote their optics from, pinned Internet Archive captures where there are any |
 | `fetch_fpga.sh` | Clones the repositories and downloads the drawings and models the FPGA boards are read from into `tmp/`; [`fpga/README.md`](../fpga/README.md) says which board is read from what |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
@@ -58,10 +58,11 @@ with its family, and not every one of those has caught something yet.
   fastener clearance check. It has caught a real defect: a merge rule that
   produced a plate whose holes the fasteners did not fit.
 - [`tinytapeout/camera_holder/verify.py`](../tinytapeout/camera_holder/README.md)
-  proves the camera holder puts the lens where the camera position sheet
-  says it has to be, that every revision's whole board is then in the
-  picture with none of it hidden, that the holder touches no board,
-  standoff or cable, and that every fastener fits.  Newer than anything it
+  proves, for the holder built for each lens, that it puts the lens where
+  the camera position sheet says it has to be, that every revision's whole
+  board is then in the picture with none of it hidden, that the holder
+  touches no board, standoff or cable, and that every fastener fits; and
+  that the holders share their beam and carrier.  Newer than anything it
   could have caught.
 - [`raspberry_pi_camera/verify_optics.py`](../raspberry_pi_camera/README.md)
   has not caught one yet -- it is newer than the sheets it checks. It proves
@@ -69,15 +70,19 @@ with its family, and not every one of those has caught something yet.
   vendor page it is credited to; that the pinhole model reproduces Raspberry
   Pi's own declared field of view from their own focal length and pixel
   count, and does *not* reproduce it from the sensor image area printed
-  beside it; that each lens's declared pair agrees or disagrees with the
-  sensor's 4:3 as the sheets say it does; that every frame is the smallest
-  4:3 rectangle holding its target plus the stated margin, and that both
-  declared angles reach it at the height printed; that a target whose plane
-  is not the subject's own top face says so; that the focus verdict each
-  sheet prints is the one the arithmetic gives; and that what the elevations
-  draw is right -- the angle each labels lies along its axis, the camera is
-  turned the way that needs it lower, and the figures the notes derive come
-  out the same by another route.
+  beside it; that each lens's figures agree or disagree with the sensor's 4:3
+  under its projection as the sheets say they do, and that the 120 degree
+  lens's pair is the split of its declared diagonal between the rectilinear
+  and equisolid bounds; that the frame margin absorbs every other pair the
+  evidence allows, and the wide lens's barrel distortion puts the frame's
+  corners inside the picture; that every frame is the smallest 4:3 rectangle
+  holding its target plus the stated margin, and that both angles reach it
+  at the height printed; that a target whose plane is not the subject's own
+  top face says so; that every hyperfocal distance, depth of field and focus
+  verdict is the one the arithmetic gives; and that what the elevations draw
+  is right -- the angle each labels lies along its axis, the camera is turned
+  the way that needs it lower, and the figures the notes derive come out the
+  same by another route.
 
 GitHub Actions runs `make check` on every push to `main` and on every pull
 request: [`.github/workflows/check.yml`](../.github/workflows/check.yml). The

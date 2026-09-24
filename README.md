@@ -19,9 +19,9 @@ it, so a new board is a new directory and does not disturb the others.
 |-----------|------------------------------|
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
-| [`tinytapeout/camera_holder/`](tinytapeout/camera_holder/README.md) | `TT-MP-CAMERA` -- A printed stand on the plate that holds a Camera Module v1.3 over whichever board is on it, with STEP solids and a DXF |
+| [`tinytapeout/camera_holder/`](tinytapeout/camera_holder/README.md) | `TT-MP-CAM65`, `TT-MP-CAM120` -- A printed stand on the plate that holds a Camera Module v1.3 over whichever board is on it, one per lens, with STEP solids and a DXF |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, each with a Digilent Pmod HAT Adapter overlaid |
-| [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; then where to put an OV5647 camera over a board to frame it: how high, in two elevations with the 65 degree lens's field of view drawn, and where, with a 120 degree lens's heights beside it |
+| [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; the OV5647's stock, autofocus and 120 degree lenses, every figure declared and derived, and their focus; then where to put an OV5647 camera over a board to frame it: how high, in two elevations drawing both lenses' fields of view, whether it is in focus there, and where |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Parts that are none of the boards above but turn up in the same assemblies, such as Pi-to-Pmod adapters and PoE splitters, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
@@ -65,13 +65,14 @@ are, and only the name is cut:
   left of these stems once `TT-MP` has said `tt-generic-mounting-plate` is the
   sheet's title (`chassis-drill-template`), which the sheet already carries in
   full, so that one is a table as well, `PLATE_NAMES`.
-- a camera sheet is named for its module, `RPICAM-3`, and those that put a
-  camera over a subject are OVER and one word for the subject,
-  `RPICAM-OVER-ARTY`: a table, `RPICAM_NAMES`, since the stem says the
-  subject in full.
-- the camera holder, a made part filed in a directory of its own, takes the
-  plate's prefix, since it bolts through the plate's own fixings, and one
-  word from `HOLDER_NAMES`: `TT-MP-CAMERA`.
+- a camera sheet is named for its module, `RPICAM-3`, the lens sheet
+  `RPICAM-LENS`, and those that put a camera over a subject are OVER and
+  one word for the subject, `RPICAM-OVER-ARTY`: a table, `RPICAM_NAMES`,
+  since the stem says the subject in full.
+- the camera holders, a made part filed in a directory of their own, take
+  the plate's prefix, since they bolt through the plate's own fixings, and
+  CAM and the lens's angle from `HOLDER_NAMES`: `TT-MP-CAM65` and
+  `TT-MP-CAM120`.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same

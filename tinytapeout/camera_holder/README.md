@@ -4,16 +4,17 @@ A printed stand that bolts onto the [generic mounting
 plate](../mounting_plate/README.md) and holds a Raspberry Pi Camera Module
 v1.3, lens down, over whichever Tiny Tapeout demo board is on the plate --
 where [`RPICAM-OVER-PLATE`](../../raspberry_pi_camera/README.md) says the
-camera has to be for the stock 65 degree lens to take in the whole board, of
-every revision.
+camera has to be for its lens to take in the whole board, of every revision.
+Two of them, one per lens: `TT-MP-CAM65` for the stock 65 degree lens, and
+`TT-MP-CAM120`, about half as tall, for the 120 degree fisheye.
 
 | | |
 |---|---|
-| `holder.py` | **Hand-written, derived.** The holder as boxes and holes, worked out at import from the optics, the plate and the camera |
-| `verify.py` | Proves the camera is where it has to be, every board is in the picture and none of it is hidden, nothing touches a board, a standoff or a cable, and every fastener fits |
-| `export_step.py` | Writes the assembly as a STEP, and each part as a STEP lying the way it prints |
+| `holder.py` | **Hand-written, derived.** The holder as boxes and holes, worked out at import from the optics, the plate and the camera, once per lens |
+| `verify.py` | Proves, for each holder, the camera is where it has to be, every board is in the picture and none of it is hidden, nothing touches a board, a standoff or a cable, and every fastener fits; and that the two share their beam and carrier |
+| `export_step.py` | Writes each holder's assembly as a STEP, and each part as a STEP lying the way it prints |
 | `export_dxf.py` | Writes the beam, the one flat part, as a DXF cut file |
-| `output/` | `TT-MP-CAMERA`, as SVG and PDF, the STEP files and the DXF |
+| `output/` | `TT-MP-CAM65` and `TT-MP-CAM120`, as SVG and PDF, the STEP files and the DXF |
 
 ```sh
 uv run --no-project python tinytapeout/camera_holder/verify.py
@@ -47,17 +48,18 @@ Nothing in `holder.py` is typed in that another module already knows:
 - **Where the lens goes** is `raspberry_pi_camera/optics.py`'s plate
   subject, frame A: the union of every revision's assembled envelope --
   outline, connectors, and the Pmod bodies over the front edge -- plus 5 mm
-  all round, made 4:3. Its centre is (63.38, 44.82) on the plate, and the
-  stock lens's declared 53.50 x 41.41 degrees reach it from 139.17 mm above
-  the board face. That is `RPICAM-OVER-PLATE`'s derivation; the holder only
-  adds the plate underneath it.
+  all round, made 4:3. Its centre is (63.38, 44.82) on the plate. The stock
+  lens's declared 53.50 x 41.41 degrees reach it from 139.17 mm above the
+  board face, and the wide lens's 96 x 72 from 72.40. That is
+  `RPICAM-OVER-PLATE`'s derivation; the holder only adds the plate
+  underneath it.
 - **What it stands on** is `tinytapeout/mounting_plate/plate.py`: the
   outline, the four M4 fixings along the plate's left and right edges, and
   the 8 mm standoff every board now stands on, so the highest board face is
   8 + 1.60 = 9.60 mm above the plate. The lens face therefore has to be at
-  least 148.77 mm above the plate face. It is set at **150.00**: a
-  millimetre over that for the print, rounded up to a figure a rule can
-  check.
+  least 148.77 mm above the plate face for the stock lens and 82.00 for the
+  wide one. They are set at **150.00** and **83.00**: a millimetre over for
+  the print, rounded up to a figure a rule can check.
 - **What it carries** is `raspberry_pi_camera/v1.py`, the Camera Module
   v1.3 written by hand from Gert van Loo's 2013 hand-measured sheet and
   checked against Raspberry Pi Spy's caliper measurement: its ø2.0 holes
@@ -68,6 +70,33 @@ Nothing in `holder.py` is typed in that another module already knows:
   so the lens's ±0.65 is well inside it. A board whose holes come out at the
   bottom of their tolerance will not take an M2 until they are opened with a
   2.0 drill.
+
+## Two lenses, two holders
+
+The 120 degree lens takes the same frame in from 72.40 mm where the stock
+lens needs 139.17, so its lens face goes 67 mm lower. That is a second
+holder rather than an adjustable one. A carrier that slid 67 mm up and down
+the posts would be set by eye, locked by friction, and knocked; a fixed
+height is one a rule can check and nobody can set wrong, and the notes on
+each sheet give it. And the second holder costs little: everything above the
+lens face is the same stack, so the **beam and the carrier are the same two
+parts in both**, only lower, and `verify.py` checks it box by box. Only the
+side frames differ, in how long their posts are.
+
+The wide lens sees the rig. Its picture is 20.5 mm wider than frame A across
+the plate, so the side frames show in it, outside every board, and anything
+standing on a board may rise only 6.9 mm before it leaves the picture,
+against 13.2 at 65 degrees. `verify.py` still finds every sight line from
+the lens to every board clear.
+
+**Which 120 degree camera.** The lens sold as 120 degrees on an OV5647 is
+Arducam's B006604, and it is on a 60 x 11.5 mm Pi Zero board that this
+carrier does not take. `TT-MP-CAM120` carries a Camera Module v1.3's board
+-- its holes, its lens axis, its lens face 5.20 mm off the board -- with a
+120 degree lens ASSUMED on it. A module whose lens stands further off its
+board puts the face lower by the difference, and the 1.00 mm over the least
+is all there is to take it. A carrier for the B006604 itself is in
+`TODO.md`.
 
 ## Why it is shaped like this
 
@@ -123,7 +152,9 @@ into the picture.
 about 1.5 N/mm as a 150 mm cantilever, so the four about 6 N/mm before the
 feet give. A few-gram camera does not load it; a knock moves it and the
 5 mm margin takes a millimetre or two. The weak point is where each foot
-leaves the plate's edge, loaded across its print layers.
+leaves the plate's edge, loaded across its print layers. The 120 degree
+holder's posts are 84 mm rather than 151, and a cantilever's stiffness goes
+as the cube of its length, so it is about six times as stiff.
 
 **Nothing of it is between the lens and a board.** `verify.py` walks the
 sight lines from the lens face to every revision's envelope and finds them
@@ -137,29 +168,38 @@ perimeters so the screws have wall to bite. Each lies with no overhang:
 
 | Part | Printed | As it lies |
 |---|---|---|
-| Side frame, left and right | on its outer face, the foot standing up from the bed | 166.0 x 92.0 x 18.7 mm |
-| Beam | flat, on its top face | 152.0 x 46.0 x 6.0 mm |
-| Camera carrier | on its top face, bosses up, nut pockets on the bed | 46.0 x 46.0 x 9.8 mm |
+| Side frame, left and right, 65 degree holder | on its outer face, the foot standing up from the bed | 166.0 x 92.0 x 18.7 mm |
+| Side frame, left and right, 120 degree holder | the same | 99.0 x 92.0 x 18.7 mm |
+| Beam, both holders | flat, on its top face | 152.0 x 46.0 x 6.0 mm |
+| Camera carrier, both holders | on its top face, bosses up, nut pockets on the bed | 46.0 x 46.0 x 9.8 mm |
 
 The right side frame is the left one mirrored, not turned: the foot's
 fixings are not symmetric along the frame, so each has its own file,
-`tt-camera-holder-side-left.step` and `tt-camera-holder-side-right.step`.
-`tt-camera-holder.step` is the assembly, every part where it goes over the
-plate. The beam is flat, so it can be cut from 6 mm sheet from
-`tt-camera-holder-beam.dxf` instead of printed.
+`tt-camera-holder-65-side-left.step` and `-side-right.step`, and the same
+for `-120-`. The beam and the carrier are one file each,
+`tt-camera-holder-beam.step` and `tt-camera-holder-carrier.step`, for both
+holders. `tt-camera-holder-65.step` and `tt-camera-holder-120.step` are the
+assemblies, every part where it goes over the plate. The beam is flat, so it
+can be cut from 6 mm sheet from `tt-camera-holder-beam.dxf` instead of
+printed.
 
 ## What is assumed, and what is not known
 
 - **Which way the pixel rows run.** ASSUMED, as above, and made cheap to
   correct.
-- **Focus.** The stock lens is "Approx 1 m to ∞" and the lens face is
-  140.4 mm above the board: the boards are out of focus, a point spreading to
-  about 21 pixels, 1.1 mm on the board, on the thin-lens estimate
-  `RPICAM-OVER-PLATE` explains. The holder puts the stock camera where its
-  field of view is right; it cannot make it focus there.
+- **Focus.** Both fixed lenses are "1 m to infinity". The stock lens's face
+  is 140.4 mm above the board and the wide lens's 73.4: the boards are out
+  of focus, a point spreading to about 21 pixels, 1.1 mm on the board, and
+  18 pixels, 0.8 mm, on the thin-lens estimate `RPICAM-LENS` explains. The
+  holders put each camera where its field of view is right; they cannot make
+  it focus there. Arducam's motorised OV5647, the B0176, focuses from 80 mm
+  and would, but its board is not the v1.3's and it has no holder here.
+- **The 120 degree camera** is a v1.3's board with a wide lens ASSUMED on
+  it, as above.
 - **The boards' buttons** are not in `tinytapeout/boards.py`, so nothing
   checks them. They are pressed from above, and above the boards there is
-  nothing but the beam 166 mm up.
+  nothing but the beam, 166 mm up on the 65 degree holder and 99 on the
+  120.
 - **Heights on the boards.** No board file gives a component a height, so
   `verify.py` keeps the holder out of every revision's envelope at every
   height from the board's underside to the lens.

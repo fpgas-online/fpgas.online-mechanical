@@ -10,12 +10,16 @@ the mount exists, how far above the board does it go, and over what point?
 One sheet per subject, and each sheet's name says which after `RPICAM-OVER-`:
 the Tiny Tapeout mounting plate and the Digilent Arty A7. Each leads with
 two elevations, one for each axis of the picture, drawing the subject edge
-on, a Camera Module v1.3 over it and the stock 65 degree lens's field of view
-reaching the edges of the rectangle the picture has to cover, and
-dimensioning how high the lens goes and where; a smaller plan shows the
-rectangles over the subject, and the tables give every height for both
-lenses. [`TT-MP-CAMERA`](../tinytapeout/camera_holder/README.md) is a
-holder built to the first of them.
+on and, over it, a Camera Module v1.3 with each lens -- the stock 65 degree
+one and a 120 degree fisheye -- at the height where its field of view takes
+in the rectangle the picture has to cover, dimensioning how high each goes
+and where; a smaller plan shows the rectangles over the subject, and the
+tables give every height, for the autofocus version too, and whether it is
+in focus. `RPICAM-LENS` is the lenses themselves: every field of view
+figure anyone gives, declared and derived, the focus of each, and what a
+fisheye's picture looks like on a board.
+[`TT-MP-CAM65` and `TT-MP-CAM120`](../tinytapeout/camera_holder/README.md)
+are holders built to the first of the position sheets, one per lens.
 
 | | |
 |---|---|
@@ -24,8 +28,8 @@ holder built to the first of them.
 | `v1.py` | **Hand-curated**, with per-value provenance: the Camera Module 1, the OV5647 board lettered v1.3, which Raspberry Pi never drew |
 | `measure_cm1.py` | Scales what the v1.3's hand-measured drawing draws and does not dimension, and checks the scale |
 | `verify.py` | Holds `v1.py` against its cached sources and the checks its error bars rest on |
-| `optics.py` | **Hand-written.** The OV5647's sensor, its two lenses and their focus, quoted from the vendors; the framing model; and the subjects a camera is put over |
-| `verify_optics.py` | Checks every quote in `optics.py` against the cached page, the model against Raspberry Pi's own figures, each lens's declared pair against the sensor's shape, and every frame against its target, its plane and its height |
+| `optics.py` | **Hand-written.** The OV5647's sensor; the stock, autofocus and 120 degree lenses, every figure quoted from its vendor or derived, with its focus and depth of field; the framing model; and the subjects a camera is put over |
+| `verify_optics.py` | Checks every quote in `optics.py` against the cached page, the model against Raspberry Pi's own figures, each lens's figures against the sensor's shape under its projection, that the margin absorbs what is not known about each lens, the wide lens's distortion, every frame against its target, its plane and its height, and every height against every lens's focus range |
 | `output/` | The `RPICAM-` sheets, as SVG and PDF, and `raspberry-pi-camera-sheets.pdf`, all of them bound into one document |
 
 ```sh
@@ -301,43 +305,139 @@ number.
 
 ## Where the camera goes
 
-The `RPICAM-OVER-*` sheets. No mechanical drawing carries a field of
-view, a focal length or a focus range, so none of this comes off one. Every
-figure below is quoted from the vendor that publishes it, and
-`verify_optics.py` reads the cached page back and fails if a quote is not in it.
+`RPICAM-LENS` and the `RPICAM-OVER-*` sheets. No mechanical drawing carries
+a field of view, a focal length or a focus range, so none of this comes off
+one. Every figure below is quoted from the vendor that publishes it, from a
+page `tools/fetch_raspberry_pi_camera.sh` caches -- a pinned Internet
+Archive capture wherever there is one -- and `verify_optics.py` reads the
+cached page back and fails if a quote is not in it.
 
 Verbatim quotes below keep the vendor's own characters, degree signs and all;
 everything outside them is ASCII, as the rest of this repository is.
 
-### The sensor and the two lenses
+### The lens options
 
-Raspberry Pi's camera documentation, Camera Module 1 column
-([cached snapshot](https://web.archive.org/web/20241230011811/https://www.raspberrypi.com/documentation/accessories/camera.html)):
+Three lenses on the one sensor, OmniVision's OV5647, whose datasheet gives
+`active array size: 2592 x 1944` at `pixel size: 1.4 µm x 1.4 µm`: 3.6288 x
+2.7216 mm, 4:3 exactly, 4.536 mm on the diagonal. H is the full angle across
+the picture's long side, V along its short side, D corner to corner.
+DECLARED is the vendor's figure, DERIVED is worked out here, ASSUMED is
+neither and says so.
 
-| | Quoted |
-|---|---|
-| Sensor | `OmniVision OV5647` |
-| Resolution | `2592 × 1944 pixels` |
-| Sensor image area | `3.76 × 2.74 mm` |
-| Pixel size | `1.4 µm × 1.4 µm` |
-| Focal length | `3.60 mm +/- 0.01` |
-| Horizontal field of view | `53.50 +/- 0.13 degrees` |
-| Vertical field of view | `41.41 +/- 0.11 degrees` |
-| Focus | `Fixed` |
-| Depth of field | `Approx 1 m to ∞` |
+**The stock lens, 65 degrees:** Raspberry Pi's Camera Module v1.3
+([documentation, Camera Module 1 column](https://web.archive.org/web/20241230011811/https://www.raspberrypi.com/documentation/accessories/camera.html)).
 
-Arducam's 5MP OV5647 documentation, from the product catalogue table headed
-`Field of View(H x V) Focus Type`:
+| | H | V | D | From |
+|---|--:|--:|--:|---|
+| DECLARED, Raspberry Pi | 53.50 | 41.41 | -- | `53.50 +/- 0.13 degrees`, `41.41 +/- 0.11 degrees` |
+| DECLARED, Arducam B0033, the same lens | 54 | 41 | -- | `Stock Lens 54° (H) x 41° (V) Fixed Focus` |
+| DERIVED, 3.60 mm on the active array, rectilinear | 53.50 | 41.41 | 64.42 | |
+| **Used** | **53.50** | **41.41** | 64.42 | |
 
-| SKU | Quoted |
-|---|---|
-| B0033, the standard module | `Stock Lens 54° (H) x 41° (V) Fixed Focus` |
-| B006604, a wide one | `120°(H) x 90°(V)`, on an `M6 Lens`, fixed focus |
-| B0176, the autofocus one | `54°(H)x44° (V) Auto Focus` |
+| Focal length | F number | Focus | Range | Hyperfocal, near limit (DERIVED, 2 px) |
+|---|---|---|---|---|
+| `3.60 mm +/- 0.01` | `F2.9` | `Fixed` | `Approx 1 m to ∞` | 1.60 m, 0.80 m; 3.20 m, 1.60 m at 1 px |
 
-Neither vendor says **how** the field of view is measured -- to which
-rectangle, at what object distance, with or without distortion. That is not
-left as a guess, because Raspberry Pi publish enough to settle it.
+**The autofocus version:** Arducam's B0176, an OV5647 with a voice-coil lens
+-- "Generally, you can understand it the same as autofocus" -- and the only
+motorised-focus version of this camera anyone sells
+([UCTRONICS, Arducam's own store](https://web.archive.org/web/20251209063424/https://www.uctronics.com/arducam-auto-focus-camera-module-5mp-for-raspberry-pi.html);
+its predecessor, the [B0121](https://web.archive.org/web/20241103134041/https://www.arducam.com/product/5mp-ov5647-motorized-focus-camera-sensor-raspberry-pi/)).
+
+| | H | V | D | From |
+|---|--:|--:|--:|---|
+| DECLARED, B0176 | 54 | 44 | -- | `Field of View(FOV) 54°(H), 44°(V)` |
+| DECLARED, B0121 | 54 | 41 | -- | `Angle of View: 54 x 41 degrees` |
+| DERIVED, 3.67 mm from the 35 mm equivalent, rectilinear | 52.62 | 40.70 | 63.44 | |
+| **Used** | **54** | **41** | | |
+
+| Focal length | F number | Focus | Range | Hyperfocal, near limit (DERIVED, 2 px) |
+|---|---|---|---|---|
+| 3.67 mm, DERIVED from `Full-frame SLR lens equivalent 35mm` over the 43.27 mm full-frame diagonal | not published; F2.9, the stock lens's, ASSUMED | `Motorized Focus` | `80mm to infinity`; the B0121 `4 cm to infinity` | 1.66 m, 0.83 m |
+
+54 across a 4:3 rectilinear picture gives 41.83 down, so neither declared
+vertical is exact; the heights take the lower, 41, so that the picture is no
+smaller than assumed on either axis. The B0121's "2.0 x 1.33 m at 2 m" is
+3:2, which this sensor cannot give, and is not used.
+
+**The wide lens, 120 degrees:** Arducam's B006604
+([product page](https://web.archive.org/web/20250530094438/https://www.arducam.com/b006604-arducam-for-raspberry-pi-zero-camera-module-wide-angle-120-1-4-inch-5mp-ov5647-spy-camera-with-flex-cable-for-pi-zero-and-pi-compute-module.html)),
+the OV5647 sold as 120 degrees: `angle of view: 120° diagonal`, `Focus
+Distance 1 m to infinity`, `Focus Type Fixed`, on a `60mm × 11.5mm × 5.5mm`
+Pi Zero board.
+
+| | H | V | D | From |
+|---|--:|--:|--:|---|
+| DECLARED, B006604 page | -- | -- | 120 | `angle of view: 120° diagonal` |
+| DECLARED, Arducam catalogue, B006604 | 120 | 90 | -- | `B006604 120°(H) x 90°(V)` -- **rejected** |
+| DECLARED, Arducam catalogue, B006604N | 96 | 72 | -- | `B006604N 96°(H) x 72°(V)`, the same camera without its IR filter |
+| DERIVED, 120 diagonal, equidistant | 96.00 | 72.00 | 120 | r = f theta |
+| DERIVED, 120 diagonal, rectilinear | 108.36 | 92.20 | 120 | the widest a lens can be |
+| DERIVED, 120 diagonal, equisolid | 94.31 | 69.83 | 120 | r = 2 f sin(theta / 2) |
+| DECLARED, [Commonlands](https://web.archive.org/web/20260817210431/https://commonlands.com/pages/image-sensors/ov5647) CIL282, 2.2 mm fisheye | 96 | 72 | 122 | from its "real distortion" on this sensor's active area |
+| DECLARED, [YXF](https://www.yxfcamera.com/products/Lenses/m6-lens-5mp-ov5647-raspberry-pi-camera-lens.html) YXF4Y001A1, 1.79 mm M6 | 92.4 | 73.9 | 119.9 | its labels shuffled: it prints 119.9 as H and 73.9 as D |
+| **Used** | **96** | **72** | 120 | |
+
+| Focal length | F number | Focus | Range | Hyperfocal, near limit (DERIVED, 2 px) |
+|---|---|---|---|---|
+| not published; 2.17 mm DERIVED from the diagonal, equidistant | not published; F2.4, YXF's for their 120 degree M6 lens for these modules, ASSUMED | `Fixed` | `Focus Distance 1 m to infinity` | 0.70 m, 0.35 m |
+
+**Waveshare's RPi Camera (G)**, the Camera Module v1 sized fisheye, is the
+other thing sold as 120 degrees: `Horizontal angle: 120 degree` on
+[The Pi Hut's listing](https://web.archive.org/web/20250810012231/https://thepihut.com/products/raspberry-pi-camera-board-fisheye-160-lens-5mp),
+`Angle of View (diagonal) : 160 degree` with `Aperture (F) : 2.35` and
+`Focal Length : 3.15mm` on
+[Waveshare's own](https://web.archive.org/web/20191211152844/https://www.waveshare.com/RPi-Camera-G.htm),
+and `Approximately 10cm to infinity` by hand on
+[its wiki](https://web.archive.org/web/20190224065515/https://www.waveshare.com/wiki/RPi_Camera_(G)).
+3.15 mm cannot put 160 degrees on this sensor: equidistant, it gives 82.5
+diagonal, and a rectilinear lens less. Its figures do not hold together, so
+it is recorded and not drawn.
+
+### The 120 is a diagonal, and the 120 x 90 cannot be right
+
+Arducam's catalogue gives the B006604 as `120°(H) x 90°(V)`, and the previous
+revision of these sheets took that at its word and found it contradicted
+itself. The product page settles it: 120 is the **diagonal**. And a
+horizontal of 120 cannot sit with a 120 diagonal under any lens at all: the
+middle of the picture's side is nearer the axis than its corner, every lens
+maps nearer to narrower, so H is always less than D.
+
+The same table's row for the same camera without its IR filter, `96°(H) x
+72°(V)`, is exactly what 120 degrees on the diagonal splits into under the
+equidistant projection, r = f theta: 120 x 3.6288 / 4.536 = 96 and 120 x
+2.7216 / 4.536 = 72. Commonlands, working a real 2.2 mm fisheye's field of
+view out on this sensor's active area from its own distortion data, get 96 x
+72 at 122. So the sheets use 96 x 72, and `verify_optics.py` checks that it
+is the split of the declared diagonal and that it lies between the
+equisolid and rectilinear splits.
+
+### Distortion, and what the model does with it
+
+A wide lens is not rectilinear, and tan() arithmetic from its focal length
+or its diagonal is wrong for it: the rectilinear split of a 120 degree
+diagonal is 108.36 x 92.20, twelve and twenty degrees wider than the lens.
+What does not depend on the lens is where a ray goes once it has left it: a
+ray A/2 off the axis meets a board Z below at Z tan(A/2), whatever the glass
+did to bend it. So the COVERAGE of a flat board is 2 Z tan(A/2) for a lens
+whose true full angle across the picture is A, fisheye or not, and every
+height here is worked that way from the angles each lens actually has.
+
+The corners are where a fisheye differs. Walked down onto the board, each
+straight side of the sensor lands as a curve bowing **outwards** --
+`RPICAM-LENS` draws it -- so a rectangle whose sides are set by H and V at
+their middles has its corners inside the picture: at 100 mm the wide lens's
+corner reaches 138.6, 103.9 against the rectangle's 111.1, 72.7.
+`verify_optics.py` walks the edge down for the equidistant and the
+equisolid projections and requires it. The price is resolution at the edge: a pixel
+at the long side's edge covers 2.23 times the board it covers on the axis.
+
+What is not known is which projection the B006604's lens really has.
+`verify_optics.py` requires the frame's 5 mm margin to absorb every
+narrower pair the evidence allows -- the equisolid 94.31 x 69.83 and YXF's 92.4 x 73.9 --
+at every height on every sheet, and it does, with at least 2.9 mm of it
+left. The same is checked of the stock lens against Arducam's 54 x 41 and
+of the autofocus lens against its derived 52.62 x 40.70.
 
 ### The model is checked, not assumed
 
@@ -351,13 +451,11 @@ DERIVED, and checked by `verify_optics.py`:
 | Horizontal, from the *image area* | 2 x atan(3.76 / 2 / 3.60) | 55.149 deg | 53.50 |
 | Vertical, from the *image area* | 2 x atan(2.74 / 2 / 3.60) | 41.669 deg | 41.41 |
 
-The declared angles come back out of the declared focal length and the
-declared pixel count, to four thousandths of a degree on both axes, under a
-plain rectilinear pinhole model measured **to the edge of the active pixel
+The stock lens's declared angles come back out of the declared focal length
+and the declared pixel count, to four thousandths of a degree on both axes,
+under a plain rectilinear model measured **to the edge of the active pixel
 array**. They do not come out of the "sensor image area" printed one row
-above in the same table, which misses by 1.65 deg across and 0.26 down. So
-the model these sheets use is the vendor's own, and the sheets can say so.
-`verify_optics.py` requires the array rows to match and the image-area rows not to.
+above in the same table, which misses by 1.65 deg across and 0.26 down.
 
 ### Where "65 degrees" comes from
 
@@ -365,43 +463,41 @@ No vendor prints it. It is the diagonal. DERIVED:
 
 | From | Diagonal | |
 |---|---|---|
-| The image area, sqrt(3.76^2 + 2.74^2) = 4.652 | 2 x atan(4.652 / 2 / 3.60) = **65.74 deg** | which is the 65 |
-| The active array, sqrt(3.6288^2 + 2.7216^2) = 4.536 | 2 x atan(4.536 / 2 / 3.60) = 64.42 deg | |
+| The active array, 4.536 mm | 2 x atan(4.536 / 2 / 3.60) = 64.42 deg | what the declared H and V give |
+| OmniVision's `image area: 3673.6 µm x 2738.4 µm`, 4.582 mm | 64.94 deg | the 65 |
+| Raspberry Pi's `3.76 × 2.74 mm`, 4.652 mm | 65.74 deg | |
 
-The sheets compute from the horizontal and vertical figures the vendors do
-print, and say in a note what the 65 is.
+OmniVision's image area is the whole 2624 x 1956 array, border pixels and
+all. Raspberry Pi's 3.76 x 2.74 reads like it with two digits swapped; that
+is a reading, not something either company says.
 
-### The 120 degree lens contradicts itself
+### Focus and depth of field
 
-DERIVED: on a 4:3 sensor a rectilinear lens has tan(V/2) = tan(H/2) x 3/4, so
-120 deg across implies **104.82 deg** down, not the 90 deg Arducam declare.
-The stock lens passes the same test to 0.01 deg (53.50 gives 41.42 against a
-declared 41.41); the wide one is out by nearly fifteen degrees, so the two
-figures cannot both be right. The sheets take the height as the greater of
-what each declared angle asks for, which is the vertical every time, and say
-by how much and on which axis the picture then runs over the rectangle drawn.
+Both fixed lenses are declared "1 m to infinity" and every height on these
+sheets is a fraction of that, so on either **every board is out of focus**.
+How far, and what a lens that focuses would do, is DERIVED:
 
-### Autofocus is a different part
+- **Circle of confusion, two pixels, 2.8 um.** Raspberry Pi's "Approx 1 m to
+  ∞" is what the stock lens gives focused at its hyperfocal distance with a
+  2.24 um circle, 1.6 pixels; two pixels is that rounded to the sensor. The
+  hyperfocal distance is f^2 / (N c) + f, and focused there everything from
+  half of it to infinity is sharp.
+- **Where a fixed lens is focused is ASSUMED:** at 2 m, twice the declared
+  near limit, as a lens focused at its hyperfocal distance would be. On a thin
+  lens, a point at the plate's 139.2 mm then spreads to 21 pixels on the
+  stock lens, 1.1 mm on the board, and at the wide lens's 72.4 mm to 19
+  pixels, 0.8 mm; set at infinity instead the stock figure is 1.2 mm, so the
+  answer does not hang on the assumption. Every demo board LED footprint is
+  1.46 x 2.96 mm.
+- **The autofocus lens** focuses down to `80mm to infinity`, the B0176's
+  figure; the B0121 said `4 cm`, and the sheets hold to the 80. Focused at
+  the plate's 140.7 mm it is sharp from 129.9 to 153.4 (F2.9 ASSUMED), which
+  a board with parts on it fits in.
+- **No motorised 120 degree OV5647 is sold.** Arducam's wide autofocus
+  OV5647, the B0370, is `155°(H) x 116°(V)`, a different lens. Waveshare's
+  RPi Camera (G) focuses by hand to about 10 cm.
 
-Arducam's B0176 is an OV5647 with a motorised lens -- "Generally, you can
-understand it the same as autofocus" -- and it is not the stock module with a
-motor bolted on: its declared field of view is `54°(H)x44° (V)` against the
-stock lens's `54° (H) x 41° (V)`, so the optics differ too. It needs a
-voice-coil device tree line and gains a close-focus autofocus range; the two
-strings Arducam's quick start shows are given there as run-together words in
-the rendered page, so the forms to type are on
-[that page](https://docs.arducam.com/Raspberry-Pi-Camera/Motorized-Focus-Camera/Quick-Start-Guide/OV5647-Motorized-Focus-Camera/)
-rather than transcribed here.
-
-What Arducam do **not** publish for it: a lens height, a focus range in
-millimetres, or a minimum object distance. So no height on any of these
-sheets is worked out from the autofocus variant. The only published close
-limits for any Raspberry Pi camera are on other sensors -- `Approx 10 cm to
-∞` for the IMX219 and the IMX708, `Approx 5 cm to ∞` for the IMX708 wide --
-and they are quoted to say what order of distance a focusable module reaches,
-not as an OV5647 figure.
-
-### The result, and the problem with it
+### The result
 
 A frame is the smallest rectangle of the sensor's own 4:3, in whichever of
 the two orientations is smaller, holding its target plus **5.00 mm on every
@@ -415,54 +511,46 @@ always the subject's own top face; the column below says which. A stand set
 h mm below the right plane covers only (Z - h) / Z of the rectangle at it, so
 the error always loses the edges.
 
-| Sheet | Frame | Rectangle, mm | Z from | 65 deg | 120 deg |
-|---|---|---|---|--:|--:|
-| `RPICAM-OVER-PLATE` | Every board, any revision | 140.27 x 105.20 | the demo board's top face | 139.2 | 52.6 |
-| `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 37.8 |
-| `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 48.5 |
-| `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 12.3 |
+| Sheet | Frame | Rectangle, mm | Z from | 65 | 65 AF | 120 |
+|---|---|---|---|--:|--:|--:|
+| `RPICAM-OVER-PLATE` | Every board, any revision | 140.27 x 105.20 | the demo board's top face | 139.2 | 140.7 | 72.4 |
+| `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 101.2 | 52.1 |
+| `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 129.7 | 66.8 |
+| `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 32.8 | 16.9 |
 
-**Every one of those heights is inside the stock lens's minimum focus
-distance.** Raspberry Pi give the Camera Module 1's focus as `Fixed` and its
-depth of field as `Approx 1 m to ∞`; the largest height here, 139.2 mm, is a
-seventh of that metre, and the smallest, 12.3 mm, is an eightieth. A stock
-Camera Module OV5647 cannot focus on any of these boards. Every sheet says so
-in its notes, and `verify_optics.py` checks the verdict against the
-arithmetic for every height that has a published limit to check against --
-which is every one at 65 deg. Arducam publish no near limit for the wide lens
-at all, so its heights are reported as unknown rather than passed or failed.
+**In focus there?** On either fixed lens, at no height here: all of them are
+inside "1 m". On the autofocus lens, at every height of 80 mm or more -- both
+plate frames and the whole Arty -- and not at the Arty's LED row, 32.8,
+which is nearer than even the B0121's 4 cm. Each sheet's table says which,
+frame by frame, and `verify_optics.py` checks every verdict against the
+arithmetic.
 
-How far out of focus is worth knowing too, and it is not hopeless. DERIVED,
-on a thin lens, ASSUMING the fixed lens is set at the 2 m hyperfocal distance
-its "1 m to ∞" implies: at the plate's 139.2 mm a point on the board spreads
-to 29.9 µm on the sensor, 21 pixels, which is about 1.1 mm on the board --
-and 1.2 mm if the lens is set at infinity instead, so the answer does not
-hang on the assumption. Every demo board LED footprint is 1.46 x 2.96 mm.
-`verify_optics.py` works it by the depth of field formula as well as by the
-thin lens and requires the two to agree.
+So a rig built to these sheets frames the board with either lens and focuses
+on it with neither fixed one: a sharp picture needs the motorised module at
+the 65 degree heights, or a lens refocused by hand.
 
-Against the only close limits anyone publishes for a Raspberry Pi camera,
-which are other sensors': the plate's 139.2 and 100.1 are both beyond
-`Approx 10 cm to ∞`, while the Arty's LEDs, at 32.4, are nearer than even
-the Camera Module 3 Wide's `Approx 5 cm to ∞`. Each sheet says which of its
-heights each limit would reach.
-
-That is the useful finding, and it is a mount decision: a rig built to these
-sheets needs an adjustable-focus or motorised OV5647 for a sharp picture;
-the stock one gives a soft one.
+The wide lens takes the same frame in from about half the height, and sees
+the rig: on the plate its picture is 20.5 mm wider than frame A, and
+anything standing on a board may rise only 6.9 mm before it leaves the
+picture, against 13.2 at 65 degrees.
 
 ### The elevations, and why the diagonal is not the angle
 
 The elevations are the primary views, because the question is a height.
 The front elevation looks along +Y with the subject's X across it; the end
 elevation, first angle, is seen from the right and drawn on the left, with Y
-across it. Each draws the declared angle that lies in its own plane from the
-lens face to the edges of frame A: 53.50 across the sensor's long side,
-41.41 along its short side, and which is which on the subject depends on
-which way the camera is turned. Z is dimensioned once, on the front
-elevation, and X and Y of the lens under each. Only the stock lens is drawn:
-the 120 degree lens's declared pair cannot both be right, so either cone
-would draw one of two figures that contradict each other.
+across it. Each draws **both lenses**, each with its own camera at its own
+height, and the angle each lies in its plane from the lens face to where the
+picture's edge meets the plane: 53.50 and 96 across the sensor's long side,
+41.41 and 72 along its short side, and which is which on the subject depends
+on which way the camera is turned. The stock lens's rays are solid and the
+wide lens's long-dashed, and the legend keys them. On the axis that set the
+height they reach frame A's edge; on the other the wide lens's picture runs
+past it, and is drawn running past it. Both heights are dimensioned on the
+front elevation, lower first, and X and Y of the lens under each. The
+autofocus version is not drawn: its angles are the stock lens's to within a
+degree, and its cone would lie on top of the stock one; its height is in the
+table.
 
 "65 degrees" is the diagonal, and using it as the angle across the picture
 is the mistake the name invites. Across the plate's frame A it gives Z
@@ -471,13 +559,15 @@ its own figure, and `verify_optics.py` checks it, together with the other
 turn of the camera: long side along Y, the plate's frame would need Z 174.3.
 
 The frame margin is what absorbs where the stand ends up: 5.00 mm of
-lateral error or, at the plate's Z, a lean of 2.1 degrees, not both.
+lateral error or, at the plate's Z, a lean of 2.1 degrees at 65 and 4.0 at
+120, not both -- and, on top, what is not known about the lenses.
 
 The camera drawn is the Camera Module v1.3, from `v1.py`: its board, its
 stepped lens stack 5.20 mm proud of it, and its FFC connector on the far
 face. That also bounds the entrance pupil: it is behind the lens face by at
-most the lens's own 5.20 mm, so a stand set from the face covers up to 3.7%
-more than frame A on the plate, and never less.
+most the lens's own 5.20 mm, so a stand set from the face covers up to 7.2%
+more than frame A on the plate at the wide lens's lower height, and never
+less.
 
 The plan is at the next standard scale down, under the end elevation. It is
 the one view that shows which way the picture lies over the subject and
@@ -498,7 +588,7 @@ the plan dimensions nothing.
   Tapeout's own printed base stands the board on; `TT-MP-PLATE` says so.
   Nothing on a board has a published height, so the sheet prints how high
   anything standing on one may rise before it leaves frame A's picture:
-  13.2 mm at 65 deg, 5.0 mm at 120 deg.
+  13.2 mm at 65 deg, 6.9 mm at 120 deg.
 
 ### Where each subject's geometry comes from
 

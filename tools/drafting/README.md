@@ -17,8 +17,9 @@ one millimetre on paper and every line weight below is a real pen width.
 | `dims.py` | Dimension primitives: linear, ordinate, leader, balloon, datum, centre mark |
 | `board_sheet.py` | The board drawing: outline, holes, features, schedules, and the balloon placer |
 | `plate_sheet.py` | The mounting plate fabrication drawing and the fitting guide |
-| `camera_sheet.py` | Camera position sheets: two elevations with the lens's field of view to the frame, and a smaller plan with the footprints a picture covers |
-| `holder_sheet.py` | The camera holder's assembly drawing: three views of parts given as boxes, each drawn as the silhouette of its boxes less what a nearer part hides |
+| `camera_sheet.py` | Camera position sheets: two elevations with each lens's camera at its height and its field of view to the picture's edge, and a smaller plan with the footprints a picture covers |
+| `lens_sheet.py` | The OV5647 lens sheet: a section and a plan of each lens's picture on a board, the fisheye's walked down from the sensor's edge, and every lens figure in tables |
+| `holder_sheet.py` | A camera holder's assembly drawing, one per lens: three views of parts given as boxes, each drawn as the silhouette of its boxes less what a nearer part hides |
 | `enclosure_sheet.py` | Three-view envelope drawings, for the PoE splitters |
 | `template_sheet.py` | A4 portrait drill templates, always 1:1 |
 
