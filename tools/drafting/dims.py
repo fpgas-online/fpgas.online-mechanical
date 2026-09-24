@@ -14,6 +14,7 @@ from dataclasses import dataclass
 
 from . import style
 from .canvas import Canvas
+from .canvas import fmt as fmt_mm
 
 
 def _fmt(value: float, places: int = 2) -> str:
@@ -237,7 +238,8 @@ def leader(c: Canvas, tip: tuple[float, float], elbow: tuple[float, float],
 
 def balloon(c: Canvas, tip: tuple[float, float], centre: tuple[float, float],
             label: str, *, radius: float = 3.2, size: float = style.T_LABEL,
-            colour: str = style.C_HIGHLIGHT, dash: str | None = None) -> None:
+            colour: str = style.C_HIGHLIGHT, dash: str | None = None,
+            leader_colour: str | None = None) -> None:
     """Numbered balloon: a circled label on a leader with a dot at the feature.
 
     *dash* draws the ring itself broken.  A sheet that superimposes several
@@ -245,21 +247,63 @@ def balloon(c: Canvas, tip: tuple[float, float], centre: tuple[float, float],
     its dot is -- the outlines lie on top of each other -- so the ring is
     drawn in the same line type as the outline it points at, which a
     monochrome print keeps and a colour alone would not.
+
+    *leader_colour* draws the leader and its dot in another colour from the
+    ring: a leader that several balloons share belongs to none of them.
     """
     tx, ty = tip
+    lc = leader_colour or colour
     bx, by = centre
     ang = math.atan2(by - ty, bx - tx)
     # A white core under the terminator: the dot is drawn in the same colour
     # as a filled feature, so on the LEDs, which are solid, it vanished and
     # the leader appeared to stop at nothing.
     c.circle(tx, ty, 1.05, fill="#ffffff", colour="#ffffff", w=0.05)
-    c.circle(tx, ty, 0.65, fill=colour, colour=colour, w=0.05)
+    c.circle(tx, ty, 0.65, fill=lc, colour=lc, w=0.05)
     c.line(tx, ty, bx - radius * math.cos(ang), by - radius * math.sin(ang),
-           w=style.W_THIN, colour=colour)
-    c.circle(bx, by, radius, fill="#ffffff", colour=colour, w=style.W_THIN,
-             dash=dash)
-    c.text(bx, by, label, size=size, colour=colour, anchor="middle",
-           baseline="middle", bold=True)
+           w=style.W_THIN, colour=lc)
+    balloon_ring(c, centre, label, radius=radius, size=size, colour=colour,
+                 dash=dash, touch=ang + math.pi)
+
+
+def balloon_ring(c: Canvas, centre: tuple[float, float], label: str, *,
+                 radius: float = 3.2, size: float = style.T_LABEL,
+                 colour: str = style.C_HIGHLIGHT,
+                 dash: str | None = None,
+                 touch: float | None = None) -> None:
+    """A balloon's ring and number, with no leader of its own.
+
+    What :func:`balloon` draws at the far end of its leader, and on its own
+    what ISO 6433 draws for the further references in a group that shares
+    one leader: each ring beside the last, the leader touching the first.
+
+    *touch* is the direction, in radians anticlockwise from three o'clock,
+    in which a leader or a neighbouring ring meets a broken ring.  The
+    pattern is then centred on a dash there, so a leader ends on a line: SVG
+    starts a circle's dashes at three o'clock, and a long-dash ring left the
+    leader stopping in a gap, which reads as a leader that does not reach
+    its balloon.  The pattern is also stretched to a whole number of
+    periods round the ring, so it closes without a short dash or a long gap
+    where it meets itself.
+    """
+    bx, by = centre
+    if dash and touch is not None:
+        marks = [float(v) for v in dash.replace(",", " ").split()]
+        around = 2 * math.pi * radius
+        stretch = around / max(1, round(around / sum(marks))) / sum(marks)
+        marks = [m * stretch for m in marks]
+        # Distance along the stroke from three o'clock, clockwise, to the
+        # point the leader touches.
+        along = radius * ((-touch) % (2 * math.pi))
+        c.circle(bx, by, radius, fill="#ffffff", colour=colour,
+                 w=style.W_THIN, dash=",".join(fmt_mm(m) for m in marks),
+                 dashoffset=marks[0] / 2 - along)
+    else:
+        c.circle(bx, by, radius, fill="#ffffff", colour=colour,
+                 w=style.W_THIN, dash=dash)
+    if label:
+        c.text(bx, by, label, size=size, colour=colour, anchor="middle",
+               baseline="middle", bold=True)
 
 
 def datum_marker(c: Canvas, x: float, y: float, *, size: float = 4.0,
