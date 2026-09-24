@@ -110,7 +110,7 @@ ABOVE_LENS = 12.0
 ARC_R = 11.0
 #: The wide lens's arc, smaller: its label goes under it, inside its own
 #: cone, where the stock lens's rays cannot reach it.
-ARC_R_WIDE = 7.0
+ARC_R_WIDE = 10.0
 
 #: A frame's colour, its legend style and its letter, by its position in the
 #: subject's list.  Two of each, because no subject has three things worth
@@ -239,19 +239,21 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     w = place(frames[0], wide)
     notes = [
         "First angle; the end elevation is seen from the right. The camera, "
-        "a Camera Module v1.3 from its own data, looks straight down, in a "
+        "a Camera Module v1.3 from its own data, drawn per lens and "
+        "fitted one at a time, looks straight down, in a "
         "mode reading the whole sensor. Z is to its entrance pupil, which "
         "nobody locates; ASSUMED behind the lens face by at most the lens's "
         f"{v1.LENS_TOP_Z:.2f} mm, so set the FACE at Z and the picture is up "
         f"to {100 * v1.LENS_TOP_Z / w.z:.1f}% larger, never smaller.",
         "A frame is the smallest rectangle of the sensor's own 4:3 holding "
         f"its target plus {optics.FRAME_MARGIN:.2f} mm all round, turned "
-        "whichever way needs the lower camera; LONG says which. The margin "
-        "absorbs where the stand ends up -- "
+        "whichever way needs the lower camera; LONG says which. One margin "
+        "absorbs both where the stand ends up -- "
         f"{optics.FRAME_MARGIN:.2f} mm of lateral error, or a lean of "
         f"{a.aim_tilt:.1f} deg at frame {FRAME_LETTERS[0]}'s {stock.short} Z "
-        f"and {w.aim_tilt:.1f} at its {wide.short} -- and what is not known "
-        "about the lenses, below.",
+        f"or {w.aim_tilt:.1f} at its {wide.short}, measured at the picture's "
+        "edge -- and what is not known about the lens, below: what one uses "
+        "the other cannot.",
     ]
 
     # Which plane each frame's height is set from.  One note, because a
@@ -288,6 +290,13 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     w_sensor, w_subject = wide.blur(w.z)
     af_z = place(frames[0], af)
     near, far = optics.dof(af_z.z, af.focal_length, af.f_number)
+    if af_z.too_close:
+        af_there = (f"frame {FRAME_LETTERS[0]}'s {af_z.z:.1f} is nearer, and "
+                    "it cannot focus there")
+    else:
+        af_there = (f"at frame {FRAME_LETTERS[0]}'s its depth of field is "
+                    f"{near:.1f} to {far:.1f} (DERIVED, F{af.f_number:g} "
+                    "ASSUMED)")
     notes.append(
         f'FOCUS. Both fixed lenses are declared "{stock.near_quote}" (Raspberry'
         f' Pi) and "{wide.near_quote}" (Arducam), and every Z here is nearer:'
@@ -298,10 +307,8 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
         f" {w_subject:.1f} mm, at {wide.short} (DERIVED, thin lens ASSUMED set"
         f" at {stock.focus_at / 1000:g} m). The autofocus {af.short}, "
         f'Arducam\'s B0176, is declared "{af.near_quote}": every Z of '
-        f"{af.near:.0f} or more is in focus once it has focused, and at frame "
-        f"{FRAME_LETTERS[0]}'s its depth of field is {near:.1f} to "
-        f"{far:.1f} (DERIVED, F{af.f_number:g} ASSUMED). No 120 deg OV5647 "
-        "with a motorised lens is sold.")
+        f"{af.near:.0f} or more is in focus once it has focused; {af_there}. "
+        "Arducam's catalogue lists no 120 deg OV5647 with a motorised lens.")
     # The wide lens: where its figures come from and what they are good to.
     alts = []
     for alt in wide.alternatives:
@@ -312,8 +319,9 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
                     f"{spare:.1f} mm")
     notes.append(
         f"The {wide.short} deg lens is a fisheye, {wide.fov_d:.0f} deg on the "
-        f"diagonal: {wide.fov_h:.0f} x {wide.fov_v:.0f} is that diagonal "
-        "split equidistantly. Its barrel distortion bows the picture's edges "
+        f"diagonal: {wide.fov_h:.0f} x {wide.fov_v:.0f} is Arducam's split "
+        "of that diagonal, equidistant, not a measurement. Its barrel "
+        "distortion bows the picture's edges "
         "outwards on the board, so the frame's corners are inside it; the "
         "margin absorbs the narrower lenses the evidence allows, "
         + "; ".join(alts) + f". See {LENS_SHEET}.")
@@ -321,8 +329,8 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     notes.append(
         f'The "{stock.key} deg" name is the stock lens\'s DIAGONAL, which '
         "no vendor prints: 2 x atan(sqrt("
-        f"{optics.DATASHEET_IMAGE_AREA[0]:.2f}^2 + "
-        f"{optics.DATASHEET_IMAGE_AREA[1]:.2f}^2) / 2 / "
+        f"{optics.DATASHEET_IMAGE_AREA[0]:.4f}^2 + "
+        f"{optics.DATASHEET_IMAGE_AREA[1]:.4f}^2) / 2 / "
         f"{optics.FOCAL_LENGTH:.2f}) = {optics.DIAGONAL_FROM_DATASHEET:.2f} deg "
         "on OmniVision's image area, "
         f"{optics.DIAGONAL_FROM_ARRAY:.2f} on the pixel array. Every Z here is "
@@ -544,7 +552,7 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
         a, m, w = place(fr, stock), place(fr, af), place(fr, wide)
         rows.append([FRAME_LETTERS[i], f"{a.z:.1f}", _in_focus(a),
                      f"{m.z:.1f}", _in_focus(m), f"{w.z:.1f}", _in_focus(w),
-                     "none sold"])
+                     "none listed"])
     title = "Z ABOVE THE FRAME PLANE, mm, AND IN FOCUS THERE?"
     block = sheet.column_block(sheet.table_height(title, len(rows)))
     sheet.table(block, title,
@@ -553,20 +561,26 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
                 ["middle", "end", "middle", "end", "middle", "end", "middle",
                  "middle"])
 
+    def flag(basis: str) -> str:
+        return basis[:4]
+
     rows = []
     for lens in (stock, af, wide):
         rows.append([
-            lens.short, lens.product.split(",")[0],
-            _deg(lens.fov_h), _deg(lens.fov_v), f"{lens.fov_d:.1f} D",
-            f"{lens.focal_length:.2f} {lens.focal_basis[0]}",
-            f"F{lens.f_number:g} {lens.f_basis[0]}",
-            f"{lens.focus}, {_fmt_near(lens)} to inf"])
+            lens.short,
+            lens.product.split(",")[0].replace("Raspberry Pi Camera Module",
+                                               "RPi Camera"),
+            _deg(lens.fov_h), _deg(lens.fov_v),
+            f"{lens.fov_d:.1f} {flag(lens.fov_d_basis)}",
+            f"{lens.focal_length:.2f} {flag(lens.focal_basis)}",
+            f"F{lens.f_number:g} {flag(lens.f_basis)}",
+            f"{lens.focus[:5]}, {_fmt_near(lens)}"])
     title = f"LENSES, deg, AS USED: SEE {LENS_SHEET}"
-    block = sheet.column_block(sheet.table_height(title, len(rows) + 1))
+    block = sheet.column_block(sheet.table_height(title, len(rows)))
     sheet.table(block, title,
-                ["", "MODULE", "H", "V", "DIAG", "f mm", "F", "FOCUS"],
-                rows + [["", "D DERIVED, A ASSUMED", "", "", "", "", "", ""]],
-                ["start", "start", "end", "end", "end", "end", "start",
+                ["", "MODULE", "H", "V", "DIAG", "f mm", "F", "FOCUS FROM"],
+                rows,
+                ["start", "start", "end", "end", "end", "end", "end",
                  "start"])
 
 
@@ -812,14 +826,15 @@ def _dimension_front(sheet: Sheet, subject: Subject, v: View,
     lane = 8.0
     for lens in order:
         z = place(subject.frames()[0], lens).z
-        dims.linear(c, right, v.pt(cu, z), lane, horizontal=False, value=z,
-                    places=1)
+        dims.linear(c, right, v.pt(cu, z), lane, horizontal=False,
+                    text=f"Z {lens.short}: {z:.1f}")
         lane += style.DIM_STEP
         if plate:
             plate_top = below[-1][1]
             dims.linear(c, v.pt(size, plate_top), v.pt(cu, z),
                         lane + (v.x(v.model_x1) - v.x(size)),
-                        horizontal=False, value=z - plate_top, places=1)
+                        horizontal=False,
+                        text=f"{lens.short}, PLATE: {z - plate_top:.1f}")
             lane += style.DIM_STEP
     # X of the lens, from the datum, under the lowest thing drawn.
     bottom = min([b for _, _, b in below] + [0.0])
