@@ -317,7 +317,7 @@ everything outside them is ASCII, as the rest of this repository is.
 
 ### The lens options
 
-Three lenses on the one sensor, OmniVision's OV5647, whose datasheet gives
+The lenses are all on the one sensor, OmniVision's OV5647, whose datasheet gives
 `active array size: 2592 x 1944` at `pixel size: 1.4 µm x 1.4 µm`: 3.6288 x
 2.7216 mm, 4:3 exactly, 4.536 mm on the diagonal. H is the full angle across
 the picture's long side, V along its short side, D corner to corner.
@@ -339,8 +339,10 @@ neither and says so.
 | `3.60 mm +/- 0.01` | `F2.9` | `Fixed` | `Approx 1 m to ∞` | 1.60 m, 0.80 m; 3.20 m, 1.60 m at 1 px |
 
 **The autofocus version:** Arducam's B0176, an OV5647 with a voice-coil lens
--- "Generally, you can understand it the same as autofocus" -- and the only
-motorised-focus version of this camera anyone sells
+-- "Generally, you can understand it the same as autofocus" -- in the same
+24 x 25 mm board size as the stock module, with a taller lens; Arducam's
+catalogue also lists wide and pan-tilt-zoom motorised OV5647s, with other
+lenses
 ([UCTRONICS, Arducam's own store](https://web.archive.org/web/20251209063424/https://www.uctronics.com/arducam-auto-focus-camera-module-5mp-for-raspberry-pi.html);
 its predecessor, the [B0121](https://web.archive.org/web/20241103134041/https://www.arducam.com/product/5mp-ov5647-motorized-focus-camera-sensor-raspberry-pi/)).
 
@@ -363,8 +365,11 @@ smaller than assumed on either axis. The B0121's "2.0 x 1.33 m at 2 m" is
 **The wide lens, 120 degrees:** Arducam's B006604
 ([product page](https://web.archive.org/web/20250530094438/https://www.arducam.com/b006604-arducam-for-raspberry-pi-zero-camera-module-wide-angle-120-1-4-inch-5mp-ov5647-spy-camera-with-flex-cable-for-pi-zero-and-pi-compute-module.html)),
 the OV5647 sold as 120 degrees: `angle of view: 120° diagonal`, `Focus
-Distance 1 m to infinity`, `Focus Type Fixed`, on a `60mm × 11.5mm × 5.5mm`
-Pi Zero board.
+Distance 1 m to infinity`, `Focus Type Fixed`: a spy camera for the Pi
+Zero, `60mm × 11.5mm × 5.5mm` on its flex. Its "1 m to infinity" is not what
+its own optics give -- at the focal length and F number below its hyperfocal
+distance is 0.70 m -- and reads like the stock lens's specification copied;
+the sheets hold to it, since it changes no verdict.
 
 | | H | V | D | From |
 |---|--:|--:|--:|---|
@@ -375,7 +380,8 @@ Pi Zero board.
 | DERIVED, 120 diagonal, rectilinear | 108.36 | 92.20 | 120 | the widest a lens can be |
 | DERIVED, 120 diagonal, equisolid | 94.31 | 69.83 | 120 | r = 2 f sin(theta / 2) |
 | DECLARED, [Commonlands](https://web.archive.org/web/20260817210431/https://commonlands.com/pages/image-sensors/ov5647) CIL282, 2.2 mm fisheye | 96 | 72 | 122 | from its "real distortion" on this sensor's active area |
-| DECLARED, [YXF](https://www.yxfcamera.com/products/Lenses/m6-lens-5mp-ov5647-raspberry-pi-camera-lens.html) YXF4Y001A1, 1.79 mm M6 | 92.4 | 73.9 | 119.9 | its labels shuffled: it prints 119.9 as H and 73.9 as D |
+| DERIVED, Commonlands' CIL282 scaled to a 120 diagonal | 94.43 | 70.82 | 120 | |
+| DECLARED but relabelled, [YXF](https://www.yxfcamera.com/products/Lenses/m6-lens-5mp-ov5647-raspberry-pi-camera-lens.html) YXF4Y001A1, 1.79 mm M6 | 92.4 | 73.9 | 119.9 | YXF print 119.9 as H, 92.4 as V and 73.9 as D; relabelled here, it is more compressed than even the equisolid on the long axis |
 | **Used** | **96** | **72** | 120 | |
 
 | Focal length | F number | Focus | Range | Hyperfocal, near limit (DERIVED, 2 px) |
@@ -403,14 +409,21 @@ horizontal of 120 cannot sit with a 120 diagonal under any lens at all: the
 middle of the picture's side is nearer the axis than its corner, every lens
 maps nearer to narrower, so H is always less than D.
 
-The same table's row for the same camera without its IR filter, `96°(H) x
-72°(V)`, is exactly what 120 degrees on the diagonal splits into under the
-equidistant projection, r = f theta: 120 x 3.6288 / 4.536 = 96 and 120 x
-2.7216 / 4.536 = 72. Commonlands, working a real 2.2 mm fisheye's field of
-view out on this sensor's active area from its own distortion data, get 96 x
-72 at 122. So the sheets use 96 x 72, and `verify_optics.py` checks that it
-is the split of the declared diagonal and that it lies between the
-equisolid and rectilinear splits.
+The same table's row for the same camera without its IR filter -- the
+B006604N, whose page's address calls it the 120 degree spy camera, noir --
+is `96°(H) x 72°(V)`. That is exactly what 120 degrees on the diagonal
+splits into under the equidistant projection, r = f theta: 120 x 3.6288 /
+4.536 = 96 and 120 x 2.7216 / 4.536 = 72. It is not a measurement, and it is
+not evidence for the equidistant model: every row in that block of the
+catalogue is its diagonal times 0.8 and 0.6, the 3:4:5 of the sides --
+72.4 x 54.3 for 90.5, 128 x 96 for 160 -- so the equidistant split is how
+Arducam wrote the table. The sheets use 96 x 72 because it is the vendor's
+own pair and the usual first model of a fisheye, and `verify_optics.py`
+checks that it is the split of the declared diagonal and lies between the
+equisolid and rectilinear splits. The one independent figure, Commonlands'
+CIL282 worked from a real 2.2 mm fisheye's distortion data on this sensor,
+is 96 x 72 at 122; scaled to 120, 94.4 x 70.8, near the equisolid split.
+The margin is checked to absorb it.
 
 ### Distortion, and what the model does with it
 
@@ -434,10 +447,12 @@ at the long side's edge covers 2.23 times the board it covers on the axis.
 
 What is not known is which projection the B006604's lens really has.
 `verify_optics.py` requires the frame's 5 mm margin to absorb every
-narrower pair the evidence allows -- the equisolid 94.31 x 69.83 and YXF's 92.4 x 73.9 --
-at every height on every sheet, and it does, with at least 2.9 mm of it
-left. The same is checked of the stock lens against Arducam's 54 x 41 and
-of the autofocus lens against its derived 52.62 x 40.70.
+narrower pair the evidence allows -- the equisolid 94.31 x 69.83,
+Commonlands' lens scaled to 120, 94.43 x 70.82, and YXF's 92.4 x 73.9 -- at
+every height on every sheet, and it does, with at least 2.9 mm of it left
+for the stand. That is the same margin that takes the stand's own error, not
+a second one. The same is checked of the stock lens against Arducam's 54 x
+41 and of the autofocus lens against its derived 52.62 x 40.70.
 
 ### The model is checked, not assumed
 
@@ -493,8 +508,8 @@ How far, and what a lens that focuses would do, is DERIVED:
   figure; the B0121 said `4 cm`, and the sheets hold to the 80. Focused at
   the plate's 140.7 mm it is sharp from 129.9 to 153.4 (F2.9 ASSUMED), which
   a board with parts on it fits in.
-- **No motorised 120 degree OV5647 is sold.** Arducam's wide autofocus
-  OV5647, the B0370, is `155°(H) x 116°(V)`, a different lens. Waveshare's
+- **Arducam's catalogue lists no motorised 120 degree OV5647.** Its wide
+  autofocus OV5647, the B0370, is `155°(H) x 116°(V)`, a different lens. Waveshare's
   RPi Camera (G) focuses by hand to about 10 cm.
 
 ### The result
@@ -559,8 +574,11 @@ its own figure, and `verify_optics.py` checks it, together with the other
 turn of the camera: long side along Y, the plate's frame would need Z 174.3.
 
 The frame margin is what absorbs where the stand ends up: 5.00 mm of
-lateral error or, at the plate's Z, a lean of 2.1 degrees at 65 and 4.0 at
-120, not both -- and, on top, what is not known about the lenses.
+lateral error or, at the plate's Z, a lean of 1.8 degrees at 65 and 2.7 at
+120, not both -- measured where it bites, at the edge of the picture that
+set the height, where a lean moves the picture sec^2 of the half-angle
+further than on the axis -- and whatever is not known about the lens comes
+out of the same 5 mm.
 
 The camera drawn is the Camera Module v1.3, from `v1.py`: its board, its
 stepped lens stack 5.20 mm proud of it, and its FFC connector on the far

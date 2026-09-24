@@ -5,7 +5,7 @@ plate](../mounting_plate/README.md) and holds a Raspberry Pi Camera Module
 v1.3, lens down, over whichever Tiny Tapeout demo board is on the plate --
 where [`RPICAM-OVER-PLATE`](../../raspberry_pi_camera/README.md) says the
 camera has to be for its lens to take in the whole board, of every revision.
-Two of them, one per lens: `TT-MP-CAM65` for the stock 65 degree lens, and
+One per lens: `TT-MP-CAM65` for the stock 65 degree lens, and
 `TT-MP-CAM120`, about half as tall, for the 120 degree fisheye.
 
 | | |
@@ -71,7 +71,7 @@ Nothing in `holder.py` is typed in that another module already knows:
   bottom of their tolerance will not take an M2 until they are opened with a
   2.0 drill.
 
-## Two lenses, two holders
+## A holder per lens
 
 The 120 degree lens takes the same frame in from 72.40 mm where the stock
 lens needs 139.17, so its lens face goes 67 mm lower. That is a second
@@ -90,13 +90,18 @@ against 13.2 at 65 degrees. `verify.py` still finds every sight line from
 the lens to every board clear.
 
 **Which 120 degree camera.** The lens sold as 120 degrees on an OV5647 is
-Arducam's B006604, and it is on a 60 x 11.5 mm Pi Zero board that this
-carrier does not take. `TT-MP-CAM120` carries a Camera Module v1.3's board
--- its holes, its lens axis, its lens face 5.20 mm off the board -- with a
-120 degree lens ASSUMED on it. A module whose lens stands further off its
-board puts the face lower by the difference, and the 1.00 mm over the least
-is all there is to take it. A carrier for the B006604 itself is in
-`TODO.md`.
+Arducam's B006604, a spy camera for the Pi Zero, 60 x 11.5 mm on its flex,
+which this carrier does not take. `TT-MP-CAM120` carries a Camera Module
+v1.3's board -- its holes, its lens axis, its lens face 5.20 mm off the
+board -- with a 120 degree lens ASSUMED on it. That is the weak point of this
+holder, and it is not a small one. A module whose lens stands further off
+its board puts the face lower by the difference, and the 1.00 mm over the
+least is all there is to take it: an M12 fisheye on a v1.3-sized board
+stands far more than 5.20 mm proud, and with the face 10 mm low the picture
+covers about 92 mm down the plate against the boards' 95.2, so their edges
+are cut off. YXF's M6 lens, 4.48 mm long, is the kind of lens it does fit.
+Before building it, measure the lens that will go in it; a carrier for the
+B006604 itself, or bosses cut to a measured lens, is in `TODO.md`.
 
 ## Why it is shaped like this
 
@@ -126,7 +131,7 @@ board that overhangs it.
 **The camera hangs from a carrier that turns.** The camera has to be turned
 so that its long image axis lies along the plate's X: frame A is 140.27 wide
 and 105.20 deep, and a quarter turn out the picture falls 17.1 mm short at
-each end. Nobody publishes which way the OV5647's pixel rows run on the
+each end, or 16.8 on the 120 degree holder. Nobody publishes which way the OV5647's pixel rows run on the
 module, so the holder assumes the long axis is along the board's 25 mm width
 and makes the assumption cheap to be wrong about: the camera screws to a
 carrier, and the carrier bolts to the beam's pad on a square of four M3
@@ -149,8 +154,9 @@ up and back over the beam: a cable drooping behind the camera would hang
 into the picture.
 
 **How stiff it is.** Not checked, estimated: a 10 mm square PETG post is
-about 1.5 N/mm as a 150 mm cantilever, so the four about 6 N/mm before the
-feet give. A few-gram camera does not load it; a knock moves it and the
+about 1.5 N/mm as a 150 mm cantilever, so four about 6 N/mm before the feet
+give. These posts are 8 mm front to back, which about halves that fore and
+aft, before the rail and the beam brace them into a frame. A few-gram camera does not load it; a knock moves it and the
 5 mm margin takes a millimetre or two. The weak point is where each foot
 leaves the plate's edge, loaded across its print layers. The 120 degree
 holder's posts are 84 mm rather than 151, and a cantilever's stiffness goes
@@ -163,7 +169,7 @@ board, which is why the notes ask for matte black.
 
 ## Printing it
 
-Four parts, three different, all PETG or anything else opaque, at least four
+All PETG or anything else opaque, at least four
 perimeters so the screws have wall to bite. Each lies with no overhang:
 
 | Part | Printed | As it lies |
@@ -193,7 +199,9 @@ printed.
   18 pixels, 0.8 mm, on the thin-lens estimate `RPICAM-LENS` explains. The
   holders put each camera where its field of view is right; they cannot make
   it focus there. Arducam's motorised OV5647, the B0176, focuses from 80 mm
-  and would, but its board is not the v1.3's and it has no holder here.
+  and would. Its board is the stock module's 24 x 25 mm, but nobody
+  dimensions its hole pattern or its taller voice-coil lens, so it has no
+  holder here.
 - **The 120 degree camera** is a v1.3's board with a wide lens ASSUMED on
   it, as above.
 - **The boards' buttons** are not in `tinytapeout/boards.py`, so nothing
