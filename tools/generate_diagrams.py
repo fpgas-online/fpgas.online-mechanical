@@ -442,6 +442,109 @@ def bundles() -> list[Bundle]:
     ]
 
 
+def draw_sheets():
+    """Draw every sheet in the set, one at a time, in the order it is written.
+
+    Yields ``(sheet, path, what)``: the drawn sheet, the SVG it is written
+    to, and which sheet it is, for a message.  A generator rather than the
+    body of ``main``, so that a check can walk exactly the sheets this writes,
+    drawn with exactly the frames, notes bands and family numbers they are
+    written with.  ``tools/check_balloons.py`` used to redraw the board sheets
+    itself with none of those, which is a different drawing from the one on
+    the page, and it could not see a sheet that ``render_board`` does not
+    draw at all.
+    """
+    sheets = tt_sheets()
+    frames = tt_view_frames(sheets)
+    # One band for the whole family, so every view gets the same rectangle and
+    # therefore the same scale and the same centring.  The shared frame alone
+    # is not enough: a sheet with a taller notes band has a shorter view area
+    # and drops to the next standard scale, which moves the hosts it was meant
+    # to hold still.
+    band = max(planned_band_height(spec, extra_notes=TT_NOTES,
+                                   view_bbox=frames[stem])
+               for stem, spec in sheets)
+    for name, stem, path, spec in tt_board_sheets():
+        sheet = render_board(spec, drawing_no=name, version=VERSION,
+                             extra_notes=TT_NOTES, family_numbers=TT_NUMBERS,
+                             view_bbox=frames[stem], band_height=band)
+        yield sheet, path, f"{name} ({spec.title})"
+
+    rpi_frame = rpi_view_frame([RPI_BOARDS[k] for k in RPI_ORDER], PMOD_HAT)
+    # One band for the family, as for the Tiny Tapeout set: a taller notes
+    # band on one sheet would shrink its view and drop its scale.
+    rpi_band = max(planned_band_height(RPI_BOARDS[k], extra_notes=RPI_NOTES,
+                                       overlay=PMOD_HAT, view_bbox=rpi_frame)
+                   for k in RPI_ORDER)
+    for name, path, spec in rpi_sheets():
+        sheet = render_board(spec, drawing_no=name, version=VERSION,
+                             overlay=PMOD_HAT, extra_notes=RPI_NOTES,
+                             family_numbers=RPI_NUMBERS, view_bbox=rpi_frame,
+                             band_height=rpi_band)
+        yield sheet, path, f"{name} ({spec.title})"
+
+    # The comparison sheet: the three models on the one outline they share.
+    # Given the same frame and the same notes band as the three sheets before
+    # it, so the board lands on the same point of the page and the bound copy
+    # can be flipped through; its own band is not folded into rpi_band above,
+    # because a taller one there would move the three sheets it is meant to
+    # line up with.
+    compare_name, compare_path, _ = rpi_compare()
+    sheet = rpi_compare_sheet.render_rpi_comparison(
+        drawing_no=compare_name, version=VERSION,
+        view_bbox=rpi_frame, band_height=rpi_band)
+    yield sheet, compare_path, f"{compare_name} ({rpi_compare_sheet.TITLE})"
+
+    for name, path, spec in fpga_sheets():
+        sheet = render_board(spec, drawing_no=name, version=VERSION,
+                             family_numbers=FPGA_NUMBERS)
+        yield sheet, path, f"{name} ({spec.title})"
+
+    acc_dir = FAMILY_DIRS["accessories"]
+    sheet = render_board(PMOD_HAT, drawing_no=PMOD_HAT_SHEET, version=VERSION)
+    yield sheet, acc_dir / f"{PMOD_HAT_STEM}.svg", PMOD_HAT_SHEET
+
+    for spec in [WAVESHARE_POE, GENERIC_POE]:
+        stem = acc_stem(spec.key)
+        name = drawing_name("accessories", stem)
+        sheet = render_enclosure(spec, drawing_no=name, version=VERSION)
+        yield sheet, acc_dir / f"{stem}.svg", name
+
+    # The Raspmod: the other way of putting Pmods on a Raspberry Pi, drawn
+    # beside the Digilent adapter it is compared with.
+    raspmod_stem = acc_stem(RASPMOD.key)
+    raspmod_name = drawing_name("accessories", raspmod_stem)
+    sheet = render_board(RASPMOD, version=VERSION, drawing_no=raspmod_name)
+    yield sheet, acc_dir / f"{raspmod_stem}.svg", raspmod_name
+
+    plate_dir = FAMILY_DIRS["mounting-plate"]
+    # The two A3 plate sheets are drawn by a function each rather than by one
+    # renderer over a list, so they are rendered one at a time; where each
+    # lands and what it is called still comes from plate_sheets().
+    plate = plate_sheets()
+    if len(plate) != 2:
+        raise SystemExit(
+            f"plate_sheets() lists {len(plate)} A3 mounting plate sheets, and "
+            "this renders exactly two: the plate's own drawing by "
+            "render_plate and the fitting guide by render_fitting_guide. "
+            "Each plate sheet is drawn by a function of its own, so a third "
+            "needs its call added here, in the order the sheets are bound.")
+    (mp_name, mp_path, _), (fg_name, fg_path, _) = plate
+    sheet = render_plate(drawing_no=mp_name, version=VERSION)
+    yield sheet, mp_path, mp_name
+
+    sheet = render_fitting_guide(drawing_no=fg_name, version=VERSION)
+    yield sheet, fg_path, fg_name
+
+    # The drill templates are A4 portrait and 1:1 rather than A3 drawings,
+    # but they are still sheets of the mounting plate and live with it: a
+    # directory of their own split the plate's four sheets across two places.
+    for kind, stem in DRILL_TEMPLATE_STEMS.items():
+        name = drawing_name("mounting-plate", stem)
+        sheet = render_drill_template(kind, drawing_no=name, version=VERSION)
+        yield sheet, plate_dir / f"{stem}.svg", name
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-raster", action="store_true")
@@ -480,103 +583,9 @@ def main() -> None:
         made.append(path)
         return path
 
-    tt_dir = FAMILY_DIRS["tinytapeout"]
-    tt_dir.mkdir(parents=True, exist_ok=True)
-    sheets = tt_sheets()
-    frames = tt_view_frames(sheets)
-    # One band for the whole family, so every view gets the same rectangle and
-    # therefore the same scale and the same centring.  The shared frame alone
-    # is not enough: a sheet with a taller notes band has a shorter view area
-    # and drops to the next standard scale, which moves the hosts it was meant
-    # to hold still.
-    band = max(planned_band_height(spec, extra_notes=TT_NOTES,
-                                   view_bbox=frames[stem])
-               for stem, spec in sheets)
-    for name, stem, path, spec in tt_board_sheets():
-        sheet = render_board(spec, drawing_no=name, version=VERSION,
-                             extra_notes=TT_NOTES, family_numbers=TT_NUMBERS,
-                             view_bbox=frames[stem], band_height=band)
-        save(sheet, path, f"{name} ({spec.title})")
-
-    rpi_dir = FAMILY_DIRS["raspberry-pi"]
-    rpi_dir.mkdir(parents=True, exist_ok=True)
-    rpi_frame = rpi_view_frame([RPI_BOARDS[k] for k in RPI_ORDER], PMOD_HAT)
-    # One band for the family, as for the Tiny Tapeout set: a taller notes
-    # band on one sheet would shrink its view and drop its scale.
-    rpi_band = max(planned_band_height(RPI_BOARDS[k], extra_notes=RPI_NOTES,
-                                       overlay=PMOD_HAT, view_bbox=rpi_frame)
-                   for k in RPI_ORDER)
-    for name, path, spec in rpi_sheets():
-        sheet = render_board(spec, drawing_no=name, version=VERSION,
-                             overlay=PMOD_HAT, extra_notes=RPI_NOTES,
-                             family_numbers=RPI_NUMBERS, view_bbox=rpi_frame,
-                             band_height=rpi_band)
-        save(sheet, path, f"{name} ({spec.title})")
-
-    # The comparison sheet: the three models on the one outline they share.
-    # Given the same frame and the same notes band as the three sheets before
-    # it, so the board lands on the same point of the page and the bound copy
-    # can be flipped through; its own band is not folded into rpi_band above,
-    # because a taller one there would move the three sheets it is meant to
-    # line up with.
-    compare_name, compare_path, _ = rpi_compare()
-    sheet = rpi_compare_sheet.render_rpi_comparison(
-        drawing_no=compare_name, version=VERSION,
-        view_bbox=rpi_frame, band_height=rpi_band)
-    save(sheet, compare_path, f"{compare_name} ({rpi_compare_sheet.TITLE})")
-
-    fpga_dir = FAMILY_DIRS["fpga"]
-    fpga_dir.mkdir(parents=True, exist_ok=True)
-    for name, path, spec in fpga_sheets():
-        sheet = render_board(spec, drawing_no=name, version=VERSION,
-                             family_numbers=FPGA_NUMBERS)
-        save(sheet, path, f"{name} ({spec.title})")
-
-    acc_dir = FAMILY_DIRS["accessories"]
-    acc_dir.mkdir(parents=True, exist_ok=True)
-    sheet = render_board(PMOD_HAT, drawing_no=PMOD_HAT_SHEET, version=VERSION)
-    save(sheet, acc_dir / f"{PMOD_HAT_STEM}.svg", PMOD_HAT_SHEET)
-
-    for spec in [WAVESHARE_POE, GENERIC_POE]:
-        stem = acc_stem(spec.key)
-        name = drawing_name("accessories", stem)
-        sheet = render_enclosure(spec, drawing_no=name, version=VERSION)
-        save(sheet, acc_dir / f"{stem}.svg", name)
-
-    # The Raspmod: the other way of putting Pmods on a Raspberry Pi, drawn
-    # beside the Digilent adapter it is compared with.
-    raspmod_stem = acc_stem(RASPMOD.key)
-    raspmod_name = drawing_name("accessories", raspmod_stem)
-    sheet = render_board(RASPMOD, version=VERSION, drawing_no=raspmod_name)
-    save(sheet, acc_dir / f"{raspmod_stem}.svg", raspmod_name)
-
-    plate_dir = FAMILY_DIRS["mounting-plate"]
-    plate_dir.mkdir(parents=True, exist_ok=True)
-    # The two A3 plate sheets are drawn by a function each rather than by one
-    # renderer over a list, so they are rendered one at a time; where each
-    # lands and what it is called still comes from plate_sheets().
-    plate = plate_sheets()
-    if len(plate) != 2:
-        raise SystemExit(
-            f"plate_sheets() lists {len(plate)} A3 mounting plate sheets, and "
-            "this renders exactly two: the plate's own drawing by "
-            "render_plate and the fitting guide by render_fitting_guide. "
-            "Each plate sheet is drawn by a function of its own, so a third "
-            "needs its call added here, in the order the sheets are bound.")
-    (mp_name, mp_path, _), (fg_name, fg_path, _) = plate
-    sheet = render_plate(drawing_no=mp_name, version=VERSION)
-    save(sheet, mp_path, mp_name)
-
-    sheet = render_fitting_guide(drawing_no=fg_name, version=VERSION)
-    save(sheet, fg_path, fg_name)
-
-    # The drill templates are A4 portrait and 1:1 rather than A3 drawings,
-    # but they are still sheets of the mounting plate and live with it: a
-    # directory of their own split the plate's four sheets across two places.
-    for kind, stem in DRILL_TEMPLATE_STEMS.items():
-        name = drawing_name("mounting-plate", stem)
-        sheet = render_drill_template(kind, drawing_no=name, version=VERSION)
-        save(sheet, plate_dir / f"{stem}.svg", name)
+    for sheet, path, what in draw_sheets():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        save(sheet, path, what)
 
     for path in made:
         print(f"  {rel(path)}")
