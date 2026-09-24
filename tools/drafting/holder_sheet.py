@@ -274,9 +274,10 @@ def _text(h: Holder):
         notes.append(
             f"CAMERA: a v1.3's board with a {lens.short} deg lens ASSUMED on "
             f"it, face {h.CAMERA.lens_height:.2f} off the board; "
-            f"{lens.product.split(',')[0]} itself is a 60 x 11.5 mm Pi Zero "
-            "board this carrier does not take. A taller lens lowers the face "
-            f"by the difference, and {spare:.2f} is all there is.")
+            f"{lens.product.split(',')[0]} itself is a Pi Zero spy camera "
+            "this carrier does not take. A taller lens lowers the face by "
+            f"the difference, and {spare:.2f} is all there is: measure the "
+            "lens first.")
     notes += [
         "TURN THE CAMERA RIGHT: ASSUMED that the picture's long side runs "
         "along the camera board's 25 mm width, which nobody publishes; it "

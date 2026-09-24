@@ -278,9 +278,11 @@ FIXINGS = tuple(sorted(
     (x, y) for x, y in _PLATE_FIXINGS
     if abs(x - min(px for px, _ in _PLATE_FIXINGS)) < 1e-9))
 
-#: Section of every member of a side frame: a post, the rail and the wall
-#: they stand in, 10 mm square.  An estimate, not a check: a 10 mm square
-#: PETG post, E about 2 GPa, is about 1.5 N/mm stiff as a 150 mm cantilever,
+#: Thickness of every member of a side frame across the plate: a post, the
+#: rail and the wall they stand in, 10 mm; a post is POST_LEN, 8 mm, front to
+#: back, which about halves its stiffness that way.  An estimate, not a
+#: check: a 10 mm square PETG post, E about 2 GPa, is about 1.5 N/mm stiff as
+#: a 150 mm cantilever,
 #: so the four together about 6 N/mm before the feet give -- a finger's push
 #: moves the camera by a millimetre or so, and a camera weighing a few grams
 #: does not move it at all.  The weak point is the foot at the plate's edge,
