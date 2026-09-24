@@ -46,7 +46,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="output/icepi-zero.pdf"><img src="output/previews/icepi-zero.png" width="270" alt="FPGA-ICEPI-ZERO Icepi Zero"></a><br>
 <b>FPGA-ICEPI-ZERO</b> Icepi Zero<br>v1.3, Raspberry Pi Zero form factor
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="output/cynthion.pdf"><img src="output/previews/cynthion.png" width="270" alt="FPGA-CYNTHION Cynthion"></a><br>
+<b>FPGA-CYNTHION</b> Cynthion<br>r1.4.0
+</td>
 </tr>
 </table>
 
@@ -101,6 +104,19 @@ and the sheet says which it was.
   header is **not fitted** -- it is absent from the production BOM -- and
   the position's pins are checked to sit on the Raspberry Pi arrangement
   before the note says so.
+- **Cynthion**: the KiCad board file at `r1.4.0`, whose release notes call it
+  the initial production release; it is the newest release, the tip of the
+  repository, and no commit since has touched the board file. Great Scott
+  Gadgets publish it under the CERN-OHL-P v2 and publish no mechanical
+  drawing, so every figure on the sheet is read from that file. A 56 x 56 mm
+  square on R3 with a recess in its top edge, four M2 holes, two Pmod hosts
+  on the front edge, a 30-way mezzanine receptacle in the middle of the
+  component side, and **four USB ports**. The board file numbers its own Pmod
+  pads, so pin 1 is checked against the Pmod convention rather than asserted
+  from it; the two agree. Its hosts are right-angle sockets, so the housings
+  hang off the front edge and a peripheral plugs in level with the board --
+  which is also why this is the first sheet to state its own assembled
+  envelope rather than take the computed one.
 
 The PYNQ-Z1 was looked at and left out: Digilent's 3D model of it has no
 mounting holes and its outline disagrees with their own stated size.
@@ -116,6 +132,17 @@ connectors a board puts on its edges: the ULX3S's two GPIO sockets,
 ButterStick's three SYZYGY ports, and on the Icepi Zero its GPIO header,
 its video connector and its card socket, so that nothing a cable or a card
 goes into is left off the drawing.
+
+A number, once issued, keeps its meaning, so a board that wants a slot the
+family has not got gets a new number at the end rather than a renumbering.
+Cynthion is the first board here with more than two USB ports and the first
+with a second LED row that is not the user row, so 9, 10 and 11 were added
+for the third and fourth USB ports and the status LEDs. That is why its four
+USB ports read 1, 2, 9, 10 and not 1 to 4, and why the other five sheets'
+schedules each gained three "not on this board" rows. Its mezzanine
+receptacle takes slot 6, the family's first expansion connector, which is the
+one slot it did fit; a note says it is a board-to-board socket rather than
+the edge port that slot holds on the other sheets.
 
 Pin 1 of every Pmod host follows the Pmod convention, top right looking into
 the socket, fed by the row of holes farther from the board edge. The Tiny

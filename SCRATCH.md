@@ -1957,3 +1957,103 @@ end for end keeps its courtyard -- was not compared between the two commits.
 Each guard was made to fire on a doctored input before it was kept.  The
 README quote was also the wording at the tip rather than at v1.3, where the
 sentence begins "Icepi Zero is an FPGA development board" with no "The".
+
+## Cynthion, and four USB ports in a schedule with room for two
+
+Asked for a sheet of the production Cynthion, Great Scott Gadgets' USB test
+instrument.  Which revision ships is answered by the repository itself: the
+`r1.4.0` release notes read "Initial production release", that tag is the
+newest one, it is the tip of `cynthion-hardware`, and nothing committed since
+has touched the board file.  CERN-OHL-P v2.  There is no mechanical drawing,
+no STEP file, and no board size stated on the product page or in the
+documentation's device overview, so `cynthion.kicad_pcb` is the whole source
+and every figure on the sheet comes out of it.  The title block is templated -- the board file
+says `${TITLE}` and `${VERSION}` -- so the citation reads the project file's
+text variables at the same commit rather than taking the revision from the
+tag name.
+
+56.00 x 56.00 mm on R3.00, four M2 holes 50 mm apart and 3 mm in from each
+edge, a recess in the top edge 1.00 mm deep, flat from x = 41.00 to 47.00 and
+ramping 2.00 back to the edge at 39.00 and 49.00, two Pmod hosts on the front
+edge on the usual 22.86 mm, a 30-way mezzanine receptacle in the middle of
+the component side, six user LEDs the FPGA drives and five status LEDs the
+debug microcontroller drives, both rows on 3.00 mm, and no Ethernet.  Nothing
+in the repository says what the recess is for, so its `profile_note` gives
+the geometry and says as much; the figures are measured off the resolved
+outline, which checks the shape as it measures.  The hosts are right-angle
+sockets: the pin field is on the board and the housing hangs 8.07 mm off the
+front edge, so the fab outline is taken rather than the courtyard -- what a
+case has to clear, not what an assembly machine wants free.
+
+**The board file numbers its own Pmod pads**, which neither of the other two
+Pmod boards in this family does, so pin 1 could be checked rather than
+asserted: `pmod_from_pins` works out where the Pmod convention puts pin 1 and
+the extractor then requires the pad the board file calls "1" to be within
+0.01 mm of it.  Both hosts agree, on a board whose maker had no reason to
+follow this repository's reading of the convention.
+
+Four USB ports -- CONTROL and AUX on the left edge, TARGET C and TARGET A on
+the right -- where `FEATURE_ORDER` had `usb_prog` and one `usb_second`.
+Renumbering was not available, because a feature number is printed on
+balloons and schedules on sheets that are already out, so 9 and 10 were added
+at the end for the third and fourth ports and 11 for the status LED row,
+which is a second row of LEDs and not the tri-colour row slot 5 means.  The
+ports take the slots in the order Great Scott Gadgets' own device overview
+introduces them, which is also the order the top-level schematic lists the
+port sheets in, so Cynthion's four read 1, 2, 9, 10 and its sheet says why.
+The other five FPGA sheets each gained three "not on this board" rows; that
+is the whole of their diff, at x >= 243 mm, and no view geometry moved.
+
+One drafting fault, found by `check_sheets.py` and of a kind already on
+record: the balloon for the user LEDs landed 0.45 mm from the 3.23 that
+dimensions the Pmod pin rows, and the two read as one word.  The pin-field
+depth dimension is drawn last of everything and writes its value along its
+own lane, and unlike the host spacing dimension beside it -- reserved when
+the PYNQ-Z2 arrived -- that lane was never reserved against the balloons.
+The lane follows from the drawn parts alone, so it now moves into
+`_depth_lanes`, is worked out before the balloons, reserved for position
+only, and then drawn from the same answer.  No other sheet moved.
+
+**Found on the way and deliberately not fixed here**: the "assembled
+envelope" note counts features but not Pmod host bodies, so wherever a
+board's host bodies stand outside its outline the figure is short by that
+overhang.  That is seven already-issued sheets, not just the right-angle
+ones: the six demo board sheets, whose housings hang off the front edge, and
+the PYNQ-Z2, whose hosts reach 1.24 mm past the right edge.  Widening the
+computation moves the figure on all seven (TT-DB-V33 goes 86.65 -> 95.20 mm,
+the PYNQ-Z2 137.60 -> 138.84 in X), which is a change of its own and not one
+to slip in beside a new board.  It is in TODO.md.
+
+Cynthion could not simply wait for it, though, because 58.00 x 56.00 is
+8.07 mm short in Y and someone cutting a front panel would believe it.  So
+`BoardSpec` grew `envelope_note`, which replaces the computed note when a
+board sets it, and the Cynthion extractor works its own figure out over the
+features and the host bodies together: 58.00 x 64.07, and 61.00 x 64.07 with
+the three side buttons, which are given separately because a reader needs to
+be able to take the number apart.  Empty on every other board, so nothing
+else moved.
+
+Three things came out of review, all of them the drawing saying something
+untrue or nothing at all:
+
+- **J5, the mezzanine.**  Row 6 read "Expansion connector, first - not on
+  this board" while the board carries a 30-way surface-mount mezzanine
+  receptacle, not marked do-not-populate, in the BOM, drawn on the schematic
+  sheet called Expansion Interfaces.  A row that denies a part is worse than
+  no row, so it is scheduled; it is a board-to-board socket in the middle of
+  the component side rather than an edge port, which the drawing cannot say
+  and a note does.  The contact count is counted off the footprint, so the
+  label cannot claim a width the part has not got.
+- **The recess** was drawn and never explained; `Outline.profile_note` is
+  what the demo boards use for their USB-C shell recess and it now carries
+  this one.
+- **The title-block reader** used `dict.get`, so an upstream rename would
+  have printed "None rev None" in the SOURCES line a reader checks to find
+  the revision.  TITLE, VERSION and COPYRIGHT are required now, and the
+  project file's path comes off `CYNTHION_PATH` instead of being spelled out
+  again.
+
+Schedule 11 was renamed "Status LEDs, debug controller" as well.  The name is
+printed on the five sheets that do not carry the row, and "driven by the
+debug controller" pushed every FPGA feature schedule from 140 to 154 mm wide,
+for a row that on five of the six says only that the board has none.

@@ -14,6 +14,8 @@ ButterStick  the KiCad board file at the release that was sold
 Icepi Zero   the KiCad board file at the mass-production tag, and again at
              a later, re-annotated commit of the same revision, which has to
              agree on every position drawn
+Cynthion     the KiCad board file at the release Great Scott Gadgets call
+             the initial production release
 ===========  =============================================================
 
 The sources are expected under ``tmp/src``; ``tools/fetch_fpga.sh`` puts
@@ -25,6 +27,7 @@ Run: uv run --no-project --with ezdxf --with pdfplumber --with cadquery \\
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -44,8 +47,17 @@ WORK = ROOT / "tmp" / "pcb"
 #: flipping between them finds the Ethernet jack at 3 whether the board has
 #: one or not.  Pmod hosts are not features: they have their own table, as
 #: on every other family.
+#:
+#: A number, once issued, keeps its meaning: it is printed on balloons and in
+#: schedules on sheets that are already out, so a board that needs a slot the
+#: family has not got gets a NEW number at the end rather than a renumbering.
+#: Cynthion is the first board here with more than two USB ports -- four of
+#: them -- and the first with a second row of LEDs that is not the user row,
+#: so 9, 10 and 11 were added for those.  That is why the USB ports read
+#: 1, 2, 9, 10 on its sheet and not 1 to 4.
 FEATURE_ORDER = ["usb_prog", "usb_second", "ethernet", "leds", "rgb_leds",
-                 "exp1", "exp2", "exp3"]
+                 "exp1", "exp2", "exp3", "usb_third", "usb_fourth",
+                 "status_leds"]
 
 FEATURE_NAMES = {
     "usb_prog": "USB programming / console port",
@@ -56,6 +68,11 @@ FEATURE_NAMES = {
     "exp1": "Expansion connector, first",
     "exp2": "Expansion connector, second",
     "exp3": "Expansion connector, third",
+    "usb_third": "Third USB port",
+    "usb_fourth": "Fourth USB port",
+    # Short, because this name is printed on the five sheets that do not
+    # carry the row as well, and it sets the width of every FPGA schedule.
+    "status_leds": "Status LEDs, debug controller",
 }
 
 #: Pin 1 of a 2x6 host, from the pin field's centre and the edge it faces.
@@ -347,6 +364,268 @@ def extract_butterstick() -> dict:
             "SC2 are the SYZYGY standoff holes of ports A, B and C, plated, "
             "and the maker's acrylic plate bolts through all eight.",
             "No Pmod host: expansion is three SYZYGY ports.",
+        ],
+    )
+
+
+CYNTHION_REPO = "https://github.com/greatscottgadgets/cynthion-hardware"
+CYNTHION_PATH = "cynthion.kicad_pcb"
+#: The tip of the repository, which is what the ``r1.4.0`` tag points at.  The
+#: release notes for that tag read "Initial production release", so it is the
+#: revision that ships, and nothing has been committed since.
+CYNTHION_COMMIT = "13aa71c2"
+CYNTHION_TAG = "r1.4.0"
+CYNTHION_RELEASE = f"{CYNTHION_REPO}/releases/tag/{CYNTHION_TAG}"
+CYNTHION_LICENCE = f"{CYNTHION_REPO}/blob/{CYNTHION_TAG}/LICENSE"
+CYNTHION_OVERVIEW = ("https://cynthion.readthedocs.io/en/latest/hardware/"
+                     "device_overview.html")
+
+#: The four USB ports, in the order Great Scott Gadgets' own device overview
+#: introduces them, which is also the order the top-level schematic lists the
+#: port sheets in.  Ordering them is the whole of the numbering decision: the
+#: family had one spare USB slot and this board wants four.
+CYNTHION_USB = [
+    ("J2", "usb_prog", "USB-C J2, CONTROL port", "usb_power"),
+    ("J1", "usb_second", "USB-C J1, AUX port", "connector"),
+    ("J4", "usb_third", "USB-C J4, TARGET C port", "connector"),
+    ("J3", "usb_fourth", "USB-A J3, TARGET A port", "usb_a"),
+]
+
+#: The project text variables the sheet's citation quotes.  All three are
+#: required: a missing one used to read as "None" in the title block line.
+CYNTHION_TITLE_VARS = ("TITLE", "VERSION", "COPYRIGHT")
+
+#: The three side-actuated buttons.  Not drawn -- the sheet marks ports,
+#: hosts, LEDs, holes and the outline -- but they are what makes the board
+#: wider than its outline, so a case designer needs their reach.
+CYNTHION_BUTTONS = ("SW1", "SW2", "SW3")
+
+#: J5's numbered contacts.  Checked rather than assumed, because the label
+#: calls the part 30-way and nothing else the extractor reads says so; the
+#: footprint carries two mechanical posts and two unnamed pads besides.
+CYNTHION_MEZZANINE_WAYS = 30
+
+
+def _cynthion_top_recess(edges: list[tuple], h: float) -> tuple:
+    """The notch in the top edge: opening, flat, depth, ramp run.
+
+    Measured off the resolved outline rather than typed into a note, so the
+    note cannot describe a profile the drawing does not have.  The shape is
+    checked as it is measured: two floor corners at one depth, each reached
+    from the edge by its own ramp, or the board has grown a profile this note
+    does not cover and the extractor stops.
+
+    The 3.0 mm window is a coincidence worth knowing about: this board's
+    corner radius is 3.0 too, so ``h - 3.0`` lands exactly on the tangent
+    where each corner arc leaves its side edge, and the side edges' top
+    endpoints sit precisely on the window's lower bound.  Only the strict
+    ``h - 3.0 < y`` keeps them out of the floor set.  Widen the window and
+    they come in, the floor is four corners rather than two, and the check
+    rejects a board that is perfectly ordinary.
+    """
+    lines = [e for e in edges if e[0] == "line"]
+    floor = sorted({(round(x, 3), round(y, 3)) for e in lines
+                    for x, y in ((e[1], e[2]), (e[3], e[4]))
+                    if h - 3.0 < y < h - 0.001})
+    if len(floor) != 2 or floor[0][1] != floor[1][1]:
+        raise SystemExit(f"cynthion: the top edge recess is not two corners "
+                         f"at one depth: {floor}")
+    opening = sorted({round(q[0], 3) for e in lines
+                      for p, q in (((e[1], e[2]), (e[3], e[4])),
+                                   ((e[3], e[4]), (e[1], e[2])))
+                      if (round(p[0], 3), round(p[1], 3)) in floor
+                      and abs(q[1] - h) < 0.001})
+    if len(opening) != 2:
+        raise SystemExit(f"cynthion: the recess does not meet the top edge "
+                         f"at two points: {opening}")
+    runs = {round(floor[0][0] - opening[0], 3), round(opening[1] - floor[1][0], 3)}
+    if len(runs) != 1:
+        raise SystemExit(f"cynthion: the recess ramps are not equal: {runs}")
+    return opening[0], floor[0][0], floor[1][0], opening[1], \
+        round(h - floor[0][1], 3), runs.pop()
+
+
+def _cynthion_title_block() -> dict:
+    """The title block the board file's ``${...}`` placeholders stand for.
+
+    Cynthion's title block is templated: the board file says ``${TITLE}`` and
+    ``${VERSION}`` and the strings live in the project file's text variables.
+    Reading them at the same pinned commit is what lets the sheet quote a
+    title block at all, and it is how the board file itself states its own
+    revision rather than the citation taking it from the tag name.
+
+    Every variable the citation uses has to be there.  ``dict.get`` would have
+    put "None" on a sheet, in the one field a reader checks to find out which
+    revision they are looking at, and nothing would have complained.
+    """
+    project = str(Path(CYNTHION_PATH).with_suffix(".kicad_pro"))
+    blob = subprocess.run(
+        ["git", "-C", str(SRC / "cynthion"), "show",
+         f"{CYNTHION_COMMIT}:{project}"],
+        capture_output=True, text=True, check=True).stdout
+    variables = json.loads(blob).get("text_variables", {})
+    missing = [k for k in CYNTHION_TITLE_VARS if not variables.get(k)]
+    if missing:
+        raise SystemExit(
+            f"cynthion: {project} @ {CYNTHION_COMMIT} has no "
+            f"{', '.join(missing)} in text_variables, so the board file's "
+            "title block cannot be resolved. Do not guess it.")
+    return variables
+
+
+def extract_cynthion() -> dict:
+    path = kicad_file("cynthion", CYNTHION_COMMIT, CYNTHION_PATH,
+                      f"cynthion-{CYNTHION_TAG}")
+    board = kicad_pcb.load(str(path))
+    key = "cynthion"
+    to_xy, to_box, (w, h) = kicad_extract.frame(board)
+    fps = board.footprints
+    edges, radii = kicad_extract.outline(key, board, to_xy, w, h)
+    if len(radii) != 1:
+        raise SystemExit(f"{key}: expected one corner radius, got {radii}")
+
+    holes = [kicad_extract.hole(key, one(fps, ref), to_xy)
+             for ref in ("H1", "H2", "H3", "H4")]
+
+    pmods = []
+    for ref, label in (("J7", "A"), ("J8", "B")):
+        fp = one(fps, ref)
+        # The fab outline, not the courtyard: these are right-angle sockets
+        # whose housing hangs off the front edge, and what a case or plate has
+        # to clear is the housing, not the housing plus assembly clearance.
+        pm = pmod_from_pins([to_xy(p.x, p.y) for p in fp.pads],
+                            key=f"pmod_{label.lower()}", label=f"Pmod {label}",
+                            designator=ref, edge="bottom",
+                            body=kicad_extract.box(fp, to_box, "fab"))
+        # The Pmod convention says where pin 1 is; this board file numbers its
+        # own pads, so the two can be checked against each other instead of
+        # the convention being asserted.  They agree.
+        p1 = to_xy(*next((p.x, p.y) for p in fp.pads if p.number == "1"))
+        if abs(pm["pin1_x"] - p1[0]) > 0.01 or abs(pm["pin1_y"] - p1[1]) > 0.01:
+            raise SystemExit(
+                f"{key}: {ref} pad 1 is at {p1}, but the Pmod convention puts "
+                f"pin 1 at ({pm['pin1_x']}, {pm['pin1_y']})")
+        pmods.append(pm)
+
+    features = []
+    for ref, key_, label, kind in CYNTHION_USB:
+        b = kicad_extract.box(one(fps, ref), to_box, "fab")
+        features.append(dict(key=key_, kind=kind, designator=ref, label=label,
+                             x0=b[0], y0=b[1], x1=b[2], y1=b[3],
+                             note="Fab-layer body outline, shell included."))
+    # J5 is populated -- not dnp, in the BOM, on the "Expansion Interfaces"
+    # schematic sheet -- so the family's first expansion slot is its, and row
+    # 6 cannot go on saying the board has no expansion connector.  It is not
+    # an edge port, though, which is what the other boards put in that slot,
+    # so the sheet says what it is in a note.
+    mez = one(fps, "J5")
+    ways = len([p for p in mez.pads if p.number.isdigit()])
+    if ways != CYNTHION_MEZZANINE_WAYS:
+        raise SystemExit(f"{key}: J5 has {ways} numbered contacts, not "
+                         f"{CYNTHION_MEZZANINE_WAYS}; the label would be "
+                         "wrong")
+    b = kicad_extract.box(mez, to_box, "fab")
+    features.append(dict(
+        key="exp1", kind="connector", designator="J5",
+        label=f"Mezzanine receptacle J5, {ways}-way",
+        x0=b[0], y0=b[1], x1=b[2], y1=b[3],
+        note="Fab-layer body outline. Board-to-board receptacle on the "
+             f"component side, footprint {mez.library_id}."))
+    features.append(row_feature(
+        [kicad_extract.box(one(fps, f"D{n}"), to_box) for n in range(2, 8)],
+        key="leds", label="User LEDs D2-D7", kind="led", designator="D2-D7",
+        note="D2 at the left-hand end; the FPGA drives them."))
+    features.append(row_feature(
+        [kicad_extract.box(one(fps, f"D{n}"), to_box) for n in range(10, 15)],
+        key="status_leds", label="Status LEDs D10-D14", kind="led",
+        designator="D10-D14",
+        note="D10 at the left-hand end; the debug controller drives them."))
+    number_features(key, features)
+
+    # The assembled envelope, worked out here rather than left to the sheet.
+    # The sheet's figure is built from the features, and the Pmod hosts are
+    # not features -- they have a table of their own -- so on this board it
+    # would be 8.07 mm short in Y, which is most of what a case has to clear.
+    # The buttons are not features either and are what makes the board wider
+    # than its outline, so they are measured and given separately: one number
+    # a reader cannot take apart is no use to someone cutting a front panel.
+    buttons = [kicad_extract.box(one(fps, ref), to_box, "fab")
+               for ref in CYNTHION_BUTTONS]
+    parts = [(f["x0"], f["y0"], f["x1"], f["y1"]) for f in features]
+    parts += [(p["body_x0"], p["body_y0"], p["body_x1"], p["body_y1"])
+              for p in pmods]
+    ex0 = min([0.0] + [p[0] for p in parts])
+    ex1 = max([w] + [p[2] for p in parts])
+    ey0 = min([0.0] + [p[1] for p in parts])
+    ey1 = max([h] + [p[3] for p in parts])
+    cx0 = min([ex0] + [b[0] for b in buttons])
+    cx1 = max([ex1] + [b[2] for b in buttons])
+    cy0 = min([ey0] + [b[1] for b in buttons])
+    cy1 = max([ey1] + [b[3] for b in buttons])
+    envelope = (
+        "Assembled envelope, connector overhang and the Pmod housings "
+        f"included: {ex1 - ex0:.2f} x {ey1 - ey0:.2f} mm. With the three "
+        f"side buttons as well it is {cx1 - cx0:.2f} x {cy1 - cy0:.2f} mm, "
+        "which is what a case has to clear.")
+    left = -min(b[0] for b in buttons)
+    right = max(b[2] for b in buttons) - w
+
+    o0, f0, f1, o1, depth, run = _cynthion_top_recess(edges, h)
+    profile_note = (
+        f"The top edge carries a recess {depth:.2f} mm deep, flat from "
+        f"x = {f0:.2f} to {f1:.2f}, each end ramping {run:.2f} back to the "
+        f"edge at x = {o0:.2f} and {o1:.2f}. The board file gives no purpose "
+        "for it.")
+
+    tb = _cynthion_title_block()
+    return dict(
+        key=key, title="Cynthion", subtitle=CYNTHION_TAG,
+        front_edge="bottom", thickness=board.thickness,
+        width=round(w, 3), height=round(h, 3), corner_radius=radii[0],
+        edges=edges, holes=holes, pmods=pmods, features=features,
+        envelope_note=envelope, profile_note=profile_note,
+        sources=[
+            ("KiCad board file",
+             f"{CYNTHION_REPO}  {CYNTHION_PATH} @ {CYNTHION_COMMIT} "
+             f"(tag {CYNTHION_TAG})",
+             f"title block: {tb['TITLE']} rev {tb['VERSION']}, "
+             f"{tb['COPYRIGHT']}, resolved from the project file's text "
+             "variables at the same commit; Great Scott Gadgets."),
+            ("Revision sold", CYNTHION_RELEASE,
+             f'the {CYNTHION_TAG} release notes read "Initial production '
+             'release."; it is the newest release and the tip of the '
+             "repository, and no commit since has touched the board file."),
+            ("Licence", CYNTHION_LICENCE,
+             "CERN Open Hardware Licence Version 2 - Permissive, "
+             "Copyright (c) 2019-2024 Great Scott Gadgets."),
+            ("Ports and indicators", CYNTHION_OVERVIEW,
+             "names the four USB ports CONTROL, AUX, TARGET C and TARGET A, "
+             "in that order; six user LEDs driven by the FPGA and five "
+             "status LEDs driven by the debug microcontroller."),
+        ],
+        notes=[
+            "Every dimension is read from the board file; Great Scott "
+            "Gadgets publish no mechanical drawing. Hole IDs are the KiCad "
+            "reference designators.",
+            "Schedule numbers 9, 10 and 11 were added to the family for this "
+            "board. 1 to 8 mean what they mean on the other FPGA sheets, so "
+            "the four USB ports read 1, 2, 9, 10.",
+            "No Ethernet jack.",
+            "Feature 6, J5, is a surface-mount mezzanine receptacle on the "
+            "component side: a board-to-board expansion socket well inside "
+            "the outline, not an edge port like the expansion connectors on "
+            "the other sheets.",
+            "Pmod A and B are right-angle sockets: the pin field is on the "
+            "board and the housing hangs off the front edge, so a peripheral "
+            "plugs in level with the board rather than standing up from it. "
+            f"The housings reach {-min(p['body_y0'] for p in pmods):.2f} mm "
+            "past the edge.",
+            "The board ships inside an enclosure. The outline drawn is the "
+            "bare PCB's; the repository publishes no case dimensions.",
+            "Buttons PROGRAM and USER on the left edge and RESET on the "
+            "right are not drawn. They are side-actuated tactile switches "
+            f"whose bodies reach {left:.2f} mm past the left edge and "
+            f"{right:.2f} mm past the right.",
         ],
     )
 
@@ -1071,6 +1350,7 @@ maker draws it:
 * ButterStick with its USB-C and Ethernet on the right
 * the Icepi Zero the way Raspberry Pi draw a Zero, its GPIO header along the
   top and its connector edge at the bottom
+* Cynthion with its two Pmod hosts along the bottom
 """
 
 from __future__ import annotations
@@ -1134,6 +1414,7 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
     front_edge={rec["front_edge"]!r},
     outline=Outline(width={rec["width"]}, height={rec["height"]},
                     corner_radius={rec["corner_radius"]}, thickness={rec["thickness"]},
+                    profile_note={rec.get("profile_note", "")!r},
                     edges=(
 {edges()},
                     )),
@@ -1151,13 +1432,15 @@ BOARDS[{rec["key"]!r}] = BoardSpec(
     ),
     notes=(
 {notes()}    ),
+    envelope_note={rec.get("envelope_note", "")!r},
 )
 '''
 
 
 def main() -> None:
     records = [extract_arty(), extract_ulx3s(), extract_pynq_z2(),
-               extract_butterstick(), extract_icepi_zero()]
+               extract_butterstick(), extract_icepi_zero(),
+               extract_cynthion()]
     numbers = "{\n" + "".join(
         f"    {i}: {FEATURE_NAMES[key]!r},\n"
         for i, key in enumerate(FEATURE_ORDER, 1)) + "}"
