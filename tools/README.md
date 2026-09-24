@@ -28,7 +28,7 @@ Imported, not run.
 | | |
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's board mechanical drawings into `tmp/` |
-| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/` |
+| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/`, and what stands in for a drawing of the Camera Module 1 |
 | `fetch_fpga.sh` | Clones the repositories and downloads the drawings and models the FPGA boards are read from into `tmp/`; [`fpga/README.md`](../fpga/README.md) says which board is read from what |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
