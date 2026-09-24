@@ -2358,6 +2358,9 @@ vendors do print.
 
 ### Arducam's 120 x 90 cannot both be right
 
+Superseded: the 120 is the diagonal, and the pair is 96 x 72. See "Both
+lenses, and what they really are" below.
+
 On a 4:3 sensor a rectilinear lens has tan(V/2) = tan(H/2) x 3/4. The stock
 lens passes: 53.50 implies 41.416 against a declared 41.41. The wide lens does
 not: 120 implies 104.82, not 90. Nearly fifteen degrees.
@@ -2613,3 +2616,98 @@ its top, and the beam on the rails.
 - The v1.3's small parts beside the lens, LED D1 and R9 by MT1, which no
   source dimensions, against the M2 heads on the lens side.
 - Focus, which no holder can fix for the stock lens.
+
+## Both lenses, and what they really are
+
+The owner's request, in full: get the real horizontal and vertical angles of
+the v1 camera's two lenses, the ~65 and the "wide" ~120 degree, document
+them, draw both, and document the focus of the fixed and the autofocus
+versions.
+
+### The 120 is a diagonal
+
+The previous finding was that Arducam's "120(H) x 90(V)" for the B006604
+could not both be right on a 4:3 sensor. The B006604's own product page
+settles why: "angle of view: 120° diagonal", "Diagnoal Field of View (DFOV)
+120°". The catalogue row put the diagonal in the H column, and made V three
+quarters of it. H = 120 with D = 120 is not a lens at all: the middle of the
+sensor's side is nearer the axis than its corner, and every projection maps
+nearer to narrower, so H < D always. That rejection holds whatever the lens.
+
+The same catalogue table has the same camera without its IR filter, the
+B006604N, as "96(H) x 72(V)". Split a 120 degree diagonal equidistantly --
+r = f theta, angle proportional to image height -- and the long side is 120
+x 3.6288 / 4.536 = 96.00 and the short 72.00, exactly. Commonlands' OV5647
+page, which works each lens's field of view out on this sensor's active area
+from its real distortion data, has a 2.2 mm fisheye at 96 x 72 x 122. So 96
+x 72 it is, with the rectilinear split (108.36 x 92.20) as the widest a lens
+could be and the equisolid (94.31 x 69.83) and YXF's M6 lens made for these
+modules (92.4 x 73.9, printed with its labels shuffled) as narrower ones.
+
+### Distortion, and why tan() is still right for coverage
+
+The request warned that rectilinear tan() maths is wrong for a wide lens. It
+is, for getting from a focal length or a diagonal to an angle, and that is
+where the 108 came from. It is not wrong for coverage: a ray theta off the
+axis meets a plane Z below Z tan(theta) out, whatever glass bent it there.
+So once the angle to the middle of each side of the picture is right, the
+coverage of the board along that line is 2 Z tan(A/2). What changes is the
+corners: under barrel distortion the sensor's straight edges land on the
+board as curves bowing outwards (tan(theta)/r grows with r), so the
+rectangle drawn from H and V is inside the picture. `verify_optics.py` walks
+the edge down for the equidistant and the equisolid projections and checks
+it, and checks the margin absorbs every narrower pair at every height -- the
+tightest leaves 2.93 of the 5.00 mm.
+
+### The autofocus module, and focus
+
+Arducam's B0176 is the motorised OV5647. UCTRONICS, Arducam's own store,
+gives it "Focus Distance 80mm to infinity", 54 x 44 and a 35 mm equivalent
+of 35; its predecessor the B0121 says 54 x 41 and "4 cm to infinity". The 35
+mm equivalent gives f = 35 x 4.536 / 43.27 = 3.67 mm. No F number anywhere;
+F2.9 is assumed from the stock lens and only enters the depth of field.
+
+Depth of field is worked at a two-pixel circle of confusion. That is not
+arbitrary: the stock lens's "Approx 1 m to infinity" is exactly what a lens
+focused at its hyperfocal distance gives with a 2.24 um circle, 1.6 pixels.
+The fixed lenses' hyperfocal distances come out at 1.60 m (stock) and 0.70 m
+(wide, with f and N as above). Every position-sheet height is out of focus
+on both fixed lenses; the motorised one is in range at every height of 80
+mm or more -- all but the Arty's LED row.
+
+### Why a separate lens sheet
+
+Putting every declared and derived figure on the position sheets did not
+fit: the plate sheet dropped to 1:2.5 and still overflowed. So the position
+sheets carry the figures they compute with, and `RPICAM-LENS` carries the
+rest: every figure, what became of it, focus, depth of field, and a plan of
+each picture on a board 100 mm down, the fisheye's bowed. It had no room for
+a second section along the short side either; the plan dimensions that way
+and the table has the angle. Its sources are named in one entry, pointing
+at `optics.py` for the addresses: the pinned captures are long enough that
+listing them took half the sheet.
+
+### Two holders, not one adjustable one
+
+The 120 degree lens needs the lens face at 82.00 over the plate against the
+stock lens's 148.77. A carrier sliding 67 mm on the posts would be set by
+eye and knocked out of place; two fixed heights are checkable with a rule.
+Everything above the lens face is the same stack, so the beam and carrier
+are identical parts, only lower -- `verify.py` checks it -- and only the side
+frames differ. Named `TT-MP-CAM65` and `TT-MP-CAM120`: `TT-MP-CAMERA` beside a
+`TT-MP-CAMERA-120` would have made one a prefix of the other, which the
+naming rules forbid.
+
+The honest gap: the lens sold as 120 degrees is on the B006604, a 60 x 11.5
+mm Pi Zero board. The 120 holder carries a v1.3's board with a wide lens
+ASSUMED on it. A carrier for the B006604 wants a drawing of that board.
+
+### What did not work
+
+- arducam.com and uctronics.com answer curl, WebFetch and a Playwright
+  browser alike with a Cloudflare challenge. Every page quoted from them is
+  a pinned Internet Archive capture; the B006604N's own page has none and is
+  not quoted -- the catalogue row stands for it.
+- Waveshare's RPi Camera (G), sold as 160 diagonal and 120 across, declares
+  3.15 mm, which gives 82.5 degrees diagonal even equidistantly. Recorded,
+  not drawn.

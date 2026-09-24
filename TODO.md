@@ -235,19 +235,27 @@ checker that measures the finished PDFs rather than trusting them.
       standoffs above the plate
 - [x] `raspberry_pi_camera/verify_optics.py`: the quotes, the model, and
       every frame against its target and its height
-- [ ] A 120 degree OV5647 lens with a properly specified field of view. The
-      figure used is Arducam's catalogue row for their B006604, a Pi Zero
-      sized board with an M6 lens, and their declared 120 x 90 is not
-      self-consistent on a 4:3 sensor -- 120 across implies 104.82 down. No
-      vendor found publishes a measured H/V/D set for any wide OV5647.
-- [ ] A near limit for the adjustable-focus and autofocus OV5647 variants.
-      Arducam publish neither a lens height nor a focus distance for the
-      B0176, so the sheets can only say that every height is inside the STOCK
-      lens's 1 m and that a focusable module is what a rig needs.
-- [ ] Lens distortion. The model is rectilinear, which the stock lens's own
-      declared figures confirm to a hundredth of a degree; at 120 degrees a
-      real lens is not, and the frame will be barrel distorted. Nothing here
-      models it.
+- [x] The 120 degree lens's field of view: the B006604's own page gives the
+      120 as a DIAGONAL, so the catalogue's 120 x 90 is rejected, and the
+      catalogue's 96 x 72 for the same camera without its IR filter -- the
+      diagonal split equidistantly, which Commonlands reproduce from a real
+      fisheye -- is used
+- [x] A focus range for the autofocus version: the B0176 is "80mm to
+      infinity" on UCTRONICS, its predecessor the B0121 "4 cm"; the sheets
+      hold to the 80, and give its height and whether each height is in range
+- [x] Lens distortion, bounded rather than guessed: coverage of a plane is
+      2 Z tan(A/2) whatever the projection, the frame's corners are inside a
+      barrel-distorted picture, and the margin is checked to absorb the
+      equisolid split and YXF's lens at every height
+- [x] Both lenses drawn on every position sheet, each with its camera at its
+      own height, and `RPICAM-LENS` for every lens figure, declared and
+      derived, and the depth of field
+- [ ] The B006604's real projection. Nobody publishes its lens's focal
+      length, F number or distortion; 2.17 mm is derived from its diagonal
+      and F2.4 is YXF's for a lens of the same angle. A photograph of a
+      ruler at a known height would settle H and V to a tenth of a degree
+- [ ] The autofocus lens's F number, which the depth of field figures
+      ASSUME is the stock lens's F2.9
 - [x] A standoff height for the Tiny Tapeout plate: 8 mm, in
       `tinytapeout/mounting_plate/plate.py`, no shorter than Tiny Tapeout's
       own printed base stands the board, and `RPICAM-OVER-PLATE` adds it
@@ -274,7 +282,7 @@ checker that measures the finished PDFs rather than trusting them.
       in the picture and unhidden, clear of every board, standoff and cable,
       every fastener
 - [x] STEP solids, assembled and per part as printed; the beam as a DXF
-- [x] `TT-MP-CAMERA`, bound into the Tiny Tapeout copy after the plate's own sheets
+- [x] The holder's sheets, bound into the Tiny Tapeout copy after the plate's own sheets
 - [ ] Print one and put it on a plate. Nothing here has been built
 - [ ] Check which way the picture's long side runs on a real v1.3 and set
       `QUARTER_TURNS` to it, so the sheet stops saying ASSUMED
@@ -283,3 +291,10 @@ checker that measures the finished PDFs rather than trusting them.
 - [ ] A focusable OV5647 would make the picture sharp as well as whole. If
       one is chosen, its lens height and hole pattern go in as a second
       `CameraBoard` and the holder is re-derived for it
+- [x] A holder per lens: `TT-MP-CAM65` and `TT-MP-CAM120`, the lens face at
+      150.00 and 83.00, sharing the beam and the carrier; `verify.py` makes
+      every check of each and checks the two share those parts
+- [ ] A 120 degree OV5647 on a board this carrier takes. `TT-MP-CAM120`
+      carries a v1.3's board with the wide lens ASSUMED on it; the B006604
+      is a 60 x 11.5 mm Pi Zero board and wants a carrier of its own, from
+      a measured drawing of it
