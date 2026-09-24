@@ -2184,3 +2184,69 @@ mount over an ø22.4 aperture, a tripod boss 13.86 across reaching 11.35 below
 the lower edge -- but it has no sheet: `render_board` draws every feature as a
 rectangle and a ø36 knurled ring drawn square is a worse drawing than none,
 and the drawing never locates the FFC connector in plan at all.
+
+## The Camera Module v1.3, drawn without a drawing
+
+Asked for the original camera, the OV5647 board lettered v1.3, which the
+camera family had left out because Raspberry Pi never drew it (#39). Nothing
+about that has changed: there is still no drawing of theirs. What changed is
+finding a source honest about what it is.
+
+**Gert van Loo's sheet.** On 21 May 2013 he posted one page to the forum's
+camera board thread "Mechanical data": "As with the raspberry-Pi mechanical
+data it is hand measured, accuracy about 0.05 mm no guarantees." It is on
+Scribd, which serves it as a page image with the printed figures in a
+separate text layer, so both are cached -- the image to measure and the text
+to quote from. It is a real drawing, plan and elevation, "scale 5:1", and it
+prints nearly everything a mount needs: 25 x 23.9, 0.95 thick, four ø2 holes
+at 9.35 and 21.85 from the connector edge and 2 and 23 up, an 8 mm lens
+module 5.1 from the connector edge and 5.2 tall, the connector 5.6 deep and
+2.8 below.
+
+**The check that makes it usable.** If the Camera Module 2 kept the old hole
+pattern, Raspberry Pi drew it after all, on the later board. Measured from
+the connector edge, Gert's hand-measured centres agree with Raspberry Pi's
+Camera Module 2 drawing to 0.023 mm and the Camera Module 3's to 0.008.
+That is the equivalent of the Pmod HAT Adapter's 50.8 mm header: a figure
+the measurement was not used to make, landing where it should. Measured from
+the far edge they are 0.05 apart instead, because his board is 23.9 and
+theirs 23.862, which is why the comparison is taken from the edge both
+boards are measured from. His three heights add up to 8.95 against
+Raspberry Pi's own "Around 25 × 24 × 9 mm".
+
+**Scaling what it draws and does not dimension.** The connector's length
+along the edge, the sensor's flex tail and its height, the steps of the lens
+stack. `measure_cm1.py` takes the scale from the two overall dimensions,
+which agree on it to 0.02 %, and measures every other printed figure off the
+drawing: the worst is 0.09 mm, the lens tip, drawn 5.11 against 5.2 printed.
+The first version found the lens module's edges on the one row the dashed
+centre line crosses and reported the module 8.81 wide; the check against the
+printed 8 caught it. The search windows are in one image's pixels, so the
+script refuses any other image by its hash.
+
+**Where the two measurements disagree.** Raspberry Pi Spy measured a Rev 1.3
+board with calipers four days earlier, to the half millimetre. It agrees
+about the holes and puts the lens module 5.5 from the connector edge where
+Gert has 5.1. Neither is wrong in a way that can be found from here: the
+same thread says the module is stuck on with adhesive, and nothing locates
+it. So 0.4 is the optical axis's error bar, not a disagreement to resolve by
+picking a side, and the sheet uses Gert's figure because everything else of
+his that can be checked checks out.
+
+**Things that could have been assumed and were not.** The holes are ø2.0:
+both measurements say 2 and the Camera Module 2 drawing says 2.2, so this
+sheet does not borrow the later board's figure. The corners are square, in
+all three drawings and in the photograph. The thickness is 0.95, and the
+drafting note that explains a non-standard thickness said it was "within
+0.05 mm of no standard finished thickness", which for 0.95 is true only
+because 1.0 - 0.95 is a hair over 0.05 in floating point; the note now says
+the figure is the source's own. Arducam's B0033 drawing is a clone's and
+supplies nothing: it agrees about the holes and prints the lens 10.25 from
+the edge.
+
+**Where it lives.** In `raspberry_pi_camera/`, as `v1.py`, beside the
+generated `boards.py` rather than in `accessories/parts.py` with the other
+hand-measured part: the family is the subject, not the method. The extractor
+now ends `boards.py` by importing `CM1` into `BOARDS`, so everything that
+walks the family draws it with no second list to keep in step. It shares the
+Camera Module 2 and 3 sheets' frame and band, and stays at 5:1.
