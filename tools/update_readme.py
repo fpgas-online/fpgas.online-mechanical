@@ -33,7 +33,8 @@ from tools.drafting import rpi_compare_sheet              # noqa: E402
 from tools.generate_diagrams import (FPGA_ORDER, LENS_SUBTITLE,  # noqa: E402
                                      LENS_TITLE, RPICAM_ORDER,
                                      RPICAM_POSITION_ORDER, RPI_ORDER,
-                                     holder_title, position_stem, tt_sheets)
+                                     RPI_OTHERS, holder_title, position_stem,
+                                     tt_sheets)
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           FITTING_GUIDE_STEM, LENS_STEM, PLATE_STEM,
                           holder_stem,
@@ -82,12 +83,16 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
         # overlaid": that is true of the three per-model sheets and not of
         # the comparison sheet, which leaves the adapter off so the three
         # models can be read against each other.  Each sheet's own subtitle
-        # says what it is.
-        ("Raspberry Pi", "raspberry-pi", COLUMNS,
+        # says what it is.  The boards that take a Pi's HATs without being
+        # one are read after the Pis, under the same heading.
+        ("Raspberry Pi, and boards that take its HATs", "raspberry-pi",
+         COLUMNS,
          named("raspberry-pi",
                [(slug(k), RPI[k].title, RPI[k].subtitle) for k in RPI_ORDER]
                + [(rpi_compare_sheet.STEM, rpi_compare_sheet.TITLE,
-                   rpi_compare_sheet.SUBTITLE)])),
+                   rpi_compare_sheet.SUBTITLE)]
+               + [(slug(k), v.title, v.subtitle)
+                  for k, v in RPI_OTHERS.items()])),
         ("Raspberry Pi camera modules", "raspberry-pi-camera", COLUMNS,
          named("raspberry-pi-camera",
                [(slug(k), RPICAM[k].title, RPICAM[k].subtitle)
