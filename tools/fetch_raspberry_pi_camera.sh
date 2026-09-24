@@ -52,22 +52,25 @@ done
 #   uctronics-B0033.pdf        Arducam's drawing of their B0033, a clone
 #   camera.html                Raspberry Pi's camera documentation
 #
-# Where a live page could change or vanish, a Wayback Machine capture is
-# fetched instead, pinned to one date.  Two of these come down gzipped
-# whatever the request asks for -- the Scribd text layer, and the Wayback
-# Machine's copy of the documentation -- so anything that arrives as a gzip
-# stream is unpacked where it lands.
+# Each is a Wayback Machine capture pinned to one date, so a quote checked
+# today is checked against the same bytes tomorrow -- except the Scribd page
+# image, of which the Wayback Machine has no capture.  That one is live, and
+# measure_cm1.py refuses it by its SHA-256 if Scribd ever serves another.
+#
+# Two of these come down gzipped whatever the request asks for -- the Scribd
+# text layer, and the Wayback Machine's copy of the documentation -- so
+# anything that arrives as a gzip stream is unpacked where it lands.
 mkdir -p tmp/rpi/cm1
 WB=https://web.archive.org/web
 while read -r f u; do
   curl -sSL -o "tmp/rpi/cm1/$f" "$u"
 done <<URLS
 scribd-page1-original.jpg https://imgv2-2-f.scribdassets.com/img/document/142718448/original/a5bde6fe7d/1
-scribd-page1.jsonp https://html.scribdassets.com/6btrecuy0w2fcmuv/pages/1-385ca7c8dd.jsonp
+scribd-page1.jsonp $WB/20230728040627id_/https://html.scribdassets.com/6btrecuy0w2fcmuv/pages/1-385ca7c8dd.jsonp
 forum-t44466.html $WB/20140401233736id_/http://www.raspberrypi.org/phpBB3/viewtopic.php?f=43&t=44466
-rpispy-diagram.pdf https://www.raspberrypi-spy.co.uk/wp-content/uploads/2013/05/Raspberry-Pi-Camera-Module-Diagram.pdf
-rpispy-article.html https://www.raspberrypi-spy.co.uk/2013/05/pi-camera-module-mechanical-dimensions/
-rpispy-photo.jpg https://www.raspberrypi-spy.co.uk/wp-content/uploads/2013/05/pi_camera_module_14.jpg
+rpispy-diagram.pdf $WB/20201026183139id_/https://www.raspberrypi-spy.co.uk/wp-content/uploads/2013/05/Raspberry-Pi-Camera-Module-Diagram.pdf
+rpispy-article.html $WB/20201026175350id_/https://www.raspberrypi-spy.co.uk/2013/05/pi-camera-module-mechanical-dimensions/
+rpispy-photo.jpg $WB/20201026175332id_/https://www.raspberrypi-spy.co.uk/wp-content/uploads/2013/05/pi_camera_module_14.jpg
 uctronics-B0033.pdf $WB/20201026093909id_/https://www.uctronics.com/download/Amazon/B0033.pdf
 camera.html $WB/20260919113406id_/https://www.raspberrypi.com/documentation/accessories/camera.html
 URLS
