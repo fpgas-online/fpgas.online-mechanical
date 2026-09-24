@@ -199,12 +199,14 @@ checker that measures the finished PDFs rather than trusting them.
       to Raspberry Pi's Camera Module 2 and 3 drawings, 0.023 and 0.008 apart
 - [ ] Measure a v1.3 board in hand to close what the sources leave open:
   - [ ] The lens module's near side from the connector edge, which the two
-        measurements give as 5.1 and 5.5; that 0.4 is the optical axis's
-        error bar, and several boards measured would say whether it is
-        glue or error
-  - [ ] The hole diameter with pin gauges: both measurements say 2.0, the
-        Camera Module 2 drawing 2.2
-  - [ ] The FFC connector's length along the edge, scaled at 19.45
+        measurements give as 5.1 and 5.5, the second to the half millimetre;
+        that spread is the optical axis's +/-0.65, and several boards
+        measured would say whether it is glue or error
+  - [ ] The hole diameter with pin gauges: both measurements say 2 and
+        neither finer, the Camera Module 2 drawing 2.2; the sheet carries
+        +/-0.2 until then
+  - [ ] The FFC connector's length along the edge, scaled at 19.45 for the
+        body and 20.73 over the latch ears
   - [ ] The height of the sensor flex over J2, scaled at 1.18, and of D1, R9
         and every other part on the lens side, which no source gives
   - [ ] Whether anything but the connector is on the underside, and how

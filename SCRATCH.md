@@ -2250,3 +2250,20 @@ hand-measured part: the family is the subject, not the method. The extractor
 now ends `boards.py` by importing `CM1` into `BOARDS`, so everything that
 walks the family draws it with no second list to keep in step. It shares the
 Camera Module 2 and 3 sheets' frame and band, and stays at 5:1.
+
+**What review changed.** A reviewer reading the same sources found the data
+claiming more than they support in four places. The connector had been
+scheduled as its dashed body, 19.45 long, where the drawing also draws the
+connector's face on the board edge running 20.73 -- the latch ears, which the
+Camera Module 2 sheet includes in the 20.88 it schedules -- so a holder
+built to the body would have fouled the ears; the envelope is scheduled now.
+The holes had been given +/-0.1 on a diameter both sources give only as "2";
+they carry +/-0.2, which admits the Camera Module 2's 2.2, and Raspberry Pi
+Spy's "will accept a 2mm machine screw" turned out to end "according to
+various posts and photos I have seen". The lens's +/-0.4 was the spread
+between the measurements with nothing for Raspberry Pi Spy reading to the
+half millimetre, and is +/-0.65. And a forum post quoted as a second sighting
+of the lens's offset from the holes begins "from the drawing it would
+appear", so it was Gert's sheet read twice. The height check against "around
+9 mm" was held to 0.1 when Raspberry Pi's own table is 0.2 to 0.4 off their
+own Camera Module 3 drawings; it is a sanity check at 0.5 now, and says so.

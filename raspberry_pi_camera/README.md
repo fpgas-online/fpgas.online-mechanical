@@ -64,7 +64,7 @@ drawn from a hand measurement instead, and has
 ## The Camera Module 1, v1.3, drawn without a drawing
 
 The original camera, the 5 megapixel OmniVision OV5647 board, lettered
-"Raspberry Pi Camera Rev 1.3" on its lens side. It was left out of the set at
+"Raspberry Pi Camera Rev 1.3" on its lens side and known as the v1.3. It was left out of the set at
 first, for a reason that still stands: Raspberry Pi have never published a
 mechanical drawing for it. It has no category on the Product Information
 Portal, `datasheets.raspberrypi.com/camera/` has never served one, the
@@ -87,23 +87,29 @@ numbers were got. The sheet says in its title block that it is hand measured.
 
 | | What it is | What it gives |
 |---|---|---|
-| [Gert van Loo's sheet](https://www.scribd.com/doc/142718448/Raspberry-Pi-Camera-Mechanical-Data) | One page, "Rev 1.0 : 21 May 2013, All sizes in mm, scale 5:1", "Best effort, manually measured, no guarantees!", posted the same day in the Raspberry Pi forum's camera board thread [Mechanical data](https://forums.raspberrypi.com/viewtopic.php?t=44466): "hand measured, accuracy about 0.05 mm no guarantees" | **The primary source.** Plan and elevation, to scale: 25 x 23.9 board, 0.95 thick; four ø2 holes, 9.35 and 21.85 from the connector edge, 2 and 23 up; the 8 mm lens module 5.1 from the connector edge and 5.2 tall; the connector 5.6 deep and 2.8 below the board; the cable 16.2 wide, leaving 1.27 below the board |
+| [Gert van Loo's sheet](https://www.scribd.com/doc/142718448/Raspberry-Pi-Camera-Mechanical-Data) | One page, "Rev 1.0 : 21 May 2013, All sizes in mm, scale 5:1", "Best effort, manually measured, no guarantees!", posted the same day in the Raspberry Pi forum's camera board thread [Mechanical data](https://forums.raspberrypi.com/viewtopic.php?t=44466): "hand measured, accuracy about 0.05 mm no guarantees" | **The primary source.** Plan and elevation, to scale: 25 x 23.9 board, 0.95 thick; four ø2 holes, 9.35 and 21.85 from the connector edge, 2 and 23 up; the 8 mm lens module 5.1 from the connector edge and 5.2 tall; the connector 5.6 deep and 2.8 below the board; the cable 16.2 wide, its upper face 1.27 below the board |
 | [Raspberry Pi Spy](https://www.raspberrypi-spy.co.uk/2013/05/pi-camera-module-mechanical-dimensions/) | A Rev 1.3 board measured "using a set of plastic calipers", 17 May 2013, every figure a whole or half millimetre | A second opinion: 25 x 24; holes 21 x 12.5, 2 in from the far edge, "~2mm"; the 8 mm lens module 8.5 in from each side and 5.5 from the connector edge; "approximately 1mm thick"; 6 mm from the board's underside to the lens face |
 | [Raspberry Pi's documentation](https://www.raspberrypi.com/documentation/accessories/camera.html) | The camera comparison table | "Around 25 × 24 × 9 mm" |
 | [Arducam B0033](https://www.uctronics.com/download/Amazon/B0033.pdf) | A clone's datasheet, sold as "fully compatible with official one" | Nothing drawn here. It agrees about the holes, 21.00 x 12.50, 2.00 in, R=1.00, and disagrees about the lens, printing its centre 10.25 from the edge where the two measurements of the Raspberry Pi board give 9.1 and 9.5 |
 
-`tools/fetch_raspberry_pi_camera.sh` caches all of them, the forum thread,
-the Arducam PDF and the documentation as pinned Wayback Machine captures.
-Gert van Loo's sheet is on Scribd, and Scribd serves its page as an image with
-the printed figures in a separate text layer, so both are fetched: the image
-to measure, the text layer to check each quoted figure against.
+`tools/fetch_raspberry_pi_camera.sh` caches all of them, each as a pinned
+Wayback Machine capture but for the one page image the Wayback Machine has
+no copy of. Gert van Loo's sheet is on Scribd, and Scribd serves its page as
+an image with the printed figures in a separate text layer, so both are
+fetched: the image to measure, the text layer to check each quoted figure
+against. One figure, "5.6", is lettered below where that image is cropped;
+the text layer puts it under the connector, and the dashed connector in the
+plan view is 5.63 deep, so that is what it is taken to dimension.
 
 ### Printed, scaled, and checked
 
-Everything the sheet prints is taken as printed. What it draws and never
-dimensions -- the FFC connector's length along the edge, the sensor's flex
-tail and how high it stands, the steps of the lens stack -- is scaled off it
-by `measure_cm1.py`. The drawing says "scale 5:1", and that is checked rather
+Everything the sheet prints is taken as printed; the lens module's position
+across the board, which it draws and does not print, is Raspberry Pi Spy's
+printed figure instead, and the drawing puts it within 0.03 of the same
+place. What else it draws and never dimensions -- the FFC connector's length
+along the edge, where the cable leaves it, the sensor's flex tail and how
+high it stands, the steps of the lens stack -- is scaled off it by
+`measure_cm1.py`. The drawing says "scale 5:1", and that is checked rather
 than trusted: the scale comes from the two overall dimensions, 25 and 23.9,
 which agree on it to 0.02 %, and then every other figure the sheet prints is
 measured off the drawing and compared. **The worst is 0.09 mm**, the lens
@@ -119,30 +125,40 @@ make:
   connector edge, agree with the Camera Module 2 drawing to **0.023 mm** and
   the Camera Module 3's to **0.008 mm**, so it did, as closely as a hand
   measurement can say. Measured from the far edge they are 0.05 apart,
-  because his board is 23.9 and theirs 23.862. The hole and outline figures
-  carry +/-0.1.
-- **The heights, against Raspberry Pi's one figure.** Lens 5.2 above the
-  board, board 0.95, connector 2.8 below: **8.95**, against "Around ... 9 mm".
-  Raspberry Pi Spy's 6 mm from the underside to the lens face is 6.15 by
-  Gert's figures.
+  because his board is 23.9 and theirs 23.862. Hole positions and the
+  outline carry +/-0.1.
+- **The heights, against Raspberry Pi's one figure** -- a sanity check,
+  not a tolerance. Lens 5.2 above the board, board 0.95, connector 2.8
+  below: **8.95**, against "Around ... 9 mm". Raspberry Pi's table gives the
+  Camera Module 2 the same figure, and its Camera Module 3 entries are 0.2
+  and 0.4 off that board's own drawings, so it would catch a gross error and
+  no fine one. Raspberry Pi Spy's 6 mm from the underside to the lens face
+  is 6.15 by Gert's figures.
 - **The lens, against a second measurement.** Here the two hand
   measurements disagree: Gert has the module 5.1 from the connector edge,
-  Raspberry Pi Spy 5.5. The module is glued to the board -- the same thread:
-  "the camera housing itself is stuck to the board with a patch of adhesive
-  and comes off fairly easily" -- and nothing locates it, so that 0.4 mm is
-  not a mistake to resolve but the honest error bar on the optical axis. The
-  sheet puts the axis where Gert measured it, at X 12.50, Y 14.80, 0.25 above
-  the upper holes, which a reader in the same thread noticed too: "the lens
-  axis is just off line from the adjacent mounting holes". It carries
-  +/-0.4.
-- **The connector, for information.** 19.45 along the edge, scaled. The
-  Camera Module 2 and 3 connector bodies are 19.61 on Raspberry Pi's
-  drawings, 0.16 away; not the same board, so not held to anything.
+  Raspberry Pi Spy 5.5, and Raspberry Pi Spy reads to the half millimetre,
+  so the two may be as much as 0.65 apart. The module is glued to the board
+  -- the same thread: "the camera housing itself is stuck to the board with
+  a patch of adhesive and comes off fairly easily" -- and nothing locates
+  it, so that spread is not a mistake to resolve but the honest error bar on
+  the optical axis, **+/-0.65**. The sheet puts the axis where Gert measured
+  it, at X 12.50, Y 14.80, 0.25 above the upper holes; a reader of his sheet
+  in the same thread saw the same thing on it, "from the drawing it would
+  appear that the lens axis is just off line from the adjacent mounting
+  holes", which is a reading of that drawing and not a second measurement.
+- **The connector, for information.** Gert draws the body dashed, 19.45
+  along the edge, and the connector's face on the edge as a heavy line that
+  runs past it at each end, 20.73: the latch ears. The sheet schedules the
+  envelope, as the Camera Module 2 sheet does its own; that board's body is
+  19.61 and its envelope 20.88 on Raspberry Pi's drawing. Not the same board,
+  so not held to anything.
 
-Two things this board does differently from the Camera Module 2, and a
-holder has to know both. Its **holes are ø2.0**: Gert and Raspberry Pi Spy
-both measure 2, and the clone's drawing agrees, where the Camera Module 2's
-are ø2.2 on the same centres. And its **corners are square**, not R2.0.
+Two things a holder has to know about this board against the Camera Module
+2. Its **holes measure ø2**: Gert prints "ø 2" and Raspberry Pi Spy "~2mm",
+neither finer, and the clone's drawing agrees, where the Camera Module 2's
+are ø2.2 on the same centres. Nothing rules 2.2 out for this board, so the
+diameter carries **+/-0.2** of its own. And its **corners are square**, not
+R2.0.
 
 ### What is not known
 
@@ -155,7 +171,8 @@ measurement settles which.
 - Anything on the underside but the FFC connector. Gert's elevation draws
   nothing else there, and nothing else says.
 - The lens's clear aperture. Gert draws the holder and its tip ring, ø7.5
-  and ø5.6 scaled, not the glass.
+  and ø5.5 scaled, not the glass.
+- The hole diameter to better than the ø2 both sources give.
 - The flex tail and J2 are in `v1.py` -- 0.85 from the lower edge to the
   module, about 1.2 high -- but scaled, and not a scheduled feature, for the
   same reason the Camera Module 2 and 3 modules' lower bodies are not: a
@@ -164,10 +181,12 @@ measurement settles which.
 ### For a camera holder
 
 `v1.py` is importable and has at module level what a holder is designed
-round: `BOARD_WIDTH`, `BOARD_HEIGHT`, `BOARD_THICKNESS`, `HOLES`,
-`HOLE_DIA`, `OPTICAL_AXIS`, `LENS`, `LENS_PROFILE`, `TAIL`, `TAIL_TOP_Z`,
-`FFC`, `FFC_BOTTOM_Z`, `FFC_CABLE_Z`, `TOP_Z`, `BOTTOM_Z`, and the error bars
-`HOLE_TOL`, `LENS_TOL` and `SCALED_TOL`. Plan positions are in this family's
+round: `BOARD_WIDTH`, `BOARD_HEIGHT`, `BOARD_THICKNESS`, `CORNER_RADIUS`,
+`HOLES`, `HOLE_DIA`, `OPTICAL_AXIS`, `LENS`, `LENS_PROFILE`, `TAIL`,
+`TAIL_TOP_Z`, `FFC` (the envelope) and `FFC_BODY`, `FFC_CABLE` and
+`FFC_CABLE_WIDTH`, `FFC_BOTTOM_Z`, `FFC_CABLE_Z`, `TOP_Z`, `BOTTOM_Z` and
+`OVERALL_HEIGHT`, and the error bars `HOLE_TOL`, `HOLE_DIA_TOL`, `LENS_TOL`
+and `SCALED_TOL`. Plan positions are in this family's
 frame, lens side up and connector edge at the top; heights are from the
 board's lens-side face, positive toward the lens.
 
