@@ -71,8 +71,12 @@ class Canvas:
             f'stroke-width="{fmt(weight)}"{extra}/>')
 
     def circle(self, cx, cy, r, *, w=style.W_THIN, colour=style.C_LINE,
-               fill="none", dash=None):
+               fill="none", dash=None, dashoffset: float | None = None):
+        """A circle.  Its dash pattern, if any, starts at three o'clock and
+        runs clockwise on the page, and *dashoffset* shifts it along."""
         extra = f' stroke-dasharray="{dash}"' if dash else ""
+        if dash and dashoffset is not None:
+            extra += f' stroke-dashoffset="{fmt(dashoffset)}"'
         self.parts.append(
             f'<circle cx="{fmt(cx)}" cy="{fmt(self._y(cy))}" r="{fmt(r)}" '
             f'fill="{fill}" stroke="{colour}" stroke-width="{fmt(w)}"{extra}/>')

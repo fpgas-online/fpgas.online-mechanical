@@ -151,6 +151,30 @@ checker that measures the finished PDFs rather than trusting them.
       faces sit when mated: the plug pin length and the host socket depth
       are footprint figures, not measured ones
 
+## The three Raspberry Pis on one outline  -- DONE
+- [x] `RPI-ALL`: the Pi 3B/3B+, 4B and 5 superimposed on the
+      85 x 56 outline they share, everything common drawn once in continuous
+      line and everything that moves once per model in that model's own line
+      type
+- [x] A balloon ring carries its model's line type, because three outlines on
+      top of one another leave nowhere for a leader's dot that belongs to one
+      of them alone
+- [x] One leader to each place, with a balloon per model on it in model
+      order (ISO 6433 grouped references), the rows in a column outside the
+      board; the overall height moved to the left to leave the right to
+      them
+- [x] Per-model feature and hole schedules, the connector swap stated in
+      words, and the union envelope, 88.00 x 57.32 mm
+- [x] `tools/check_balloons.py` watches the new sheet, and every other: it
+      walks `generate_diagrams.draw_sheets()`, and reports a leader crossing
+      another leader or a ring, a feature it does not point at, or a
+      dimension line
+- [ ] Ask whether the Pmod HAT Adapter belongs on it after all. It is left
+      off because its host positions say nothing about how the models differ
+      and its pin fields fall exactly where they do differ; if a plate
+      designer wants the two questions answered on one page, a second view
+      on the same sheet would be the way rather than an overlay
+
 ## Icepi Zero  -- DONE
 - [x] `FPGA-ICEPI-ZERO` from cheyao's KiCad board file at the `v1.3` tag,
       the mass production files, and again at the re-annotated tip of the

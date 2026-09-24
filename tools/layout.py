@@ -308,6 +308,40 @@ def plate_name(stem_tail: str) -> str:
             "sheet itself already carries in full")
 
 
+#: The one Raspberry Pi sheet that is not a model's own, by what is left of
+#: its stem once ``rpi`` has been taken off.  The model sheets need no row:
+#: ``rpi5`` leaves ``5`` and the name is RPI-5, which is as short as a name
+#: gets.  The comparison sheet's stem says what it shows in words,
+#: ``rpi-models-compared``, and the word for every model on one outline is
+#: ALL.
+RPI_NAMES = {
+    "models-compared": "all",  # the models superimposed on one outline
+}
+
+#: What a model sheet's stem leaves behind the lead: a digit and a letter or
+#: two -- ``3b``, ``4b``, ``5``.
+RPI_MODEL_RE = re.compile(r"\d[a-z]*")
+
+
+def rpi_name(rest: str) -> str:
+    """What the Raspberry Pi sheet whose stem ends in *rest* is called.
+
+    A model's own sheet keeps the model, ``5`` for ``rpi5``; anything else
+    is looked up in ``RPI_NAMES``, and a stem that is neither stops the
+    render rather than passing a stem-shaped name through.
+    """
+    if RPI_MODEL_RE.fullmatch(rest):
+        return rest
+    try:
+        return RPI_NAMES[rest]
+    except KeyError:
+        raise SystemExit(
+            f"no drawing name for the Raspberry Pi sheet whose stem ends "
+            f"{rest!r}; a model sheet is named for its model, and any other "
+            "sheet wants a row in RPI_NAMES in tools/layout.py of four or "
+            "five characters saying what it is")
+
+
 #: How a family cuts what is left of a stem down to a drawing name, for the
 #: families that need it.  A separate table rather than a third column
 #: of FAMILY_PREFIXES: several branches are open at once each adding a row to
@@ -315,17 +349,19 @@ def plate_name(stem_tail: str) -> str:
 #: where a new table beside it conflicts with nothing.
 #:
 #: A family with no rule here is named for its stem, which is the ordinary
-#: case and wants no table: RPI-3B and FPGA-ARTY-A7 are already as short as
-#: their sheets can honestly be said to be.  The families here are the
-#: ones where the stem is not:
+#: case and wants no table: FPGA-ARTY-A7 is already as short as its sheet
+#: can honestly be said to be.  The families here are the ones where the
+#: stem is not:
 #:
 #: * a demo board's stem carries every revision the sheet covers
+#: * a Pi sheet that is no model's own has a stem saying what it shows
 #: * an accessory's says in words what the part is
 #: * a mounting plate sheet's says its title -- ``chassis-drill-template``
 #:
 #: Each is right for a file name and too long for a drawing number.
 FAMILY_NAME_RULES = {
     "tinytapeout": tt_name,
+    "raspberry-pi": rpi_name,
     "accessories": acc_name,
     "mounting-plate": plate_name,
 }

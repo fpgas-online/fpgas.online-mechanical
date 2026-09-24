@@ -82,13 +82,22 @@ the tree with nothing wrong.
   white disc, so it takes a bite out of whatever it lands on, and neither the
   text-to-text test nor the line test could see it.
 
-- **`check_balloons.py`** looks one level below the finished SVG, at the
-  obstacle model the balloon placer works from, and reports every leader whose
-  final route crosses something a reader cannot afford to have a line ruled
-  over: a phantom Pmod host, another balloon, another leader, an ordinate
-  witness line. It found that a Pmod host's two-letter label was reserving the
-  whole height of its pin field, which walled off the diagonal every leader
-  from the lower-left corner of a Raspberry Pi wanted to take.
+- **`check_balloons.py`** walks every sheet the generator writes, drawn by
+  the generator's own `draw_sheets()` so that it judges the leaders on the
+  page, and holds every leader -- a balloon's or a callout's -- against four
+  things: another leader or another balloon's ring, a hard obstacle in the
+  placer's model (a phantom Pmod host, an ordinate witness line), the body of
+  a feature it does not point at, and a dimension or extension line. It also
+  reports a balloon sitting on a feature outline. Leader against leader is an
+  exact segment intersection, because two leaders meeting at a steep angle
+  share less than a millimetre of paper and a sampled test steps over them.
+  Anything not listed in its `ACCEPTED`, per sheet and per leader, fails. It
+  found that a Pmod host's two-letter label was reserving the whole height of
+  its pin field, which walled off the diagonal every leader from the
+  lower-left corner of a Raspberry Pi wanted to take; and, once it looked at
+  feature bodies and dimensions, that on `RPI-ALL` three leaders were ruled
+  across the overall height and one across two connectors it did not point
+  at.
 
 - **`check_drill_template.py`** measures the drill template PDFs instead of
   trusting them. It reads each page back, finds every hole as a circle, and
