@@ -73,9 +73,11 @@ are, and only the name is cut:
   the plate's prefix, since they bolt through the plate's own fixings, and
   CAM and the lens's angle from `HOLDER_NAMES`: `TT-MP-CAM65` and
   `TT-MP-CAM120`.
-- a Raspberry Pi sheet is named for its model, `RPI-5`, and the one sheet
-  that is no model's own, the three models superimposed, is `RPI-ALL`: a
-  one-row table, `RPI_NAMES`, since `models-compared` is a title too.
+- a Raspberry Pi sheet is named for its model, `RPI-5`, and a sheet that is
+  no model's own takes its name from a table, `RPI_NAMES`, since its stem is
+  words: the three models superimposed, `models-compared`, are `RPI-ALL`,
+  and a board that is not a Raspberry Pi but takes its HATs has a stem
+  saying whose it is, so `orangepi-pc.pdf` is `RPI-OPIPC`.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
