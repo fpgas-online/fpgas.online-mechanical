@@ -128,6 +128,27 @@ class _Ballooned:
     #: that can say which of them a number belongs to.
     colour: str = style.C_HIGHLIGHT
     dash: str | None = None
+    #: Where the balloon goes, when the drawing has decided that rather than
+    #: the placer.  The placer never moves it, and counts it as placed from
+    #: the start, so every other balloon keeps clear of it and its leader.
+    at: tuple[float, float] | None = None
+    #: Further balloons on the same leader, as (label, colour, dash), drawn
+    #: ring against ring in a line from the first along *row*.  ISO 6433's
+    #: grouped part references: one leader to one place, several references
+    #: at the end of it.
+    also: tuple[tuple[str, str, str | None], ...] = ()
+    row: tuple[float, float] = (1.0, 0.0)
+    #: The leader's own colour, when it is not the ring's: a leader that
+    #: several balloons share belongs to none of them.
+    leader_colour: str | None = None
+
+    def rings(self, centre: tuple[float, float]
+              ) -> list[tuple[float, float]]:
+        """The centres of the balloons in *also*, for a first one at *centre*."""
+        step = 2 * BALLOON_R
+        return [(centre[0] + self.row[0] * step * k,
+                 centre[1] + self.row[1] * step * k)
+                for k in range(1, len(self.also) + 1)]
 
     def anchors(self) -> tuple[tuple[float, float], ...]:
         return self.tips or (self.tip,)
@@ -524,7 +545,9 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
     each balloon in turn against the others' final positions.  It converges in
     a couple of passes on drawings this size.
     """
-    placed: list[tuple[float, float] | None] = [None] * len(items)
+    # A balloon the drawing has fixed is in place before the first sweep, so
+    # the greedy pass already routes round it.
+    placed: list[tuple[float, float] | None] = [it.at for it in items]
     anchor: list[tuple[float, float]] = [it.tip for it in items]
 
     def scene(skip: int, route: bool = False) -> Obstacles:
@@ -557,8 +580,9 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
             # The candidate disc already carries 2.0 mm of clearance, so the
             # placed balloon's circle is shrunk by that much to leave exactly
             # BALLOON_GAP of paper between the two rims.
-            o.add_circle(pos[0], pos[1], BALLOON_R + BALLOON_GAP - 2.0,
-                         weight=HARD)
+            for ring in [pos] + items[k].rings(pos):
+                o.add_circle(ring[0], ring[1], BALLOON_R + BALLOON_GAP - 2.0,
+                             weight=HARD)
             o.add_segment(anchor[k][0], anchor[k][1], pos[0], pos[1],
                           weight=HARD)
         return o
@@ -608,6 +632,8 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
 
     def best_spot(index: int) -> tuple[tuple[float, float], tuple[float, float]]:
         item = items[index]
+        if item.at is not None:
+            return item.tip, item.at
         world = scene(index)
         route = scene(index, route=True)
         tips = item.anchors()
@@ -644,9 +670,39 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
         if not moved:
             break
 
+    # The placer never moves a fixed balloon, so nothing above has asked
+    # whether where it was put is any good.  Asked here instead, of every
+    # ring in its row, against what the placer holds every balloon to: the
+    # bounds, anything hard, and the lines a balloon may not sit across.
+    for i, item in enumerate(items):
+        if item.at is None:
+            continue
+        world = scene(i)
+        for ring in [item.at] + item.rings(item.at):
+            inside = (bounds.x + BALLOON_R <= ring[0] <= bounds.x1 - BALLOON_R
+                      and bounds.y + BALLOON_R <= ring[1]
+                      <= bounds.y1 - BALLOON_R)
+            hard = world.hits(ring[0], ring[1], BALLOON_R, worst=True)
+            if position_only is not None:
+                hard = max(hard, position_only.hits(
+                    ring[0], ring[1], BALLOON_R + LINE_GAP, worst=True))
+            if not inside or hard >= HARD:
+                raise SystemExit(
+                    f"balloon {item.label}: a ring the drawing fixed at "
+                    f"({ring[0]:.1f}, {ring[1]:.1f}) is "
+                    + ("outside the space balloons may use" if not inside
+                       else "on something a balloon may not cover")
+                    + "; the drawing that placed it has to move it")
+
     for item, tip, pos in zip(items, anchor, placed):
         dims.balloon(c, tip, pos, item.label, radius=BALLOON_R,
-                     colour=item.colour, dash=item.dash)
+                     colour=item.colour, dash=item.dash,
+                     leader_colour=item.leader_colour)
+        for (label, colour, dash), ring in zip(item.also, item.rings(pos)):
+            # Each touches the one before it, so that is where it starts.
+            dims.balloon_ring(c, ring, label, radius=BALLOON_R,
+                              colour=colour, dash=dash,
+                              touch=math.atan2(-item.row[1], -item.row[0]))
 
 
 def _radius_callout(o, board: Rect, sheet: Sheet, view: View
@@ -978,7 +1034,16 @@ def draw_legend(sheet: Sheet,
         else:
             shape, w, colour, dash = LEGEND_STYLES[kind]
         cy = y - LEGEND_ROW / 2
-        if shape == "hole":
+        if shape == "balloons":
+            # A row of empty rings, one per line type given, as a sheet that
+            # puts several balloons on one leader draws them: *colour* and
+            # *dash* are then sequences, one entry per ring.
+            r = LEGEND_ROW / 2 - 0.3
+            for k, (ring_colour, ring_dash) in enumerate(zip(colour, dash)):
+                dims.balloon_ring(c, (rect.x + r + 2 * r * k, cy), "",
+                                  radius=r, colour=ring_colour,
+                                  dash=ring_dash, touch=math.pi)
+        elif shape == "hole":
             mid = rect.x + LEGEND_SWATCH / 2
             c.circle(mid, cy, 1.7, w=w, colour=colour, fill="#ffffff")
             dims.centre_mark(c, mid, cy, 1.7, colour=colour, over=1.2)
