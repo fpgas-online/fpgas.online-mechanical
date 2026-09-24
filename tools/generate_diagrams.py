@@ -243,8 +243,8 @@ def _drawn_bbox(spec, overlay=None) -> tuple[float, float, float, float]:
             xs += [p.body_x0, p.body_x1]
             ys += [p.body_y0, p.body_y1]
     if overlay is not None:
-        xs += [0.0, overlay.outline.width]
-        ys += [0.0, overlay.outline.height]
+        xs += overlay.outline.extent()[0::2]
+        ys += overlay.outline.extent()[1::2]
         for p in overlay.pmods:
             xs += [p.cx - p.pin_span / 2 - 2, p.cx + p.pin_span / 2 + 2]
             ys += [p.cy - p.pin_span / 2 - 2, p.cy + p.pin_span / 2 + 2]

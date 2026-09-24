@@ -852,7 +852,7 @@ def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None,
         if p.body_y1 > p.body_y0:
             ys += [p.body_y0, p.body_y1]
     if overlay is not None:
-        ys += [0.0, overlay.outline.height]
+        ys += overlay.outline.extent()[1::2]
     return (max(ys) - min(ys)) + VIEW_MARGIN_TOP + VIEW_MARGIN_BOTTOM
 
 
@@ -1035,9 +1035,19 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
     # cannot recover from.
     notes = ["Viewed from the component side."]
     if overlay is not None:
-        notes.append(
-            f"Phantom outline is the {overlay.title} fitted on the 40-pin "
-            "GPIO header; its mounting holes coincide with this board's.")
+        # Said from the geometry rather than asserted: it is true of every
+        # Raspberry Pi, and of a board whose header is somewhere else it is
+        # the first thing a plate designer needs to know is false.
+        misses = [min((math.dist((h.x, h.y), (b.x, b.y)) for b in spec.holes),
+                      default=math.inf) for h in overlay.holes]
+        if misses and max(misses) < 0.05:
+            holes = "its mounting holes coincide with this board's"
+        else:
+            holes = (f"its mounting holes miss this board's by "
+                     f"{min(misses):.1f} mm or more, so no standoff can "
+                     "join the two")
+        notes.append(f"Phantom outline is the {overlay.title} fitted on the "
+                     f"40-pin GPIO header; {holes}.")
     if spec.kits:
         # Which product a board arrives in is how most people identify the one
         # on their desk.  Just the list: what a kit is belongs to the shop,
@@ -1432,8 +1442,8 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
             xs += [p.body_x0, p.body_x1]
             ys += [p.body_y0, p.body_y1]
     if overlay is not None:
-        xs += [0.0, overlay.outline.width]
-        ys += [0.0, overlay.outline.height]
+        xs += overlay.outline.extent()[0::2]
+        ys += overlay.outline.extent()[1::2]
         for p in overlay.pmods:
             xs += [p.cx - p.pin_span / 2 - 2, p.cx + p.pin_span / 2 + 2]
             ys += [p.cy - p.pin_span / 2 - 2, p.cy + p.pin_span / 2 + 2]
