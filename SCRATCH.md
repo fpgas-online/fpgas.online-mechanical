@@ -2236,3 +2236,22 @@ and thrown away.  And `_chain_room` counts only the spacing dimensions
 `render_board` actually draws: a pair of hosts sharing a coordinate, as the
 Pmod HAT Adapter's JA and JB do, gets no dimension and must not be reserved
 paper for one.
+
+## The Zybo Z7's ordinate lane, rebased onto the Cynthion
+
+The Cynthion merged while this branch was open, and it is the second sheet
+the centring leaves short.  Its lower ordinate chain staggers into a second
+lane and wants 40.80 mm; a centred view gives it 37.47, so it is 3.33 short,
+and `_view_margins` moves it the way it moves the Zybo Z7: from (20.00,
+30.00) to (17.21, 33.87).  Nothing on the sheet collided before -- the checks
+passed on main -- so this is the rule applied as written, not a fault
+repaired, and no board is made an exception to it.  The sheet is re-rendered
+here and rebound into `fpga-sheets.pdf` with the Zybo Z7.
+
+The counts in the section above were taken before the Cynthion was in the
+set and stand as the record of that measurement.  The comments in
+`board_sheet.py` and the item in TODO.md say what is true now, naming the
+sheets rather than counting them: every board sheet `render_board` draws
+wants more than 30 mm except the ULX3S, the Icepi Zero and the Pmod HAT
+Adapter, and the Zybo Z7 and the Cynthion are the two the centring leaves
+short.

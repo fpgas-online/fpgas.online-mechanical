@@ -137,8 +137,8 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] `dims.ordinate_reach` and `_view_margins`: a view whose ordinate chain
       staggers a label into a second lane is given the room out of the height
       the sheet has spare, instead of a flat 30 mm on the chain's edge. Only
-      a sheet the centring leaves short moves, which is the Zybo Z7 alone,
-      short by 9.17 mm; no other sheet changes
+      a sheet the centring leaves short moves: the Zybo Z7, short by 9.17 mm,
+      and the Cynthion, short by 3.33; no other sheet changes
 - [ ] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
       silkscreen; `accessories/parts.py` has it opposite the Pmod convention
 - [ ] Cynthion's three side buttons and its two SWD connectors are not drawn.
