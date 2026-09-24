@@ -284,3 +284,29 @@ def grid_image(rect, frame: Frame, box, zoom: float = 2.0):
         cv2.putText(c, str(v), (2, py - 2), cv2.FONT_HERSHEY_SIMPLEX, 0.45,
                     (0, 0, 255), 1)
     return c
+
+
+def corner_radius(rect, frame: Frame, corner: tuple[float, float]):
+    """The radius of the board corner at *corner*, a corner of the frame.
+
+    Rays fan out across the corner from a point 4 mm inside it; on each, the
+    board edge is the steepest rise from the dark board to the lighter
+    background, and a circle is fitted to those points.  Returns (x, y, r)
+    of the circle, in millimetres.
+    """
+    lum = cv2.GaussianBlur(cv2.cvtColor(rect, cv2.COLOR_BGR2GRAY)
+                           .astype(np.float32), (0, 0), 1.0)
+    cx, cy = corner
+    sx = 1 if cx == 0 else -1
+    sy = 1 if cy == 0 else -1
+    ox, oy = cx + 4 * sx, cy + 4 * sy
+    ts = np.arange(0, 7, 0.05)
+    pts = []
+    for a in np.linspace(0, np.pi / 2, 31)[3:-3]:
+        xs, ys = ox - sx * np.cos(a) * ts, oy - sy * np.sin(a) * ts
+        px = np.array([frame.to_px(x, y) for x, y in zip(xs, ys)], np.float32)
+        prof = cv2.remap(lum, px[:, 0].reshape(1, -1), px[:, 1].reshape(1, -1),
+                         cv2.INTER_LINEAR)[0]
+        k = int(np.argmax(np.gradient(prof)))
+        pts.append((xs[k], ys[k]))
+    return fit_circle(np.array(pts))
