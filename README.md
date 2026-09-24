@@ -7,7 +7,8 @@ templates made to mount them.
 
 The drawings are for designing the things the boards mount into -- plates,
 brackets, enclosures, rack shelves. Every dimension is traceable to an
-official source, and each sheet lists its sources.
+official source or, where a maker publishes none, was measured and checked,
+and the sheet says so and to what tolerance. Each sheet lists its sources.
 
 Adding hardware is the normal case. Each family lives in its own directory
 with its data, the extractor that produces it and the sheets rendered from
@@ -19,7 +20,7 @@ it, so a new board is a new directory and does not disturb the others.
 |-----------|------------------------------|
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
-| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, each with a Digilent Pmod HAT Adapter overlaid |
+| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, and boards that take their HATs, each with a Digilent Pmod HAT Adapter overlaid |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Parts that are none of the boards above but turn up in the same assemblies, such as Pi-to-Pmod adapters and PoE splitters, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
@@ -298,6 +299,7 @@ derived from keep their own licences:
 | ButterStick board files | Its maker's open hardware licence |
 | Cynthion board file | Great Scott Gadgets' under the CERN-OHL-P v2 |
 | Icepi Zero board files | Solderpad Hardware Licence 2.1 |
+| Orange Pi PC photographs | Xunlong's, and linux-sunxi's contributors' |
 | PYNQ-Z2 model | TUL's |
 | Raspberry Pi mechanical drawings | Raspberry Pi Ltd's |
 | Tiny Tapeout board files | Apache 2.0 |
