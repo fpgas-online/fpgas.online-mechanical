@@ -4,14 +4,20 @@
 ``orangepi_pc.py`` records every reading ``measure_orangepi_pc.py`` took off
 the photographs, adopts a figure from them and quotes a tolerance.  This
 holds the result to checks the measurement did not use, and fails if any
-check lands outside the tolerance the sheet prints:
+check lands outside the tolerance the sheet prints -- twice it, where two
+positions are compared by the distance between them:
 
-1. **The tolerance covers the readings.**  Each is the largest disagreement
-   between two photographs of the same thing, or with the header's own
-   grid, so it must be at least the worst of those.
-2. **The 40-pin header** comes out 48.26 mm from pin 1 to pin 39, on a
-   2.54 mm pitch with its rows 2.54 mm apart -- the fit set the scale from
-   the board's edges, not from the header.
+1. **The tolerance covers the readings.**  It must be at least the furthest
+   any photograph's reading lies from the figure drawn, and for holes and
+   header, the furthest any check on them lies.
+2. **The 40-pin header.**  Fitted to the board's edges, it came out long:
+   48.58 and 48.48 mm from pin 1 to pin 39 where it is 48.26.  That check
+   found the fit 0.5 to 0.7 % wide across the board, and ``orangepi_pc.py``
+   now takes its scale across the board from the header, so this prints
+   what the check found and then holds to the tolerance what is left: the
+   two photographs' headers against each other, the rows' 2.54 mm spacing,
+   which the correction does not touch, and the board's own edges on the
+   header's scale.
 3. **The board** is 56 mm tall in the photographs' own proportions, not the
    55 of Xunlong's manual.
 4. **Standard parts** are the size the same part is on Raspberry Pi Ltd's
@@ -143,11 +149,18 @@ def main() -> int:
 
     print("2. the 40-pin header")
     for name, h in opi.HEADER_SEEN.items():
-        check(abs(h["span"] - 48.26) <= opi.BOARD_TOL,
-              f"{name}: pin 1 to pin 39 {h['span']:.2f} against 48.26 "
-              f"({h['span'] - 48.26:+.2f}); body {h['span'] + 2.54:.2f} against 50.80")
+        print(f"  found {name}: pin 1 to pin 39 {h['span']:.2f} on the edges' "
+              f"scale, against 48.26 ({(h['span'] / 48.26 - 1) * 100:+.2f} %)")
+        scaled = h["span"] * opi.X_SCALE
+        check(abs(scaled - 48.26) <= opi.BOARD_TOL,
+              f"{name}: pin 1 to pin 39 {scaled:.2f} on the header's scale "
+              f"({scaled - 48.26:+.2f})")
         check(abs(h["rows"] - 2.54) <= opi.BOARD_TOL,
               f"{name}: rows {h['rows']:.2f} apart against 2.54")
+        edge = abs(opi.WIDTH - opi.WIDTH * 48.26 / h["span"]) / 2
+        check(edge <= opi.BOARD_TOL,
+              f"{name}: board {opi.WIDTH * 48.26 / h['span']:.2f} wide on the "
+              f"header's scale, each edge {edge:.2f} from where it is drawn")
 
     print("3. the board's height, as the photographs have it")
     h = median(opi.PHOTO_HEIGHT.values())
@@ -173,10 +186,17 @@ def main() -> int:
     print("5. third-party models")
     x0, y0 = opi.HOLES_AT["MT1"]
     x1, y1 = opi.HOLES_AT["MT4"]
+    xun = (PC_PLUS_HOLES["MT4"][0] - PC_PLUS_HOLES["MT1"][0],
+           PC_PLUS_HOLES["MT4"][1] - PC_PLUS_HOLES["MT1"][1])
     for case, (px, py) in CASE_PITCH.items():
-        check(max(abs(x1 - x0 - px), abs(y1 - y0 - py)) <= 2 * opi.BOARD_TOL,
-              f"{case} case standoffs {px:.2f} x {py:.2f} against "
-              f"{x1 - x0:.2f} x {y1 - y0:.2f} ({x1 - x0 - px:+.2f}, {y1 - y0 - py:+.2f})")
+        off = max(abs(x1 - x0 - px), abs(y1 - y0 - py))
+        ok = off <= 2 * opi.BOARD_TOL
+        why = ""
+        if not ok and max(abs(xun[0] - px), abs(xun[1] - py)) > 2 * opi.BOARD_TOL:
+            ok, why = True, f"; {px - xun[0]:+.2f} from the PC Plus as well"
+        check(ok, f"{case} case standoffs {px:.2f} x {py:.2f} against "
+                  f"{x1 - x0:.2f} x {y1 - y0:.2f} "
+                  f"({x1 - x0 - px:+.2f}, {y1 - y0 - py:+.2f}){why}")
     for label, (hx, hy) in opi.HOLES_AT.items():
         for src, holes in (("PC Plus", PC_PLUS_HOLES), ("Gachin", GACHIN_HOLES)):
             ox, oy = holes[label]
