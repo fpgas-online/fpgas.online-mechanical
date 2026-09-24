@@ -63,8 +63,8 @@ TT_BUNDLE = "tinytapeout-sheets.pdf"
 #: The Raspberry Pi sheets bound the same way, for the same reasons.
 RPI_BUNDLE = "raspberry-pi-sheets.pdf"
 
-#: And the camera sheets, which are a set: one board three times, with the
-#: lens module the thing that moves between them.
+#: And the camera sheets, which are a set: boards on one hole pattern, with
+#: the lens module the thing that moves between them.
 RPICAM_BUNDLE = "raspberry-pi-camera-sheets.pdf"
 
 #: And the FPGA development boards.

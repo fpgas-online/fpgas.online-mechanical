@@ -48,8 +48,8 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 
 ## Where the numbers come from
 
-For the Camera Module 2 and 3, three PDFs, all Raspberry Pi Ltd's, all
-vector, none of them a DXF:
+For the Camera Module 2 and 3, PDFs, all Raspberry Pi Ltd's, all vector,
+none of them a DXF:
 
 | Sheet | Drawing | Published |
 |---|---|---|

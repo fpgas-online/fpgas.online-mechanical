@@ -312,10 +312,12 @@ derived from keep their own licences:
 |---|---|
 | Arty A7 drawing | Digilent's |
 | ButterStick board files | Its maker's open hardware licence |
+| Camera Module v1.3 hand-measured drawing | Gert van Loo's |
 | Cynthion board file | Great Scott Gadgets' under the CERN-OHL-P v2 |
 | Icepi Zero board files | Solderpad Hardware Licence 2.1 |
 | PYNQ-Z2 model | TUL's |
 | Raspberry Pi camera mechanical drawings | Raspberry Pi Ltd's |
 | Raspberry Pi mechanical drawings | Raspberry Pi Ltd's |
+| Raspberry Pi Spy camera module diagram | Raspberry Pi Spy's |
 | Tiny Tapeout board files | Apache 2.0 |
 | ULX3S board files | Its maker's open hardware licence |
