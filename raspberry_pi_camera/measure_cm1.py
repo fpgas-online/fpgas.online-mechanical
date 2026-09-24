@@ -22,6 +22,18 @@ PDF's plot scale is.  The scale is recovered from the two overall dimensions,
 the sheet prints, none of which was used to derive it.  The worst of those
 residuals is the error bar on everything scaled.
 
+One printed figure is not in the image.  "5.6" is lettered under the
+elevation, below where the page image is cropped, so its dimension line
+cannot be seen; the text layer puts it under the connector, and it is
+checked against the connector's depth in the plan view, where the dashed
+body is drawn.
+
+This page image, not the one Scribd's own viewer shows.  The viewer lays a
+different rendering of the page in two clips, the elevation shifted against
+the plan, under its text layer.  In the image measured here the two views
+share a column grid -- the connector edge is at the same pixel in both --
+so they are measured on one scale.
+
 Frame: the drawing's own.  The plan view puts the FFC connector on the left
 edge and looks at the lens side; ``u`` is millimetres in from that edge,
 across the 23.9, and ``v`` millimetres up from the lower edge, across the 25.
@@ -193,6 +205,14 @@ def measure(path: Path = IMAGE) -> dict:
     tail_end = max(x for x in range(424, 612) if ink[440:600, x].any())
 
     # --- the underside connector, dashed in the plan view -------------
+    # Two things are drawn: the body, dashed because it is on the far face,
+    # and the connector's face on the board edge, a heavy line four pixels
+    # wide laid inside the outline and longer than the body -- the latch
+    # ears, as the Camera Module 2 drawing draws them.  The body is found as
+    # its two dashed long sides; the face as the run of the heavy line in a
+    # column just inside the outline.
+    face = _runs(ink[280:760, 185], 280)
+    face = max(face, key=lambda r: r[1] - r[0])
     dashed = ink[300:740, 190:283].sum(axis=1)
     dash_rows = [i + 300 for i in range(len(dashed)) if dashed[i] >= 40]
     conn_top = np.mean([y for y in dash_rows if y < 400])
@@ -208,10 +228,20 @@ def measure(path: Path = IMAGE) -> dict:
     side_rows = ink[:, 180:620].sum(axis=1)
     board_top = _line_at(side_rows, 934, 942, 400)
     board_bot = _line_at(side_rows, 952, 958, 400)
+    # The module body's two sides in elevation, which print "5.1" and "8.0"
+    # again: the plan and the elevation are drawn on one column grid.
+    side_cols = ink[890:935, :].sum(axis=0)
+    side_u0 = _line_at(side_cols, 270, 280, 40)
+    side_u1 = _line_at(side_cols, 417, 426, 40)
+    # The cable leaving the connector, a heavy line; "1.27" is dimensioned
+    # from the board's underside to its upper face.
+    cable_face = min(y for y in range(960, 1000) if ink[y, 100:170].sum() > 60)
     # The lens stack in elevation is three boxes one on another -- the
     # module body, a round holder, a thin ring at the tip -- and each is
     # topped by a horizontal line at least 90 pixels long.  Each line's
-    # height and length is one step of the profile.
+    # height and length is one step of the profile.  The length is taken
+    # centre line to centre line, as everything else here is: the run of ink
+    # less one line width, two pixels.
     steps = []
     for y in range(835, 936):
         long_runs = [r for r in _runs(ink[y, 260:430], 260)
@@ -220,9 +250,9 @@ def measure(path: Path = IMAGE) -> dict:
             r = max(long_runs, key=lambda r: r[1] - r[0])
             if steps and y - steps[-1][0][-1] <= 2:
                 steps[-1][0].append(y)
-                steps[-1][1].append(r[1] - r[0] + 1)
+                steps[-1][1].append(r[1] - r[0] - 1)
             else:
-                steps.append(([y], [r[1] - r[0] + 1]))
+                steps.append(([y], [r[1] - r[0] - 1]))
     if len(steps) != 3:
         raise SystemExit(f"expected the lens stack in three steps, found "
                          f"{len(steps)}")
@@ -245,6 +275,10 @@ def measure(path: Path = IMAGE) -> dict:
         Check(8.0, (lens_bot - lens_top) / px_v, "lens module, plan, up"),
         Check(8.0, (lens_u1 - lens_u0) / px_u, "lens module, plan, across"),
         Check(5.6, u(conn_back), "connector depth, plan"),
+        Check(5.1, u(side_u0), "connector edge to lens module, elev."),
+        Check(8.0, (side_u1 - side_u0) / px_u, "lens module, elevation"),
+        Check(1.27, (cable_face - 0.5 - board_bot) / px_z,
+              "underside to cable, elevation"),
         Check(16.2, (cable_bot - cable_top) / px_v, "FFC cable width"),
         Check(0.95, (board_bot - board_top) / px_z, "board thickness"),
         Check(5.2, (board_top - lens_tip) / px_z, "lens tip above board"),
@@ -257,6 +291,8 @@ def measure(path: Path = IMAGE) -> dict:
         worst=max(abs(c.residual) for c in checks),
         # Scaled, not printed: what v1.py takes from this script.
         connector_v=(v(conn_bot), v(conn_top)),
+        connector_face_v=(v(face[1] + 0.5), v(face[0] - 0.5)),
+        cable_v=(v(cable_bot), v(cable_top)),
         lens_v=(v(lens_bot), v(lens_top)),
         barrel_dia=barrel_outer,
         tail_u=(u(lens_u1), u(tail_end)),
@@ -279,8 +315,13 @@ def main() -> None:
     print(f"  worst residual {m['worst']:.2f} mm")
     print("\nscaled, not printed:")
     v0, v1 = m["connector_v"]
-    print(f"  FFC connector, along the edge  v {v0:.2f} to {v1:.2f}, "
+    print(f"  FFC connector body, along edge v {v0:.2f} to {v1:.2f}, "
           f"{v1 - v0:.2f} long")
+    f0, f1 = m["connector_face_v"]
+    print(f"  FFC connector face, on edge    v {f0:.2f} to {f1:.2f}, "
+          f"{f1 - f0:.2f} long")
+    c0, c1 = m["cable_v"]
+    print(f"  FFC cable, off the edge        v {c0:.2f} to {c1:.2f}")
     l0, l1 = m["lens_v"]
     print(f"  lens module, across            v {l0:.2f} to {l1:.2f}")
     print(f"  lens barrel, outer circle      dia {m['barrel_dia']:.2f}")
