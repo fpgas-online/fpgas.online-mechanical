@@ -167,6 +167,14 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>FPGA-CYNTHION</b> Cynthion<br>r1.4.0
 </td>
 </tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="fpga/output/ultra96-v2.pdf"><img src="fpga/output/previews/ultra96-v2.png" width="270" alt="FPGA-ULTRA96-V2 Avnet Ultra96-V2"></a><br>
+<b>FPGA-ULTRA96-V2</b> Avnet Ultra96-V2<br>96Boards CE, 85 x 54 mm
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
+</tr>
 </table>
 
 ### Accessories
@@ -297,4 +305,5 @@ derived from keep their own licences:
 | PYNQ-Z2 model | TUL's |
 | Raspberry Pi mechanical drawings | Raspberry Pi Ltd's |
 | Tiny Tapeout board files | Apache 2.0 |
+| Ultra96-V2 drawing | Avnet's, republished by Linaro with the 96Boards Consumer Edition specification |
 | ULX3S board files | Its maker's open hardware licence |

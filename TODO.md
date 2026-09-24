@@ -120,7 +120,7 @@ checker that measures the finished PDFs rather than trusting them.
       preview and branch that cites a stem keeps working
 - [ ] The open pull requests each rename their own sheets on top of this
 
-## FPGA development boards  -- sheets done, three items open
+## FPGA development boards  -- sheets done, four items open
 - [x] Arty A7 from Digilent's DXF and PDF plot; no mounting holes, rubber feet
 - [x] ULX3S from KiCad at the four tags sold, required to agree
 - [x] PYNQ-Z2 from TUL's STEP assembly; LEDs not in the model, said in words
@@ -129,6 +129,9 @@ checker that measures the finished PDFs rather than trusting them.
       ports took two new numbers at the end of the family schedule and the
       status LED row a third, and its mezzanine receptacle J5 took the
       family's first expansion slot
+- [x] Ultra96-V2 from Avnet's Altium "Mechanical and Drill" plot, scale
+      recovered from the outline and checked against the 96Boards CE
+      specification; no Pmod, no Ethernet
 - [x] `fpga-sheets.pdf`, every FPGA sheet bound into one document
 - [ ] PYNQ-Z2 LED positions, by photogrammetry from TUL's product photo if
       no vector source turns up
@@ -138,6 +141,12 @@ checker that measures the finished PDFs rather than trusting them.
       The buttons reach 2.50 mm past the left and right edges and a case
       needs holes for them, which is in the notes and the envelope figure but
       is not a feature with a balloon
+- [ ] Ultra96-V2 connector shells: the plot has pads and no body outlines,
+      so every feature on FPGA-ULTRA96-V2 is a pad extent. Avnet's product
+      page is indexed as offering STEP models of the board and of its heat
+      sink, and the page itself answers with an Akamai Bot Manager
+      interstitial; with one of those models the shells and the heat sink
+      envelope could be drawn instead
 
 ## Raspmod, the other Pi-to-Pmod adapter  -- DONE
 - [x] Pat Deegan's TT Demoboard To Raspi, from its KiCad board file at a

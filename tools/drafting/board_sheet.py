@@ -746,6 +746,18 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
     it is position only.  Reserving the whole band against leaders as well
     boxed the balloons into the board's interior, because a leader from a part
     near one of those two edges had to cross a band to reach any space at all.
+
+    The two ends of that band are the exception: a solid filled arrowhead with
+    a leader ruled through it stops reading as an arrowhead, and it is three
+    millimetres long rather than a band the width of the board, so charging
+    leaders for it cannot box anything in.  The Ultra96-V2's LED balloon went
+    out to the right at the height of the 54.00 dimension's lower arrowhead
+    and straight through it.  Reserved at both ends and on both sides of the
+    tip, because a span too narrow for its value flips its arrows outboard.
+    No padding: the box is the arrowhead's bounding box, already wider than
+    the triangle everywhere but its base, and the leader test carries a
+    millimetre of clearance of its own.  Padded further it started moving
+    balloons that were not touching anything.
     """
     o = spec.outline
     for edge in ((0, 0, o.width, 0), (o.width, 0, o.width, o.height),
@@ -756,6 +768,7 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
     band = dim_text_band()
     edge_y, offset = overall_width_line(board, chain_edge)
     overall_y = edge_y + offset
+    nose, flank = style.ARROW_LEN, style.ARROW_HALF_WIDTH
     for value, horizontal in ((o.width, True), (o.height, False)):
         half = style.text_width(f"{value:.2f}", style.T_DIM) / 2
         if horizontal:
@@ -764,12 +777,19 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
             edge_only.add_rect(board.x, lo, board.x1, hi, pad=1.2, weight=HARD)
             obstacles.add_rect(mid - half, lo, mid + half, hi,
                                pad=1.2, weight=HARD)
+            for tip in (board.x, board.x1):
+                obstacles.add_rect(tip - nose, overall_y - flank,
+                                   tip + nose, overall_y + flank, weight=HARD)
         else:
             mid = (board.y + board.y1) / 2
             lo, hi = board.x1 + OVERALL_GAP - band, board.x1 + OVERALL_GAP + 1.0
             edge_only.add_rect(lo, board.y, hi, board.y1, pad=1.2, weight=HARD)
             obstacles.add_rect(lo, mid - half, hi, mid + half,
                                pad=1.2, weight=HARD)
+            line = board.x1 + OVERALL_GAP
+            for tip in (board.y, board.y1):
+                obstacles.add_rect(line - flank, tip - nose,
+                                   line + flank, tip + nose, weight=HARD)
 
 
 def draw_outline_frame(sheet: Sheet, view: View, spec: BoardSpec,
@@ -1795,8 +1815,11 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         sheet.table(block, title, head, rows, align)
 
     if schedule:
-        block = sheet.column_block(sheet.table_height("FEATURE SCHEDULE", len(schedule)))
-        sheet.table(block, "FEATURE SCHEDULE",
+        title = "FEATURE SCHEDULE"
+        if spec.extent_of:
+            title += f" - {spec.extent_of}"
+        block = sheet.column_block(sheet.table_height(title, len(schedule)))
+        sheet.table(block, title,
                     ["#", "FEATURE", "X EXTENT mm", "Y EXTENT mm"], schedule,
                     ["middle", "start", "end", "end"])
 
