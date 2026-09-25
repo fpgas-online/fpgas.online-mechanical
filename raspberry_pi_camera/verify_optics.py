@@ -91,9 +91,9 @@ QUOTES = {
         "Stock Lens 54° (H) x 41° (V) Fixed Focus",
         "B0176 15/Bottom Mini Size 54°(H)x44° (V) Auto Focus",
         "B006604 120°(H) x 90°(V)",
-        # The same camera without its IR-cut filter, a row further down the
-        # same table, and a different pair: the two rows cannot both be the
-        # one lens's.
+        # The no-IR-filter rows: B006603N is a different, narrower SKU,
+        # quoted for the IR column it carries, which the B006604N row below
+        # shares; B006604N is the 120 degree camera without its filter.
         "B006603N 64°(H) x 48°(V) without IR-cut filter",
         "B006604N 96°(H) x 72°(V)",
         "B0370 Wide Angle M12 155°(H) x 116°(V) Auto Focus",
@@ -591,7 +591,7 @@ def check_frames() -> int:
             for lens in LENSES.values():
                 p = place(subject.frames()[0], lens)
                 print(f"   --   {label} stays in frame A up to "
-                      f"{p.headroom(box):5.1f} mm above the plate at "
+                      f"{p.headroom(box):5.1f} mm above the board face at "
                       f"{lens.key} deg")
         print()
     return bad
@@ -663,11 +663,20 @@ def check_elevations() -> int:
         print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} 65 deg across the "
               f"long side: Z {naive:.1f}, {short:.1f} mm lost off each end")
         # 4. How far the stand may lean before the margin is used up.
-        tilt = math.degrees(math.atan(FRAME_MARGIN / p.z))
-        ok = abs(tilt - p.aim_tilt) < 1e-9
+        # Solved the other way: bisect for the lean at which the governing
+        # edge has come in by the margin.
+        a = stock.fov_h if p.governed_by == "H" else stock.fov_v
+        th = math.radians(a / 2)
+        lo, hi = 0.0, th
+        for _ in range(200):
+            mid = (lo + hi) / 2
+            lost = p.z * (math.tan(th) - math.tan(th - mid))
+            lo, hi = (mid, hi) if lost < FRAME_MARGIN else (lo, mid)
+        tilt = math.degrees(lo)
+        ok = abs(tilt - p.aim_tilt) < 1e-6
         bad += not ok
         print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} a lean of {tilt:.2f} "
-              f"deg moves the picture {FRAME_MARGIN:.2f} mm at Z")
+              f"deg moves the picture's edge {FRAME_MARGIN:.2f} mm at Z")
         # 5. How soft a stock lens is at Z: the depth of field formula,
         #    f^2 |s - u| / (N u (s - f)), against the thin lens Lens.blur
         #    works the other way round, and against a lens set at infinity,

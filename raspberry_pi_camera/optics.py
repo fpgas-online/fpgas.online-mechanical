@@ -60,9 +60,10 @@ PIXEL_PITCH = 0.0014            # mm
 
 #: Raspberry Pi's own "Sensor image area", which is NOT the active array: it
 #: is 0.13 mm wider and 0.02 mm taller, so the two give different angles.  Kept
-#: because it is what the vendor prints, and because the diagonal of THIS
-#: rectangle, not of the active array, is where the marketing figure "65
-#: degrees" comes from.  See FOV_CHECK.
+#: because it is what the vendor prints, and because FOV_CHECK shows it is NOT
+#: the rectangle the declared angles are measured to.  Its diagonal is 65.74;
+#: the 65 the lens is sold under is nearer OmniVision's own image area, see
+#: DATASHEET_IMAGE_AREA.
 IMAGE_AREA = (3.76, 2.74)       # mm
 
 #: Raspberry Pi: "3.60 mm +/- 0.01".
@@ -92,8 +93,9 @@ def full_angle(size: float, focal: float = FOCAL_LENGTH) -> float:
 #: better than 0.01 degrees.  Their own "image area" does not: it gives 55.15
 #: horizontally, 1.65 degrees out.  So the declared field of view is measured
 #: to the edge of the ACTIVE ARRAY, under a rectilinear model, and that is the
-#: model these sheets use.  The same arithmetic on the image area is where
-#: "65 degrees" comes from: 65.74 diagonal, against the array's 64.42.
+#: model these sheets use.  The same arithmetic on Raspberry Pi's image
+#: area gives a 65.74 diagonal, against the array's 64.42 and OmniVision's
+#: image area's 64.94.
 FOV_CHECK = (
     ("Horizontal, from the active array", full_angle(ARRAY_WIDTH), 53.50),
     ("Vertical, from the active array", full_angle(ARRAY_HEIGHT), 41.41),
@@ -150,8 +152,10 @@ CONSISTENCY_TOL = 0.1
 # a lens of the same f, and every real one bends the edges in instead --
 # barrel distortion.  The simplest model of that is the equidistant, or
 # f-theta, projection, r = f theta, and the other common fisheye mapping is
-# the equisolid, r = 2 f sin(theta / 2).  Real lenses sit between the
-# rectilinear and the equisolid.
+# the equisolid, r = 2 f sin(theta / 2).  Most wide lenses sit between the
+# rectilinear and the equisolid, and not all: YXF's figures, relabelled,
+# are more compressed than the equisolid on the long axis.  So the bound is
+# not taken on trust; verify.py checks the margin absorbs each pair.
 #
 # What this does and does not change.  Where the picture's edge lands on a
 # flat board Z below the lens is a matter of the angle of the ray to that
@@ -378,7 +382,10 @@ class Figure:
     """One set of field angles for a lens, and where it came from.
 
     ``kind`` is DECLARED for a vendor's own figure, DERIVED for one worked
-    out here, and ``d`` is None where the source gives no diagonal.
+    out here, and RELABELLED for a vendor's figures put under the labels
+    they must have -- YXF print their lens's diagonal as its vertical and
+    its horizontal as its diagonal.  ``d`` is None where the source gives no
+    diagonal.
     ``rejected`` says why a figure is not used, where it cannot be right
     whatever else is true; verify.py checks the reason.
     """
@@ -449,6 +456,14 @@ class Lens:
         th = math.tan(math.radians(self.fov_h / 2))
         tv = math.tan(math.radians(self.fov_v / 2))
         return 2 * math.degrees(math.atan(math.hypot(th, tv)))
+
+    @property
+    def fov_d_basis(self) -> str:
+        """DECLARED if a vendor declares the diagonal used, else DERIVED."""
+        return ("DECLARED" if any(f.kind == "DECLARED" and f.d is not None
+                                  and abs(f.d - self.fov_d) < 0.01
+                                  and f.h is None for f in self.figures)
+                else "DERIVED")
 
     @property
     def consistent_v(self) -> float:
@@ -553,22 +568,32 @@ AUTOFOCUS = Lens(
     sources=(UCTRONICS_B0176, ARDUCAM_B0121, ARDUCAM_DOC, ARDUCAM_AF),
 )
 
-#: The wide lens: Arducam's B006604, the OV5647 sold as 120 degrees.  Its
-#: product page gives the 120 as a DIAGONAL; the catalogue table gives the
-#: same camera "120(H) x 90(V)", which cannot be right under any projection
-#: -- the horizontal is shorter than the diagonal on the sensor, so no lens
-#: can see as far across as it does to the corner -- and gives the same camera
-#: without its IR filter "96(H) x 72(V)".  That second pair is exactly what a
-#: 120 degree diagonal splits into under the equidistant projection, and
-#: Commonlands, working from a real 2.2 mm fisheye's distortion data on this
-#: sensor's active area, get 96 x 72 for a 122 degree lens.  So the sheets
-#: use 96 x 72.
+#: The wide lens: Arducam's B006604, the OV5647 sold as 120 degrees, a spy
+#: camera on a 60 x 11.5 mm flex for the Pi Zero.  Its product page gives the
+#: 120 as a DIAGONAL; the catalogue table gives the same camera "120(H) x
+#: 90(V)", which cannot be right under any projection -- the horizontal is
+#: shorter than the diagonal on the sensor, so no lens can see as far across
+#: as it does to the corner.  The catalogue gives the same camera without its
+#: IR filter, the B006604N -- its page's address calls it the 120 degree spy
+#: camera, noir -- "96(H) x 72(V)".
+#:
+#: That pair is not a measurement.  Every row of that block of the catalogue
+#: is its diagonal times 0.8 and 0.6, the 3:4:5 of the sides: B006603 72.4 x
+#: 54.3 from 90.5, B006605 128 x 96 from 160, B006604N 96 x 72 from 120.  So
+#: 96 x 72 is Arducam's own arithmetic, the diagonal split equidistantly,
+#: r = f theta, by construction.  It is used because it is the vendor's, and
+#: because the equidistant model is the usual first model of a fisheye; the
+#: one independent figure, Commonlands' CIL282, worked from a real 2.2 mm
+#: fisheye's distortion data on this sensor's active area, is 96 x 72 for a
+#: 122 degree diagonal, which scaled to 120 is 94.4 x 70.8 -- close to the
+#: equisolid split.
 #:
 #: The bound on that.  For a fixed diagonal, the rectilinear split is the
 #: widest, 108.36 x 92.20, and puts the picture further out than drawn: the
-#: safe side.  The equisolid split, 94.31 x 69.83, and YXF's M6 lens for OV5647
-#: modules, 92.4 x 73.9, are narrower than 96 x 72 on one axis each, and are
-#: the alternatives the frame margin is checked to absorb.
+#: safe side.  The equisolid split, 94.31 x 69.83, Commonlands' lens scaled
+#: to 120, and YXF's M6 lens for OV5647 modules, 92.4 x 73.9 as relabelled,
+#: are narrower than 96 x 72 on at least one axis, and are the alternatives
+#: the frame margin is checked to absorb.
 #:
 #: Neither the focal length nor the F number is published for the B006604.
 #: The focal length is DERIVED, 2.17 mm, from the 120 diagonal under the
@@ -576,6 +601,17 @@ AUTOFOCUS = Lens(
 #: r = f theta -- beside YXF's 1.79 and Commonlands' 2.2 for lenses of the
 #: same angle.  The F number is ASSUMED, F2.4, YXF's for their 120 degree M6
 #: lens made for these modules; it only enters the depth of field.
+#:
+#: Its focus is declared "1 m to infinity" too, but with this focal length
+#: and F number the hyperfocal distance at two pixels is 0.70 m, so that is
+#: not what a lens focused at its hyperfocal distance gives: 1 m to infinity
+#: focused at 2 m would need a circle of 0.7 pixels, and the page's
+#: specification table reads like the stock lens's.  The 2 m is ASSUMED all
+#: the same, as for the stock lens; set at infinity instead, the blur at
+#: these heights is the same to a pixel, so no verdict hangs on it.
+#: Commonlands' 96 x 72 x 122 lens, scaled to a 120 diagonal in proportion,
+#: as a fisheye's angles scale with its diagonal.  DERIVED.
+COMMONLANDS_AT_120 = tuple(a * 120.0 / 122.0 for a in (96.0, 72.0))
 LENS_120 = Lens(
     key="120",
     name="120 deg, wide",
@@ -584,8 +620,8 @@ LENS_120 = Lens(
     fov_h=96.0,
     fov_v=72.0,
     projection="equidistant",
-    basis="Arducam's own 96 x 72, the equidistant split of their declared "
-          "120 diagonal, which Commonlands reproduce from a real lens.",
+    basis="Arducam's own 96 x 72, which is their declared 120 diagonal "
+          "split equidistantly; the margin absorbs the narrower pairs.",
     figures=(
         Figure("Arducam B006604 page", "DECLARED", None, None, 120.0),
         Figure("Arducam catalogue, B006604", "DECLARED", 120.0, 90.0,
@@ -598,14 +634,18 @@ LENS_120 = Lens(
         Figure("120 diagonal, equisolid", "DERIVED",
                *split_diagonal(120.0, "equisolid"), 120.0),
         Figure("Commonlands CIL282, 2.2 mm", "DECLARED", 96.0, 72.0, 122.0),
-        Figure("YXF4Y001A1, 1.79 mm", "DECLARED", 92.4, 73.9, 119.9),
+        Figure("Commonlands CIL282, scaled to 120", "DERIVED",
+               *COMMONLANDS_AT_120, 120.0),
+        Figure("YXF4Y001A1, 1.79 mm", "RELABELLED", 92.4, 73.9, 119.9),
     ),
     alternatives=(
         Figure("120 diagonal, rectilinear", "DERIVED",
                *split_diagonal(120.0, "rectilinear")),
         Figure("120 diagonal, equisolid", "DERIVED",
                *split_diagonal(120.0, "equisolid")),
-        Figure("YXF4Y001A1, 1.79 mm", "DECLARED", 92.4, 73.9),
+        Figure("Commonlands CIL282, scaled to 120", "DERIVED",
+               *COMMONLANDS_AT_120),
+        Figure("YXF4Y001A1, 1.79 mm", "RELABELLED", 92.4, 73.9),
     ),
     focal_length=focal_from_diagonal(120.0, "equidistant"),
     focal_basis="DERIVED",
@@ -916,12 +956,23 @@ class Placement:
     @property
     def aim_tilt(self) -> float:
         """How far off vertical the camera may lean, in degrees, and still
-        hold the target: the margin, seen from Z.
+        hold the target, with the whole margin spent on the lean.
 
-        A lateral error of the whole margin, or a tilt of this much, uses it
-        up; the two together use it up sooner.
+        Measured at the picture's edge on the axis that set the height, not
+        on the lens axis: that edge is theta = A/2 out, and a lean t pulls it
+        in to Z tan(theta - t), so the margin m is used up when
+        tan(theta) - tan(theta - t) = m / Z.  At the edge a degree of lean
+        moves the picture sec^2(theta) times as far as it does on the axis,
+        which on the wide lens is more than twice.
+
+        A lateral error of the whole margin, or a lean of this much, uses it
+        up; the two together use it up sooner, and so does anything the lens
+        is not known to within -- it all comes out of the same margin.
         """
-        return math.degrees(math.atan(FRAME_MARGIN / self.z))
+        a = self.lens.fov_h if self.governed_by == "H" else self.lens.fov_v
+        theta = math.radians(a / 2)
+        return math.degrees(
+            theta - math.atan(math.tan(theta) - FRAME_MARGIN / self.z))
 
     def headroom(self, box: tuple[float, float, float, float]) -> float:
         """How far above the frame plane *box* may rise and stay in shot.
