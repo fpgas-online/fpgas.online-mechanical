@@ -505,6 +505,9 @@ class Subject:
     #: cell, not a caption, and the sheet's own title carries the long form.
     subject_field: str = ""
     #: What the title block should say the subject's own figures are good to.
+    #: Comma-separated, because SVG collapses the runs of spaces the other
+    #: sheets separate their tolerance fields with, and "plot bodies +/-0.30
+    #: Z DERIVED" then reads as one clause about nothing in particular.
     #: Not the drafting library's PCB default: nothing on these sheets is a
     #: hole in a board, and each subject's geometry came from a different
     #: source with a different claim.
@@ -601,7 +604,7 @@ def _plate_subject() -> Subject:
                    note="LED and 7-segment footprints, in plate "
                         "coordinates."),
         ),
-        tolerance="plate +/-0.20   LEDs +/-0.10   Z DERIVED",
+        tolerance="plate +/-0.20, LEDs +/-0.10, Z DERIVED",
         notes=(
             "Frame B is the union of every LED and 7-segment over all five "
             "revision families; no one revision needs all of it. They are "
@@ -648,7 +651,7 @@ def _arty_subject() -> Subject:
         subtitle="Camera Module OV5647, 65 and 120 degree lenses",
         spec=spec, targets=(t["board"], t["leds"]), sources=src,
         subject_field="Digilent Arty A7",
-        tolerance="DXF +/-0.20   plot bodies +/-0.30   Z DERIVED",
+        tolerance="DXF +/-0.20, plot bodies +/-0.30, Z DERIVED",
         notes=(
             "Which LED row is which is not named by any Digilent source; "
             f"{arty_sheet} takes the row nearest the edge as the tri-colour "
