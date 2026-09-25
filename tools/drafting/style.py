@@ -160,6 +160,9 @@ C_PHANTOM = "#7a7a7a"
 #: a reader has.  Two colours dark enough to photocopy, distinct from the
 #: component red so neither reads as a part of the subject.
 C_FRAME_A = "#005f5f"
+#: The second frame's colour, and the colour a USB-C opening is marked in on
+#: the mounting plate sheets.  One name: the two were the same literal in two
+#: files, and a value with two spellings is a value that drifts.
 C_FRAME_B = "#7a4a00"
 C_FILL_HOLE = "#ffffff"
 C_FILL_LIGHT = "#f0f0f0"
