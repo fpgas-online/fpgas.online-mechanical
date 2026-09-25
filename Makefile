@@ -25,6 +25,7 @@ fetch:
 	@test -d tmp/src/tt123-demo-pcb || git clone --quiet \
 		https://github.com/TinyTapeout/tt123-demo-pcb tmp/src/tt123-demo-pcb
 	tools/fetch_fpga.sh
+	tools/fetch_orangepi_pc.sh
 	@test -d tmp/src/tinytapeout-demoboard-to-raspi || git clone --quiet \
 		https://github.com/psychogenic/tinytapeout-demoboard-to-raspi \
 		tmp/src/tinytapeout-demoboard-to-raspi
@@ -48,6 +49,7 @@ diagrams:
 check: diagrams
 	$(DRAW) python tools/check_sheets.py
 	$(UV) python tinytapeout/mounting_plate/verify.py
+	$(UV) python raspberry_pi/verify_orangepi_pc.py
 	$(DRAW) python tools/check_balloons.py
 	$(UV) --with pdfplumber --with pillow python tools/check_drill_template.py
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py

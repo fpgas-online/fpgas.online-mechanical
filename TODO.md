@@ -151,6 +151,38 @@ checker that measures the finished PDFs rather than trusting them.
       faces sit when mated: the plug pin length and the host socket depth
       are footprint figures, not measured ones
 
+## Orange Pi PC  -- DONE
+- [x] Find what Shenzhen Xunlong publish: manual, schematic, datasheet, wiki,
+      product page, the old download host and the forum, all read. There is
+      no drawing, and SCRATCH.md says where it was looked for
+- [x] `RPI-OPIPC`, measured from two pairs of photographs, linux-sunxi's
+      v1.3 and Xunlong's v1.2, top and bottom: holes and header to
+      +/-0.4 mm, parts to +/-1.1: no reading, and no check on holes and
+      header, further than that from what is drawn
+- [x] `verify_orangepi_pc.py` in `make check`: the header's pitch and length,
+      the board's proportions, standard part widths against the Pi drawings,
+      and the case standoffs, Gachin's model, landroo's cut-outs and
+      Xunlong's PC Plus drawing
+- [x] The Pmod HAT Adapter overlay, moved onto this board's header, and a
+      note, worked out from the geometry, that its holes miss the board's
+- [x] The scale across the board from the header: fitted to the edges alone,
+      both bottom views put pin 1 to pin 39 0.5 to 0.7 % long, and the holes
+      79.40 apart where most cases and the PC Plus say 78.96 to 79.15. On the
+      header's scale they are 78.96
+- [ ] Why the edges read narrow: on the header's scale the board is 84.44
+      and 84.61 wide, not 85. Probably the edge finder lands inside the
+      routed edge; an edge finder that did not would let the header go back
+      to being a check
+- [ ] Heights: none are measured, so whether the Pmod HAT Adapter clears
+      the IR receiver, the audio jack and the debug UART pins under it is not
+      established. The oblique linux-sunxi views might give them
+- [ ] The debug UART header J3 and the camera connector CON1 are measured and
+      checked but not drawn: on the sheet their balloons, or the ones they
+      crowded out, could only cross the adapter's hosts JB and JC
+- [ ] How far a microSD card stands out of its socket, and the audio jack's
+      width, which is the narrowest part checked against the PC Plus drawing
+      at 5.15 mm against 6.20
+
 ## Icepi Zero  -- DONE
 - [x] `FPGA-ICEPI-ZERO` from cheyao's KiCad board file at the `v1.3` tag,
       the mass production files, and again at the re-annotated tip of the

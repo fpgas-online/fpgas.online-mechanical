@@ -7,12 +7,9 @@ from, and reports every leader whose final route crosses a *hard* obstacle: a
 phantom Pmod host, another balloon, another leader, or an ordinate witness
 line.  Those are the things a reader cannot afford to have a line ruled over.
 
-Two crossings are unavoidable and are listed in ACCEPTED below: on the
-Raspberry Pi 4B and Pi 5 the micro-HDMI connectors sit directly beneath the
-Pmod HAT Adapter's host JC, so a leader from those connectors has to cross the
-host whichever way it leaves.  That physical overlap is the subject of a note
-on both sheets.  Anything else fails, so a regression cannot pass unremarked
-just because the total happens to look familiar.
+Crossings that cannot be avoided are listed in ACCEPTED below, each with
+the reason; anything else fails, so a regression cannot pass unremarked just
+because the total happens to look familiar.
 
 Run with::
 
@@ -52,6 +49,7 @@ dims.balloon = _spy_balloon
 from accessories.parts import ACCESSORIES, PMOD_HAT        # noqa: E402
 from fpga.boards import BOARDS as FPGA               # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI        # noqa: E402
+from tools.generate_diagrams import RPI_OTHERS, hat_on  # noqa: E402
 from tinytapeout.boards import BOARDS as TT          # noqa: E402
 
 
@@ -101,11 +99,19 @@ def _crossed(tip, centre, obstacles, samples: int = 200) -> list[str]:
 #: Listed per balloon rather than as a count, so a new crossing somewhere else
 #: on the same sheet is still caught.
 #:
-#: Empty at present.  The two entries that used to be here were the micro-HDMI
-#: connectors on the Pi 4B and Pi 5, which sit underneath the Pmod HAT
-#: Adapter's host JC; those connectors are no longer drawn, so the crossing
-#: they forced is gone with them.
-ACCEPTED: dict[str, set[str]] = {}
+#: The two entries that used to be here were the micro-HDMI connectors on the
+#: Pi 4B and Pi 5, which sit underneath the Pmod HAT Adapter's host JC; those
+#: connectors are no longer drawn, so the crossing they forced is gone with
+#: them.
+#:
+#: The Orange Pi PC's microSD socket (9) and power button (10) are two of
+#: three parts on its left edge, inboard of which the adapter's hosts JA and
+#: JB stand, with the Y ordinate chain to their left and the X chain below.
+#: Their leaders share one way out, up the strip between the edge and the
+#: hosts, and above it the overall width's extension line; the micro-USB's
+#: leader takes the strip, and these two cross a host.  The microSD socket is
+#: partly under JB in plan in any case.
+ACCEPTED: dict[str, set[str]] = {"raspberry-pi/orangepi_pc": {"9", "10"}}
 
 
 def _on_a_feature(items, placed, obstacles) -> set[str]:
@@ -156,6 +162,7 @@ def check(name: str, spec, overlay=None) -> tuple[set[str], set[str]]:
 def main() -> int:
     sheets = [(f"tinytapeout/{k}", v, None) for k, v in TT.items()]
     sheets += [(f"raspberry-pi/{k}", v, PMOD_HAT) for k, v in RPI.items()]
+    sheets += [(f"raspberry-pi/{k}", v, hat_on(v)) for k, v in RPI_OTHERS.items()]
     sheets += [(f"fpga/{k}", v, None) for k, v in FPGA.items()]
     sheets.append(("accessories/pmod-hat", PMOD_HAT, None))
     sheets += [(f"accessories/{k}", v, None) for k, v in ACCESSORIES.items()

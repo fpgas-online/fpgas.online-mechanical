@@ -209,6 +209,11 @@ def draw_feature(c: Canvas, view: View, f: Feature) -> None:
     if f.kind == "led":
         c.rect(min(x0, x1), min(y0, y1), abs(x1 - x0), abs(y1 - y0),
                weight=0.05, colour=colour, fill=colour)
+    if f.pin1 is not None:
+        # A filled dot, the size of a pin, on pin 1: which way round a header
+        # goes is the one thing its body outline cannot say.
+        px, py = view.pt(*f.pin1)
+        c.circle(px, py, view.d(0.5), w=0.05, colour=colour, fill=colour)
 
 
 def draw_pmod(c: Canvas, view: View, p, spec: BoardSpec) -> None:
@@ -770,6 +775,15 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
             edge_only.add_rect(lo, board.y, hi, board.y1, pad=1.2, weight=HARD)
             obstacles.add_rect(lo, mid - half, hi, mid + half,
                                pad=1.2, weight=HARD)
+    # Their extension lines too, position only like the outline: a balloon
+    # parked on one reads as part of the dimension.  On the Orange Pi PC one
+    # sat squarely on the width's left extension line, where nothing had
+    # reserved it.
+    for x in (board.x, board.x1):
+        edge_only.add_segment(x, edge_y, x, overall_y, weight=HARD)
+    for y in (board.y, board.y1):
+        edge_only.add_segment(board.x1, y, board.x1 + OVERALL_GAP, y,
+                              weight=HARD)
 
 
 def draw_outline_frame(sheet: Sheet, view: View, spec: BoardSpec,
@@ -852,7 +866,7 @@ def _view_height_needed(spec: BoardSpec, overlay: BoardSpec | None,
         if p.body_y1 > p.body_y0:
             ys += [p.body_y0, p.body_y1]
     if overlay is not None:
-        ys += [0.0, overlay.outline.height]
+        ys += overlay.outline.extent()[1::2]
     return (max(ys) - min(ys)) + VIEW_MARGIN_TOP + VIEW_MARGIN_BOTTOM
 
 
@@ -1035,9 +1049,20 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
     # cannot recover from.
     notes = ["Viewed from the component side."]
     if overlay is not None:
-        notes.append(
-            f"Phantom outline is the {overlay.title} fitted on the 40-pin "
-            "GPIO header; its mounting holes coincide with this board's.")
+        # Said from the geometry rather than asserted: it is true of every
+        # Raspberry Pi, and of a board whose header is somewhere else it is
+        # the first thing a plate designer needs to know is false.
+        misses = [min((math.dist((h.x, h.y), (b.x, b.y)) for b in spec.holes),
+                      default=math.inf) for h in overlay.holes]
+        if misses and max(misses) < 0.05:
+            holes = "its mounting holes coincide with this board's"
+        else:
+            # Rounded down, so that "or more" is true of every hole.
+            holes = (f"its mounting holes miss this board's by "
+                     f"{math.floor(min(misses) * 10) / 10:.1f} mm or more, so "
+                     "no standoff can join the two")
+        notes.append(f"Phantom outline is the {overlay.title} fitted on the "
+                     f"40-pin GPIO header; {holes}.")
     if spec.kits:
         # Which product a board arrives in is how most people identify the one
         # on their desk.  Just the list: what a kit is belongs to the shop,
@@ -1432,8 +1457,8 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
             xs += [p.body_x0, p.body_x1]
             ys += [p.body_y0, p.body_y1]
     if overlay is not None:
-        xs += [0.0, overlay.outline.width]
-        ys += [0.0, overlay.outline.height]
+        xs += overlay.outline.extent()[0::2]
+        ys += overlay.outline.extent()[1::2]
         for p in overlay.pmods:
             xs += [p.cx - p.pin_span / 2 - 2, p.cx + p.pin_span / 2 + 2]
             ys += [p.cy - p.pin_span / 2 - 2, p.cy + p.pin_span / 2 + 2]
