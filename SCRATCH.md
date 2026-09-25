@@ -2551,8 +2551,10 @@ Part (b)'s second half: something that puts the camera where
 The stock 65 degree lens is the Camera Module v1.3's, and Raspberry Pi never
 drew that board. Another branch, `issue-39-rpi-camera-v1`, wrote its data by
 hand from Gert van Loo's 2013 hand-measured sheet, and this one is built on
-it: `raspberry_pi_camera/v1.py` is that branch's. Holes ø2.0 on the family's 21 x 12.5 pattern, the lens
-module 8 mm square and 5.20 proud, glued on so its axis is ±0.4, the board
+it: `raspberry_pi_camera/v1.py` is that branch's. Its reviewed version gives
+the lens an error bar of ±0.65, the holes ±0.2 and the connector its latch
+ears, and puts the optical axis at (12.5, 14.8). Holes ø2.0 on the family's
+21 x 12.5 pattern, the lens module 8 mm square and 5.20 proud, the board
 0.95, the FFC connector 2.8 deep on the far face. Until it landed the holder
 was developed against Camera Module 3's pattern, flagged, and verify.py
 failed on it.
@@ -2597,8 +2599,9 @@ connector's 2.8, a 4 mm carrier, and the beam on the rails.
   under the centre line, which included one of the two at the back.
 - An M2 does not pass a ø2.0 hole at the nominal sizes. It does at the
   thread's own tolerance -- 6g puts an M2's major diameter at most 1.981 --
-  and Raspberry Pi Spy say the holes "will accept a 2mm machine screw", so
-  that is the check, with both cited.
+  so that is the check. v1.py carries the holes ±0.2, since no source reads
+  them finer, and at 1.80 an M2 does not go: verify.py reports it, and the
+  fix is a 2.0 drill.
 - The M3 carrier screw the first table named was 12 mm: 6 mm of beam, 4 of
   carrier and a 2.4 mm nut want 12.4. Lengths are worked from the grips now.
 

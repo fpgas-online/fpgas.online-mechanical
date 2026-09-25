@@ -123,6 +123,10 @@ class CameraBoard:
     #: wide it is.
     ffc_cable_z: float
     ffc_cable_width: float
+    #: Where the cable crosses the board's edge, along that edge.
+    ffc_cable: tuple[float, float]
+    #: How far the holes may be from their nominal diameter.
+    hole_dia_tol: float
     sources: tuple[Source, ...] = ()
 
     @property
@@ -135,9 +139,10 @@ def camera_board() -> CameraBoard:
     """The Camera Module v1.3, from ``raspberry_pi_camera/v1.py``.
 
     The stock 65 degree lens is this board's.  Everything a holder needs is
-    that module's own figures, with its own error bars: the holes to
-    HOLE_TOL, the lens and so its axis to LENS_TOL, the connector's length
-    to SCALED_TOL.
+    that module's own figures, with its own error bars: the hole centres to
+    HOLE_TOL and their size to HOLE_DIA_TOL, the lens and so its axis to
+    LENS_TOL, the connector's length and the cable's crossing to
+    SCALED_TOL.
     """
     from raspberry_pi_camera import v1
     x0, y0, x1, y1 = v1.LENS
@@ -158,6 +163,8 @@ def camera_board() -> CameraBoard:
         ffc_edge="top",
         ffc_cable_z=-v1.FFC_CABLE_Z - v1.BOARD_THICKNESS,
         ffc_cable_width=v1.FFC_CABLE_WIDTH,
+        ffc_cable=v1.FFC_CABLE,
+        hole_dia_tol=v1.HOLE_DIA_TOL,
         sources=v1.CM1.sources)
 
 

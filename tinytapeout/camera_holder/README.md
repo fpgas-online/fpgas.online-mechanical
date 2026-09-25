@@ -61,9 +61,13 @@ Nothing in `holder.py` is typed in that another module already knows:
 - **What it carries** is `raspberry_pi_camera/v1.py`, the Camera Module
   v1.3 written by hand from Gert van Loo's 2013 hand-measured sheet and
   checked against Raspberry Pi Spy's caliper measurement: its ø2.0 holes
-  on the 21 x 12.5 pattern, its optical axis (±0.4, since the lens module
-  is glued on), its 0.95 board, the lens 5.20 proud of it, and the FFC
-  connector 2.8 deep on the far face.
+  (±0.2) on the 21 x 12.5 pattern, its optical axis (±0.65, since the lens
+  module is glued on and the two measurements disagree by up to that), its
+  0.95 board, the lens 5.20 proud of it, and the FFC connector 2.8 deep on
+  the far face. The picture has 5.47 mm to spare round the tightest board,
+  so the lens's ±0.65 is well inside it. A board whose holes come out at the
+  bottom of their tolerance will not take an M2 until they are opened with a
+  2.0 drill.
 
 ## Why it is shaped like this
 

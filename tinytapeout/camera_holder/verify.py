@@ -55,7 +55,6 @@ EPS = 1e-6
 #: The largest an M2 thread can be: ISO 965-2 tolerance class 6g puts the
 #: major diameter 0.019 under the 2.000 basic size for a 0.4 mm pitch.
 M2_MAX_MAJOR = 1.981
-HOLE_TOL_NOTE = "0.1 on the hole"
 
 #: The least air left between the holder and anything it must not touch.
 CLEAR = 0.5
@@ -188,7 +187,7 @@ def the_camera() -> None:
     check(worst >= v1.LENS_TOL + v1.HOLE_TOL - EPS,
           "and with room for where the lens really is",
           f"{worst:.2f} mm to spare at the tightest, against the "
-          f"{v1.LENS_TOL:.1f} v1.py gives the glued-on lens module and the "
+          f"{v1.LENS_TOL:.2f} v1.py gives the glued-on lens module and the "
           f"{v1.HOLE_TOL:.1f} it gives the holes it is located by")
 
     # Nothing of the holder between the lens and any board.  The picture of
@@ -363,13 +362,18 @@ def fasteners() -> None:
     # The camera's own screws: through its holes, heads clear of its lens
     # and of what is beside it, bosses clear of what is on its far face.
     # An M2's thread is at most 1.981 across (ISO 965-2, 6g: 19 um under
-    # the 2.000 basic size), and v1.py's holes are 2.0, which Raspberry Pi
-    # Spy say "will accept a 2mm machine screw".
+    # the 2.000 basic size).  v1.py's holes are 2.0 as both measurements
+    # give them, which passes it; but v1.py carries them +/-0.2, because no
+    # source reads them finer, and at the bottom of that an M2 does not go.
     cam_holes = [(u, v, d) for u, v, d in H.CAMERA.holes]
     check(all(d > M2_MAX_MAJOR for _, _, d in cam_holes),
-          "an M2 passes the camera's holes",
+          "an M2 passes the camera's holes, as measured",
           f"holes {', '.join(f'{d:.2f}' for *_, d in cam_holes)} against an "
-          f"M2 thread at most {M2_MAX_MAJOR:.3f}, +/-{HOLE_TOL_NOTE}")
+          f"M2 thread at most {M2_MAX_MAJOR:.3f}")
+    low = min(d for *_, d in cam_holes) - H.CAMERA.hole_dia_tol
+    check(True, "and at the bottom of their tolerance",
+          f"{low:.2f}, which an M2 does not pass: a board whose holes are "
+          "that small wants them opened with a 2.0 drill", report=True)
     au, av = H.CAMERA.lens_axis
     size = H.CAMERA.lens_profile[0][1]
     beside = [("lens module", au - size / 2, av - size / 2, au + size / 2,
@@ -415,18 +419,23 @@ def the_cable() -> None:
     tip = H.camera_to_plate(H.CAMERA.lens_axis[0] + out_u,
                             H.CAMERA.lens_axis[1] + out_v)
     dx, dy = tip[0] - H.AXIS_X, tip[1] - H.AXIS_Y
-    # The cable, as wide as v1.py says, centred on the connector, from the
+    # The cable, where v1.py says it crosses the board's edge, from the
     # connector out past the carrier's edge, at the height v1.py says it
     # leaves the connector: a strip, and the gap it runs in.
     reach = H.CARRIER_HALF + 5.0
-    half = H.CAMERA.ffc_cable_width / 2
-    mx, my = (cx0 + cx1) / 2, (cy0 + cy1) / 2
+    u0, u1 = H.CAMERA.ffc_cable
+    ends = [H.camera_to_plate(u, y1 if edge == "top" else y0)
+            for u in (u0, u1)] if edge in ("top", "bottom") else \
+        [H.camera_to_plate(x1 if edge == "right" else x0, u)
+         for u in (u0, u1)]
     if abs(dy) > abs(dx):
-        strip = (mx - half, mx + half, cy1 if dy > 0 else H.AXIS_Y - reach,
+        a, b = sorted(p[0] for p in ends)
+        strip = (a, b, cy1 if dy > 0 else H.AXIS_Y - reach,
                  H.AXIS_Y + reach if dy > 0 else cy0)
     else:
+        a, b = sorted(p[1] for p in ends)
         strip = (cx1 if dx > 0 else H.AXIS_X - reach,
-                 H.AXIS_X + reach if dx > 0 else cx0, my - half, my + half)
+                 H.AXIS_X + reach if dx > 0 else cx0, a, b)
     z = H.PCB_BACK + H.CAMERA.ffc_cable_z
     box = (*strip, z - 0.3, z + 0.3)
     check(z + 0.3 <= H.CARRIER_Z0 - EPS,
@@ -442,7 +451,8 @@ def the_cable() -> None:
     toward = {(0, 1): "the back", (0, -1): "the front", (1, 0): "the right",
               (-1, 0): "the left"}[(round(dx), round(dy))]
     check(g >= CLEAR - EPS, "and runs out from under it unobstructed",
-          f"towards {toward}, {H.CAMERA.ffc_cable_width:.1f} wide; "
+          f"towards {toward}, {strip[1] - strip[0] if abs(dy) > abs(dx) else strip[3] - strip[2]:.2f} wide "
+          f"(v1.py prints {H.CAMERA.ffc_cable_width:.1f}); "
           f"{g:+.2f} mm to the nearest boss or nut")
 
 
