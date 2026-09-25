@@ -9,8 +9,8 @@ recorded beside it -- which is what ``accessories/parts.py`` does for the
 parts nobody publishes a drawing of, and for the same reason.
 
 ``tools/fetch_raspberry_pi_camera.sh`` caches every page quoted below into
-``tmp/src/rpi-camera-optics/``, and ``raspberry_pi_camera/verify.py`` reads
-those files back and fails if a quote here is not in them.
+``tmp/src/rpi-camera-optics/``, and ``raspberry_pi_camera/verify_optics.py``
+reads those files back and fails if a quote here is not in them.
 
 The model
 ---------
@@ -155,7 +155,7 @@ CONSISTENCY_TOL = 0.1
 # the equisolid, r = 2 f sin(theta / 2).  Most wide lenses sit between the
 # rectilinear and the equisolid, and not all: YXF's figures, relabelled,
 # are more compressed than the equisolid on the long axis.  So the bound is
-# not taken on trust; verify.py checks the margin absorbs each pair.
+# not taken on trust; verify_optics.py checks the margin absorbs each pair.
 #
 # What this does and does not change.  Where the picture's edge lands on a
 # flat board Z below the lens is a matter of the angle of the ray to that
@@ -168,8 +168,8 @@ CONSISTENCY_TOL = 0.1
 # -- and how the frame's corners fare: under barrel distortion the
 # picture's straight edges map to curves on the board that bow OUTWARDS, so
 # a rectangle whose edges are set by A_h and A_v at the mid-points has its
-# corners inside the picture, with room to spare.  verify.py checks that
-# by walking the picture's edge down onto the board.
+# corners inside the picture, with room to spare.  verify_optics.py checks
+# that by walking the picture's edge down onto the board.
 
 
 def split_diagonal(d: float, projection: str) -> tuple[float, float]:
@@ -387,7 +387,7 @@ class Figure:
     its horizontal as its diagonal.  ``d`` is None where the source gives no
     diagonal.
     ``rejected`` says why a figure is not used, where it cannot be right
-    whatever else is true; verify.py checks the reason.
+    whatever else is true; verify_optics.py checks the reason.
     """
 
     what: str
@@ -412,9 +412,9 @@ class Lens:
     tan(V/2) = tan(H/2) x 3/4 on a 4:3 sensor, an equidistant one V = H x 3/4.
 
     ``alternatives`` are the other pairs the evidence would allow, and
-    verify.py requires the TARGET to stay in the picture at the sheet's
-    height under every one of them: the frame's margin is what has to absorb
-    the uncertainty in the lens, and it is checked that it does.
+    verify_optics.py requires the TARGET to stay in the picture at the
+    sheet's height under every one of them: the frame's margin is what has
+    to absorb the uncertainty in the lens, and it is checked that it does.
 
     ``focal_length`` and ``f_number`` carry their own basis, DECLARED,
     DERIVED or ASSUMED; ``near`` is the near end of the focus range the

@@ -445,8 +445,9 @@ straight side of the sensor lands as a curve bowing **outwards** --
 their middles has its corners inside the picture: at 100 mm the wide lens's
 corner reaches 138.6, 103.9 against the rectangle's 111.1, 72.7.
 `verify_optics.py` walks the edge down for the equidistant and the
-equisolid projections and requires it. The price is resolution at the edge: a pixel
-at the long side's edge covers 2.23 times the board it covers on the axis.
+equisolid projections and requires it. The price is resolution at the
+edge: a pixel at the long side's edge covers 2.23 times the board it covers
+on the axis.
 
 What is not known is which projection the B006604's lens really has.
 `verify_optics.py` requires the frame's 5 mm margin to absorb every
