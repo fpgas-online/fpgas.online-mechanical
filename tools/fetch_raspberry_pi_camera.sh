@@ -80,3 +80,82 @@ for f in tmp/rpi/cm1/*; do
   esac
   printf '%-52s %8s bytes\n' "cm1/$(basename "$f")" "$(wc -c < "$f")"
 done
+
+# The optical figures for the camera position sheets, the RPICAM-OVER-*,
+# which no mechanical drawing carries: field of view, focal length, sensor
+# size and focus range.
+#
+# Raspberry Pi Ltd's own camera documentation is the source for the OV5647
+# Camera Module 1 figures, and it is fetched from the Internet Archive: a
+# direct request to raspberrypi.com is answered 403 from here, and a pinned
+# snapshot is what makes the quotes on the sheets reproducible anyway.
+#
+# Arducam's OV5647 documentation is the source for the wide and the autofocus
+# variants, which Raspberry Pi never made: their product catalogue table names
+# a horizontal and a vertical field of view and a focus type per SKU, which is
+# the only place either is written down by the company that sells the part.
+mkdir -p tmp/src/rpi-camera-optics
+fetch_optics() {
+  curl -sSL -A "Mozilla/5.0 (X11; Linux x86_64) mechanical-drawings/1.0" \
+       -o "tmp/src/rpi-camera-optics/$2" "$1"
+  printf '%-52s %8s bytes\n' "$2" "$(wc -c < "tmp/src/rpi-camera-optics/$2")"
+}
+fetch_optics \
+  'https://web.archive.org/web/20241230011811/https://www.raspberrypi.com/documentation/accessories/camera.html' \
+  raspberry-pi-camera-documentation.html
+fetch_optics \
+  'https://docs.arducam.com/Raspberry-Pi-Camera/Native-camera/5MP-OV5647/' \
+  arducam-5mp-ov5647.html
+fetch_optics \
+  'https://docs.arducam.com/Raspberry-Pi-Camera/Motorized-Focus-Camera/Motorized-Focus-Camera/' \
+  arducam-motorized-focus-camera.html
+fetch_optics \
+  'https://docs.arducam.com/Raspberry-Pi-Camera/Motorized-Focus-Camera/Quick-Start-Guide/OV5647-Motorized-Focus-Camera/' \
+  arducam-ov5647-motorized-focus-camera.html
+
+# The lens options and their focus, one page per claim the sheets make about
+# them.  Every page that the Internet Archive holds is fetched from a pinned
+# capture: arducam.com and uctronics.com answer a plain request with a
+# Cloudflare challenge, and a capture is what keeps a quote checkable after
+# the vendor edits the page.  The one page it does not hold, YXF's M6 lens,
+# is fetched live.
+#
+# OmniVision's own OV5647 datasheet, for the image area and the active array
+# the lenses are measured against.
+fetch_optics \
+  'https://web.archive.org/web/20260723044623/https://cdn.sparkfun.com/datasheets/Dev/RaspberryPi/ov5647_full.pdf' \
+  ov5647-datasheet.pdf
+# Arducam's 120 degree module, the B006604: its product page gives the angle
+# as a DIAGONAL, which the catalogue table above does not.
+fetch_optics \
+  'https://web.archive.org/web/20250530094438/https://www.arducam.com/b006604-arducam-for-raspberry-pi-zero-camera-module-wide-angle-120-1-4-inch-5mp-ov5647-spy-camera-with-flex-cable-for-pi-zero-and-pi-compute-module.html' \
+  arducam-b006604.html
+# The motorised-focus OV5647: the B0121, discontinued, whose page names the
+# B0176 as its successor, and the B0176 on UCTRONICS, Arducam's own store.
+fetch_optics \
+  'https://web.archive.org/web/20241103134041/https://www.arducam.com/product/5mp-ov5647-motorized-focus-camera-sensor-raspberry-pi/' \
+  arducam-b0121-motorized-focus.html
+fetch_optics \
+  'https://web.archive.org/web/20251209063424/https://www.uctronics.com/arducam-auto-focus-camera-module-5mp-for-raspberry-pi.html' \
+  uctronics-arducam-b0176.html
+# Two lens makers' figures for real ~120 degree lenses on this sensor, with
+# the distortion in: Commonlands work each lens's field of view out on the
+# OV5647's active area from their own distortion data, and YXF publish a
+# datasheet row for an M6 lens made for OV5647 modules.
+fetch_optics \
+  'https://web.archive.org/web/20260817210431/https://commonlands.com/pages/image-sensors/ov5647' \
+  commonlands-ov5647.html
+fetch_optics \
+  'https://www.yxfcamera.com/products/Lenses/m6-lens-5mp-ov5647-raspberry-pi-camera-lens.html' \
+  yxf-m6-lens.html
+# Waveshare's RPi Camera (G), the Camera Module v1 sized fisheye, and The Pi
+# Hut's listing of it, which is where its horizontal figure is printed.
+fetch_optics \
+  'https://web.archive.org/web/20191211152844/https://www.waveshare.com/RPi-Camera-G.htm' \
+  waveshare-rpi-camera-g.html
+fetch_optics \
+  'https://web.archive.org/web/20190224065515/https://www.waveshare.com/wiki/RPi_Camera_(G)' \
+  waveshare-rpi-camera-g-wiki.html
+fetch_optics \
+  'https://web.archive.org/web/20250810012231/https://thepihut.com/products/raspberry-pi-camera-board-fisheye-160-lens-5mp' \
+  pihut-fisheye-160.html

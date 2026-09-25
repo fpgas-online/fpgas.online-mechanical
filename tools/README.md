@@ -21,14 +21,14 @@ Imported, not run.
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
 | `render_svg.py` | SVG to PDF and PNG via Inkscape, text exported as paths |
-| `reproducible.py` | Pins the clocks, tool version strings and GUIDs that cairo, Inkscape, pypdf and ezdxf stamp into their output |
+| `reproducible.py` | Pins the clocks, tool version strings and GUIDs that cairo, Inkscape, pypdf and ezdxf stamp into their output, and the export clock, the absolute path and the per-process product counter OpenCascade stamps into a STEP |
 
 ## Build
 
 | | |
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's board mechanical drawings into `tmp/` |
-| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/`, and what stands in for a drawing of the Camera Module 1 |
+| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/`, what stands in for a drawing of the Camera Module 1, and every vendor page and datasheet the lens and camera position sheets quote their optics from, pinned Internet Archive captures where there are any |
 | `fetch_fpga.sh` | Clones the repositories and downloads the drawings and models the FPGA boards are read from into `tmp/`; [`fpga/README.md`](../fpga/README.md) says which board is read from what |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
@@ -42,11 +42,47 @@ The extractors are not here. Each lives with its subject:
 - [`tinytapeout/extract.py`](../tinytapeout/README.md)
 - [`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md)
 
+The camera holder has no extractor:
+[`tinytapeout/camera_holder/holder.py`](../tinytapeout/camera_holder/README.md)
+is derived at import from the modules it is built on.
+
 ## Checks
 
-Each has caught a real defect. `make check` runs all but `crosscheck_gerber.py`,
-which needs network. A check specific to one made part is not here: it lives
-with the part, as the mounting plate's `verify.py` does.
+`make check` runs all but `crosscheck_gerber.py`, which needs network. Each
+of the checks listed at the end of this section has caught a real defect. A
+check specific to one family or one made part is not among them: it lives
+with its family, and not every one of those has caught something yet.
+
+- [`tinytapeout/mounting_plate/verify.py`](../tinytapeout/mounting_plate/README.md)
+  proves the finished plate accepts every demo board revision, with a real M3
+  fastener clearance check. It has caught a real defect: a merge rule that
+  produced a plate whose holes the fasteners did not fit.
+- [`tinytapeout/camera_holder/verify.py`](../tinytapeout/camera_holder/README.md)
+  proves, for the holder built for each lens, that it puts the lens where
+  the camera position sheet says it has to be, that every revision's whole
+  board is then in the picture with none of it hidden, that the holder
+  touches no board, standoff or cable, and that every fastener fits; and
+  that the holders share their beam and carrier.  Newer than anything it
+  could have caught.
+- [`raspberry_pi_camera/verify_optics.py`](../raspberry_pi_camera/README.md)
+  has not caught one yet -- it is newer than the sheets it checks. It proves
+  that every figure quoted in `raspberry_pi_camera/optics.py` is in the
+  vendor page it is credited to; that the pinhole model reproduces Raspberry
+  Pi's own declared field of view from their own focal length and pixel
+  count, and does *not* reproduce it from the sensor image area printed
+  beside it; that each lens's figures agree or disagree with the sensor's 4:3
+  under its projection as the sheets say they do, and that the 120 degree
+  lens's pair is the split of its declared diagonal between the rectilinear
+  and equisolid bounds; that the frame margin absorbs every other pair the
+  evidence allows, and the wide lens's barrel distortion puts the frame's
+  corners inside the picture; that every frame is the smallest 4:3 rectangle
+  holding its target plus the stated margin, and that both angles reach it
+  at the height printed; that a target whose plane is not the subject's own
+  top face says so; that every hyperfocal distance, depth of field and focus
+  verdict is the one the arithmetic gives; and that what the elevations draw
+  is right -- the angle each labels lies along its axis, the camera is turned
+  the way that needs it lower, and the figures the notes derive come out the
+  same by another route.
 
 GitHub Actions runs `make check` on every push to `main` and on every pull
 request: [`.github/workflows/check.yml`](../.github/workflows/check.yml). The

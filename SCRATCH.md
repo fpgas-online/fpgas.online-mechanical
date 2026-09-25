@@ -2267,3 +2267,473 @@ of the lens's offset from the holes begins "from the drawing it would
 appear", so it was Gert's sheet read twice. The height check against "around
 9 mm" was held to 0.1 when Raspberry Pi's own table is 0.2 to 0.4 off their
 own Camera Module 3 drawings; it is a sanity check at 0.5 now, and says so.
+
+## Where the camera goes: the RPICAM-OVER-* sheets
+
+Issue #7. Sheets saying where an OV5647 camera has to sit above a Tiny
+Tapeout mounting plate and a Digilent Arty A7, for a 65 and a 120 degree
+lens, framing the whole board and framing just the indicators.
+
+### The decision that shaped everything: the frame does not depend on the lens
+
+The obvious layout is one sheet per lens, which is how the issue is worded.
+It is the wrong shape, and working out why decided the rest of the sheet.
+
+A frame footprint -- the rectangle of the subject that ends up in the picture
+-- is the **sensor's** aspect ratio, not the lens's. The OV5647 is 2592 x
+1944, which is 4:3 exactly, and that is the shape of the file that comes out
+whatever is screwed onto the front. So the smallest frame holding a given
+target is the same rectangle for both lenses, and the only thing the lens
+changes is how far above it the camera goes.
+
+That means a subject has exactly as many rectangles as it has things worth
+framing -- two, here -- and both lenses share them. One sheet per subject
+with both lenses on it therefore draws each rectangle once; one sheet per lens
+would have drawn all of them twice, on two different subjects at two
+different scales on one A3 page, and still
+sent anyone setting up a rig to the other page to find out what the other
+lens does. **One sheet per subject, both lenses in the tables.**
+
+Both come out at 1:1, which is what the rest of the set is.
+
+### No side elevation -- superseded
+
+The issue offers "a side elevation or a table giving the heights". The heights
+run from 12.3 to 146.8 mm. An elevation at the plan's own 1:1 would want
+another 150 mm of sheet height, which an A3 carrying a 1:1 plan and a notes
+band does not have; at any other scale it would be a view beside a 1:1 view,
+inviting exactly the measurement it cannot support. A table, and the notes say
+what Z is measured from.
+
+That was the wrong way round, and the owner said so: the question is a
+height, so the view that shows the height is the primary one and the plan is
+the one that can shrink. See "The camera position sheets lead with the
+elevations" below.
+
+### Every height fails the focus check, and that is the finding
+
+Raspberry Pi give the Camera Module 1's focus as `Fixed` and its depth of
+field as `Approx 1 m to ∞`. The *largest* height on any of these sheets is
+146.8 mm, a seventh of that metre; the smallest is 12.3 mm. So a stock Camera
+Module OV5647 cannot focus on any of these boards, at either lens, at any of
+the framings asked for.
+
+`verify_optics.py` passes while reporting `TOO CLOSE` on every row that has
+a published limit. It has to: what is being checked is that the sheet prints the
+verdict the arithmetic gives, not that the problem has gone away. The 120
+degree lens prints `UNKNOWN` instead, because Arducam publish no near limit
+for it at all.
+
+The useful conclusion is a mount decision rather than a drawing one: a rig
+built to these sheets needs an adjustable-focus or motorised OV5647.
+
+### The pinhole model is established, not assumed
+
+The one piece of luck in the sources. Raspberry Pi publish a focal length, a
+sensor size, a pixel count *and* a field of view, and any two predict the
+third -- so the model can be checked instead of asserted.
+
+    2 x atan(2592 x 0.0014 / 2 / 3.60) = 53.496    declared 53.50 +/- 0.13
+    2 x atan(1944 x 0.0014 / 2 / 3.60) = 41.413    declared 41.41 +/- 0.11
+
+Four thousandths of a degree on both axes. And it only works against the
+**active pixel array**: their own "Sensor image area", 3.76 x 2.74 mm, printed
+one row above in the same table, gives 55.149 across and misses by 1.65
+degrees. So the declared field of view is the rectilinear angle to the edge of
+the array, which is the arithmetic the sheets do. `FOV_CHECK` carries both
+rows and `verify_optics.py` requires the array to match and the image area
+not to.
+
+### "65 degrees" is the diagonal, and it is the image area's diagonal
+
+Neither Raspberry Pi nor Arducam ever print 65. What they print for the stock
+lens is 53.50 x 41.41 and 54 x 41 respectively. The 65 is the diagonal:
+
+    image area:    2 x atan(sqrt(3.76^2 + 2.74^2) / 2 / 3.60) = 65.74
+    active array:  2 x atan(sqrt(3.6288^2 + 2.7216^2) / 2 / 3.60) = 64.42
+
+So the marketing figure comes from the rectangle that does *not* reproduce the
+declared H and V. Both are on the sheet, and the computation uses the pair the
+vendors do print.
+
+### Arducam's 120 x 90 cannot both be right
+
+Superseded: the 120 is the diagonal, and the pair is 96 x 72. See "Both
+lenses, and what they really are" below.
+
+On a 4:3 sensor a rectilinear lens has tan(V/2) = tan(H/2) x 3/4. The stock
+lens passes: 53.50 implies 41.416 against a declared 41.41. The wide lens does
+not: 120 implies 104.82, not 90. Nearly fifteen degrees.
+
+Rather than pick one, the height is taken as the greater of what each declared
+angle asks for. On every frame here that is the vertical, so at the height
+printed the picture is wider across than the rectangle drawn -- which is the
+safe direction, and the sheet says it.
+
+### The margin is five millimetres flat
+
+Not a percentage. What a hand-aimed camera on a stand has to absorb is where
+the stand ends up, which is a few millimetres whatever is being framed. Ten
+per cent round the Arty's LED row would have been 0.36 mm on the short axis,
+which is under the board data's own tolerance and would have been a number
+pretending to be a margin.
+
+### The camera may be turned through ninety degrees
+
+The frame is the smaller of the two 4:3 orientations. Every target on the
+plate and the Arty is wider than it is tall, so every frame here is
+landscape; a target taller than it is wide would put the camera higher
+framed landscape than turned through ninety degrees. The `LONG` column says
+which way round, and `verify_optics.py` checks that the declared angles
+reach the frame the way round it was drawn -- which is the one place the
+orientation could have been got backwards without anything looking wrong.
+
+### The indicators on the plate are not clustered
+
+Worth knowing before building a rig: across the five revision families the
+LEDs and 7-segment displays span 90.91 x 62.79 mm of a 135 x 101 mm plate, so
+framing "just the LEDs" buys 47 mm of height over framing the whole plate and
+not much else. That is not a fault in the plate; it is that the LEDs move
+between revisions and a fixed rig has to cover all of them. The sheet draws
+every position, over all five, and says so.
+
+### The position sheets are named from a table
+
+The position sheets are named from a table, `RPICAM_NAMES` in
+`tools/layout.py`, keyed by their file stems: OVER and one word for the
+subject, `RPICAM-OVER-PLATE` and `RPICAM-OVER-ARTY`, the wider of them 36.03
+mm at the ISO 3098 floor where the stems in capitals ran to 61.02. The
+owner's bound is four or five characters behind the prefix, and a stem that
+says its subject in full -- `over-tt-mounting-plate` -- is right for a file
+and far past it for a drawing number; the sheet's title says the subject in
+full anyway.
+### The annotation column stayed at 165 mm, and the notes were cut
+
+These sheets carry three small tables and no schedule, so the column could
+have been narrower, and every millimetre off it is a millimetre on every line
+of the notes band beside it -- which these sheets want, because their notes are
+mostly optics, a subject the drawing cannot show at all. At 138 mm everything
+fitted except the title block: the `VERSION` cell is a quarter of the column
+and below about 157 mm it can no longer hold a `git describe` string. Widening
+the grid's cells unequally would have been the right fix and would have
+changed every title block in the repository, so the notes were cut instead.
+
+Two small library changes did go in: a title block may rename its `MATERIAL`
+field, because these sheets draw no part and a field headed MATERIAL with a
+board name in it is worse than either (they say `SUBJECT`); and the legend
+gained the two frame line styles. Those are colours as well as a line type,
+because on a sheet where one frame contains the other, type K alone cannot
+say *which* frame a rectangle is, and that is the only question a reader has.
+
+### Z is measured from the target's plane, not the subject's face
+
+The review caught the one thing here that was wrong rather than untidy, and it
+is worth writing down because it is the mistake this whole model invites.
+
+The camera height is a distance from the pinhole to the plane it is focused
+and framed on. The subject's own top face is the obvious plane to quote it
+from, and on one of these frames it is the wrong one: `RPICAM-OVER-PLATE`
+frame B frames the demo boards' indicators, and a demo board stands on
+standoffs above the plate. At the 100.1 mm the sheet first gave, a board
+12 mm up put the picture at 88.83 x 66.62 against an indicator union of
+90.91 x 62.79. The outer LEDs were outside the frame.
+
+The picture at `h` above the plane the height was set from is `(Z - h) / Z`
+of what is drawn, so the error is always in the direction that loses the
+edges -- never the safe one. A `Target` now carries the plane it lies in and
+Z is quoted above that, with a PLANE note on every sheet saying which.
+
+Where the offset to the subject's own face is known, the sheet gives it. Where
+it is not, the sheet says so rather than inventing one, and the
+plate-to-board offset is not: it is the standoff height plus the board
+thickness. The thickness is in `tinytapeout/boards.py`, 1.56 to 1.60 mm
+across the revisions; the standoff height is the builder's and is specified
+nowhere in this repository, standoffs having never been drawn. Measure the
+stack.
+
+Frame A on the plate keeps the plate's own face, because the plate is what it
+frames. The board still stands above it and is still inside it, so the sheet
+prints the headroom instead: the board outlines stay in the picture up to
+25.2 mm above the plate at 65 deg and 9.5 mm at 120 deg. At 120 degrees that
+is less than a 10 mm standoff and a 1.6 mm board, which is worth knowing
+before building the rig.
+
+### What is left uncertain
+
+- Z is to the lens's entrance pupil, and no vendor says where that sits behind
+  the front element. On a 3.60 mm lens it is a few millimetres. Set Z from the
+  lens face; the sheets say ASSUMED.
+- The 120 degree figure is Arducam's, for the M6 lens on their B006604, which
+  is a Pi Zero sized OV5647 board rather than a Camera Module shaped one. The
+  sensor is the same and the framing arithmetic carries over, but the source
+  is a catalogue row and not a lens datasheet. Nobody appears to publish a
+  full H/V/D set, measured and defined, for any 120 degree OV5647 module.
+- Neither vendor says how the field of view is measured. The check above says
+  it behaves like a rectilinear angle to the array edge on the stock lens; at
+  120 degrees real lenses are not rectilinear and the frame will be barrel
+  distorted. Nothing here models distortion.
+- The plate-to-board offset is not published: it needs a standoff height
+  nobody here has written down. The sheet says to measure, and says which way
+  the error goes if you do not; it cannot do better until somebody specifies
+  a standoff.
+- The 65 degree column's excess over the rectangle drawn is 0.01 to 0.02 mm,
+  which is the rounding in the declared 53.50 and 41.41 rather than anything
+  physical. It is reported by `verify_optics.py` and not by the sheets.
+
+## The camera position sheets lead with the elevations
+
+Issue #7 again, part (b). The owner asked for the side view to be the
+primary one: the board, the camera over it, the 65 degree lens's field of
+view, and dimensions saying how high and where for the whole board to be in
+the picture.
+
+### Two elevations, because the picture has two axes
+
+"65 degrees" is the stock lens's diagonal. What reaches the edge of the
+picture is the declared angle along each axis -- 53.50 across the sensor's
+long side, 41.41 along its short side -- and which lies along the subject's
+X depends on which way the camera is turned. So one elevation per axis: the
+front elevation along +Y with X across it, and the end elevation, first
+angle, seen from the right and drawn on the left with Y across it, so that Y
+reads left to right. Each draws its own angle from the lens face to frame A's
+edges. Z is dimensioned once, on the front elevation.
+
+Reading 65 as the angle across the long side is the mistake the name
+invites, and it is not small: over the plate it gives Z 110.1 where 139.2 is
+needed, and the picture misses 14.6 mm off each end. Every sheet prints its
+own figure. Turned the other way the camera would need 174.3.
+
+### The plan stayed, smaller
+
+It is the only view showing which way the picture lies over the subject and
+where frame B is, so it earns its place, but not at the elevations' scale:
+at 1:2 under the front elevation it took the paper the notes needed and
+pushed the plate sheet to 1:5. It sits under the end elevation at the next
+standard scale down, dimensions nothing (the elevations dimension frame A,
+the table every frame), and the notes flow into the paper the views leave --
+beside the plan, then across the full width, then the column's foot --
+rather than a band. The scale is the largest at which the views and the
+notes both fit: 1:2 for the plate and for the Arty. Getting the plate to 1:2
+took cutting every note that said a thing twice.
+
+### Frame A on the plate is every board, not the plate
+
+A camera fixed over the plate has to take in whichever board is on it, not
+the plate. Frame A is now the union of every revision's assembled envelope,
+Pmod bodies included, set from the demo board's top face. That needed the
+standoff, which the plate never specified. It does now: 8 mm, a choice made
+no shorter than what Tiny Tapeout's own printed base gives the board
+(`case/tt06_demo_base.scad` in tt-demo-pcb: `Height = 8` with a 1.6 PCB in
+its top, so 6.4 mm studs over a pocket "for PTH pins and rubber feet"). The
+board face is then 9.56 to 9.60 above the plate; Z is set from the higher.
+
+### Focus, said plainly and quantified
+
+Every height is nearer than the stock lens's "Approx 1 m to infinity", so the
+board is out of focus. How far: on a thin lens set at the 2 m hyperfocal
+distance that range implies, a point spreads to 21 pixels, 1.1 mm on the
+board, at the plate's 139.2. Set at infinity instead it is 1.2 mm, so the
+figure does not hang on the assumption. The only published close limits are
+other sensors': the plate's heights are beyond "Approx 10 cm", and the
+Arty's LEDs are nearer than even "Approx 5 cm".
+
+### The entrance pupil, bounded by the data
+
+Nobody locates it, but the v1.3's data gives the lens 5.20 mm proud of the
+board, and the pupil is between the sensor and the lens face. So set the
+face at Z and the picture is up to 3.7% larger over the plate, never
+smaller -- which is what the first note says instead of "a few millimetres".
+
+## A camera holder on the TT plate: TT-MP-CAMERA
+
+Part (b)'s second half: something that puts the camera where
+`RPICAM-OVER-PLATE` says, built on the plate.
+
+### The camera
+
+The stock 65 degree lens is the Camera Module v1.3's, and Raspberry Pi never
+drew that board. Another branch, `issue-39-rpi-camera-v1`, wrote its data by
+hand from Gert van Loo's 2013 hand-measured sheet, and this one is built on
+it: `raspberry_pi_camera/v1.py` is that branch's. Its reviewed version gives
+the lens an error bar of ±0.65, the holes ±0.2 and the connector its latch
+ears, and puts the optical axis at (12.5, 14.8). Holes ø2.0 on the family's
+21 x 12.5 pattern, the lens module 8 mm square and 5.20 proud, the board
+0.95, the FFC connector 2.8 deep on the far face. Until it landed the holder
+was developed against Camera Module 3's pattern, flagged, and verify.py
+failed on it.
+
+### Why a portal
+
+Every revision's Pmod hosts are on the front edge and every USB-C is on the
+front or the back, so the holder stands on the left and right edges and
+spans over. The only connectors on a side are J12 to J14 on DB 4+ and DB 06+,
+not fitted, whose bodies stand 2.50 mm in from the plate's left edge; the
+side frame's wall is 1.00 mm outside that and mostly off the plate, and it
+is a window -- posts at the ends, a rail, a foot -- so a peripheral in one
+comes out through it.
+
+The feet sit over the plate's four side M4 fixings and share their screws.
+That is the plate's own pattern, so no hole is added and the holder can only
+go on one way. The plate's left and right fixings are mirror images about
+its centre line to 0.003 mm, which is what lets the two side frames be
+mirror images.
+
+### Why the carrier turns
+
+Which way the OV5647's pixel rows run on the v1.3 is published nowhere. The
+frame's long side has to lie along the plate's X; a quarter turn out, the
+picture falls 17.1 mm short at each end. So the camera is on a carrier that
+bolts to the beam on a square of four M3 centred on the lens axis, and turns
+a quarter at a time without moving the axis. Printed bosses for both hole
+orientations on one part were the first idea and do not work: whichever
+way the second set is turned, one of its bosses lands 1.1 mm into the
+camera's FFC connector and two are centred off the board's edge.
+
+### The height
+
+Lens face 150.00 above the plate face: 139.17 over the highest board face,
+9.60 up, is 148.77, plus a millimetre for the print, rounded up. The stack
+above it is the camera's own 5.20 and 0.95, bosses a millimetre over the
+connector's 2.8, a 6 mm carrier with the camera's M2 nuts in pockets in
+its top, and the beam on the rails.
+
+### What came up while it was being written
+
+- The first cut of the side frame's fixings took every plate fixing with X
+  under the centre line, which included one of the two at the back.
+- An M2 does not pass a ø2.0 hole at the nominal sizes. It does at the
+  thread's own tolerance -- 6g puts an M2's major diameter at most 1.981 --
+  so that is the check. v1.py carries the holes ±0.2, since no source reads
+  them finer, and at 1.80 an M2 does not go: verify.py reports it, and the
+  fix is a 2.0 drill.
+- The M3 carrier screw the first table named was 12 mm: 6 mm of beam, 4 of
+  carrier and a 2.4 mm nut want 12.4. Lengths are worked from the grips now.
+
+### What is left uncertain
+
+- It has not been printed.
+- The sensor orientation, as above.
+- The v1.3's small parts beside the lens, LED D1 and R9 by MT1, which no
+  source dimensions, against the M2 heads on the lens side.
+- Focus, which no holder can fix for the stock lens.
+
+## Both lenses, and what they really are
+
+The owner's request, in full: get the real horizontal and vertical angles of
+the v1 camera's two lenses, the ~65 and the "wide" ~120 degree, document
+them, draw both, and document the focus of the fixed and the autofocus
+versions.
+
+### The 120 is a diagonal
+
+The previous finding was that Arducam's "120(H) x 90(V)" for the B006604
+could not both be right on a 4:3 sensor. The B006604's own product page
+settles why: "angle of view: 120° diagonal", "Diagnoal Field of View (DFOV)
+120°". The catalogue row put the diagonal in the H column, and made V three
+quarters of it. H = 120 with D = 120 is not a lens at all: the middle of the
+sensor's side is nearer the axis than its corner, and every projection maps
+nearer to narrower, so H < D always. That rejection holds whatever the lens.
+
+The same catalogue table has the same camera without its IR filter, the
+B006604N, as "96(H) x 72(V)". Split a 120 degree diagonal equidistantly --
+r = f theta, angle proportional to image height -- and the long side is 120
+x 3.6288 / 4.536 = 96.00 and the short 72.00, exactly. Commonlands' OV5647
+page, which works each lens's field of view out on this sensor's active area
+from its real distortion data, has a 2.2 mm fisheye at 96 x 72 x 122. So 96
+x 72 it is, with the rectilinear split (108.36 x 92.20) as the widest a lens
+could be and the equisolid (94.31 x 69.83) and YXF's M6 lens made for these
+modules (92.4 x 73.9, printed with its labels shuffled) as narrower ones.
+
+### Distortion, and why tan() is still right for coverage
+
+The request warned that rectilinear tan() maths is wrong for a wide lens. It
+is, for getting from a focal length or a diagonal to an angle, and that is
+where the 108 came from. It is not wrong for coverage: a ray theta off the
+axis meets a plane Z below Z tan(theta) out, whatever glass bent it there.
+So once the angle to the middle of each side of the picture is right, the
+coverage of the board along that line is 2 Z tan(A/2). What changes is the
+corners: under barrel distortion the sensor's straight edges land on the
+board as curves bowing outwards (tan(theta)/r grows with r), so the
+rectangle drawn from H and V is inside the picture. `verify_optics.py` walks
+the edge down for the equidistant and the equisolid projections and checks
+it, and checks the margin absorbs every narrower pair at every height -- the
+tightest leaves 2.93 of the 5.00 mm.
+
+### The autofocus module, and focus
+
+Arducam's B0176 is the motorised OV5647. UCTRONICS, Arducam's own store,
+gives it "Focus Distance 80mm to infinity", 54 x 44 and a 35 mm equivalent
+of 35; its predecessor the B0121 says 54 x 41 and "4 cm to infinity". The 35
+mm equivalent gives f = 35 x 4.536 / 43.27 = 3.67 mm. No F number anywhere;
+F2.9 is assumed from the stock lens and only enters the depth of field.
+
+Depth of field is worked at a two-pixel circle of confusion. That is not
+arbitrary: the stock lens's "Approx 1 m to infinity" is exactly what a lens
+focused at its hyperfocal distance gives with a 2.24 um circle, 1.6 pixels.
+The fixed lenses' hyperfocal distances come out at 1.60 m (stock) and 0.70 m
+(wide, with f and N as above). Every position-sheet height is out of focus
+on both fixed lenses; the motorised one is in range at every height of 80
+mm or more -- all but the Arty's LED row.
+
+### Why a separate lens sheet
+
+Putting every declared and derived figure on the position sheets did not
+fit: the plate sheet dropped to 1:2.5 and still overflowed. So the position
+sheets carry the figures they compute with, and `RPICAM-LENS` carries the
+rest: every figure, what became of it, focus, depth of field, and a plan of
+each picture on a board 100 mm down, the fisheye's bowed. It had no room for
+a second section along the short side either; the plan dimensions that way
+and the table has the angle. Its sources are named in one entry, pointing
+at `optics.py` for the addresses: the pinned captures are long enough that
+listing them took half the sheet.
+
+### Two holders, not one adjustable one
+
+The 120 degree lens needs the lens face at 82.00 over the plate against the
+stock lens's 148.77. A carrier sliding 67 mm on the posts would be set by
+eye and knocked out of place; two fixed heights are checkable with a rule.
+Everything above the lens face is the same stack, so the beam and carrier
+are identical parts, only lower -- `verify.py` checks it -- and only the side
+frames differ. Named `TT-MP-CAM65` and `TT-MP-CAM120`: `TT-MP-CAMERA` beside a
+`TT-MP-CAMERA-120` would have made one a prefix of the other, which the
+naming rules forbid.
+
+The honest gap: the lens sold as 120 degrees is on the B006604, a 60 x 11.5
+mm Pi Zero board. The 120 holder carries a v1.3's board with a wide lens
+ASSUMED on it. A carrier for the B006604 wants a drawing of that board.
+
+### What did not work
+
+- arducam.com and uctronics.com answer curl, WebFetch and a Playwright
+  browser alike with a Cloudflare challenge. Every page quoted from them is
+  a pinned Internet Archive capture; the B006604N's own page has none and is
+  not quoted -- the catalogue row stands for it.
+- Waveshare's RPi Camera (G), sold as 160 diagonal and 120 across, declares
+  3.15 mm, which gives 82.5 degrees diagonal even equidistantly. Recorded,
+  not drawn.
+
+### What the review of the lens work changed
+
+- 96 x 72 is Arducam's arithmetic, not evidence. Every row in that block
+  of their catalogue is its diagonal times 0.8 and 0.6 -- B006603 72.4 x
+  54.3 from 90.5, B006605 128 x 96 from 160 -- so the equidistant split is
+  how the table was written. It stays the pair used, as the vendor's own and
+  the usual first model of a fisheye, but it is no longer called
+  corroborated; Commonlands' lens, the one independent figure, scaled to 120
+  is 94.4 x 70.8, near the equisolid, and is now an alternative the margin is
+  checked to absorb. YXF's figures are flagged relabelled.
+- The lean the margin allows was atan(margin / Z), which is right on the
+  lens axis only. At the picture's edge a lean moves it sec^2 of the
+  half-angle further, so it is now solved there: 1.82 deg at 65 over the
+  plate, not 2.06, and 2.68 at 120, not 3.95. And the stand's error and the
+  lens's uncertainty come out of one margin, which the sheets now say.
+- The tables' one-letter flags read DECLARED and DERIVED both as D; they
+  are DECL, DERI and ASSU now, and the diagonal's comes from the data.
+- The wide lens's "1 m to infinity" is not what its own optics give (its
+  hyperfocal distance is 0.70 m) and reads copied from the stock lens's;
+  said so, and it changes no verdict.
+- The autofocus note printed a depth of field at frame A's height whether
+  or not the lens can focus there; where it cannot, it now says so.
+- The 120 holder's 1.00 mm is too little for any real M12 fisheye on a
+  v1.3-sized board: with the face 10 mm low the boards' edges are cut off.
+  The README says so plainly and TODO carries the fix.

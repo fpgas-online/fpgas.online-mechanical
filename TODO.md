@@ -216,3 +216,97 @@ checker that measures the finished PDFs rather than trusting them.
       profiled outline before `render_board` can draw its ø36 C/CS mount and
       its tripod boss honestly, and its FFC connector is in no plan view
 - [ ] The Global Shutter Camera, `RP-008195-DS-1`, if anyone wants it
+
+## Where the camera goes  -- DONE
+- [x] OV5647 optics from the vendors' own words: sensor, focal length, the
+      65 and 120 degree lenses' declared field of view, and the focus range;
+      every quote checked against the cached page by `verify_optics.py`
+- [x] The pinhole model established rather than assumed: the declared 53.50
+      and 41.41 come back out of the declared 3.60 mm and 2592 x 1944 to four
+      thousandths of a degree, and only against the active pixel array
+- [x] A sheet per subject, each named for what it is over:
+      `RPICAM-OVER-PLATE` and `RPICAM-OVER-ARTY`
+- [x] Two frames per subject, whole subject and indicators, each the smallest
+      4:3 rectangle holding its target plus 5.00 mm all round, with the camera
+      height for both lenses and the focus verdict against the published near
+      limit
+- [x] Z measured from the plane the frame's target lies in, not the subject's
+      own top face: the demo boards' indicators are on a board standing on
+      standoffs above the plate
+- [x] `raspberry_pi_camera/verify_optics.py`: the quotes, the model, and
+      every frame against its target and its height
+- [x] The 120 degree lens's field of view: the B006604's own page gives the
+      120 as a DIAGONAL, so the catalogue's 120 x 90 is rejected, and the
+      catalogue's 96 x 72 for the same camera without its IR filter -- the
+      diagonal split equidistantly, which Commonlands reproduce from a real
+      fisheye -- is used
+- [x] A focus range for the autofocus version: the B0176 is "80mm to
+      infinity" on UCTRONICS, its predecessor the B0121 "4 cm"; the sheets
+      hold to the 80, and give its height and whether each height is in range
+- [x] Lens distortion, bounded rather than guessed: coverage of a plane is
+      2 Z tan(A/2) whatever the projection, the frame's corners are inside a
+      barrel-distorted picture, and the margin is checked to absorb the
+      equisolid split and YXF's lens at every height
+- [x] Both lenses drawn on every position sheet, each with its camera at its
+      own height, and `RPICAM-LENS` for every lens figure, declared and
+      derived, and the depth of field
+- [ ] The B006604's real projection. Nobody publishes its lens's focal
+      length, F number or distortion; 2.17 mm is derived from its diagonal
+      and F2.4 is YXF's for a lens of the same angle. A photograph of a
+      ruler at a known height would settle H and V to a tenth of a degree
+- [ ] The autofocus lens's F number, which the depth of field figures
+      ASSUME is the stock lens's F2.9
+- [x] A standoff height for the Tiny Tapeout plate: 8 mm, in
+      `tinytapeout/mounting_plate/plate.py`, no shorter than Tiny Tapeout's
+      own printed base stands the board, and `RPICAM-OVER-PLATE` adds it
+- [x] The elevations lead: two per sheet, one per axis of the picture, the
+      stock lens's declared angle in each plane drawn from the lens to frame
+      A's edges, Z and the lens's X and Y dimensioned; the plan kept, smaller
+- [x] The plate's frame A is every revision's board rather than the plate,
+      set from the board face
+- [x] Say what the diagonal does if it is read as the angle across, how far
+      the stand may lean, how soft the stock lens is at these heights, and
+      which published close limits each height is inside
+- [x] Draw the Camera Module v1.3 over the lens from its own data, which
+      bounds the entrance pupil by the lens's 5.20 mm
+- [ ] `RPICAM-OVER-ETH`, the Arty with its Ethernet LEDs, is parked on the
+      branch `issue-7-camera-over-arty-ethernet`, one source commit on top
+      of this one. Its note cites the light pipe that brings those LEDs up
+      from `fpga/light_pipe/adapter.py`, so it waits for the light pipe
+      branch (issue #8, PR #29) to be on its base, then re-renders
+- [ ] `RPICAM-OVER-ACORN`, an Acorn CLE-215+ in a PoE M.2 HAT+ on a Pi 5, is
+      parked on the branch `issue-7-camera-over-acorn`, one source commit on
+      top of this one. It takes the card and where it sits from
+      `accessories/parts.py`, so it waits for the M.2 HAT branch (issue #6,
+      PR #25) to be on its base, then re-renders
+
+## A camera holder on the TT plate  -- DONE, unprinted
+- [x] `tinytapeout/camera_holder/holder.py`: a portal of two window-shaped
+      side frames and a beam, derived at import from the optics, the plate
+      and the Camera Module v1.3 data, with the lens face at 150.00 above
+      the plate face against the 148.77 the stock lens needs
+- [x] The feet share the plate's own four M4 side fixings: no new hole
+- [x] A carrier that turns a quarter at a time about the lens axis, because
+      which way the OV5647's rows run on the module is not published
+- [x] `verify.py`: the camera's height and position, every revision whole
+      in the picture and unhidden, clear of every board, standoff and cable,
+      every fastener
+- [x] STEP solids, assembled and per part as printed; the beam as a DXF
+- [x] The holder's sheets, bound into the Tiny Tapeout copy after the plate's own sheets
+- [ ] Print one and put it on a plate. Nothing here has been built
+- [ ] Check which way the picture's long side runs on a real v1.3 and set
+      `QUARTER_TURNS` to it, so the sheet stops saying ASSUMED
+- [ ] Measure the v1.3's small parts beside the lens -- LED D1 and R9 by MT1
+      -- against the M2 screw heads on the lens side
+- [ ] A focusable OV5647 would make the picture sharp as well as whole. If
+      one is chosen, its lens height and hole pattern go in as a second
+      `CameraBoard` and the holder is re-derived for it
+- [x] A holder per lens: `TT-MP-CAM65` and `TT-MP-CAM120`, the lens face at
+      150.00 and 83.00, sharing the beam and the carrier; `verify.py` makes
+      every check of each and checks the two share those parts
+- [ ] A 120 degree OV5647 on a board this carrier takes. `TT-MP-CAM120`
+      carries a v1.3's board with the wide lens ASSUMED 5.20 mm proud of it,
+      and has 1.00 mm to spare; a taller lens, any M12 fisheye, drops the
+      face further than that and cuts the boards' edges off. Either a
+      carrier for the B006604, a Pi Zero spy camera, from a measured drawing
+      of it, or bosses cut to a measured lens

@@ -27,12 +27,23 @@ from tinytapeout.mounting_plate.plate import PLATE                              
 from fpga.boards import BOARDS as FPGA                        # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from raspberry_pi_camera.boards import BOARDS as RPICAM       # noqa: E402
+from raspberry_pi_camera.optics import subjects as RPICAM_SUBJECTS  # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
-from tools.generate_diagrams import (FPGA_ORDER, RPICAM_ORDER,  # noqa: E402
-                                     RPI_ORDER, tt_sheets)
+from tools.generate_diagrams import (FPGA_ORDER, LENS_SUBTITLE,  # noqa: E402
+                                     LENS_TITLE, RPICAM_ORDER,
+                                     RPICAM_POSITION_ORDER, RPI_ORDER,
+                                     holder_title, position_stem, tt_sheets)
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
-                          FITTING_GUIDE_STEM, PLATE_STEM, PMOD_HAT_STEM,
+                          FITTING_GUIDE_STEM, LENS_STEM, PLATE_STEM,
+                          holder_stem,
+                          PMOD_HAT_STEM,
                           acc_stem, drawing_name, rel, slug)
+
+from tinytapeout.camera_holder.holder import (  # noqa: E402
+    VARIANTS as HOLDER_VARIANTS)
+
+#: Built once: each subject walks another family's data modules.
+_SUBJECTS = RPICAM_SUBJECTS()
 
 BEGIN = "<!-- sheets:begin -->"
 END = "<!-- sheets:end -->"
@@ -73,7 +84,11 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
         ("Raspberry Pi camera modules", "raspberry-pi-camera", COLUMNS,
          named("raspberry-pi-camera",
                [(slug(k), RPICAM[k].title, RPICAM[k].subtitle)
-                for k in RPICAM_ORDER])),
+                for k in RPICAM_ORDER]
+               + [(LENS_STEM, LENS_TITLE, LENS_SUBTITLE)]
+               + [(position_stem(k), _SUBJECTS[k].title,
+                   _SUBJECTS[k].subtitle)
+                  for k in RPICAM_POSITION_ORDER])),
         ("FPGA development boards", "fpga", COLUMNS,
          named("fpga", [(slug(k), FPGA[k].title, FPGA[k].subtitle)
                         for k in FPGA_ORDER])),
@@ -96,6 +111,9 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
                 (DRILL_TEMPLATE_STEMS["chassis"], "Drill Template: Chassis",
                  "A4 at 1:1 - the six M4 fixings in the box the plate bolts "
                  "to")])),
+        ("Camera holder", "camera-holder", COLUMNS,
+         named("camera-holder", [(holder_stem(k), *holder_title(h.LENS))
+                                 for k, h in HOLDER_VARIANTS.items()])),
     ]
 
 
@@ -163,6 +181,7 @@ FAMILY_READMES = {
     "fpga": ROOT / "fpga" / "README.md",
     "accessories": ROOT / "accessories" / "README.md",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "README.md",
+    "camera-holder": ROOT / "tinytapeout" / "camera_holder" / "README.md",
 }
 
 
