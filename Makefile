@@ -53,7 +53,7 @@ diagrams:
 check: diagrams
 	$(DRAW) python tools/check_sheets.py
 	$(UV) python tinytapeout/mounting_plate/verify.py
-	$(UV) python raspberry_pi_camera/verify_optics.py
+	$(UV) --with pypdf python raspberry_pi_camera/verify_optics.py
 	$(UV) python tinytapeout/camera_holder/verify.py
 	$(DRAW) python tools/check_balloons.py
 	$(UV) --with pdfplumber --with pillow python tools/check_drill_template.py

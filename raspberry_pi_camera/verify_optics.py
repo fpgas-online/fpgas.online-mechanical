@@ -30,7 +30,8 @@ stock Camera Module OV5647 is fixed at "Approx 1 m to infinity" and every
 board here wants the camera a tenth of that away.  What is being checked is
 that the sheet says so, not that the problem has gone away.
 
-Run: uv run --no-project python raspberry_pi_camera/verify_optics.py
+Run: uv run --no-project --with pypdf \\
+         python raspberry_pi_camera/verify_optics.py
 """
 
 from __future__ import annotations
@@ -65,20 +66,91 @@ QUOTES = {
         "3.76 × 2.74 mm",
         "1.4 µm × 1.4 µm",
         "3.60 mm +/- 0.01",
-        "F2.9",
+        "Focal ratio (F-Stop) F2.9",
         "53.50 +/- 0.13 degrees",
         "41.41 +/- 0.11 degrees",
         "Focus Fixed Adjustable Motorized Motorized",
         "Depth of field Approx 1 m to ∞ Approx 10 cm to ∞",
         "Approx 5 cm to ∞",
     ],
+    # OmniVision's own datasheet: the active array the declared angles are
+    # measured to, and the larger "image area" round it that Raspberry Pi's
+    # 3.76 x 2.74 looks like a transposition of.
+    "ov5647-datasheet.pdf": [
+        "active array size: 2592 x 1944",
+        "pixel size: 1.4 µm x 1.4 µm",
+        "image area: 3673.6 µm x 2738.4 µm",
+        "lens chief ray angle: 24°",
+    ],
     "arducam-5mp-ov5647.html": [
         "Stock Lens 54° (H) x 41° (V) Fixed Focus",
         "B0176 15/Bottom Mini Size 54°(H)x44° (V) Auto Focus",
         "B006604 120°(H) x 90°(V)",
+        # The same camera without its IR-cut filter, a row further down the
+        # same table, and a different pair: the two rows cannot both be the
+        # one lens's.
+        "B006603N 64°(H) x 48°(V) without IR-cut filter",
+        "B006604N 96°(H) x 72°(V)",
+        "B0370 Wide Angle M12 155°(H) x 116°(V) Auto Focus",
+    ],
+    # The B006604's own product page: the 120 is a DIAGONAL.
+    "arducam-b006604.html": [
+        "SKU B006604",
+        "angle of view: 120° diagonal",
+        "Diagnoal Field of View (DFOV) 120°",
+        "Focus Distance 1 m to infinity",
+        "Focus Type Fixed",
     ],
     "arducam-motorized-focus-camera.html": [
         "you can understand it the same as autofocus",
+    ],
+    # The motorised-focus OV5647 twice over: the discontinued B0121, whose
+    # page names the B0176 as its successor, and the B0176 itself.
+    "arducam-b0121-motorized-focus.html": [
+        "SKU: B0121",
+        "Please check the new version- SKU: B0176",
+        "Angle of View: 54 x 41 degrees",
+        "Field of View: 2.0 x 1.33 m at 2 m",
+        "Full-frame SLR lens equivalent: 35 mm",
+        "Focus distance: 4 cm to infinity",
+    ],
+    "uctronics-arducam-b0176.html": [
+        "SKU B0176",
+        "Focus Distance 80mm to infinity",
+        "Field of View(FOV) 54°(H), 44°(V)",
+        "Focus Type Motorized Focus",
+        "Full-frame SLR lens equivalent 35mm",
+        "Camera Board Size 24mm x 25mm",
+    ],
+    # Two lens makers' figures for a real lens of about 120 degrees diagonal
+    # on this sensor, distortion included.
+    "commonlands-ov5647.html": [
+        "Active area 3.63 × 2.72 mm",
+        "real distortion rather than a focal-length-only estimate",
+        "Fisheye 2.2mm M12 Lens (CIL282) 2.2 mm M12 f/1.8 96° 72° 122°",
+    ],
+    "yxf-m6-lens.html": [
+        "1/4 inch OV5647",
+        "Focal Length [mm] 1.79mm",
+        "Aperture F.no 2.4 ± 5%",
+        "Field of View Diagonal [°] 73.9°",
+        "Field of View Horizontal [°] 119.9°",
+        "Field of View Vertical [°] 92.4°",
+        "Distortion [%] -11.5%",
+    ],
+    # Waveshare's Camera Module v1 sized fisheye, and The Pi Hut's listing of
+    # it, the one place its horizontal angle is printed.
+    "waveshare-rpi-camera-g.html": [
+        "Aperture (F) : 2.35",
+        "Focal Length : 3.15mm",
+        "Angle of View (diagonal) : 160 degree",
+    ],
+    "waveshare-rpi-camera-g-wiki.html": [
+        "Approximately 10cm to infinity",
+    ],
+    "pihut-fisheye-160.html": [
+        "Aperture (F): 2.35",
+        "Diagonal angle: 160 degree Horizontal angle: 120 degree",
     ],
     # Arducam's OV5647 motorized focus guide.  The sheets do not print these
     # two strings -- they are what the words look like after the spacing in
@@ -102,8 +174,15 @@ def _plain(path: Path) -> str:
 
     The quotes in the optics module are sentences and table rows, and in the
     HTML the words of a table row are separated by markup rather than by
-    spaces.  Tags out, entities resolved, whitespace collapsed.
+    spaces.  Tags out, entities resolved, whitespace collapsed.  A PDF --
+    only OmniVision's datasheet -- is read by its text layer, the first
+    pages, which is where its key specifications are.
     """
+    if path.suffix == ".pdf":
+        from pypdf import PdfReader
+        pages = PdfReader(path).pages[:8]
+        return re.sub(r"\s+", " ", " ".join(p.extract_text() or ""
+                                            for p in pages))
     text = path.read_text(encoding="utf-8", errors="replace")
     text = re.sub(r"(?is)<(script|style)\b.*?</\1>", " ", text)
     text = re.sub(r"<[^>]+>", " ", text)

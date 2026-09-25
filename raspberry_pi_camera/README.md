@@ -33,7 +33,7 @@ tools/fetch_raspberry_pi_camera.sh                    # once, needs network
 uv run --no-project --with pdfplumber python raspberry_pi_camera/extract.py
 uv run --no-project --with pdfplumber --with pillow --with numpy \
     python raspberry_pi_camera/verify.py
-uv run --no-project --with pillow python raspberry_pi_camera/verify_optics.py
+uv run --no-project --with pypdf python raspberry_pi_camera/verify_optics.py
 ```
 
 ## The sheets

@@ -112,3 +112,50 @@ fetch_optics \
 fetch_optics \
   'https://docs.arducam.com/Raspberry-Pi-Camera/Motorized-Focus-Camera/Quick-Start-Guide/OV5647-Motorized-Focus-Camera/' \
   arducam-ov5647-motorized-focus-camera.html
+
+# The lens options and their focus, one page per claim the sheets make about
+# them.  Every page that the Internet Archive holds is fetched from a pinned
+# capture: arducam.com and uctronics.com answer a plain request with a
+# Cloudflare challenge, and a capture is what keeps a quote checkable after
+# the vendor edits the page.  The one page it does not hold, YXF's M6 lens,
+# is fetched live.
+#
+# OmniVision's own OV5647 datasheet, for the image area and the active array
+# the lenses are measured against.
+fetch_optics \
+  'https://web.archive.org/web/20260723044623/https://cdn.sparkfun.com/datasheets/Dev/RaspberryPi/ov5647_full.pdf' \
+  ov5647-datasheet.pdf
+# Arducam's 120 degree module, the B006604: its product page gives the angle
+# as a DIAGONAL, which the catalogue table above does not.
+fetch_optics \
+  'https://web.archive.org/web/20250530094438/https://www.arducam.com/b006604-arducam-for-raspberry-pi-zero-camera-module-wide-angle-120-1-4-inch-5mp-ov5647-spy-camera-with-flex-cable-for-pi-zero-and-pi-compute-module.html' \
+  arducam-b006604.html
+# The motorised-focus OV5647: the B0121, discontinued, whose page names the
+# B0176 as its successor, and the B0176 on UCTRONICS, Arducam's own store.
+fetch_optics \
+  'https://web.archive.org/web/20241103134041/https://www.arducam.com/product/5mp-ov5647-motorized-focus-camera-sensor-raspberry-pi/' \
+  arducam-b0121-motorized-focus.html
+fetch_optics \
+  'https://web.archive.org/web/20251209063424/https://www.uctronics.com/arducam-auto-focus-camera-module-5mp-for-raspberry-pi.html' \
+  uctronics-arducam-b0176.html
+# Two lens makers' figures for real ~120 degree lenses on this sensor, with
+# the distortion in: Commonlands work each lens's field of view out on the
+# OV5647's active area from their own distortion data, and YXF publish a
+# datasheet row for an M6 lens made for OV5647 modules.
+fetch_optics \
+  'https://web.archive.org/web/20260817210431/https://commonlands.com/pages/image-sensors/ov5647' \
+  commonlands-ov5647.html
+fetch_optics \
+  'https://www.yxfcamera.com/products/Lenses/m6-lens-5mp-ov5647-raspberry-pi-camera-lens.html' \
+  yxf-m6-lens.html
+# Waveshare's RPi Camera (G), the Camera Module v1 sized fisheye, and The Pi
+# Hut's listing of it, which is where its horizontal figure is printed.
+fetch_optics \
+  'https://web.archive.org/web/20191211152844/https://www.waveshare.com/RPi-Camera-G.htm' \
+  waveshare-rpi-camera-g.html
+fetch_optics \
+  'https://web.archive.org/web/20190224065515/https://www.waveshare.com/wiki/RPi_Camera_(G)' \
+  waveshare-rpi-camera-g-wiki.html
+fetch_optics \
+  'https://web.archive.org/web/20250810012231/https://thepihut.com/products/raspberry-pi-camera-board-fisheye-160-lens-5mp' \
+  pihut-fisheye-160.html
