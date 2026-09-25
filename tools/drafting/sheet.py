@@ -27,6 +27,11 @@ class TitleBlock:
     #: Only a multi-view drawing declares a projection angle; a single-view
     #: sheet leaves it blank rather than claiming one it does not demonstrate.
     projection: str = ""
+    #: What the wide field beside the general tolerance is called.  MATERIAL
+    #: on every drawing of a part; the camera position sheets draw no part, so
+    #: theirs says SUBJECT and names the thing the camera is pointed at.  A
+    #: field headed MATERIAL and filled with a board name is worse than either.
+    material_label: str = "MATERIAL"
 
 
 @dataclass
@@ -241,7 +246,8 @@ class Sheet:
         f = self.ROW_FRACS
         # A single-view sheet does not get a PROJECTION cell at all: an empty
         # cell on a title block reads as an omission, not as "not applicable".
-        wide = [("MATERIAL", t.material, 0.28 if t.projection else 0.34),
+        wide = [(t.material_label, t.material,
+                 0.28 if t.projection else 0.34),
                 ("GENERAL TOLERANCE", t.tolerance, 0.56 if t.projection else 0.66)]
         if t.projection:
             wide.append(("PROJECTION", "", 0.16))
