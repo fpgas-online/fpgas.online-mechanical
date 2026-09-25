@@ -128,6 +128,23 @@ the grey dashed boxes are Pmod connector bodies: clearance, not features.
 `tools/check_drill_template.py` measures the finished PDFs back and proves
 every hole lands where `plate.py` puts it.
 
+## What a board stands on
+
+Eight millimetre M3 standoffs, plate face to board underside, so a board's
+top face is 9.56 to 9.60 mm above the plate face by its own thickness. That
+is a choice rather than a figure anyone publishes, and it was made when
+something had to be built to it: the [camera holder](../camera_holder/README.md)
+sets its lens height from the board face, and until then the plate said "on
+standoffs" and left the length to the builder. It is no shorter than what
+Tiny Tapeout's own printed base gives a board -- `case/tt06_demo_base.scad`
+in tt-demo-pcb stands it on studs 6.4 mm tall over a pocket kept "for PTH
+pins and rubber feet" -- so it clears whatever that base clears.
+`design.py` refuses a shorter one, and `verify.py` reads the base's source
+back for the two numbers the 6.4 comes from.
+
+The camera holder's feet sit over the plate's four M4 side fixings and share
+their screws, so the plate needs no new hole for it.
+
 ## Coordinates
 
 Origin at the plate's lower-left corner, X right, Y up, seen from the side the

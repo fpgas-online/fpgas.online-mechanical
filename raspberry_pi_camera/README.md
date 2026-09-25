@@ -8,9 +8,14 @@ axis, and the camera FFC connector on the underside.
 The `RPICAM-OVER-*` sheets answer the other half of the same question. Once
 the mount exists, how far above the board does it go, and over what point?
 One sheet per subject, and each sheet's name says which after `RPICAM-OVER-`:
-the Tiny Tapeout mounting plate and the Digilent Arty A7. Each carries the
-rectangle the picture has to cover, the plane the height is measured from,
-and the height each lens needs.
+the Tiny Tapeout mounting plate and the Digilent Arty A7. Each leads with
+two elevations, one for each axis of the picture, drawing the subject edge
+on, a Camera Module v1.3 over it and the stock 65 degree lens's field of view
+reaching the edges of the rectangle the picture has to cover, and
+dimensioning how high the lens goes and where; a smaller plan shows the
+rectangles over the subject, and the tables give every height for both
+lenses. [`TT-MP-CAMERA`](../tinytapeout/camera_holder/README.md) is a
+holder built to the first of them.
 
 | | |
 |---|---|
@@ -401,14 +406,14 @@ the error always loses the edges.
 
 | Sheet | Frame | Rectangle, mm | Z from | 65 deg | 120 deg |
 |---|---|---|---|--:|--:|
-| `RPICAM-OVER-PLATE` | The whole plate | 148.00 x 111.00 | the plate face | 146.8 | 55.5 |
+| `RPICAM-OVER-PLATE` | Every board, any revision | 140.27 x 105.20 | the demo board's top face | 139.2 | 52.6 |
 | `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 37.8 |
 | `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 48.5 |
 | `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 12.3 |
 
 **Every one of those heights is inside the stock lens's minimum focus
 distance.** Raspberry Pi give the Camera Module 1's focus as `Fixed` and its
-depth of field as `Approx 1 m to ∞`; the largest height here, 146.8 mm, is a
+depth of field as `Approx 1 m to ∞`; the largest height here, 139.2 mm, is a
 seventh of that metre, and the smallest, 12.3 mm, is an eightieth. A stock
 Camera Module OV5647 cannot focus on any of these boards. Every sheet says so
 in its notes, and `verify_optics.py` checks the verdict against the
@@ -416,24 +421,73 @@ arithmetic for every height that has a published limit to check against --
 which is every one at 65 deg. Arducam publish no near limit for the wide lens
 at all, so its heights are reported as unknown rather than passed or failed.
 
+How far out of focus is worth knowing too, and it is not hopeless. DERIVED,
+on a thin lens, ASSUMING the fixed lens is set at the 2 m hyperfocal distance
+its "1 m to ∞" implies: at the plate's 139.2 mm a point on the board spreads
+to 29.9 µm on the sensor, 21 pixels, which is about 1.1 mm on the board --
+and 1.2 mm if the lens is set at infinity instead, so the answer does not
+hang on the assumption. Every demo board LED footprint is 1.46 x 2.96 mm.
+`verify_optics.py` works it by the depth of field formula as well as by the
+thin lens and requires the two to agree.
+
+Against the only close limits anyone publishes for a Raspberry Pi camera,
+which are other sensors': the plate's 139.2 and 100.1 are both beyond
+`Approx 10 cm to ∞`, while the Arty's LEDs, at 32.4, are nearer than even
+the Camera Module 3 Wide's `Approx 5 cm to ∞`. Each sheet says which of its
+heights each limit would reach.
+
 That is the useful finding, and it is a mount decision: a rig built to these
-sheets needs an adjustable-focus or motorised OV5647, not the stock one.
+sheets needs an adjustable-focus or motorised OV5647 for a sharp picture;
+the stock one gives a soft one.
+
+### The elevations, and why the diagonal is not the angle
+
+The elevations are the primary views, because the question is a height.
+The front elevation looks along +Y with the subject's X across it; the end
+elevation, first angle, is seen from the right and drawn on the left, with Y
+across it. Each draws the declared angle that lies in its own plane from the
+lens face to the edges of frame A: 53.50 across the sensor's long side,
+41.41 along its short side, and which is which on the subject depends on
+which way the camera is turned. Z is dimensioned once, on the front
+elevation, and X and Y of the lens under each. Only the stock lens is drawn:
+the 120 degree lens's declared pair cannot both be right, so either cone
+would draw one of two figures that contradict each other.
+
+"65 degrees" is the diagonal, and using it as the angle across the picture
+is the mistake the name invites. Across the plate's frame A it gives Z
+110.1, and the picture then misses 14.6 mm off each end. Each sheet prints
+its own figure, and `verify_optics.py` checks it, together with the other
+turn of the camera: long side along Y, the plate's frame would need Z 174.3.
+
+The frame margin is what absorbs where the stand ends up: 5.00 mm of
+lateral error or, at the plate's Z, a lean of 2.1 degrees, not both.
+
+The camera drawn is the Camera Module v1.3, from `v1.py`: its board, its
+stepped lens stack 5.20 mm proud of it, and its FFC connector on the far
+face. That also bounds the entrance pupil: it is behind the lens face by at
+most the lens's own 5.20 mm, so a stand set from the face covers up to 3.7%
+more than frame A on the plate, and never less.
+
+The plan is at the next standard scale down, under the end elevation. It is
+the one view that shows which way the picture lies over the subject and
+where frame B is; frame A's position is dimensioned on the elevations, and
+the plan dimensions nothing.
 
 ### What the sheets assume
 
 - **Z is to the lens's entrance pupil**, and neither vendor says where that
-  sits behind the front element. On a 3.60 mm lens it is within a few
-  millimetres of it. Set Z from the lens face and treat it as good to a few
-  millimetres, no better. ASSUMED, and on every sheet.
-- **The plate-to-board offset on `RPICAM-OVER-PLATE` is the
-  builder's.** Frame B is set from the demo board's top face, and getting
-  there from the plate means the standoff height plus the board thickness.
-  The thickness is each
-  revision's own board file, 1.56 to 1.60 mm; the standoff height is
-  specified nowhere in this repository, so the sheet says to measure the
-  stack rather than adding a figure from here. Frame A is set from the plate
-  face, and the sheet prints how far a board may stand above it before its
-  own outline leaves the picture: 25.2 mm at 65 deg, 9.5 mm at 120 deg.
+  sits. It is behind the lens face by at most the 5.20 mm the v1.3's lens
+  stands off its board, so set the face at Z and the picture is up to that
+  much larger. ASSUMED, and on every sheet.
+- **The plate-to-board offset on `RPICAM-OVER-PLATE` is now the plate's.**
+  Both frames are set from the demo board's top face, which is the plate's
+  own 8 mm standoff plus the board: 9.56 to 9.60 mm above the plate face, by
+  each revision's own board thickness, and Z is set from the higher. The 8 mm
+  is a choice, not a published figure, made no shorter than the 6.4 mm Tiny
+  Tapeout's own printed base stands the board on; `TT-MP-PLATE` says so.
+  Nothing on a board has a published height, so the sheet prints how high
+  anything standing on one may rise before it leaves frame A's picture:
+  13.2 mm at 65 deg, 5.0 mm at 120 deg.
 
 ### Where each subject's geometry comes from
 
@@ -441,7 +495,7 @@ Nothing is restated that some family already extracted:
 
 | Subject | From |
 |---|---|
-| TT mounting plate | [`tinytapeout/mounting_plate/plate.py`](../tinytapeout/mounting_plate/README.md) for the outline, [`tinytapeout/boards.py`](../tinytapeout/README.md) for every revision's LEDs, 7-segment displays, board outlines and thicknesses, moved into plate coordinates by the placement offsets |
+| TT mounting plate | [`tinytapeout/mounting_plate/plate.py`](../tinytapeout/mounting_plate/README.md) for the outline and the standoff, [`tinytapeout/boards.py`](../tinytapeout/README.md) for every revision's envelope, LEDs, 7-segment displays and thickness, moved into plate coordinates by the placement offsets |
 | Arty A7 | [`fpga/boards.py`](../fpga/README.md), which is Digilent's own DXF and PDF plot |
 
 ## What is not here, and why

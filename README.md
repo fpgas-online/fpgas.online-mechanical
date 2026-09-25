@@ -19,8 +19,9 @@ it, so a new board is a new directory and does not disturb the others.
 |-----------|------------------------------|
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
+| [`tinytapeout/camera_holder/`](tinytapeout/camera_holder/README.md) | `TT-MP-CAMERA` -- A printed stand on the plate that holds a Camera Module v1.3 over whichever board is on it, with STEP solids and a DXF |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, each with a Digilent Pmod HAT Adapter overlaid |
-| [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; then where to put an OV5647 camera over a board to frame it, for a 65 and a 120 degree lens |
+| [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; then where to put an OV5647 camera over a board to frame it: how high, in two elevations with the 65 degree lens's field of view drawn, and where, with a 120 degree lens's heights beside it |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Parts that are none of the boards above but turn up in the same assemblies, such as Pi-to-Pmod adapters and PoE splitters, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
@@ -68,6 +69,9 @@ are, and only the name is cut:
   camera over a subject are OVER and one word for the subject,
   `RPICAM-OVER-ARTY`: a table, `RPICAM_NAMES`, since the stem says the
   subject in full.
+- the camera holder, a made part filed in a directory of its own, takes the
+  plate's prefix, since it bolts through the plate's own fixings, and one
+  word from `HOLDER_NAMES`: `TT-MP-CAMERA`.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
@@ -291,7 +295,9 @@ the data the drawing was made from. A `+` on the end means it was rendered
 with uncommitted changes.
 
 Every check that runs over the output has caught a real defect, from text
-colliding on a sheet to a mounting hole no M3 screw actually fits.
+colliding on a sheet to a mounting hole no M3 screw actually fits. The
+camera family's and the camera holder's own checks, which read their data
+rather than the output, have caught nothing yet.
 [`tools/README.md`](tools/README.md) says what each one does and what it
 found.
 
