@@ -51,8 +51,8 @@ and where it cannot be the note that gets dropped for space.
 DRAWING NO carries a name, not a number, and it is given half the title block
 rather than the quarter the other fields in its row share. Half is more than
 anything in this set needs now that the families with the longest
-stems are named by a rule: the widest name left, `FPGA-BUTTERSTICK`, clears a
-quarter by 3.72 mm, where the mounting plate's fitting guide cleared it by
+stems are named by a rule: the widest name, `RPICAM-OVER-PLATE`, clears a
+quarter by 2.02 mm, where the mounting plate's fitting guide cleared it by
 half a millimetre before that family had a rule of its own. But a sheet on
 another branch needs half as much again as a quarter has, so the field is
 sized for the names it will be given, not the ones it has. The two drill

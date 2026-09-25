@@ -145,7 +145,7 @@ def position_stem(key: str) -> str:
     comes from ``tools.layout.RPICAM_NAMES``, keyed by that stem:
     ``RPICAM-OVER-ARTY``, the family prefix, the word the title shares with
     the other position sheets, and one word for the subject, as ``RPICAM-2``
-    does not say camera twice either.  The wider of the two,
+    does not say camera twice either.  The widest of them,
     ``RPICAM-OVER-PLATE``, is 36.03 mm of lettering at the ISO 3098 floor in
     the 79.30 mm the DRAWING NO cell has.
 
