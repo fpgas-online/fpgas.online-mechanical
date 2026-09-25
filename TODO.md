@@ -225,11 +225,12 @@ checker that measures the finished PDFs rather than trusting them.
       and 41.41 come back out of the declared 3.60 mm and 2592 x 1944 to four
       thousandths of a degree, and only against the active pixel array
 - [x] A sheet per subject, each named for what it is over:
-      `RPICAM-OVER-PLATE` and `RPICAM-OVER-ARTY`
-- [x] Two frames per subject, whole subject and indicators, each the smallest
-      4:3 rectangle holding its target plus 5.00 mm all round, with the camera
-      height for both lenses and the focus verdict against the published near
-      limit
+      `RPICAM-OVER-PLATE`, `RPICAM-OVER-ARTY`, and `RPICAM-OVER-ETH` for the
+      Arty with its Ethernet LEDs
+- [x] Two frames on each subject sheet, the whole subject and its indicators,
+      and one on the Arty's Ethernet sheet: each the smallest 4:3 rectangle
+      holding its target plus 5.00 mm all round, with the camera height for
+      both lenses and the focus verdict against the published near limit
 - [x] Z measured from the plane the frame's target lies in, not the subject's
       own top face: the demo boards' indicators are on a board standing on
       standoffs above the plate
@@ -269,11 +270,13 @@ checker that measures the finished PDFs rather than trusting them.
       which published close limits each height is inside
 - [x] Draw the Camera Module v1.3 over the lens from its own data, which
       bounds the entrance pupil by the lens's 5.20 mm
-- [ ] `RPICAM-OVER-ETH`, the Arty with its Ethernet LEDs, is parked on the
-      branch `issue-7-camera-over-arty-ethernet`, one source commit on top
-      of this one. Its note cites the light pipe that brings those LEDs up
-      from `fpga/light_pipe/adapter.py`, so it waits for the light pipe
-      branch (issue #8, PR #29) to be on its base, then re-renders
+- [ ] `RPICAM-OVER-ETH`'s frame should cover the light pipe's
+      exits rather than the RJ45 jack's body. `FPGA-LP-ARTY`
+      now draws the adapter, and its pipe tips are 5.01 mm in FRONT of the
+      jack's face, not over the body; measured from the board edge they are
+      5.11 mm past it against a frame that reaches 7.28 mm past it, so the
+      frame is loose rather than wrong, and tightening it onto the exits
+      would shrink it, and with it the height.
 - [ ] `RPICAM-OVER-ACORN`, an Acorn CLE-215+ in a PoE M.2 HAT+ on a Pi 5, is
       parked on the branch `issue-7-camera-over-acorn`, one source commit on
       top of this one. It takes the card and where it sits from

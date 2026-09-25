@@ -8,7 +8,8 @@ axis, and the camera FFC connector on the underside.
 The `RPICAM-OVER-*` sheets answer the other half of the same question. Once
 the mount exists, how far above the board does it go, and over what point?
 One sheet per subject, and each sheet's name says which after `RPICAM-OVER-`:
-the Tiny Tapeout mounting plate and the Digilent Arty A7. Each leads with
+the Tiny Tapeout mounting plate, the Digilent Arty A7, and the Arty again
+with its Ethernet LEDs. Each leads with
 two elevations, one for each axis of the picture, drawing the subject edge
 on and, over it, a Camera Module v1.3 with each lens -- the stock 65 degree
 one and a 120 degree fisheye -- at the height where its field of view takes
@@ -536,13 +537,15 @@ the error always loses the edges.
 | `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 101.2 | 52.1 |
 | `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 129.7 | 66.8 |
 | `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 32.8 | 16.9 |
+| `RPICAM-OVER-ETH` | LD0-LD7 and the RJ45 | 45.15 x 60.21 | the board face | 59.7 | 60.4 | 31.1 |
 
 **In focus there?** On either fixed lens, at no height here: all of them are
 inside "1 m". On the autofocus lens, at every height of 80 mm or more -- both
 plate frames and the whole Arty -- and not at the Arty's LED row, 32.8,
-which is nearer than even the B0121's 4 cm. Each sheet's table says which,
-frame by frame, and `verify_optics.py` checks every verdict against the
-arithmetic.
+which is nearer than even the B0121's 4 cm, or its Ethernet corner, 60.4,
+which is beyond the B0121's 4 cm but inside the B0176's 80 mm. Each sheet's
+table says which, frame by frame, and `verify_optics.py` checks every
+verdict against the arithmetic.
 
 So a rig built to these sheets frames the board with either lens and focuses
 on it with neither fixed one: a sharp picture needs the motorised module at
@@ -611,6 +614,16 @@ the plan dimensions nothing.
   Nothing on a board has a published height, so the sheet prints how high
   anything standing on one may rise before it leaves frame A's picture:
   13.2 mm at 65 deg, 6.9 mm at 120 deg.
+- **The Arty's Ethernet LEDs are on the front face of the jack** and cannot
+  be seen from above at all. `RPICAM-OVER-ETH`'s frame covers
+  the jack's *body* footprint, on the assumption that a light pipe adapter
+  brings them to the top somewhere near it. `FPGA-LP-ARTY`
+  draws one, and its pipe tips land 5.01 mm in *front* of the jack's face
+  rather than over the body. Measured from the board edge that is 5.11 mm
+  past it, inside a frame that reaches 7.28 mm past it -- 5.00 mm of margin
+  out from the jack body's own front edge, plus 2.04 mm of 4:3 expansion --
+  so the frame is loose rather than wrong. Nothing on that sheet is a
+  measurement of the adapter. ASSUMED, and `TODO.md` carries tightening it.
 
 ### Where each subject's geometry comes from
 

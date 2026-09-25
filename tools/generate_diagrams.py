@@ -93,11 +93,11 @@ RPICAM_ORDER = ["cm1", "cm2", "cm3"]
 #: family: they are about the same modules, and a reader who has just found
 #: out where the optical axis sits on the board is the reader who wants to
 #: know where to put the board.  The plate first, because it is the thing
-#: this repository is mostly about, then the Arty.  Each entry is the key of
-#: a subject in ``raspberry_pi_camera.optics``, which is the thing the camera
-#: is pointed at; ``position_stem`` says what the sheet drawn for it is
-#: called.
-RPICAM_POSITION_ORDER = ["tt-mounting-plate", "arty-a7"]
+#: this repository is mostly about, then the Arty and its extra sheet.  Each
+#: entry is the key of a subject in ``raspberry_pi_camera.optics``, which is
+#: the thing the camera is pointed at; ``position_stem`` says what the sheet
+#: drawn for it is called.
+RPICAM_POSITION_ORDER = ["tt-mounting-plate", "arty-a7", "arty-ethernet"]
 #: In the order they were asked for.  No shared frame: unlike the demo
 #: boards, which register on their Pmod hosts, and the Pis, which share an
 #: outline, these have nothing in common to hold still, so each sheet is
@@ -148,6 +148,13 @@ def position_stem(key: str) -> str:
     does not say camera twice either.  The widest of them,
     ``RPICAM-OVER-PLATE``, is 36.03 mm of lettering at the ISO 3098 floor in
     the 79.30 mm the DRAWING NO cell has.
+
+    The Arty's two subjects are ``arty-a7`` and ``arty-ethernet``, which is
+    what ``fpga/light_pipe/`` calls that end of the board; their names are
+    OVER-ARTY and OVER-ETH, and neither is a prefix of the other -- a name
+    that is a prefix of a sibling's cannot be told from it by any test that
+    reads a sheet, which ``tools.layout.drawing_name`` makes a rule and
+    ``tools/check_sheets.py`` enforces.
 
     Here rather than in ``tools/layout.py``, which holds the stems that notes
     on OTHER sheets cite: nothing cites these, and the camera board sheets

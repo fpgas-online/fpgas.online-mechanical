@@ -815,9 +815,10 @@ class Frame:
 def frame_for(target: Target, margin: float = FRAME_MARGIN) -> Frame:
     """The smallest 4:3 frame, either way up, holding *target* plus *margin*.
 
-    Either way up matters.  A target taller than it is wide, framed
-    landscape, puts the camera higher than the same target turned through
-    ninety degrees.
+    Either way up matters.  The Arty's LED row with the Ethernet jack above
+    it is 31.08 x 50.20 mm, nearer five-eighths as wide as it is tall than
+    half; framed landscape the camera has to go to 80 mm, turned through
+    ninety degrees it goes to 60.
     """
     x0, y0 = target.x0 - margin, target.y0 - margin
     x1, y1 = target.x1 + margin, target.y1 + margin
@@ -1203,8 +1204,12 @@ def _plate_subject() -> Subject:
 
 def _arty_targets(spec: BoardSpec) -> dict[str, Target]:
     leds = [f for f in spec.features if f.kind == "led"]
+    eth = next(f for f in spec.features if f.kind == "ethernet")
     wx0, wy0, wx1, wy1 = _envelope(spec)
     lx0, ly0, lx1, ly1 = _union([(f.x0, f.y0, f.x1, f.y1) for f in leds])
+    ex0, ey0, ex1, ey1 = _union(
+        [(f.x0, f.y0, f.x1, f.y1) for f in leds] + [(eth.x0, eth.y0, eth.x1,
+                                                     eth.y1)])
     return {
         "board": Target(
             "board", "Whole board", wx0, wy0, wx1, wy1,
@@ -1214,10 +1219,14 @@ def _arty_targets(spec: BoardSpec) -> dict[str, Target]:
             "leds", "LD0-LD7", lx0, ly0, lx1, ly1,
             note="The four tri-colour LEDs LD0-LD3 and the four single "
                  "LD4-LD7, in two rows on a 7.00 mm pitch."),
+        "eth": Target(
+            "eth", "LD0-LD7 + RJ45", ex0, ey0, ex1, ey1,
+            note="The user LEDs together with the Ethernet jack body J9, "
+                 "which is where the link and activity LEDs are."),
     }
 
 
-def _arty_subject() -> Subject:
+def _arty_subjects() -> tuple[Subject, Subject]:
     from fpga.boards import BOARDS as FPGA
     spec = FPGA["arty-a7"]
     # The Arty's own sheet, derived from the stem fpga/ writes it to rather
@@ -1228,7 +1237,7 @@ def _arty_subject() -> Subject:
     src = (Source(label="Board geometry", ref="fpga/boards.py",
                   note="Outline, Pmod hosts, connectors and LED rows; see "
                        f"{arty_sheet}."),)
-    return Subject(
+    main = Subject(
         key="arty-a7",
         title="Camera over the Arty A7",
         subtitle="Camera Module OV5647, 65 and 120 degree lenses",
@@ -1242,9 +1251,46 @@ def _arty_subject() -> Subject:
             "frame, so the framing does not turn on it.",
         ),
     )
+    # The adapter that would bring those LEDs to a face a camera can see,
+    # and how far in front of the jack's front face it puts the pipe tips:
+    # the facet's own X in the adapter's jack frame, which runs back into the
+    # board, so a negative value is out in front of the face.
+    from fpga.light_pipe import adapter as light_pipe
+    pipe_sheet = drawing_name("light-pipe", light_pipe.ADAPTER.key)
+    pipe_exit = -light_pipe.FACET_X
+    # Keyed "arty-ethernet", which is what fpga/light_pipe/ already calls
+    # that end of the board; the sheet's name is RPICAM-OVER-ETH, from
+    # tools/layout.RPICAM_NAMES, beside RPICAM-OVER-ARTY for the whole
+    # board, and neither name is a prefix of the other, which
+    # tools/layout.drawing_name makes a rule and tools/check_sheets.py
+    # enforces.
+    eth = Subject(
+        key="arty-ethernet",
+        title="Camera over the Arty A7, Ethernet LEDs included",
+        subtitle="Camera Module OV5647, 65 and 120 degree lenses",
+        spec=spec, targets=(t["eth"],), sources=src,
+        subject_field="Digilent Arty A7",
+        tolerance="jack body +/-0.30, pipe exit ASSUMED, Z DERIVED",
+        notes=(
+            "ASSUMED: the Ethernet LEDs are on the front face of the RJ45 "
+            "jack, pointing out of the board edge, and cannot be seen from "
+            "above at all. This frame covers the jack's BODY footprint, on "
+            "the assumption that a light pipe adapter brings them to the top "
+            "somewhere near it. Nothing here is a measurement of such an "
+            "adapter.",
+            f"{pipe_sheet} draws one, and it puts its pipe tips "
+            f"{pipe_exit:.2f} mm in FRONT of the jack's front face rather "
+            "than over the body. That is inside this frame, which reaches "
+            "further out again, but the frame is still the jack's body and "
+            "the margin: treat its extent as provisional until an exit is "
+            "dimensioned onto this sheet.",
+        ),
+    )
+    return main, eth
 
 
 def subjects() -> dict[str, Subject]:
     """Every camera position sheet's subject, in reading order."""
-    out = (_plate_subject(), _arty_subject())
+    arty, arty_eth = _arty_subjects()
+    out = (_plate_subject(), arty, arty_eth)
     return {s.key: s for s in out}

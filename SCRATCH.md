@@ -2737,3 +2737,48 @@ ASSUMED on it. A carrier for the B006604 wants a drawing of that board.
 - The 120 holder's 1.00 mm is too little for any real M12 fisheye on a
   v1.3-sized board: with the face 10 mm low the boards' edges are cut off.
   The README says so plainly and TODO carries the fix.
+
+## RPICAM-OVER-ETH, back from a branch of its own
+
+Issue #7's branch was split on 25 September 2026 so that it would wait on
+the Camera Module v1.3's branch alone. This sheet came off it then, because
+its second note reads the pipe exits out of `fpga/light_pipe/adapter.py`,
+which is the light pipe branch's, and it was kept as one commit on
+`issue-7-camera-over-arty-ethernet` until that branch was under it. It comes
+back as it was. What was written about it at the time is below.
+
+It is also the one target here taller than it is wide. LD0-LD7 with the jack
+above them are 31.08 x 50.20 mm, so the frame is 45.15 x 60.21 with its long
+side along Y: framed landscape the stock lens would go to 80 mm, turned
+through ninety degrees it goes to 59.7. That is what the frames table's
+`LONG` column is for, and why the wide lens's picture runs over in Y there.
+
+### The Arty's Ethernet LEDs are not visible at all
+
+They are on the front face of the RJ45 jack, pointing out of the board edge.
+Nothing a camera above the board can do will see them.
+`RPICAM-OVER-ETH` therefore frames the jack's **body
+footprint**, on the stated assumption that a light pipe adapter brings them
+to the top somewhere near it.
+
+`FPGA-LP-ARTY` draws such an adapter, and it does not put
+them over the body: its pipe tips sit on the facet 5.01 mm in *front* of the
+jack's front face, which is 5.11 mm past the board edge. The frame reaches
+7.28 mm past that same edge -- 5.00 mm of margin out from the jack body's own
+front edge at -0.24, plus the 2.04 mm the 4:3 expansion adds on the short
+axis -- so the tips are inside it, and so is the 6.53 mm the adapter's cheeks
+reach. The frame is not wrong, it is loose. Every figure here is computed
+from `fpga/light_pipe/adapter.py` and the frame model rather than measured by
+hand, the sheet still says ASSUMED twice, and `TODO.md` carries tightening
+the frame onto the exits.
+
+### The Arty's second sheet is OVER-ETH, and its key is arty-ethernet
+
+The key for the second Arty sheet is `arty-ethernet` rather than
+`arty-a7-ethernet`, which is what the sheet is of, because it is already what
+`fpga/light_pipe/` calls that end of the board, so the two sheets about the
+Arty's Ethernet jack read `RPICAM-OVER-ETH` and `FPGA-LP-ARTY`. The names
+must not be prefixes of one another -- `tools/layout.py` makes producing
+such a name a rule and `check_sheets.py` enforces it, for the reason the
+mounting plate taught: nothing that quotes the shorter name can be read
+unambiguously -- and OVER-ARTY against OVER-ETH is not.

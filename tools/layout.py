@@ -366,6 +366,7 @@ RPICAM_NAMES = {
     LENS_STEM: "lens",                         # the OV5647's lens options
     "over-tt-mounting-plate": "over-plate",    # the TT mounting plate
     "over-arty-a7": "over-arty",               # the Arty A7
+    "over-arty-ethernet": "over-eth",          # the Arty's Ethernet corner
 }
 
 #: What a camera module sheet's stem leaves behind the lead: the module
