@@ -28,7 +28,7 @@ Imported, not run.
 | | |
 |---|---|
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's board mechanical drawings into `tmp/` |
-| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/`, and what stands in for a drawing of the Camera Module 1 |
+| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/`, what stands in for a drawing of the Camera Module 1, and the vendor pages the camera position sheets quote their optics from |
 | `fetch_fpga.sh` | Clones the repositories and downloads the drawings and models the FPGA boards are read from into `tmp/`; [`fpga/README.md`](../fpga/README.md) says which board is read from what |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
@@ -45,8 +45,13 @@ The extractors are not here. Each lives with its subject:
 ## Checks
 
 Each has caught a real defect. `make check` runs all but `crosscheck_gerber.py`,
-which needs network. A check specific to one made part is not here: it lives
-with the part, as the mounting plate's `verify.py` does.
+which needs network. A check specific to one family or one made part is not
+here: it lives with it, as the mounting plate's `verify.py` does, and as
+[`raspberry_pi_camera/verify_optics.py`](../raspberry_pi_camera/README.md)
+does, which proves every quote on the camera position sheets is in the page
+it is credited to, that the pinhole model reproduces Raspberry Pi's own
+declared field of view from their own focal length and sensor size, and that
+every frame holds its target at the height the sheet prints.
 
 GitHub Actions runs `make check` on every push to `main` and on every pull
 request: [`.github/workflows/check.yml`](../.github/workflows/check.yml). The

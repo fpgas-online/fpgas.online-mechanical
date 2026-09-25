@@ -17,6 +17,7 @@ one millimetre on paper and every line weight below is a real pen width.
 | `dims.py` | Dimension primitives: linear, ordinate, leader, balloon, datum, centre mark |
 | `board_sheet.py` | The board drawing: outline, holes, features, schedules, and the balloon placer |
 | `plate_sheet.py` | The mounting plate fabrication drawing and the fitting guide |
+| `camera_sheet.py` | Camera position sheets: a subject with the footprints a picture covers drawn over it |
 | `enclosure_sheet.py` | Three-view envelope drawings, for the PoE splitters |
 | `template_sheet.py` | A4 portrait drill templates, always 1:1 |
 

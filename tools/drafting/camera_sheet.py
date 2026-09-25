@@ -36,8 +36,8 @@ from .view import View
 #: Room round the plan view.  The left and the bottom carry one dimension per
 #: frame, stacked; nothing goes above or to the right but the frame markers.
 MARGIN_LEFT = 34.0
-MARGIN_BOTTOM = 30.0
-MARGIN_TOP = 7.0
+MARGIN_BOTTOM = 27.0
+MARGIN_TOP = 5.0
 MARGIN_RIGHT = 12.0
 
 #: A frame's colour, by its position in the subject's list.
@@ -48,12 +48,12 @@ FRAME_LETTERS = "AB"
 #: Radius of the lettered marker that names a frame at its own corner.
 MARKER_R = 3.2
 
-#: These sheets carry three small tables and no schedule, so the annotation
-#: column can be narrower than the board sheets' 165 mm -- and it has to be.
-#: The notes here are mostly optics, which is a subject the drawing cannot
-#: show at all, and every millimetre taken off the column is a millimetre
-#: added to every line of the notes band beside it.
-COLUMN_WIDTH = 138.0
+#: The annotation column stays at the library's own width.  Narrowing it
+#: would widen every line of the notes band beside it, which these sheets
+#: want -- their notes are mostly optics, a subject the drawing cannot show
+#: at all -- but the title block is the column, and below about 157 mm the
+#: VERSION cell can no longer hold a `git describe` string.  The notes were
+#: cut to fit instead.
 
 
 def _bbox(subject: Subject) -> tuple[float, float, float, float]:
@@ -98,12 +98,12 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
         "The camera looks straight down at the subject plane, the top face "
         "of the board. X and Y locate the optical axis in the subject's own "
         "frame; Z is the lens height above it. ASSUMED: Z is to the entrance "
-        "pupil, which neither vendor locates, so set it from the lens face.",
+        "pupil, which neither vendor locates; set it from the lens face.",
         f"A frame is the smallest rectangle of the sensor's own 4:3 "
         f"proportions holding its target plus {optics.FRAME_MARGIN:.2f} mm "
-        "on every side; LONG says which way the camera is turned. A frame "
-        "is the shape of the picture, not of the optics, so both lenses "
-        "share the rectangles drawn and differ only in Z.",
+        "all round; LONG says which way the camera is turned. A frame is the "
+        "shape of the picture, not of the optics, so both lenses share the "
+        "rectangles drawn and differ only in Z.",
     ]
     # The one thing a reader of this sheet has to be told before they build
     # anything, so it goes above the derivations.
@@ -111,29 +111,28 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
                 for fr in frames for ln in LENSES.values()}
     if "TOO CLOSE" in verdicts:
         notes.append(
-            "FOCUS: every height here is nearer than the stock lens's "
-            f"published near limit of {stock.min_object_distance:.0f} mm -- "
-            'Raspberry Pi give its focus as "Fixed" and its depth of field '
-            'as "Approx 1 m to infinity". A stock OV5647 cannot focus on '
-            "any of these boards; use one whose lens focuses closer.")
+            "FOCUS: every height here is nearer than the stock lens's near "
+            f"limit of {stock.min_object_distance:.0f} mm -- Raspberry Pi "
+            'give its focus as "Fixed", "Approx 1 m to infinity". A stock '
+            "OV5647 cannot focus on any of these boards; use one whose lens "
+            "focuses closer.")
     notes.append(
-        "AUTOFOCUS: an autofocus OV5647 exists and is a different part. "
-        "Arducam's B0176 declares 54 x 44 deg against the stock lens's 54 x "
-        "41, so its optics differ as well as its focusing: a motorised "
-        "lens, its own device tree line, a close focus setting. They publish "
-        "no lens height and no near limit for it, so no Z here comes from "
-        "it. Raspberry Pi's own focusable modules, on other sensors, are "
-        'given as "Approx 10 cm to infinity" and "Approx 5 cm to infinity".')
+        "AUTOFOCUS: an autofocus OV5647 exists and is a different part -- "
+        "Arducam's B0176, declared 54 x 44 deg against the stock lens's 54 x "
+        "41, with a motorised lens, its own device tree line and a close "
+        "focus setting. No lens height and no near limit are published for "
+        "it, so no Z here comes from it. Raspberry Pi's own focusable "
+        'modules, on other sensors, reach "Approx 10 cm" and "Approx 5 cm".')
     notes.append(
         "The 120 deg lens's declared pair is not self-consistent: 120 across "
-        "a 4:3 sensor implies 104.82 down it, not the 90 declared. Z is the "
-        "greater of what the two ask for, the vertical, so the picture is "
-        "WIDER than the rectangle drawn and the frame is still covered.")
+        "a 4:3 sensor implies 104.82 down it, not 90. Z is the greater of "
+        "what the two ask for, the vertical, so the picture is WIDER than "
+        "the rectangle drawn and the frame is still covered.")
     notes.append(
-        'The name "65 degrees" is the stock lens\'s diagonal and no vendor '
-        "prints it. DERIVED, 2 x atan(sqrt(3.76^2 + 2.74^2) / 2 / 3.60) = "
-        "65.74 deg from the image area, 64.42 from the active pixel array. "
-        "The table gives the figures they do print.")
+        'The name "65 degrees" is the stock lens\'s diagonal, which no '
+        "vendor prints. DERIVED: 2 x atan(sqrt(3.76^2 + 2.74^2) / 2 / 3.60) "
+        "= 65.74 deg from the image area, 64.42 from the pixel array. The "
+        "table gives the figures they do print.")
     for fr in frames:
         if fr.target.note:
             letter = FRAME_LETTERS[frames.index(fr)]
@@ -240,8 +239,7 @@ def render_camera_position(subject: Subject, *, drawing_no: str, version: str,
     band_h, band_cols = Sheet.plan_notes_band(
         sheet_size, note_blocks(notes, src),
         max_height=style.SHEET_SIZES[sheet_size][1]
-        - 2 * style.FRAME_MARGIN - view_h - 4.0,
-        column_width=COLUMN_WIDTH)
+        - 2 * style.FRAME_MARGIN - view_h - 4.0)
 
     sheet = Sheet(sheet_size, TitleBlock(
         title=subject.title.upper(), subtitle=subject.subtitle,
@@ -249,8 +247,7 @@ def render_camera_position(subject: Subject, *, drawing_no: str, version: str,
         drawn_by="generated",
         material=subject.subject_field or subject.spec.title,
         material_label="SUBJECT",
-        tolerance=subject.tolerance), column_width=COLUMN_WIDTH,
-        notes_band_height=band_h)
+        tolerance=subject.tolerance), notes_band_height=band_h)
     sheet.draw_frame()
 
     view = View.fit(sheet.area, bbox, margin=MARGIN_LEFT,

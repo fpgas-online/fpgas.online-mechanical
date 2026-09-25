@@ -216,3 +216,32 @@ checker that measures the finished PDFs rather than trusting them.
       profiled outline before `render_board` can draw its ø36 C/CS mount and
       its tripod boss honestly, and its FFC connector is in no plan view
 - [ ] The Global Shutter Camera, `RP-008195-DS-1`, if anyone wants it
+
+## Where the camera goes  -- DONE
+- [x] OV5647 optics from the vendors' own words: sensor, focal length, the
+      65 and 120 degree lenses' declared field of view, and the focus range;
+      every quote checked against the cached page by `verify_optics.py`
+- [x] The pinhole model established rather than assumed: the declared 53.50
+      and 41.41 come back out of the declared 3.60 mm and 2592 x 1944 to four
+      thousandths of a degree, and only against the active pixel array
+- [x] A sheet per subject, each named for what it is over:
+      `RPICAM-OVER-PLATE` and `RPICAM-OVER-ARTY`
+- [x] Two frames per subject, whole subject and indicators, each the smallest
+      4:3 rectangle holding its target plus 5.00 mm all round, with the camera
+      height for both lenses and the focus verdict against the published near
+      limit
+- [x] `raspberry_pi_camera/verify_optics.py`: the quotes, the model, and
+      every frame against its target and its height
+- [ ] A 120 degree OV5647 lens with a properly specified field of view. The
+      figure used is Arducam's catalogue row for their B006604, a Pi Zero
+      sized board with an M6 lens, and their declared 120 x 90 is not
+      self-consistent on a 4:3 sensor -- 120 across implies 104.82 down. No
+      vendor found publishes a measured H/V/D set for any wide OV5647.
+- [ ] A near limit for the adjustable-focus and autofocus OV5647 variants.
+      Arducam publish neither a lens height nor a focus distance for the
+      B0176, so the sheets can only say that every height is inside the STOCK
+      lens's 1 m and that a focusable module is what a rig needs.
+- [ ] Lens distortion. The model is rectilinear, which the stock lens's own
+      declared figures confirm to a hundredth of a degree; at 120 degrees a
+      real lens is not, and the frame will be barrel distorted. Nothing here
+      models it.

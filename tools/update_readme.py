@@ -27,12 +27,17 @@ from tinytapeout.mounting_plate.plate import PLATE                              
 from fpga.boards import BOARDS as FPGA                        # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from raspberry_pi_camera.boards import BOARDS as RPICAM       # noqa: E402
+from raspberry_pi_camera.optics import subjects as RPICAM_SUBJECTS  # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
 from tools.generate_diagrams import (FPGA_ORDER, RPICAM_ORDER,  # noqa: E402
-                                     RPI_ORDER, tt_sheets)
+                                     RPICAM_POSITION_ORDER, RPI_ORDER,
+                                     position_stem, tt_sheets)
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           FITTING_GUIDE_STEM, PLATE_STEM, PMOD_HAT_STEM,
                           acc_stem, drawing_name, rel, slug)
+
+#: Built once: each subject walks another family's data modules.
+_SUBJECTS = RPICAM_SUBJECTS()
 
 BEGIN = "<!-- sheets:begin -->"
 END = "<!-- sheets:end -->"
@@ -73,7 +78,10 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
         ("Raspberry Pi camera modules", "raspberry-pi-camera", COLUMNS,
          named("raspberry-pi-camera",
                [(slug(k), RPICAM[k].title, RPICAM[k].subtitle)
-                for k in RPICAM_ORDER])),
+                for k in RPICAM_ORDER]
+               + [(position_stem(k), _SUBJECTS[k].title,
+                   _SUBJECTS[k].subtitle)
+                  for k in RPICAM_POSITION_ORDER])),
         ("FPGA development boards", "fpga", COLUMNS,
          named("fpga", [(slug(k), FPGA[k].title, FPGA[k].subtitle)
                         for k in FPGA_ORDER])),
