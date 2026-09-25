@@ -269,6 +269,16 @@ checker that measures the finished PDFs rather than trusting them.
       which published close limits each height is inside
 - [x] Draw the Camera Module v1.3 over the lens from its own data, which
       bounds the entrance pupil by the lens's 5.20 mm
+- [ ] `RPICAM-OVER-ETH`, the Arty with its Ethernet LEDs, is parked on the
+      branch `issue-7-camera-over-arty-ethernet`, one source commit on top
+      of this one. Its note cites the light pipe that brings those LEDs up
+      from `fpga/light_pipe/adapter.py`, so it waits for the light pipe
+      branch (issue #8, PR #29) to be on its base, then re-renders
+- [ ] `RPICAM-OVER-ACORN`, an Acorn CLE-215+ in a PoE M.2 HAT+ on a Pi 5, is
+      parked on the branch `issue-7-camera-over-acorn`, one source commit on
+      top of this one. It takes the card and where it sits from
+      `accessories/parts.py`, so it waits for the M.2 HAT branch (issue #6,
+      PR #25) to be on its base, then re-renders
 
 ## A camera holder on the TT plate  -- DONE, unprinted
 - [x] `tinytapeout/camera_holder/holder.py`: a portal of two window-shaped
