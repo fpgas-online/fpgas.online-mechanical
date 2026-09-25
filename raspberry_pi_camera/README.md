@@ -9,7 +9,8 @@ The `RPICAM-OVER-*` sheets answer the other half of the same question. Once
 the mount exists, how far above the board does it go, and over what point?
 One sheet per subject, and each sheet's name says which after `RPICAM-OVER-`:
 the Tiny Tapeout mounting plate and the Digilent Arty A7. Each carries the
-footprint the picture covers drawn on it and the height each lens needs.
+rectangle the picture has to cover, the plane the height is measured from,
+and the height each lens needs.
 
 | | |
 |---|---|
@@ -19,7 +20,7 @@ footprint the picture covers drawn on it and the height each lens needs.
 | `measure_cm1.py` | Scales what the v1.3's hand-measured drawing draws and does not dimension, and checks the scale |
 | `verify.py` | Holds `v1.py` against its cached sources and the checks its error bars rest on |
 | `optics.py` | **Hand-written.** The OV5647's sensor, its two lenses and their focus, quoted from the vendors; the framing model; and the subjects a camera is put over |
-| `verify_optics.py` | Checks every quote in `optics.py` against the cached page, the model against Raspberry Pi's own figures, and every frame against its target |
+| `verify_optics.py` | Checks every quote in `optics.py` against the cached page, the model against Raspberry Pi's own figures, each lens's declared pair against the sensor's shape, and every frame against its target, its plane and its height |
 | `output/` | The `RPICAM-` sheets, as SVG and PDF, and `raspberry-pi-camera-sheets.pdf`, all of them bound into one document |
 
 ```sh
@@ -289,6 +290,9 @@ view, a focal length or a focus range, so none of this comes off one. Every
 figure below is quoted from the vendor that publishes it, and
 `verify_optics.py` reads the cached page back and fails if a quote is not in it.
 
+Verbatim quotes below keep the vendor's own characters, degree signs and all;
+everything outside them is ASCII, as the rest of this repository is.
+
 ### The sensor and the two lenses
 
 Raspberry Pi's camera documentation, Camera Module 1 column
@@ -303,7 +307,6 @@ Raspberry Pi's camera documentation, Camera Module 1 column
 | Focal length | `3.60 mm +/- 0.01` |
 | Horizontal field of view | `53.50 +/- 0.13 degrees` |
 | Vertical field of view | `41.41 +/- 0.11 degrees` |
-| Focal ratio | `F2.9` |
 | Focus | `Fixed` |
 | Depth of field | `Approx 1 m to ∞` |
 
@@ -326,17 +329,19 @@ DERIVED, and checked by `verify_optics.py`:
 
 | | Arithmetic | Result | Declared |
 |---|---|---|---|
-| Active array | 2592 × 0.0014, 1944 × 0.0014 | 3.6288 × 2.7216 mm, 4:3 exactly | -- |
-| Horizontal, from the array | 2·atan(3.6288 / 2 / 3.60) | **53.496°** | 53.50 |
-| Vertical, from the array | 2·atan(2.7216 / 2 / 3.60) | **41.413°** | 41.41 |
-| Horizontal, from the *image area* | 2·atan(3.76 / 2 / 3.60) | 55.149° | 53.50 |
+| Active array | 2592 x 0.0014, 1944 x 0.0014 | 3.6288 x 2.7216 mm, 4:3 exactly | -- |
+| Horizontal, from the array | 2 x atan(3.6288 / 2 / 3.60) | **53.496 deg** | 53.50 |
+| Vertical, from the array | 2 x atan(2.7216 / 2 / 3.60) | **41.413 deg** | 41.41 |
+| Horizontal, from the *image area* | 2 x atan(3.76 / 2 / 3.60) | 55.149 deg | 53.50 |
+| Vertical, from the *image area* | 2 x atan(2.74 / 2 / 3.60) | 41.669 deg | 41.41 |
 
 The declared angles come back out of the declared focal length and the
-declared pixel count, to four thousandths of a degree, under a plain
-rectilinear pinhole model measured **to the edge of the active pixel array**.
-They do not come out of the "sensor image area" printed one row above in the
-same table, which misses by 1.65°. So the model these sheets use is the
-vendor's own, and the sheets can say so.
+declared pixel count, to four thousandths of a degree on both axes, under a
+plain rectilinear pinhole model measured **to the edge of the active pixel
+array**. They do not come out of the "sensor image area" printed one row
+above in the same table, which misses by 1.65 deg across and 0.26 down. So
+the model these sheets use is the vendor's own, and the sheets can say so.
+`verify_optics.py` requires the array rows to match and the image-area rows not to.
 
 ### Where "65 degrees" comes from
 
@@ -344,30 +349,33 @@ No vendor prints it. It is the diagonal. DERIVED:
 
 | From | Diagonal | |
 |---|---|---|
-| The image area, √(3.76² + 2.74²) = 4.652 | 2·atan(4.652 / 2 / 3.60) = **65.74°** | which is the 65 |
-| The active array, √(3.6288² + 2.7216²) = 4.536 | 2·atan(4.536 / 2 / 3.60) = 64.42° | |
+| The image area, sqrt(3.76^2 + 2.74^2) = 4.652 | 2 x atan(4.652 / 2 / 3.60) = **65.74 deg** | which is the 65 |
+| The active array, sqrt(3.6288^2 + 2.7216^2) = 4.536 | 2 x atan(4.536 / 2 / 3.60) = 64.42 deg | |
 
 The sheets compute from the horizontal and vertical figures the vendors do
 print, and say in a note what the 65 is.
 
 ### The 120 degree lens contradicts itself
 
-DERIVED: on a 4:3 sensor a rectilinear lens has tan(V/2) = tan(H/2) × 3/4, so
-120° across implies **104.82°** down, not the 90° Arducam declare. The stock
-lens passes the same test to 0.006° (53.50 → 41.416 against a declared
-41.41); the wide one is out by nearly fifteen degrees, so the two figures
-cannot both be right. The sheets take the height as the greater of what each
-declared angle asks for, which is the vertical, and note that the picture is
-then wider across than the rectangle drawn.
+DERIVED: on a 4:3 sensor a rectilinear lens has tan(V/2) = tan(H/2) x 3/4, so
+120 deg across implies **104.82 deg** down, not the 90 deg Arducam declare.
+The stock lens passes the same test to 0.01 deg (53.50 gives 41.42 against a
+declared 41.41); the wide one is out by nearly fifteen degrees, so the two
+figures cannot both be right. The sheets take the height as the greater of
+what each declared angle asks for, which is the vertical every time, and say
+by how much and on which axis the picture then runs over the rectangle drawn.
 
 ### Autofocus is a different part
 
 Arducam's B0176 is an OV5647 with a motorised lens -- "Generally, you can
 understand it the same as autofocus" -- and it is not the stock module with a
 motor bolted on: its declared field of view is `54°(H)x44° (V)` against the
-stock lens's `54° (H) x 41° (V)`, so the optics differ too. It needs its own
-device tree line, `dtoverlay = ov5647 , vcm`, and `rpicam-apps` gains a close
-focus range, `autofocus - range macro`.
+stock lens's `54° (H) x 41° (V)`, so the optics differ too. It needs a
+voice-coil device tree line and gains a close-focus autofocus range; the two
+strings Arducam's quick start shows are given there as run-together words in
+the rendered page, so the forms to type are on
+[that page](https://docs.arducam.com/Raspberry-Pi-Camera/Motorized-Focus-Camera/Quick-Start-Guide/OV5647-Motorized-Focus-Camera/)
+rather than transcribed here.
 
 What Arducam do **not** publish for it: a lens height, a focus range in
 millimetres, or a minimum object distance. So no height on any of these
@@ -386,22 +394,27 @@ absorb is where the stand ends up, which does not scale with the thing being
 framed, and ten per cent round the Arty's LED row would be 0.36 mm, under the
 board data's own tolerance.
 
-| Sheet | Frame | Covers, mm | 65° | 120° |
-|---|---|---|--:|--:|
-| `RPICAM-OVER-PLATE` | The whole plate | 148.00 × 111.00 | 146.8 | 55.5 |
-| `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 × 75.69 | 100.1 | 37.8 |
-| `RPICAM-OVER-ARTY` | The whole Arty | 129.33 × 97.00 | 128.3 | 48.5 |
-| `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 × 24.51 | 32.4 | 12.3 |
+**Z is measured from the plane the frame's target lies in**, which is not
+always the subject's own top face; the column below says which. A stand set
+h mm below the right plane covers only (Z - h) / Z of the rectangle at it, so
+the error always loses the edges.
+
+| Sheet | Frame | Rectangle, mm | Z from | 65 deg | 120 deg |
+|---|---|---|---|--:|--:|
+| `RPICAM-OVER-PLATE` | The whole plate | 148.00 x 111.00 | the plate face | 146.8 | 55.5 |
+| `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 37.8 |
+| `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 48.5 |
+| `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 12.3 |
 
 **Every one of those heights is inside the stock lens's minimum focus
 distance.** Raspberry Pi give the Camera Module 1's focus as `Fixed` and its
-depth of field as `Approx 1 m to ∞`; the nearest height here is a seventh of
-that metre and the closest is a thirtieth. A stock Camera Module OV5647
-cannot focus on any of these boards. Every sheet says so in its notes and
-prints `TOO CLOSE` against every row of its height table, and
-`verify_optics.py` checks that the verdict printed is the verdict the arithmetic gives. The
-120° column prints `UNKNOWN` instead, because Arducam publish no near limit
-for that lens at all.
+depth of field as `Approx 1 m to ∞`; the largest height here, 146.8 mm, is a
+seventh of that metre, and the smallest, 12.3 mm, is an eightieth. A stock
+Camera Module OV5647 cannot focus on any of these boards. Every sheet says so
+in its notes, and `verify_optics.py` checks the verdict against the
+arithmetic for every height that has a published limit to check against --
+which is every one at 65 deg. Arducam publish no near limit for the wide lens
+at all, so its heights are reported as unknown rather than passed or failed.
 
 That is the useful finding, and it is a mount decision: a rig built to these
 sheets needs an adjustable-focus or motorised OV5647, not the stock one.
@@ -412,6 +425,15 @@ sheets needs an adjustable-focus or motorised OV5647, not the stock one.
   sits behind the front element. On a 3.60 mm lens it is within a few
   millimetres of it. Set Z from the lens face and treat it as good to a few
   millimetres, no better. ASSUMED, and on every sheet.
+- **The plate-to-board offset on `RPICAM-OVER-PLATE` is the
+  builder's.** Frame B is set from the demo board's top face, and getting
+  there from the plate means the standoff height plus the board thickness.
+  The thickness is each
+  revision's own board file, 1.56 to 1.60 mm; the standoff height is
+  specified nowhere in this repository, so the sheet says to measure the
+  stack rather than adding a figure from here. Frame A is set from the plate
+  face, and the sheet prints how far a board may stand above it before its
+  own outline leaves the picture: 25.2 mm at 65 deg, 9.5 mm at 120 deg.
 
 ### Where each subject's geometry comes from
 
@@ -419,7 +441,7 @@ Nothing is restated that some family already extracted:
 
 | Subject | From |
 |---|---|
-| TT mounting plate | [`tinytapeout/mounting_plate/plate.py`](../tinytapeout/mounting_plate/README.md) for the outline, [`tinytapeout/boards.py`](../tinytapeout/README.md) for every revision's LEDs and 7-segment, moved into plate coordinates by the placement offsets |
+| TT mounting plate | [`tinytapeout/mounting_plate/plate.py`](../tinytapeout/mounting_plate/README.md) for the outline, [`tinytapeout/boards.py`](../tinytapeout/README.md) for every revision's LEDs, 7-segment displays, board outlines and thicknesses, moved into plate coordinates by the placement offsets |
 | Arty A7 | [`fpga/boards.py`](../fpga/README.md), which is Digilent's own DXF and PDF plot |
 
 ## What is not here, and why

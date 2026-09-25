@@ -230,6 +230,9 @@ checker that measures the finished PDFs rather than trusting them.
       4:3 rectangle holding its target plus 5.00 mm all round, with the camera
       height for both lenses and the focus verdict against the published near
       limit
+- [x] Z measured from the plane the frame's target lies in, not the subject's
+      own top face: the demo boards' indicators are on a board standing on
+      standoffs above the plate
 - [x] `raspberry_pi_camera/verify_optics.py`: the quotes, the model, and
       every frame against its target and its height
 - [ ] A 120 degree OV5647 lens with a properly specified field of view. The
@@ -245,3 +248,9 @@ checker that measures the finished PDFs rather than trusting them.
       declared figures confirm to a hundredth of a degree; at 120 degrees a
       real lens is not, and the frame will be barrel distorted. Nothing here
       models it.
+- [ ] A standoff height for the Tiny Tapeout plate.
+      `RPICAM-OVER-PLATE` frame B is set from the demo board's
+      top face and the offset from the plate is the standoff height plus the
+      board thickness; only the thickness is in this repository. If the plate
+      ever specifies a standoff, put the figure in
+      `tinytapeout/mounting_plate/plate.py` and let the sheet add it.

@@ -2376,9 +2376,9 @@ The frame is the smaller of the two 4:3 orientations. Every target on the
 plate and the Arty is wider than it is tall, so every frame here is
 landscape; a target taller than it is wide would put the camera higher
 framed landscape than turned through ninety degrees. The `LONG` column says
-which way round, and `verify_optics.py` checks that the declared angles reach the frame the way round it
-was drawn -- which is the one place the orientation could have been got
-backwards without anything looking wrong.
+which way round, and `verify_optics.py` checks that the declared angles
+reach the frame the way round it was drawn -- which is the one place the
+orientation could have been got backwards without anything looking wrong.
 
 ### The indicators on the plate are not clustered
 
@@ -2399,7 +2399,6 @@ owner's bound is four or five characters behind the prefix, and a stem that
 says its subject in full -- `over-tt-mounting-plate` -- is right for a file
 and far past it for a drawing number; the sheet's title says the subject in
 full anyway.
-
 ### The annotation column stayed at 165 mm, and the notes were cut
 
 These sheets carry three small tables and no schedule, so the column could
@@ -2418,6 +2417,39 @@ gained the two frame line styles. Those are colours as well as a line type,
 because on a sheet where one frame contains the other, type K alone cannot
 say *which* frame a rectangle is, and that is the only question a reader has.
 
+### Z is measured from the target's plane, not the subject's face
+
+The review caught the one thing here that was wrong rather than untidy, and it
+is worth writing down because it is the mistake this whole model invites.
+
+The camera height is a distance from the pinhole to the plane it is focused
+and framed on. The subject's own top face is the obvious plane to quote it
+from, and on one of these frames it is the wrong one: `RPICAM-OVER-PLATE`
+frame B frames the demo boards' indicators, and a demo board stands on
+standoffs above the plate. At the 100.1 mm the sheet first gave, a board
+12 mm up put the picture at 88.83 x 66.62 against an indicator union of
+90.91 x 62.79. The outer LEDs were outside the frame.
+
+The picture at `h` above the plane the height was set from is `(Z - h) / Z`
+of what is drawn, so the error is always in the direction that loses the
+edges -- never the safe one. A `Target` now carries the plane it lies in and
+Z is quoted above that, with a PLANE note on every sheet saying which.
+
+Where the offset to the subject's own face is known, the sheet gives it. Where
+it is not, the sheet says so rather than inventing one, and the
+plate-to-board offset is not: it is the standoff height plus the board
+thickness. The thickness is in `tinytapeout/boards.py`, 1.56 to 1.60 mm
+across the revisions; the standoff height is the builder's and is specified
+nowhere in this repository, standoffs having never been drawn. Measure the
+stack.
+
+Frame A on the plate keeps the plate's own face, because the plate is what it
+frames. The board still stands above it and is still inside it, so the sheet
+prints the headroom instead: the board outlines stay in the picture up to
+25.2 mm above the plate at 65 deg and 9.5 mm at 120 deg. At 120 degrees that
+is less than a 10 mm standoff and a 1.6 mm board, which is worth knowing
+before building the rig.
+
 ### What is left uncertain
 
 - Z is to the lens's entrance pupil, and no vendor says where that sits behind
@@ -2432,3 +2464,10 @@ say *which* frame a rectangle is, and that is the only question a reader has.
   it behaves like a rectilinear angle to the array edge on the stock lens; at
   120 degrees real lenses are not rectilinear and the frame will be barrel
   distorted. Nothing here models distortion.
+- The plate-to-board offset is not published: it needs a standoff height
+  nobody here has written down. The sheet says to measure, and says which way
+  the error goes if you do not; it cannot do better until somebody specifies
+  a standoff.
+- The 65 degree column's excess over the rectangle drawn is 0.01 to 0.02 mm,
+  which is the rounding in the declared 53.50 and 41.41 rather than anything
+  physical. It is reported by `verify_optics.py` and not by the sheets.
