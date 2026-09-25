@@ -57,6 +57,17 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>RPICAM-3</b> Raspberry Pi Camera Module 3<br>25 x 23.862 mm, standard and wide, Sony IMX708
 </td>
 </tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="output/over-tt-mounting-plate.pdf"><img src="output/previews/over-tt-mounting-plate.png" width="270" alt="RPICAM-OVER-PLATE Camera over the TT Mounting Plate"></a><br>
+<b>RPICAM-OVER-PLATE</b> Camera over the TT Mounting Plate<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+<td width="33%" valign="top" align="center">
+<a href="output/over-arty-a7.pdf"><img src="output/previews/over-arty-a7.png" width="270" alt="RPICAM-OVER-ARTY Camera over the Arty A7"></a><br>
+<b>RPICAM-OVER-ARTY</b> Camera over the Arty A7<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+<td width="33%"></td>
+</tr>
 </table>
 
 <!-- sheets:end -->

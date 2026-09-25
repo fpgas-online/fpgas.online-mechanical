@@ -162,6 +162,17 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>RPICAM-3</b> Raspberry Pi Camera Module 3<br>25 x 23.862 mm, standard and wide, Sony IMX708
 </td>
 </tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/over-tt-mounting-plate.pdf"><img src="raspberry_pi_camera/output/previews/over-tt-mounting-plate.png" width="270" alt="RPICAM-OVER-PLATE Camera over the TT Mounting Plate"></a><br>
+<b>RPICAM-OVER-PLATE</b> Camera over the TT Mounting Plate<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/over-arty-a7.pdf"><img src="raspberry_pi_camera/output/previews/over-arty-a7.png" width="270" alt="RPICAM-OVER-ARTY Camera over the Arty A7"></a><br>
+<b>RPICAM-OVER-ARTY</b> Camera over the Arty A7<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+<td width="33%"></td>
+</tr>
 </table>
 
 ### FPGA development boards
@@ -246,6 +257,19 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="tinytapeout/mounting_plate/output/tt-generic-mounting-plate-chassis-drill-template.pdf"><img src="tinytapeout/mounting_plate/output/previews/tt-generic-mounting-plate-chassis-drill-template.png" width="270" alt="TT-MP-CHASSIS Drill Template: Chassis"></a><br>
 <b>TT-MP-CHASSIS</b> Drill Template: Chassis<br>A4 at 1:1 - the six M4 fixings in the box the plate bolts to
 </td>
+</tr>
+</table>
+
+### Camera holder
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="tinytapeout/camera_holder/output/tt-camera-holder.pdf"><img src="tinytapeout/camera_holder/output/previews/tt-camera-holder.png" width="270" alt="TT-MP-CAMERA Camera Holder, TT Mounting Plate"></a><br>
+<b>TT-MP-CAMERA</b> Camera Holder, TT Mounting Plate<br>Holds a Camera Module over every demo board revision
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
 </tr>
 </table>
 
