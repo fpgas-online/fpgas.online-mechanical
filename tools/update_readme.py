@@ -29,11 +29,13 @@ from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from raspberry_pi_camera.boards import BOARDS as RPICAM       # noqa: E402
 from raspberry_pi_camera.optics import subjects as RPICAM_SUBJECTS  # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
-from tools.generate_diagrams import (FPGA_ORDER, RPICAM_ORDER,  # noqa: E402
+from tools.generate_diagrams import (FPGA_ORDER, HOLDER_SUBTITLE,  # noqa: E402
+                                     HOLDER_TITLE, RPICAM_ORDER,
                                      RPICAM_POSITION_ORDER, RPI_ORDER,
                                      position_stem, tt_sheets)
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
-                          FITTING_GUIDE_STEM, PLATE_STEM, PMOD_HAT_STEM,
+                          FITTING_GUIDE_STEM, HOLDER_STEM, PLATE_STEM,
+                          PMOD_HAT_STEM,
                           acc_stem, drawing_name, rel, slug)
 
 #: Built once: each subject walks another family's data modules.
@@ -104,6 +106,9 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
                 (DRILL_TEMPLATE_STEMS["chassis"], "Drill Template: Chassis",
                  "A4 at 1:1 - the six M4 fixings in the box the plate bolts "
                  "to")])),
+        ("Camera holder", "camera-holder", COLUMNS,
+         named("camera-holder", [(HOLDER_STEM, HOLDER_TITLE,
+                                  HOLDER_SUBTITLE)])),
     ]
 
 
@@ -171,6 +176,7 @@ FAMILY_READMES = {
     "fpga": ROOT / "fpga" / "README.md",
     "accessories": ROOT / "accessories" / "README.md",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "README.md",
+    "camera-holder": ROOT / "tinytapeout" / "camera_holder" / "README.md",
 }
 
 

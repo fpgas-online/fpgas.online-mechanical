@@ -32,6 +32,7 @@ FAMILY_DIRS = {
     "fpga": ROOT / "fpga" / "output",
     "accessories": ROOT / "accessories" / "output",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "output",
+    "camera-holder": ROOT / "tinytapeout" / "camera_holder" / "output",
 }
 
 #: Every demo board sheet's file stem is this and the revisions it covers,
@@ -150,6 +151,14 @@ FAMILY_PREFIXES = {
     "fpga": ("FPGA", ""),
     "accessories": ("ACC", ""),
     "mounting-plate": ("TT-MP", PLATE_STEM),
+    # The camera holder is a made part built on the plate, and filed in a
+    # directory of its own: its checks and its STEP solids do not belong
+    # among the plate's generated data.  It takes the plate's prefix because
+    # it is a sheet of the plate's set -- it bolts through the plate's own
+    # fixings -- and HOLDER_NAMES says which in one word.  A prefix two
+    # families share is safe because check_sheets.py tests every name
+    # against every other across the whole set.
+    "camera-holder": ("TT-MP", ""),
 }
 
 
@@ -314,6 +323,25 @@ def plate_name(stem_tail: str) -> str:
             "sheet itself already carries in full")
 
 
+#: The camera holder's sheet, by file stem: the stem says what it is and
+#: what it is on, where the prefix has already said the plate.
+HOLDER_STEM = "tt-camera-holder"
+HOLDER_NAMES = {
+    HOLDER_STEM: "camera",       # the camera holder on the TT plate
+}
+
+
+def holder_name(stem: str) -> str:
+    """What the camera holder sheet written to *stem* is called."""
+    try:
+        return HOLDER_NAMES[stem]
+    except KeyError:
+        raise SystemExit(
+            f"no drawing name for the camera holder sheet {stem!r}; add one "
+            "to HOLDER_NAMES in tools/layout.py, one word saying what it is "
+            "on the plate for")
+
+
 #: The camera position sheets, by file stem.  A camera module's own sheet
 #: needs no row: ``cm3`` leaves ``3`` behind the lead and the name is
 #: RPICAM-3.  A position sheet's stem is ``over-`` and its subject's key,
@@ -363,6 +391,7 @@ def rpicam_name(rest: str) -> str:
 #: * an accessory's says in words what the part is
 #: * a mounting plate sheet's says its title -- ``chassis-drill-template``
 #: * a camera position sheet's says its subject in full
+#: * a camera holder's says what it is and what it is on
 #:
 #: Each is right for a file name and too long for a drawing number.
 FAMILY_NAME_RULES = {
@@ -370,6 +399,7 @@ FAMILY_NAME_RULES = {
     "accessories": acc_name,
     "mounting-plate": plate_name,
     "raspberry-pi-camera": rpicam_name,
+    "camera-holder": holder_name,
 }
 
 
