@@ -248,9 +248,38 @@ checker that measures the finished PDFs rather than trusting them.
       declared figures confirm to a hundredth of a degree; at 120 degrees a
       real lens is not, and the frame will be barrel distorted. Nothing here
       models it.
-- [ ] A standoff height for the Tiny Tapeout plate.
-      `RPICAM-OVER-PLATE` frame B is set from the demo board's
-      top face and the offset from the plate is the standoff height plus the
-      board thickness; only the thickness is in this repository. If the plate
-      ever specifies a standoff, put the figure in
-      `tinytapeout/mounting_plate/plate.py` and let the sheet add it.
+- [x] A standoff height for the Tiny Tapeout plate: 8 mm, in
+      `tinytapeout/mounting_plate/plate.py`, no shorter than Tiny Tapeout's
+      own printed base stands the board, and `RPICAM-OVER-PLATE` adds it
+- [x] The elevations lead: two per sheet, one per axis of the picture, the
+      stock lens's declared angle in each plane drawn from the lens to frame
+      A's edges, Z and the lens's X and Y dimensioned; the plan kept, smaller
+- [x] The plate's frame A is every revision's board rather than the plate,
+      set from the board face
+- [x] Say what the diagonal does if it is read as the angle across, how far
+      the stand may lean, how soft the stock lens is at these heights, and
+      which published close limits each height is inside
+- [x] Draw the Camera Module v1.3 over the lens from its own data, which
+      bounds the entrance pupil by the lens's 5.20 mm
+
+## A camera holder on the TT plate  -- DONE, unprinted
+- [x] `tinytapeout/camera_holder/holder.py`: a portal of two window-shaped
+      side frames and a beam, derived at import from the optics, the plate
+      and the Camera Module v1.3 data, with the lens face at 150.00 above
+      the plate face against the 148.77 the stock lens needs
+- [x] The feet share the plate's own four M4 side fixings: no new hole
+- [x] A carrier that turns a quarter at a time about the lens axis, because
+      which way the OV5647's rows run on the module is not published
+- [x] `verify.py`: the camera's height and position, every revision whole
+      in the picture and unhidden, clear of every board, standoff and cable,
+      every fastener
+- [x] STEP solids, assembled and per part as printed; the beam as a DXF
+- [x] `TT-MP-CAMERA`, bound into the Tiny Tapeout copy after the plate's two
+- [ ] Print one and put it on a plate. Nothing here has been built
+- [ ] Check which way the picture's long side runs on a real v1.3 and set
+      `QUARTER_TURNS` to it, so the sheet stops saying ASSUMED
+- [ ] Measure the v1.3's small parts beside the lens -- LED D1 and R9 by MT1
+      -- against the M2 screw heads on the lens side
+- [ ] A focusable OV5647 would make the picture sharp as well as whole. If
+      one is chosen, its lens height and hole pattern go in as a second
+      `CameraBoard` and the holder is re-derived for it

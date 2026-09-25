@@ -2296,7 +2296,7 @@ lens does. **One sheet per subject, both lenses in the tables.**
 
 Both come out at 1:1, which is what the rest of the set is.
 
-### No side elevation
+### No side elevation -- superseded
 
 The issue offers "a side elevation or a table giving the heights". The heights
 run from 12.3 to 146.8 mm. An elevation at the plan's own 1:1 would want
@@ -2304,6 +2304,11 @@ another 150 mm of sheet height, which an A3 carrying a 1:1 plan and a notes
 band does not have; at any other scale it would be a view beside a 1:1 view,
 inviting exactly the measurement it cannot support. A table, and the notes say
 what Z is measured from.
+
+That was the wrong way round, and the owner said so: the question is a
+height, so the view that shows the height is the primary one and the plan is
+the one that can shrink. See "The camera position sheets lead with the
+elevations" below.
 
 ### Every height fails the focus check, and that is the finding
 
@@ -2471,3 +2476,136 @@ before building the rig.
 - The 65 degree column's excess over the rectangle drawn is 0.01 to 0.02 mm,
   which is the rounding in the declared 53.50 and 41.41 rather than anything
   physical. It is reported by `verify_optics.py` and not by the sheets.
+
+## The camera position sheets lead with the elevations
+
+Issue #7 again, part (b). The owner asked for the side view to be the
+primary one: the board, the camera over it, the 65 degree lens's field of
+view, and dimensions saying how high and where for the whole board to be in
+the picture.
+
+### Two elevations, because the picture has two axes
+
+"65 degrees" is the stock lens's diagonal. What reaches the edge of the
+picture is the declared angle along each axis -- 53.50 across the sensor's
+long side, 41.41 along its short side -- and which lies along the subject's
+X depends on which way the camera is turned. So one elevation per axis: the
+front elevation along +Y with X across it, and the end elevation, first
+angle, seen from the right and drawn on the left with Y across it, so that Y
+reads left to right. Each draws its own angle from the lens face to frame A's
+edges. Z is dimensioned once, on the front elevation.
+
+Reading 65 as the angle across the long side is the mistake the name
+invites, and it is not small: over the plate it gives Z 110.1 where 139.2 is
+needed, and the picture misses 14.6 mm off each end. Every sheet prints its
+own figure. Turned the other way the camera would need 174.3.
+
+### The plan stayed, smaller
+
+It is the only view showing which way the picture lies over the subject and
+where frame B is, so it earns its place, but not at the elevations' scale:
+at 1:2 under the front elevation it took the paper the notes needed and
+pushed the plate sheet to 1:5. It sits under the end elevation at the next
+standard scale down, dimensions nothing (the elevations dimension frame A,
+the table every frame), and the notes flow into the paper the views leave --
+beside the plan, then across the full width, then the column's foot --
+rather than a band. The scale is the largest at which the views and the
+notes both fit: 1:2 for the plate and for the Arty. Getting the plate to 1:2
+took cutting every note that said a thing twice.
+
+### Frame A on the plate is every board, not the plate
+
+A camera fixed over the plate has to take in whichever board is on it, not
+the plate. Frame A is now the union of every revision's assembled envelope,
+Pmod bodies included, set from the demo board's top face. That needed the
+standoff, which the plate never specified. It does now: 8 mm, a choice made
+no shorter than what Tiny Tapeout's own printed base gives the board
+(`case/tt06_demo_base.scad` in tt-demo-pcb: `Height = 8` with a 1.6 PCB in
+its top, so 6.4 mm studs over a pocket "for PTH pins and rubber feet"). The
+board face is then 9.56 to 9.60 above the plate; Z is set from the higher.
+
+### Focus, said plainly and quantified
+
+Every height is nearer than the stock lens's "Approx 1 m to infinity", so the
+board is out of focus. How far: on a thin lens set at the 2 m hyperfocal
+distance that range implies, a point spreads to 21 pixels, 1.1 mm on the
+board, at the plate's 139.2. Set at infinity instead it is 1.2 mm, so the
+figure does not hang on the assumption. The only published close limits are
+other sensors': the plate's heights are beyond "Approx 10 cm", and the
+Arty's LEDs are nearer than even "Approx 5 cm".
+
+### The entrance pupil, bounded by the data
+
+Nobody locates it, but the v1.3's data gives the lens 5.20 mm proud of the
+board, and the pupil is between the sensor and the lens face. So set the
+face at Z and the picture is up to 3.7% larger over the plate, never
+smaller -- which is what the first note says instead of "a few millimetres".
+
+## A camera holder on the TT plate: TT-MP-CAMERA
+
+Part (b)'s second half: something that puts the camera where
+`RPICAM-OVER-PLATE` says, built on the plate.
+
+### The camera
+
+The stock 65 degree lens is the Camera Module v1.3's, and Raspberry Pi never
+drew that board. Another branch, `issue-39-rpi-camera-v1`, wrote its data by
+hand from Gert van Loo's 2013 hand-measured sheet, and this one is built on
+it: `raspberry_pi_camera/v1.py` is that branch's. Holes ø2.0 on the family's 21 x 12.5 pattern, the lens
+module 8 mm square and 5.20 proud, glued on so its axis is ±0.4, the board
+0.95, the FFC connector 2.8 deep on the far face. Until it landed the holder
+was developed against Camera Module 3's pattern, flagged, and verify.py
+failed on it.
+
+### Why a portal
+
+Every revision's Pmod hosts are on the front edge and every USB-C is on the
+front or the back, so the holder stands on the left and right edges and
+spans over. The only connectors on a side are J12 to J14 on DB 4+ and DB 06+,
+not fitted, whose bodies stand 2.50 mm in from the plate's left edge; the
+side frame's wall is 1.00 mm outside that and mostly off the plate, and it
+is a window -- posts at the ends, a rail, a foot -- so a peripheral in one
+comes out through it.
+
+The feet sit over the plate's four side M4 fixings and share their screws.
+That is the plate's own pattern, so no hole is added and the holder can only
+go on one way. The plate's left and right fixings are mirror images about
+its centre line to 0.003 mm, which is what lets the two side frames be
+mirror images.
+
+### Why the carrier turns
+
+Which way the OV5647's pixel rows run on the v1.3 is published nowhere. The
+frame's long side has to lie along the plate's X; a quarter turn out, the
+picture falls 17.1 mm short at each end. So the camera is on a carrier that
+bolts to the beam on a square of four M3 centred on the lens axis, and turns
+a quarter at a time without moving the axis. Printed bosses for both hole
+orientations on one part were the first idea and do not work: whichever
+way the second set is turned, one of its bosses lands 1.1 mm into the
+camera's FFC connector and two are centred off the board's edge.
+
+### The height
+
+Lens face 150.00 above the plate face: 139.17 over the highest board face,
+9.60 up, is 148.77, plus a millimetre for the print, rounded up. The stack
+above it is the camera's own 5.20 and 0.95, bosses a millimetre over the
+connector's 2.8, a 4 mm carrier, and the beam on the rails.
+
+### What came up while it was being written
+
+- The first cut of the side frame's fixings took every plate fixing with X
+  under the centre line, which included one of the two at the back.
+- An M2 does not pass a ø2.0 hole at the nominal sizes. It does at the
+  thread's own tolerance -- 6g puts an M2's major diameter at most 1.981 --
+  and Raspberry Pi Spy say the holes "will accept a 2mm machine screw", so
+  that is the check, with both cited.
+- The M3 carrier screw the first table named was 12 mm: 6 mm of beam, 4 of
+  carrier and a 2.4 mm nut want 12.4. Lengths are worked from the grips now.
+
+### What is left uncertain
+
+- It has not been printed.
+- The sensor orientation, as above.
+- The v1.3's small parts beside the lens, LED D1 and R9 by MT1, which no
+  source dimensions, against the M2 heads on the lens side.
+- Focus, which no holder can fix for the stock lens.
