@@ -225,14 +225,15 @@ checker that measures the finished PDFs rather than trusting them.
       and 41.41 come back out of the declared 3.60 mm and 2592 x 1944 to four
       thousandths of a degree, and only against the active pixel array
 - [x] A sheet per subject, each named for what it is over:
-      `RPICAM-OVER-PLATE` and `RPICAM-OVER-ARTY`
+      `RPICAM-OVER-PLATE`, `RPICAM-OVER-ARTY`, and `RPICAM-OVER-ACORN` for
+      an Acorn CLE-215+ in a Waveshare PoE M.2 HAT+ (B) on a Pi 5
 - [x] Two frames per subject, whole subject and indicators, each the smallest
       4:3 rectangle holding its target plus 5.00 mm all round, with the camera
       height for both lenses and the focus verdict against the published near
       limit
 - [x] Z measured from the plane the frame's target lies in, not the subject's
       own top face: the demo boards' indicators are on a board standing on
-      standoffs above the plate
+      standoffs above the plate, and the Acorn is a card seated above a Pi
 - [x] `raspberry_pi_camera/verify_optics.py`: the quotes, the model, and
       every frame against its target and its height
 - [x] The 120 degree lens's field of view: the B006604's own page gives the
@@ -274,11 +275,14 @@ checker that measures the finished PDFs rather than trusting them.
       of this one. Its note cites the light pipe that brings those LEDs up
       from `fpga/light_pipe/adapter.py`, so it waits for the light pipe
       branch (issue #8, PR #29) to be on its base, then re-renders
-- [ ] `RPICAM-OVER-ACORN`, an Acorn CLE-215+ in a PoE M.2 HAT+ on a Pi 5, is
-      parked on the branch `issue-7-camera-over-acorn`, one source commit on
-      top of this one. It takes the card and where it sits from
-      `accessories/parts.py`, so it waits for the M.2 HAT branch (issue #6,
-      PR #25) to be on its base, then re-renders
+- [x] The Acorn taken from `accessories/parts.py` rather than restated: the
+      card feature, its seated position and the HAT's standoff overhang are
+      that module's, which `ACC-HAT-M2POE` is drawn from too, so the card is
+      one rectangle in one place
+- [ ] A Pi-to-card stack height for the Acorn. Waveshare dimension no height
+      and the CLE-215+'s heatsink is unpublished, so
+      `RPICAM-OVER-ACORN` can only say to measure the stack and
+      which way the error goes.
 
 ## A camera holder on the TT plate  -- DONE, unprinted
 - [x] `tinytapeout/camera_holder/holder.py`: a portal of two window-shaped

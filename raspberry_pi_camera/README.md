@@ -8,7 +8,8 @@ axis, and the camera FFC connector on the underside.
 The `RPICAM-OVER-*` sheets answer the other half of the same question. Once
 the mount exists, how far above the board does it go, and over what point?
 One sheet per subject, and each sheet's name says which after `RPICAM-OVER-`:
-the Tiny Tapeout mounting plate and the Digilent Arty A7. Each leads with
+the Tiny Tapeout mounting plate, the Digilent Arty A7 and an Acorn CLE-215+.
+Each leads with
 two elevations, one for each axis of the picture, drawing the subject edge
 on and, over it, a Camera Module v1.3 with each lens -- the stock 65 degree
 one and a 120 degree fisheye -- at the height where its field of view takes
@@ -536,10 +537,12 @@ the error always loses the edges.
 | `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 101.2 | 52.1 |
 | `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 129.7 | 66.8 |
 | `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 32.8 | 16.9 |
+| `RPICAM-OVER-ACORN` | The whole assembly | 98.00 x 73.50 | the Acorn card's top face | 97.2 | 98.3 | 50.6 |
+| `RPICAM-OVER-ACORN` | The Acorn card | 90.00 x 67.50 | the Acorn card's top face | 89.3 | 90.3 | 46.5 |
 
 **In focus there?** On either fixed lens, at no height here: all of them are
 inside "1 m". On the autofocus lens, at every height of 80 mm or more -- both
-plate frames and the whole Arty -- and not at the Arty's LED row, 32.8,
+plate frames, the whole Arty and both Acorn frames -- and not at the Arty's LED row, 32.8,
 which is nearer than even the B0121's 4 cm. Each sheet's table says which,
 frame by frame, and `verify_optics.py` checks every verdict against the
 arithmetic.
@@ -611,6 +614,16 @@ the plan dimensions nothing.
   Nothing on a board has a published height, so the sheet prints how high
   anything standing on one may rise before it leaves frame A's picture:
   13.2 mm at 65 deg, 6.9 mm at 120 deg.
+- **The Pi-to-card stack on `RPICAM-OVER-ACORN` is
+  unpublished.** Waveshare dimension no height on their drawing and
+  `accessories/parts.py` carries none either, so both frames are set from
+  the card's own top face -- the highest plane either target reaches, so
+  everything below it is covered by more than the frame. Measure the stack.
+  A stand set from the Pi's face instead sits too low and loses the ends of
+  the card.
+- **The Acorn's own LED positions are not published.** SQRL issued no
+  mechanical drawing and their site is gone, so the second frame on
+  `RPICAM-OVER-ACORN` is the card, not its indicators.
 
 ### Where each subject's geometry comes from
 
@@ -620,6 +633,17 @@ Nothing is restated that some family already extracted:
 |---|---|
 | TT mounting plate | [`tinytapeout/mounting_plate/plate.py`](../tinytapeout/mounting_plate/README.md) for the outline and the standoff, [`tinytapeout/boards.py`](../tinytapeout/README.md) for every revision's envelope, LEDs, 7-segment displays and thickness, moved into plate coordinates by the placement offsets |
 | Arty A7 | [`fpga/boards.py`](../fpga/README.md), which is Digilent's own DXF and PDF plot |
+| Acorn assembly | [`raspberry_pi/boards.py`](../raspberry_pi/README.md) for the Pi 5, and [`accessories/parts.py`](../accessories/README.md) for the card, where it sits and the HAT it sits in |
+
+The Acorn is no exception either. Its card is the PCI Express M.2
+specification's Type 2280 outline, 22 x 80 mm, widened by the one millimetre
+SQRL's own product page claims ("it is one millimeter wider than the official
+specifications", [Internet Archive, 2020](https://web.archive.org/web/2020/http://www.squirrelsresearch.com/acorn-cle-215-plus/));
+that rectangle, where it is seated, the HAT's own width and how far its 2280
+standoff reaches past the board edge are all `accessories/parts.py`'s, which
+`ACC-HAT-M2POE` is drawn from as well, so the card on that sheet and the card
+on this one cannot drift apart. The assembly's 88.00 mm far edge falls out of
+this repository's own Pi 5 data and that standoff.
 
 ## What is not here, and why
 

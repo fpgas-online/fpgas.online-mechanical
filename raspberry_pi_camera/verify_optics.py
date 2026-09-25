@@ -170,6 +170,18 @@ QUOTES = {
     ],
 }
 
+#: The two quotes on the sheets that are not in a page this family's own
+#: fetch script caches: the M.2 specification is a PDF another family
+#: downloads, and SQRL's page is cited from the Internet Archive through the
+#: branch that draws the assembly.  Listed so that nothing a sheet prints
+#: between quotation marks is silently unaccounted for, and named with the
+#: source that carries it.
+UNCHECKED = {
+    'SQRL Acorn CLE-215+, Internet Archive 2020':
+        "it is one millimeter wider than the official specifications",
+    'Waveshare PoE M.2 HAT+ (B) dimension drawing': "Unit: mm",
+}
+
 #: How far a frame edge may sit inside where the margin puts it.  Floating
 #: point only: the frame is built from the target by addition.
 EPS = 1e-6
@@ -216,7 +228,10 @@ def check_quotes() -> tuple[int, int]:
             bad += not ok
             print(f"   {'ok  ' if ok else 'FAIL'} {name[:34]:<36} "
                   f"{quote!r}")
-    print(f"quotes: {total - bad} of {total} found in the cached pages\n")
+    for who, quote in UNCHECKED.items():
+        print(f"   --   {who[:34]:<36} {quote!r} (not fetched here)")
+    print(f"quotes: {total - bad} of {total} found in the cached pages, "
+          f"{len(UNCHECKED)} cited from elsewhere\n")
     return bad, total
 
 

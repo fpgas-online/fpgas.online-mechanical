@@ -306,8 +306,8 @@ def check_drawing_names() -> list[str]:
     sheet waiting on another branch will be ``FPGA-ARTY-ETHERNET-LIGHT-PIPE``
     at 58.03 mm.  Every name on a sheet with a title block fits the
     79.30 mm that cell leaves, and clears the 38.05 mm a quarter-width one
-    would have left as well -- the closest, ``RPICAM-OVER-PLATE``, by
-    2.02 mm, where before the
+    would have left as well -- the closest, ``RPICAM-OVER-ACORN``, by
+    0.35 mm, where before the
     mounting plate had a rule of its own the closest was 0.49 mm.
     ``Sheet._title_cell``
     refuses to draw a value that overruns its cell, so an overflow cannot

@@ -2737,3 +2737,51 @@ ASSUMED on it. A carrier for the B006604 wants a drawing of that board.
 - The 120 holder's 1.00 mm is too little for any real M12 fisheye on a
   v1.3-sized board: with the face 10 mm low the boards' edges are cut off.
   The README says so plainly and TODO carries the fix.
+
+## RPICAM-OVER-ACORN, back from a branch of its own
+
+Issue #7's branch was split on 25 September 2026 so that it would wait on
+the Camera Module v1.3's branch alone. This sheet came off it then, because
+the card, where it is seated and the HAT's standoff are all imported from
+`accessories/parts.py`, and those are the M.2 HAT branch's, so it was kept as
+one commit on `issue-7-camera-over-acorn` until that branch was under it. It
+comes back as it was. What was written about it at the time is below.
+
+It is also the second place Z is not measured from the subject's own face:
+the Acorn is a card seated in a HAT above the Pi, roughly 16 mm up. Set from
+the Pi, at 89.3 mm the picture at the card was 73.89 x 55.41 against a
+90 x 67.50 frame, so the 80 mm card did not fit at all. Nobody publishes the
+Pi-to-card offset -- Waveshare dimension no height on their drawing,
+`accessories/parts.py` carries none either, and the CLE-215+'s heatsink is
+unpublished -- so both Acorn frames are set from the card's own top face,
+the HIGHEST plane either target reaches, and everything below it is covered
+by more than the frame, which is the safe direction. And its two frames are
+not nested: neither contains the other.
+
+The widest drawing name in the set is now `RPICAM-OVER-ACORN`, 37.70 mm at
+the ISO 3098 floor, 0.35 mm inside the quarter-width cell the DRAWING NO no
+longer has to fit.
+
+### The Acorn, and where the card sits
+
+The card itself needs no branch: the PCI Express M.2 specification gives Type
+2280 as 22 x 80 mm, and SQRL's own archived product page adds the millimetre
+-- "it is one millimeter wider than the official specifications" -- so 23 x
+80, with both citations on the sheet.
+
+Where it *sits* is `accessories/parts.py`'s, which `ACC-HAT-M2POE` is drawn
+from: the connector datum at X 5.07, the module axis at Y 18.26, the HAT's
+own 85.00 mm width and the 3.00 mm the 2280 standoff projects past it.
+Nothing is copied -- the card feature itself is imported, so the rectangle on
+this sheet is the rectangle on that one. The assembly's 88.00 x 57.32 mm
+envelope then falls out of this repository's own Pi 5 data: the Pi's own
+assembled *envelope*, connectors included, is 87.960 x 57.320 over an
+85 x 56 board, and the standoff takes the 87.960 to 88.00.
+
+The boss itself is not drawn. Drawing it would have meant restating a fourth
+figure, its ø5.87, for a circle 2 mm outside the Pi's own Ethernet jack; the
+note carries the 88.00 instead.
+
+Its LEDs are simply not published. SQRL issued no mechanical drawing and the
+company's site is gone, so there is no indicator frame for the Acorn: frame B
+is the card. The sheet says that rather than inventing one.

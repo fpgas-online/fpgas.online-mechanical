@@ -93,11 +93,11 @@ RPICAM_ORDER = ["cm1", "cm2", "cm3"]
 #: family: they are about the same modules, and a reader who has just found
 #: out where the optical axis sits on the board is the reader who wants to
 #: know where to put the board.  The plate first, because it is the thing
-#: this repository is mostly about, then the Arty.  Each entry is the key of
-#: a subject in ``raspberry_pi_camera.optics``, which is the thing the camera
-#: is pointed at; ``position_stem`` says what the sheet drawn for it is
-#: called.
-RPICAM_POSITION_ORDER = ["tt-mounting-plate", "arty-a7"]
+#: this repository is mostly about, then the Arty, then the Acorn.  Each
+#: entry is the key of a subject in ``raspberry_pi_camera.optics``, which is
+#: the thing the camera is pointed at; ``position_stem`` says what the sheet
+#: drawn for it is called.
+RPICAM_POSITION_ORDER = ["tt-mounting-plate", "arty-a7", "acorn-cle-215-plus"]
 #: In the order they were asked for.  No shared frame: unlike the demo
 #: boards, which register on their Pmod hosts, and the Pis, which share an
 #: outline, these have nothing in common to hold still, so each sheet is
@@ -146,7 +146,7 @@ def position_stem(key: str) -> str:
     ``RPICAM-OVER-ARTY``, the family prefix, the word the title shares with
     the other position sheets, and one word for the subject, as ``RPICAM-2``
     does not say camera twice either.  The widest of them,
-    ``RPICAM-OVER-PLATE``, is 36.03 mm of lettering at the ISO 3098 floor in
+    ``RPICAM-OVER-ACORN``, is 37.70 mm of lettering at the ISO 3098 floor in
     the 79.30 mm the DRAWING NO cell has.
 
     Here rather than in ``tools/layout.py``, which holds the stems that notes
