@@ -169,7 +169,6 @@ def draw_parts(c, v: View, view: str) -> None:
     for key, members in by_part.items():
         rects = [_project(b, view)[0] for b, _ in members]
         near = max(_project(b, view)[1] for b, _ in members)
-        far = min(_project(b, view)[2] for b, _ in members)
         # A box of another part hides this part's lines only where it is
         # wholly in front of all of this part.
         covers = [_project(b, view)[0] for k, b, _ in items
@@ -181,7 +180,6 @@ def draw_parts(c, v: View, view: str) -> None:
                     c.line(*v.pt(a, at), *v.pt(b, at), **kw)
                 else:
                     c.line(*v.pt(at, a), *v.pt(at, b), **kw)
-        del far
 
 
 def draw_adjacent(c, v: View, view: str) -> None:
@@ -236,41 +234,39 @@ def _text():
     on_sensor, on_subject = optics.blur(H.LENS_FACE - hi)
     spare = H.LENS_FACE - hi - H.REQUIRED.z
     notes = [
-        "First angle. Plate coordinates, as TT-MP-PLATE's: X right, Y to "
-        "the back, Z up from the plate's TOP face. The right side frame is "
-        "the left one mirrored about the plate's centre line.",
-        f"WHAT IT IS FOR: the lens over the centre of {POSITION_SHEET}'s "
-        f"frame A, at ({H.AXIS_X:.2f}, {H.AXIS_Y:.2f}), and high enough "
-        f"that the stock {lens.key} deg lens takes in every revision's "
-        f"whole board. That needs {H.REQUIRED.z:.2f} above the highest "
-        f"board face, {hi:.2f} up, so {H.LENS_FACE_MIN:.2f}; the lens face "
-        f"is set at {H.LENS_FACE:.2f}, {spare:.2f} over, a millimetre for "
-        "the print and rounded up.",
-        "TURN THE CAMERA RIGHT: the picture's long side has to run along X. "
-        "ASSUMED that it runs along the camera board's 25 mm width, which "
-        "nobody publishes; a quarter turn out, the picture falls "
-        f"{H.turned_wrong():.1f} mm short at each end. Check the first "
-        "picture, and if its long side runs front to back, put the carrier "
-        "back a quarter turn round: its four fixings are square about the "
-        "lens, so the lens does not move.",
-        f"FOCUS: the stock lens is \"Approx 1 m to infinity\", and "
-        f"{H.LENS_FACE - hi:.1f} is far nearer: OUT OF FOCUS. The boards "
-        "come out "
-        f"soft, a point spreading to about {on_sensor / optics.PIXEL_PITCH:.0f}"
-        f" pixels, {on_subject:.1f} mm on the board, per {POSITION_SHEET}.",
-        "ACCESS: front and back are open over every revision's Pmod hosts "
-        "and USB-C; each side frame is a window, which clears the side Pmod "
-        "positions J12-J14 two revisions carry, not fitted. The boards' "
-        "buttons are not in the board data and are not checked: they are "
-        "pressed from above, under a beam "
-        f"{H.BEAM_Z0:.0f} mm up.",
-        "FIXING: each foot sits over two of the plate's own M4 side "
-        "fixings and shares their screws, so the plate needs no new hole. "
-        "The FFC leaves the camera towards the back, in the gap under the "
-        "carrier; take it up behind the beam.",
-        "PRINT: opaque PETG, at least four perimeters. Matte black if it "
-        "can be: the side frames' lower ends show in the picture's margin, "
-        "outside every board. Each part lies as the PARTS table says.",
+        "First angle, in TT-MP-PLATE's coordinates, Z up from the plate's "
+        "TOP face. The right side frame is the left one mirrored.",
+        f"FOR: the lens over {POSITION_SHEET}'s frame A, at "
+        f"({H.AXIS_X:.2f}, {H.AXIS_Y:.2f}), high enough for the stock "
+        f"{lens.key} deg lens to take in every revision's whole board: "
+        f"{H.REQUIRED.z:.2f} over the highest board face, {hi:.2f} up, so "
+        f"{H.LENS_FACE_MIN:.2f}. Set at {H.LENS_FACE:.2f}, {spare:.2f} over "
+        "for the print. For a camera mode reading the whole sensor.",
+        "TURN THE CAMERA RIGHT: ASSUMED that the picture's long side runs "
+        "along the camera board's 25 mm width, which nobody publishes; it "
+        "has to run along X, and a quarter turn out the picture is "
+        f"{H.turned_wrong():.1f} mm short at each end. If the first picture "
+        "is the wrong way, turn the carrier a quarter: its fixings are "
+        "square about the lens.",
+        f"FOCUS: stock lens \"Approx 1 m to infinity\"; at "
+        f"{H.LENS_FACE - hi:.1f} the boards are OUT OF FOCUS, a point about "
+        f"{on_sensor / optics.PIXEL_PITCH:.0f} pixels, {on_subject:.1f} mm "
+        f"on the board ({POSITION_SHEET}).",
+        "MAKE the parts from tt-camera-holder-*.step; this sheet is the "
+        f"assembly. Holes: M4 {H.M4_CLEAR:.1f}, M3 {H.M3_CLEAR:.1f}, M2 "
+        f"{H.M2_CLEAR:.1f}, M2 nut pockets {H.M2_POCKET_AF:.1f} AF. Ream "
+        "the side frames' holes, which print lying down. Opaque PETG, four "
+        "perimeters, matte black if it can be: the side frames show in the "
+        "picture's margin. The camera's holes are 2.0 +/-"
+        f"{H.CAMERA.hole_dia_tol:.1f}: open a tight one with a 2.0 drill.",
+        "ACCESS: front and back are open over every Pmod host and USB-C; "
+        "the side frames are windows over the unfitted side Pmods J12-J14. "
+        "Buttons are not in the board data and not checked; they are "
+        f"pressed from above, under a beam {H.BEAM_Z0:.0f} mm up.",
+        "FIXING: the feet share the plate's own M4 side fixings, so no new "
+        f"hole; on a chassis the M4s are {H.FOOT_T:g} mm longer than the "
+        "plate's own. Plug the FFC in first -- its latch is out of reach "
+        "under the carrier -- and take it up and back over the beam.",
     ]
     src = [f"{s.label}: {s.ref} - {s.note}" for s in H.SOURCES]
     return notes, src
@@ -280,19 +276,23 @@ def _tables(sheet: Sheet) -> None:
     rows = []
     for p in H.PARTS:
         b = p.bbox
-        rows.append([p.name, str(p.count if p.key != "side" else 2),
+        rows.append([p.name, str(p.count),
                      f"{b.x1 - b.x0:.1f} x {b.y1 - b.y0:.1f} x "
-                     f"{b.z1 - b.z0:.1f}", p.print_note.split(":")[0]])
+                     f"{b.z1 - b.z0:.1f}",
+                     p.print_note.split(":")[0].split(";")[0].rstrip(".")])
     block = sheet.column_block(sheet.table_height("PARTS, PRINTED", len(rows)))
     sheet.table(block, "PARTS, PRINTED",
                 ["PART", "QTY", "X x Y x Z mm", "PRINT"], rows,
                 ["start", "end", "end", "start"])
 
-    rows = [[str(n), what.split(",")[0], where.split(";")[0].split(".")[0]]
-            for what, n, where in H.FASTENERS]
+    rows = []
+    for what, n, where in H.FASTENERS:
+        screw, standard, extra = what.split(", ")
+        rows.append([str(n), f"{screw}, {standard}", extra,
+                     where.split(";")[0].split(".")[0].split(",")[0]])
     block = sheet.column_block(sheet.table_height("FASTENERS", len(rows)))
-    sheet.table(block, "FASTENERS", ["QTY", "SCREW", "JOINS"], rows,
-                ["end", "start", "start"])
+    sheet.table(block, "FASTENERS", ["QTY", "SCREW", "WITH", "JOINS"], rows,
+                ["end", "start", "start", "start"])
 
     lo, hi = optics.plate_board_plane()
     rows = [
@@ -408,7 +408,7 @@ def render_holder(*, title: str, subtitle: str, drawing_no: str,
     _dimension(sheet, front, end, plan)
 
     for v, name in ((end, "END ELEVATION"), (front, "FRONT ELEVATION"),
-                    (plan, f"PLAN, {plan.scale_label}")):
+                    (plan, f"PLAN, {plan.scale_label}, NOT IN PROJECTION")):
         c.text(v.rect.cx, v.rect.y1 + 3.0, name, size=style.T_LABEL,
                anchor="middle", bold=True)
 

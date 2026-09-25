@@ -204,11 +204,11 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     a = place(frames[0], stock)
     notes = [
         "First angle; the end elevation is seen from the right. The camera, "
-        "a Camera Module v1.3 from its own data, looks straight down. Z is "
-        "to its entrance pupil, which nobody locates but which is behind the "
-        f"lens face by at most the lens's {v1.LENS_TOP_Z:.2f} mm: set the "
-        f"FACE at Z and the picture is up to {100 * v1.LENS_TOP_Z / a.z:.1f}%"
-        " larger, never smaller.",
+        "a Camera Module v1.3 from its own data, looks straight down, in a "
+        "mode reading the whole sensor. Z is to its entrance pupil, which "
+        "nobody locates; ASSUMED behind the lens face by at most the lens's "
+        f"{v1.LENS_TOP_Z:.2f} mm, so set the FACE at Z and the picture is up "
+        f"to {100 * v1.LENS_TOP_Z / a.z:.1f}% larger, never smaller.",
         "A frame is the smallest rectangle of the sensor's own 4:3 holding "
         f"its target plus {optics.FRAME_MARGIN:.2f} mm all round, turned "
         "whichever way needs the lower camera; LONG says which. The margin "
@@ -637,8 +637,10 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
 
     # The plane Z is measured from, a little past everything on it, and the
     # target lying in it.
-    span_lo = min(f_lo, 0.0) - 3.0
-    span_hi = max(f_hi, size) + 3.0
+    # Clipped to the view: a frame over part of a board leaves the rest of
+    # the board to run on across the other elevation.
+    span_lo = max(min(f_lo, 0.0) - 3.0, v.model_x0)
+    span_hi = min(max(f_hi, size) + 3.0, v.model_x1)
     c.line(*v.pt(span_lo, 0.0), *v.pt(span_hi, 0.0), w=style.W_THIN,
            colour=style.C_PHANTOM, dash=style.D_CENTRE)
     c.line(*v.pt(t_lo, 0.0), *v.pt(t_hi, 0.0), w=style.W_OUTLINE + 0.2,
@@ -652,8 +654,14 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
     c.line(*v.pt(cu, -1.5), *v.pt(cu, z + ABOVE_LENS - 3.0),
            w=style.W_CENTRE, colour=style.C_LINE, dash=style.D_CENTRE)
     long_x = subject.frames()[0].long_axis == "X"
-    # ASSUMED, as on the holder: the long image axis along the board's width.
-    _draw_camera(c, v, cu, z, "u" if (axis == "X") == long_x else "v")
+    # ASSUMED, as on the holder: the long image axis along the board's
+    # width.  Lens down, the board's width runs against X; a quarter turn
+    # puts its height against X and its width against Y.
+    if long_x:
+        along, sign = ("u", -1) if axis == "X" else ("v", 1)
+    else:
+        along, sign = ("v", -1) if axis == "X" else ("u", -1)
+    _draw_camera(c, v, cu, z, along, sign)
 
     # The angle, at the lens, and its value outside the cone on the left,
     # where neither elevation has anything else: the heights are dimensioned
@@ -667,22 +675,29 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
     return apex[0]
 
 
-def _draw_camera(c, v: View, cu: float, z: float, along: str) -> None:
+def _draw_camera(c, v: View, cu: float, z: float, along: str,
+                 sign: int) -> None:
     """The Camera Module v1.3, lens face down at Z, from its own data.
 
     *along* is which of the board's two axes lies across this elevation: its
-    25 mm width ("u") or its 23.9 mm height ("v").  The lens axis is
+    25 mm width ("u") or its 23.9 mm height ("v"); *sign* is +1 where that
+    axis runs the elevation's way and -1 where turning the board lens down
+    reverses it.  Both follow the camera holder's ``camera_to_plate``, so
+    the module is drawn the way the holder hangs it.  The lens axis is
     ``v1.OPTICAL_AXIS``, so the board is drawn off centre along its height,
     with the FFC connector on its far face at the edge the axis is nearer.
     """
     from raspberry_pi_camera import v1
     au, av = v1.OPTICAL_AXIS
-    if along == "u":
-        lo, hi = cu - au, cu + (v1.BOARD_WIDTH - au)
-        flo, fhi = cu - au + v1.FFC[0], cu - au + v1.FFC[2]
-    else:
-        lo, hi = cu - av, cu + (v1.BOARD_HEIGHT - av)
-        flo, fhi = cu - av + v1.FFC[1], cu - av + v1.FFC[3]
+    a, size, f0, f1 = ((au, v1.BOARD_WIDTH, v1.FFC[0], v1.FFC[2])
+                       if along == "u" else
+                       (av, v1.BOARD_HEIGHT, v1.FFC[1], v1.FFC[3]))
+
+    def at(w):
+        return cu + sign * (w - a)
+
+    lo, hi = sorted((at(0.0), at(size)))
+    flo, fhi = sorted((at(f0), at(f1)))
     front = z + v1.LENS_TOP_Z
     back = front + v1.BOARD_THICKNESS
     kw = dict(weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT)
