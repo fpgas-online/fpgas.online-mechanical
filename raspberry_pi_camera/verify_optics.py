@@ -1,34 +1,39 @@
 #!/usr/bin/env python3
 """Check that the camera position sheets say what they can be shown to say.
 
-Four things, from the data modules rather than from the drawings:
+From the data modules rather than from the drawings:
 
 * every figure quoted in :mod:`raspberry_pi_camera.optics` is really in the
   vendor page cached under ``tmp/src/rpi-camera-optics/``;
-* the pinhole model reproduces Raspberry Pi's own declared field of view from
-  their own focal length and sensor size, which is what makes it the right
-  model rather than a convenient one;
-* every lens's declared pair is tested against the sensor's own shape, so
-  that ``Lens.consistent`` means what the sheets say it means;
+* the rectilinear model reproduces Raspberry Pi's own declared field of view
+  from their own focal length and sensor size, which is what makes it the
+  right model for the stock lens rather than a convenient one;
+* every lens's figures are tested against the sensor's own shape under the
+  lens's projection and the other one, the one declared pair that cannot be
+  right under any projection is named, and the wide lens's pair is the
+  split of its declared diagonal it is said to be, between the rectilinear
+  and equisolid splits of it;
+* the frame margin absorbs every alternative pair the evidence allows, at
+  the height the sheet prints, and the wide lens's barrel distortion puts
+  the frame's corners inside the picture rather than outside it;
 * every frame is the smallest rectangle of the sensor's aspect ratio holding
   its target plus the stated margin, and the camera sits over its centre at a
-  height where both declared angles reach it;
+  height where both angles reach it, for every lens;
 * every target whose plane is not the subject's own top face says so, because
   a height set at the wrong plane covers less at the right one;
-* every height is compared against the lens's published near limit, and the
-  answer the sheet prints is the answer the arithmetic gives;
+* the hyperfocal distance and depth of field of every lens, and every
+  height against every lens's declared focus range, with how soft a fixed
+  lens is there and how deep the field is once a motorised one has focused;
 * what the elevations draw and print: that the declared angle each one
   shows is the one lying along its axis, that it reaches the frame's edge
   from the lens, that the camera is turned the way that needs the lower
   camera, the height above the plate face on the mounting plate sheet, and
-  the figures the notes derive -- the diagonal's mistake, how far the stand
-  may lean, how soft a stock lens is at these heights, and which published
-  close limits each height is inside.
+  the figures the notes derive.
 
-That last one passes while reporting TOO CLOSE on every row.  It has to: a
-stock Camera Module OV5647 is fixed at "Approx 1 m to infinity" and every
-board here wants the camera a tenth of that away.  What is being checked is
-that the sheet says so, not that the problem has gone away.
+The focus check passes while reporting every fixed-focus height as out of
+range.  It has to: both fixed lenses are declared "1 m to infinity" and
+every board here wants the camera a tenth of that away.  What is being
+checked is that the sheet says so, not that the problem has gone away.
 
 Run: uv run --no-project --with pypdf \\
          python raspberry_pi_camera/verify_optics.py
@@ -96,6 +101,7 @@ QUOTES = {
     # The B006604's own product page: the 120 is a DIAGONAL.
     "arducam-b006604.html": [
         "SKU B006604",
+        "Dimension: 60mm × 11.5mm × 5.5mm",
         "angle of view: 120° diagonal",
         "Diagnoal Field of View (DFOV) 120°",
         "Focus Distance 1 m to infinity",
@@ -215,23 +221,258 @@ def check_quotes() -> tuple[int, int]:
 
 
 def check_lenses() -> int:
-    """Each lens's declared pair, against the shape of the sensor behind it.
+    """Each lens's figures, against the shape of the sensor behind it.
 
-    ``Lens.consistent`` is what the sheets branch on when they decide whether
-    to warn that the picture runs over the rectangle drawn, so the rule it
-    encodes is checked here rather than trusted: on a 4:3 sensor a
-    rectilinear lens has tan(V/2) = tan(H/2) x 3/4.
+    Four things.  The pair a sheet computes with agrees with the 4:3 sensor
+    under the lens's own projection -- tan(V/2) = tan(H/2) x 3/4 for a
+    rectilinear lens, V = H x 3/4 for an equidistant one -- or the lens says
+    it does not, which is what the sheets branch on.  Every declared pair is
+    tried both ways, so that a pair called inconsistent is inconsistent under
+    either projection and not just the convenient one.  No figure may have a
+    horizontal as wide as its own diagonal, which no projection can give:
+    the array's corner is further from the axis than its side, and every
+    lens maps further to wider.  And the wide lens's pair is what its
+    declared diagonal splits into under the projection it is said to have.
     """
     bad = 0
-    for lens in list(LENSES.values()) + [optics.AUTOFOCUS]:
+    lenses = list(optics.ALL_LENSES.values())
+    for lens in lenses:
         off = abs(lens.consistent_v - lens.fov_v)
         agrees = off <= CONSISTENCY_TOL
         ok = agrees == lens.consistent
         bad += not ok
-        print(f"   {'ok  ' if ok else 'FAIL'} {lens.name:<22} declared "
-              f"{lens.fov_h:6.2f} x {lens.fov_v:5.2f}; {lens.fov_h:.2f} on a "
-              f"4:3 sensor implies {lens.consistent_v:6.2f}, off by {off:5.2f}"
-              f" -> {'consistent' if lens.consistent else 'INCONSISTENT'}")
+        print(f"   {'ok  ' if ok else 'FAIL'} {lens.name:<22} uses "
+              f"{lens.fov_h:6.2f} x {lens.fov_v:5.2f}, {lens.projection}: "
+              f"{lens.fov_h:.2f} across implies {lens.consistent_v:6.2f} "
+              f"down, off by {off:5.2f} -> "
+              f"{'consistent' if lens.consistent else 'INCONSISTENT'}")
+        for fg in lens.figures:
+            if fg.h is None:
+                print(f"   --     {fg.what:<34} {fg.kind:<8} diagonal "
+                      f"{fg.d:.1f} only")
+                continue
+            if fg.d is not None and fg.h >= fg.d - 1e-9:
+                # The one conclusion no choice of lens model can rescue.
+                print(f"   --     {fg.what:<34} {fg.kind:<8} {fg.h:6.2f} "
+                      f"across against {fg.d:.1f} diagonal: IMPOSSIBLE, H "
+                      "cannot reach the diagonal")
+                continue
+            if fg.v is None:
+                continue
+            rect = abs(optics.implied_v(fg.h, "rectilinear") - fg.v)
+            equi = abs(optics.implied_v(fg.h, "equidistant") - fg.v)
+            print(f"   --     {fg.what:<34} {fg.kind:<8} {fg.h:6.2f} x "
+                  f"{fg.v:5.2f}: off the 4:3 by {rect:5.2f} rectilinear, "
+                  f"{equi:5.2f} equidistant")
+    # The catalogue's 120 x 90 is the one declared pair the sheets reject,
+    # so the reason is checked: it is the product page's 120 diagonal, which
+    # the same camera's H cannot equal.
+    wide = optics.LENS_120
+    page = next(f for f in wide.figures if f.h is None)
+    cat = next(f for f in wide.figures if f.rejected)
+    ok = cat.h >= page.d and cat.v is not None
+    bad += not ok
+    print(f"   {'ok  ' if ok else 'FAIL'} {cat.what} gives {cat.h:.0f} across"
+          f" where the product page gives {page.d:.0f} diagonal: rejected")
+    h, v = optics.split_diagonal(page.d, wide.projection)
+    ok = abs(h - wide.fov_h) < 0.01 and abs(v - wide.fov_v) < 0.01
+    bad += not ok
+    print(f"   {'ok  ' if ok else 'FAIL'} {page.d:.0f} diagonal, "
+          f"{wide.projection}, splits to {h:.2f} x {v:.2f}; the sheets use "
+          f"{wide.fov_h:.2f} x {wide.fov_v:.2f}")
+    # The splits either side: for one diagonal, rectilinear is the widest a
+    # lens without pincushion distortion can be, and equisolid is narrower
+    # than equidistant; the pair used has to lie between.
+    r = optics.split_diagonal(page.d, "rectilinear")
+    q = optics.split_diagonal(page.d, "equisolid")
+    ok = q[0] < wide.fov_h < r[0] and q[1] < wide.fov_v < r[1]
+    bad += not ok
+    print(f"   {'ok  ' if ok else 'FAIL'} between equisolid {q[0]:.2f} x "
+          f"{q[1]:.2f} and rectilinear {r[0]:.2f} x {r[1]:.2f}")
+    # Its focal length, from the same diagonal, beside the two real lenses'.
+    f = optics.focal_from_diagonal(page.d, wide.projection)
+    ok = abs(f - wide.focal_length) < 1e-9
+    bad += not ok
+    print(f"   {'ok  ' if ok else 'FAIL'} its focal length, DERIVED: "
+          f"{optics.ARRAY_DIAGONAL / 2:.3f} / {math.radians(page.d / 2):.4f}"
+          f" rad = {f:.3f} mm (rectilinear would be "
+          f"{optics.focal_from_diagonal(page.d, 'rectilinear'):.3f})")
+    # The autofocus lens's, from its 35 mm equivalent.
+    af = optics.AUTOFOCUS
+    f = 35.0 * optics.ARRAY_DIAGONAL / math.hypot(36.0, 24.0)
+    ok = abs(f - af.focal_length) < 1e-9
+    bad += not ok
+    print(f"   {'ok  ' if ok else 'FAIL'} {af.name}'s focal length, DERIVED:"
+          f" 35 x {optics.ARRAY_DIAGONAL:.3f} / 43.27 = {f:.3f} mm")
+    # The datasheet's image area, whose diagonal is the 65.
+    d = optics.full_angle(math.hypot(*optics.DATASHEET_IMAGE_AREA))
+    ok = abs(d - optics.DIAGONAL_FROM_DATASHEET) < 1e-9 and round(d) == 65
+    bad += not ok
+    print(f"   {'ok  ' if ok else 'FAIL'} OmniVision's image area, "
+          f"{optics.DATASHEET_IMAGE_AREA[0]:.4f} x "
+          f"{optics.DATASHEET_IMAGE_AREA[1]:.4f}, diagonal {d:.2f} deg at "
+          f"{optics.FOCAL_LENGTH:.2f} mm")
+    print()
+    return bad
+
+
+def check_bounds() -> int:
+    """The frame margin absorbs what is not known about each lens.
+
+    For every lens, frame and alternative pair: at the height the sheet
+    prints, a lens with the alternative angles still has the TARGET in its
+    picture.  The frame is the target plus the margin; the margin is what
+    is spent.  A pair wider than the one used only overshoots, and is
+    checked all the same.
+    """
+    bad = 0
+    print("What the margin absorbs")
+    for subject in subjects().values():
+        for letter, frame in zip("AB", subject.frames()):
+            t = frame.target
+            for lens in optics.ALL_LENSES.values():
+                p = place(frame, lens)
+                for alt in lens.alternatives:
+                    ax = alt.h if frame.long_axis == "X" else alt.v
+                    ay = alt.v if frame.long_axis == "X" else alt.h
+                    hx = p.z * math.tan(math.radians(ax / 2))
+                    hy = p.z * math.tan(math.radians(ay / 2))
+                    spare = min(t.x0 - (p.x - hx), (p.x + hx) - t.x1,
+                                t.y0 - (p.y - hy), (p.y + hy) - t.y1)
+                    ok = spare >= -EPS
+                    bad += not ok
+                    print(f"   {'ok  ' if ok else 'FAIL'} {subject.key:<20} "
+                          f"{letter} {lens.short:>3}, as {alt.what:<34} "
+                          f"{spare:+6.2f} mm to spare of "
+                          f"{optics.FRAME_MARGIN:.2f}")
+    print()
+    return bad
+
+
+def _edge_on_plane(z: float, projection: str, focal: float, n=64):
+    """The picture's edge, walked onto a plane *z* below the lens.
+
+    Image points round the array's edge, each turned back into its field
+    angle by *projection* and sent down to the plane.  Returned as the
+    greatest |x| along the long edges and |y| along the short ones, with
+    the least of each, so a caller can see whether the edge bows in or out.
+    """
+    w, h = optics.ARRAY_WIDTH / 2, optics.ARRAY_HEIGHT / 2
+    xs, ys = [], []
+    for i in range(n + 1):
+        for (u, v, into) in ((w, -h + 2 * h * i / n, xs),
+                             (-w + 2 * w * i / n, h, ys)):
+            r = math.hypot(u, v)
+            if projection == "equidistant":
+                theta = r / focal
+            else:
+                theta = 2 * math.asin(r / (2 * focal))
+            out = z * math.tan(theta)
+            into.append(abs(out * (u if into is xs else v) / r))
+    return min(xs), max(xs), min(ys), max(ys)
+
+
+def check_distortion() -> int:
+    """Under barrel distortion the frame's corners are inside the picture.
+
+    The heights are set so that the picture's edge reaches the frame at the
+    MIDDLE of each side, where the declared angles are measured.  A
+    rectilinear lens's edges are straight, so its corners are then exactly
+    the frame's.  A barrel-distorted lens's are not: walked down onto the
+    board, each straight edge of the sensor lands as a curve, and this
+    checks it bows outwards -- the least distance out along an edge is at
+    its middle -- for the wide lens's projection and for the equisolid one
+    it is bounded by, so that the frame's corners are covered with room to
+    spare rather than cut off.
+    """
+    bad = 0
+    wide = optics.LENS_120
+    print("Distortion: the picture's edges on the board, at the wide lens")
+    for projection in ("equidistant", "equisolid"):
+        f = optics.focal_from_diagonal(120.0, projection)
+        # Any height will do: the shape scales with it.
+        z = 100.0
+        x_lo, x_hi, y_lo, y_hi = _edge_on_plane(z, projection, f)
+        mid_x = z * math.tan(w_half(projection, f, "x"))
+        mid_y = z * math.tan(w_half(projection, f, "y"))
+        ok = (abs(x_lo - mid_x) < 1e-6 and abs(y_lo - mid_y) < 1e-6
+              and x_hi > x_lo and y_hi > y_lo)
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {projection:<11} f {f:.3f}: at"
+              f" Z {z:.0f} the side edges run {x_lo:.1f} to {x_hi:.1f} out, "
+              f"the top and bottom {y_lo:.1f} to {y_hi:.1f}: least at the "
+              "middle, so they bow outwards")
+    # How coarse the board comes out at the edge against the middle, on
+    # the wide lens: d(Z tan theta)/d theta over f.
+    for axis, a in (("H", wide.fov_h), ("V", wide.fov_v),
+                    ("D", wide.fov_d)):
+        k = 1 / math.cos(math.radians(a / 2)) ** 2
+        print(f"   --   at the {axis} edge, {a / 2:.1f} deg out, a pixel "
+              f"covers {k:.2f} x the board it does on the axis (radially)")
+    print()
+    return bad
+
+
+def w_half(projection: str, f: float, axis: str) -> float:
+    """The field half-angle, in radians, at the middle of an array edge."""
+    r = (optics.ARRAY_WIDTH if axis == "x" else optics.ARRAY_HEIGHT) / 2
+    if projection == "equidistant":
+        return r / f
+    return 2 * math.asin(r / (2 * f))
+
+
+def check_focus() -> int:
+    """The depth of field figures the sheets print, and every verdict.
+
+    Worked by the formulae directly rather than through optics' helpers
+    where there is a second way: the hyperfocal distance as f^2 / (N c) + f,
+    and the circle of confusion Raspberry Pi's own "1 m to infinity" implies.
+    """
+    bad = 0
+    print(f"Focus, at a circle of confusion of {optics.COC_PIXELS} pixels, "
+          f"{optics.COC * 1000:.1f} um")
+    for lens in optics.ALL_LENSES.values():
+        f, n = lens.focal_length, lens.f_number
+        h1 = f * f / (n * optics.PIXEL_PITCH) + f
+        h2 = f * f / (n * optics.COC) + f
+        ok = abs(h2 - lens.hyperfocal) < 1e-9
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {lens.name:<20} f {f:.3f} "
+              f"({lens.focal_basis}), F{n:g} ({lens.f_basis}): hyperfocal "
+              f"{h2:.0f} mm at 2 px, near limit {h2 / 2:.0f}; {h1:.0f} and "
+              f"{h1 / 2:.0f} at 1 px; declared \"{lens.near_quote}\"")
+    c = optics.LENS_65.focal_length ** 2 / (
+        optics.LENS_65.f_number * (2 * 1000.0 - optics.LENS_65.focal_length))
+    ok = abs(c - optics.IMPLIED_COC) < 1e-12
+    bad += not ok
+    print(f"   {'ok  ' if ok else 'FAIL'} \"Approx 1 m to infinity\" at the "
+          f"hyperfocal distance implies a circle of {c * 1000:.2f} um, "
+          f"{c / optics.PIXEL_PITCH:.1f} px")
+    # Every height against every lens's declared near limit, and what a
+    # motorised lens's depth of field is once it has focused there.
+    af = optics.AUTOFOCUS
+    for subject in subjects().values():
+        for letter, frame in zip("AB", subject.frames()):
+            for lens in optics.ALL_LENSES.values():
+                p = place(frame, lens)
+                truth = p.z < lens.near
+                ok = p.too_close is truth
+                bad += not ok
+                extra = ""
+                if lens.focus_at is None:
+                    near, far = optics.dof(p.z, lens.focal_length,
+                                           lens.f_number)
+                    extra = (f"; focused there, sharp from {near:.1f} to "
+                             f"{far:.1f}")
+                else:
+                    on_sensor, on_subject = lens.blur(p.z)
+                    extra = (f"; a point spreads {on_sensor * 1000:.1f} um,"
+                             f" {on_sensor / optics.PIXEL_PITCH:.0f} px, "
+                             f"{on_subject:.2f} mm on the board")
+                print(f"   {'ok  ' if ok else 'FAIL'} {subject.key:<20} "
+                      f"{letter} {lens.short:>3} Z {p.z:6.1f} against "
+                      f"{lens.near:5.0f}: "
+                      f"{'OUT OF RANGE' if truth else 'in range'}{extra}")
     print()
     return bad
 
@@ -315,7 +556,7 @@ def check_frames() -> int:
                   + ("" if t.plane_above_subject == 0.0
                      else ", and says where that is"))
 
-            for lens in LENSES.values():
+            for lens in optics.ALL_LENSES.values():
                 p = place(frame, lens)
                 # 4. The camera is over the frame's centre.
                 centred = (abs(p.x - frame.cx) < EPS
@@ -326,25 +567,12 @@ def check_frames() -> int:
                 bad += not (centred and reaches)
                 dx, dy = p.excess
                 print(f"   {'ok  ' if centred and reaches else 'FAIL'} "
-                      f"  {lens.key:>3} deg: X {p.x:7.2f} Y {p.y:6.2f} "
+                      f"  {lens.short:>3}: X {p.x:7.2f} Y {p.y:6.2f} "
                       f"Z {p.z:6.1f} (H wants {p.z_from_h:6.1f}, V "
                       f"{p.z_from_v:6.1f}, {p.governed_by} governs); covers "
                       f"{p.covers_x:7.2f} x {p.covers_y:6.2f}, over by "
                       f"{dx:5.2f} x {dy:5.2f}")
 
-                # 6. The focus verdict the sheet prints is the arithmetic.
-                if lens.min_object_distance is None:
-                    print(f"        -- {lens.key:>3} deg: no near limit is "
-                          "published, so the sheet prints UNKNOWN")
-                    continue
-                printed = p.too_close
-                truth = p.z < lens.min_object_distance
-                bad += printed is not truth
-                mark = "TOO CLOSE" if truth else "ok"
-                print(f"   {'ok  ' if printed is truth else 'FAIL'} "
-                      f"  {lens.key:>3} deg: Z {p.z:.1f} against a near "
-                      f"limit of {lens.min_object_distance:.0f} -> {mark} "
-                      f"({p.z / lens.min_object_distance:.2f} x the limit)")
         # 7. Frame edges too close together to be drawn as two lines.  Not
         #    a failure -- the frames are what the targets make them -- but
         #    the sheet has to point at each one, so they are listed here and
@@ -441,15 +669,15 @@ def check_elevations() -> int:
         print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} a lean of {tilt:.2f} "
               f"deg moves the picture {FRAME_MARGIN:.2f} mm at Z")
         # 5. How soft a stock lens is at Z: the depth of field formula,
-        #    f^2 |s - u| / (N u (s - f)), against the thin lens optics.blur
+        #    f^2 |s - u| / (N u (s - f)), against the thin lens Lens.blur
         #    works the other way round, and against a lens set at infinity,
         #    which is the other reading of "1 m to infinity".
-        f, n = optics.FOCAL_LENGTH, float(optics.FOCAL_RATIO.lstrip("F"))
-        s, u = optics.FIXED_FOCUS_DISTANCE, p.z
+        f, n = stock.focal_length, float(optics.FOCAL_RATIO.lstrip("F"))
+        s, u = stock.focus_at, p.z
         b = f * f * abs(s - u) / (n * u * (s - f))
         b_inf = f * f / (n * u)
-        on_sensor, on_subject = optics.blur(u)
-        ok = abs(b - on_sensor) < 1e-12 and n == optics.F_NUMBER
+        on_sensor, on_subject = stock.blur(u)
+        ok = abs(b - on_sensor) < 1e-12 and n == stock.f_number
         bad += not ok
         print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} stock lens at Z: a "
               f"point spreads to {b * 1000:.1f} um, {b / optics.PIXEL_PITCH:.0f}"
@@ -492,14 +720,19 @@ def main() -> None:
     problems += bad
     problems += check_model()
     problems += check_lenses()
+    problems += check_bounds()
+    problems += check_distortion()
     problems += check_frames()
+    problems += check_focus()
     problems += check_elevations()
 
+    fixed = [ln for ln in optics.ALL_LENSES.values() if ln.focus_at]
     close = sum(1 for s in subjects().values() for f in s.frames()
-                for ln in LENSES.values() if place(f, ln).too_close)
-    print(f"all {close} heights with a published near limit are nearer "
-          f"than the stock lens's {LENSES['65'].min_object_distance:.0f} mm, "
-          "and every sheet says so.")
+                for ln in fixed if place(f, ln).too_close)
+    total = sum(1 for s in subjects().values() for f in s.frames()
+                for ln in fixed)
+    print(f"{close} of {total} fixed-focus heights are nearer than the lens's "
+          "declared near limit, and every sheet says so.")
     print("PASS: the frames hold their targets and the heights reach them"
           if not problems else f"FAIL: {problems} problem(s)")
     sys.exit(1 if problems else 0)

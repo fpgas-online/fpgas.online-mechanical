@@ -14,13 +14,23 @@ those files back and fails if a quote here is not in them.
 
 The model
 ---------
-A rectilinear (pinhole) camera looking straight down at the subject plane.
-At a height *Z* above that plane a lens of full field angle *A* covers
-``2 * Z * tan(A / 2)``.  That model is not assumed: Raspberry Pi publish a
-focal length and a sensor size as well as a field of view for the OV5647, and
-the three agree to a hundredth of a degree on both axes only under this
-model, measured to the edge of the active pixel array.  See
-:data:`FOV_CHECK`.
+A camera looking straight down at the subject plane.  At a height *Z* above
+that plane a lens whose full field angle across the picture is *A* covers
+``2 * Z * tan(A / 2)``, and that is geometry, not a lens model: a ray *A/2*
+off the axis meets the plane that far out whatever the lens did to bend it.
+What does depend on the lens is what *A* is.  For the stock lens it is
+checked rather than assumed: Raspberry Pi publish a focal length and a
+sensor size as well as a field of view for the OV5647, and the three agree to
+a hundredth of a degree on both axes only under a rectilinear lens, measured
+to the edge of the active pixel array.  See :data:`FOV_CHECK`.  A 120 degree
+lens is not rectilinear, and its angles are split from its diagonal under
+the equidistant projection instead, with the rectilinear and equisolid
+splits either side of it as the bound; see "Projection" below.
+
+Focus is the other half.  Every lens carries the near end of its declared
+focus range, and the depth of field figures are DERIVED from its focal
+length and F number at a circle of confusion of two pixels, with every
+figure that is not published marked as derived or assumed where it is set.
 
 Coordinates
 -----------
@@ -101,35 +111,229 @@ FOV_CHECK = (
 FOV_CHECK_TOL = 0.01
 
 #: The stock lens's diagonal field of view, which is the figure it is sold
-#: under and which no vendor prints.  Two of them, because the two rectangles
-#: Raspberry Pi publish do not agree: the image area gives the 65 the module
-#: is named for, the active array -- the one that reproduces the declared H
-#: and V -- gives a degree and a third less.
+#: under and which no vendor prints.  One per rectangle, because the
+#: rectangles do not agree: Raspberry Pi's image area gives 65.74, OmniVision's
+#: own (DIAGONAL_FROM_DATASHEET, below) 64.94, and the active array -- the one
+#: that reproduces the declared H and V -- 64.42.
 DIAGONAL_FROM_IMAGE_AREA = full_angle(math.hypot(*IMAGE_AREA))
 DIAGONAL_FROM_ARRAY = full_angle(math.hypot(ARRAY_WIDTH, ARRAY_HEIGHT))
 
-#: How far a declared vertical may sit from what the declared horizontal
-#: implies on a 4:3 sensor before the pair is called inconsistent.  A tenth of
-#: a degree: the stock lens comes in at 0.006 and the wide one at 14.82, so
-#: nothing here is near the line.
+#: OmniVision's own "image area", from the OV5647 datasheet: the whole
+#: 2624 x 1956 array at 1.4 um, border pixels included, round the 2592 x 1944
+#: active array.  Raspberry Pi's 3.76 x 2.74 reads like this 3.67 x 2.74 with
+#: two digits swapped -- that is a reading, not something either company
+#: says -- and it is the rectangle whose diagonal is the 65 the stock lens is
+#: sold under: 64.94 degrees at 3.60 mm.
+DATASHEET_IMAGE_AREA = (3.6736, 2.7384)     # mm
+DIAGONAL_FROM_DATASHEET = full_angle(math.hypot(*DATASHEET_IMAGE_AREA))
+
+#: The active array's diagonal, which every diagonal angle here is measured
+#: across.  DERIVED: sqrt(3.6288^2 + 2.7216^2) = 4.536 mm.
+ARRAY_DIAGONAL = math.hypot(ARRAY_WIDTH, ARRAY_HEIGHT)
+
+#: How far a vertical may sit from what the horizontal implies, under the
+#: lens's own projection, before the pair is called inconsistent.  A tenth of
+#: a degree: the stock pair comes in at 0.006, and every pair that fails
+#: fails by more than half a degree.
 CONSISTENCY_TOL = 0.1
+
+# ---------------------------------------------------------------------------
+# Projection: how a field angle lands on the sensor
+# ---------------------------------------------------------------------------
+#
+# A lens maps a ray arriving at angle theta off its axis to a point r from
+# the centre of the sensor.  A rectilinear lens has r = f tan(theta), which
+# keeps straight lines straight, and is what the stock lens is: its declared
+# angles come back out of its declared focal length under tan() to a
+# hundredth of a degree (FOV_CHECK).  A wide lens cannot be: at 120 degrees
+# diagonal tan() would need r to grow by tan(60) = 1.73 against the axis for
+# a lens of the same f, and every real one bends the edges in instead --
+# barrel distortion.  The simplest model of that is the equidistant, or
+# f-theta, projection, r = f theta, and the other common fisheye mapping is
+# the equisolid, r = 2 f sin(theta / 2).  Real lenses sit between the
+# rectilinear and the equisolid.
+#
+# What this does and does not change.  Where the picture's edge lands on a
+# flat board Z below the lens is a matter of the angle of the ray to that
+# edge, not of how the lens got it there: a ray theta off the axis meets the
+# plane Z tan(theta) out, whatever the projection.  So the COVERAGE of a
+# plane is 2 Z tan(A / 2) for a lens whose full angle across the picture is
+# A, for a fisheye as for any other, and place() is right for both.  What the
+# projection decides is what A IS for a given focal length or a given
+# diagonal -- which is where the tan() arithmetic goes wrong for a wide lens
+# -- and how the frame's corners fare: under barrel distortion the
+# picture's straight edges map to curves on the board that bow OUTWARDS, so
+# a rectangle whose edges are set by A_h and A_v at the mid-points has its
+# corners inside the picture, with room to spare.  verify.py checks that
+# by walking the picture's edge down onto the board.
+
+
+def split_diagonal(d: float, projection: str) -> tuple[float, float]:
+    """The full H and V angles a lens of diagonal *d* gives on this sensor.
+
+    DERIVED: the image height at the array's corner is half its diagonal,
+    and the image heights at the middle of its long and short edges are
+    half its width and half its height; each projection turns a height back
+    into an angle.
+    """
+    half = math.radians(d / 2)
+    r_d = ARRAY_DIAGONAL / 2
+    out = []
+    for size in (ARRAY_WIDTH, ARRAY_HEIGHT):
+        r = size / 2
+        if projection == "rectilinear":
+            t = math.atan(math.tan(half) * r / r_d)
+        elif projection == "equidistant":
+            t = half * r / r_d
+        elif projection == "equisolid":
+            t = 2 * math.asin(math.sin(half / 2) * r / r_d)
+        else:
+            raise ValueError(projection)
+        out.append(2 * math.degrees(t))
+    return out[0], out[1]
+
+
+def focal_from_diagonal(d: float, projection: str) -> float:
+    """The focal length that puts diagonal *d* on the array's corner."""
+    half = math.radians(d / 2)
+    r_d = ARRAY_DIAGONAL / 2
+    if projection == "rectilinear":
+        return r_d / math.tan(half)
+    if projection == "equidistant":
+        return r_d / half
+    if projection == "equisolid":
+        return r_d / (2 * math.sin(half / 2))
+    raise ValueError(projection)
+
+
+def angles_from_focal(f: float, projection: str) -> tuple[float, float, float]:
+    """H, V and D, in degrees, for a lens of focal length *f* on the array."""
+    out = []
+    for size in (ARRAY_WIDTH, ARRAY_HEIGHT, ARRAY_DIAGONAL):
+        r = size / 2
+        if projection == "rectilinear":
+            t = math.atan(r / f)
+        elif projection == "equidistant":
+            t = r / f
+        else:
+            raise ValueError(projection)
+        out.append(2 * math.degrees(t))
+    return out[0], out[1], out[2]
+
+
+def implied_v(h: float, projection: str) -> float:
+    """The vertical angle a horizontal *h* implies on the 4:3 array."""
+    if projection == "rectilinear":
+        return 2 * math.degrees(
+            math.atan(math.tan(math.radians(h / 2)) / ASPECT))
+    if projection == "equidistant":
+        return h / ASPECT
+    raise ValueError(projection)
+
+
+# ---------------------------------------------------------------------------
+# Focus and depth of field
+# ---------------------------------------------------------------------------
+
+#: The circle of confusion the depth of field figures are worked to: two
+#: pixels, 2.8 um.  ASSUMED, and not arbitrary: Raspberry Pi's own "Approx 1
+#: m to infinity" for the stock lens is what a lens focused at its
+#: hyperfocal distance gives with a circle of 2.24 um, 1.6 pixels (see
+#: IMPLIED_COC), so two pixels is that figure rounded to the sensor.  One
+#: pixel doubles every hyperfocal distance; the sheets say which they use.
+COC_PIXELS = 2
+COC = COC_PIXELS * PIXEL_PITCH          # mm
+
+
+def hyperfocal(f: float, n: float, c: float = COC) -> float:
+    """Hyperfocal distance, in mm: focused there, all from half of it to
+    infinity is within *c*.  DERIVED, thin lens: f^2 / (N c) + f."""
+    return f * f / (n * c) + f
+
+
+def dof(s: float, f: float, n: float,
+        c: float = COC) -> tuple[float, float]:
+    """Near and far limits of the depth of field focused at *s*, in mm.
+
+    DERIVED, thin lens: near = s (H - f) / (H + s - 2 f), far = s (H - f) /
+    (H - s), infinity at or beyond the hyperfocal distance H.
+    """
+    h = hyperfocal(f, n, c)
+    near = s * (h - f) / (h + s - 2 * f)
+    far = math.inf if s >= h else s * (h - f) / (h - s)
+    return near, far
+
+
+def blur(z: float, focus: float, f: float,
+         n: float) -> tuple[float, float]:
+    """How big a point on a subject *z* away comes out, focused at *focus*.
+
+    DERIVED, thin lens: the subject images at ``v = f z / (z - f)`` behind
+    the lens and the sensor sits where *focus* images, so a point spreads to
+    a disc of the aperture ``f / N`` scaled by how far short of its own image
+    the sensor is.  Returned as (diameter on the sensor, the same disc
+    projected back onto the subject), both in millimetres.
+    """
+    v_subject = f * z / (z - f)
+    v_sensor = f * focus / (focus - f)
+    on_sensor = (f / n) * abs(v_subject - v_sensor) / v_subject
+    return on_sensor, on_sensor * z / v_subject
+
+
+# ---------------------------------------------------------------------------
+# Sources
+# ---------------------------------------------------------------------------
 
 RPI_DOC = Source(
     label="Raspberry Pi camera documentation",
     ref="https://web.archive.org/web/20241230011811/"
         "https://www.raspberrypi.com/documentation/accessories/camera.html",
     note='Camera Module 1 column: OV5647, 2592 x 1944 at 1.4 um, image '
-         'area 3.76 x 2.74, 3.60 mm, 53.50 x 41.41 deg, "Approx 1 m to '
-         'infinity"; the close limits of the other modules.',
+         'area 3.76 x 2.74, 3.60 mm, F2.9, 53.50 x 41.41 deg, "Approx 1 m '
+         'to infinity"; the close limits of the other modules.',
+)
+
+OV5647_DATASHEET = Source(
+    label="OmniVision OV5647 datasheet",
+    ref="https://web.archive.org/web/20260723044623/"
+        "https://cdn.sparkfun.com/datasheets/Dev/RaspberryPi/ov5647_full.pdf",
+    note='"active array size: 2592 x 1944", "image area: 3673.6 um x '
+         '2738.4 um".',
 )
 
 ARDUCAM_DOC = Source(
     label="Arducam 5MP OV5647 documentation",
     ref="https://docs.arducam.com/Raspberry-Pi-Camera/Native-camera/"
         "5MP-OV5647/",
-    note='Product catalogue: B0033 "Stock Lens 54 (H) x 41 (V) Fixed '
-         'Focus", B006604 "120 (H) x 90 (V)", B0176 "54(H)x44 (V) Auto '
-         'Focus".',
+    note='Product catalogue: B0033 "54 (H) x 41 (V)", B0176 "54(H)x44 (V) '
+         'Auto Focus", B006604 "120(H) x 90(V)", and B006604N, the same '
+         'without its IR filter, "96(H) x 72(V)".',
+)
+
+ARDUCAM_B006604 = Source(
+    label="Arducam B006604 product page",
+    ref="https://web.archive.org/web/20250530094438/https://www.arducam.com/"
+        "b006604-arducam-for-raspberry-pi-zero-camera-module-wide-angle-120-"
+        "1-4-inch-5mp-ov5647-spy-camera-with-flex-cable-for-pi-zero-and-pi-"
+        "compute-module.html",
+    note='"angle of view: 120 diagonal", "Focus Distance 1 m to infinity", '
+         '"Focus Type Fixed".',
+)
+
+ARDUCAM_B0121 = Source(
+    label="Arducam B0121 product page, the B0176's predecessor",
+    ref="https://web.archive.org/web/20241103134041/https://www.arducam.com/"
+        "product/5mp-ov5647-motorized-focus-camera-sensor-raspberry-pi/",
+    note='"Angle of View: 54 x 41 degrees", "Full-frame SLR lens '
+         'equivalent: 35 mm", "Focus distance: 4 cm to infinity".',
+)
+
+UCTRONICS_B0176 = Source(
+    label="Arducam B0176 on UCTRONICS, Arducam's own store",
+    ref="https://web.archive.org/web/20251209063424/https://www.uctronics."
+        "com/arducam-auto-focus-camera-module-5mp-for-raspberry-pi.html",
+    note='"Focus Distance 80mm to infinity", "Field of View(FOV) 54(H), '
+         '44(V)", "Full-frame SLR lens equivalent 35mm".',
 )
 
 ARDUCAM_AF = Source(
@@ -139,135 +343,325 @@ ARDUCAM_AF = Source(
     note='Quoted: "you can understand it the same as autofocus".',
 )
 
+COMMONLANDS = Source(
+    label="Commonlands, OV5647 lens table",
+    ref="https://web.archive.org/web/20260817210431/https://commonlands.com/"
+        "pages/image-sensors/ov5647",
+    note='Worked from each lens\'s "real distortion": CIL282, "2.2 mm M12 '
+         'f/1.8 96 72 122" on the active area.',
+)
+
+YXF_M6 = Source(
+    label="YXF YXF4Y001A1 M6 lens for OV5647 modules",
+    ref="https://www.yxfcamera.com/products/Lenses/"
+        "m6-lens-5mp-ov5647-raspberry-pi-camera-lens.html",
+    note='"1.79mm", "F.no 2.4", 119.9, 92.4 and 73.9 deg with the labels '
+         'shuffled, "-11.5%" distortion.',
+)
+
+WAVESHARE_G = Source(
+    label="Waveshare RPi Camera (G)",
+    ref="https://web.archive.org/web/20191211152844/"
+        "https://www.waveshare.com/RPi-Camera-G.htm",
+    note='"Aperture (F) : 2.35", "Focal Length : 3.15mm", "Angle of View '
+         '(diagonal) : 160 degree"; its wiki, "Approximately 10cm to '
+         'infinity"; The Pi Hut, "Horizontal angle: 120 degree".',
+)
+
 # ---------------------------------------------------------------------------
-# The two lenses the issue asks for
+# The lenses
 # ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
+class Figure:
+    """One set of field angles for a lens, and where it came from.
+
+    ``kind`` is DECLARED for a vendor's own figure, DERIVED for one worked
+    out here, and ``d`` is None where the source gives no diagonal.
+    ``rejected`` says why a figure is not used, where it cannot be right
+    whatever else is true; verify.py checks the reason.
+    """
+
+    what: str
+    kind: str
+    h: float | None
+    v: float | None
+    d: float | None = None
+    rejected: str = ""
+
+
+@dataclass(frozen=True)
 class Lens:
-    """One lens variant of an OV5647 camera module.
+    """One lens option for an OV5647 camera module.
 
-    ``fov_h`` and ``fov_v`` are the full field angles the vendor declares, in
-    degrees, for the long and the short axis of the image.  Neither vendor
-    says how they are measured; :data:`FOV_CHECK` establishes that Raspberry
-    Pi's pair is the rectilinear angle to the edge of the active array, and
-    Arducam's is taken the same way for want of anything better.
+    ``fov_h`` and ``fov_v`` are the pair the sheets compute with: the full
+    field angles across the picture's long and short axes, in degrees.  They
+    are declared figures wherever a vendor's own pair survives the checks,
+    and ``basis`` says why these and not the others in ``figures``.
 
-    ``min_object_distance`` is the nearest the vendor says the module will
-    focus, in millimetres, or None where none is published.  It is not a
-    detail: the stock lens is fixed at "Approx 1 m to infinity", and every
-    height on these sheets is a fraction of that.
+    ``projection`` is how the lens maps angle to image height, which is what
+    "consistent" means for its pair: a rectilinear pair obeys
+    tan(V/2) = tan(H/2) x 3/4 on a 4:3 sensor, an equidistant one V = H x 3/4.
+
+    ``alternatives`` are the other pairs the evidence would allow, and
+    verify.py requires the TARGET to stay in the picture at the sheet's
+    height under every one of them: the frame's margin is what has to absorb
+    the uncertainty in the lens, and it is checked that it does.
+
+    ``focal_length`` and ``f_number`` carry their own basis, DECLARED,
+    DERIVED or ASSUMED; ``near`` is the near end of the focus range the
+    vendor declares, in millimetres, and ``near_quote`` the words.
+    ``focus_at`` is where a fixed lens is focused, which nobody publishes,
+    and is ASSUMED at twice the declared near limit, as a lens focused at
+    its hyperfocal distance would be; None for a lens that focuses itself.
     """
 
     key: str
     name: str
-    subtitle: str
+    short: str
+    product: str
     fov_h: float
     fov_v: float
+    projection: str
+    basis: str
+    figures: tuple[Figure, ...]
+    alternatives: tuple[Figure, ...]
+    focal_length: float
+    focal_basis: str
+    f_number: float
+    f_basis: str
     focus: str
-    min_object_distance: float | None
-    mod_note: str
+    near: float
+    near_quote: str
+    focus_at: float | None
     sources: tuple[Source, ...]
 
     @property
-    def consistent_v(self) -> float:
-        """The vertical angle this lens's declared horizontal implies.
+    def fov_d(self) -> float:
+        """The diagonal the pair used implies, under the lens's projection.
 
-        DERIVED: on a 4:3 sensor a rectilinear lens has
-        ``tan(V/2) = tan(H/2) * 3/4``.  A declared pair that disagrees with
-        this is a pair that cannot both be right, and both of these sheets'
-        lenses are checked against it.
+        DERIVED.  For the stock lens, 64.42 against the array; for the wide
+        lens, its declared 120 exactly, since the pair is split from it.
         """
-        return 2 * math.degrees(
-            math.atan(math.tan(math.radians(self.fov_h / 2)) / ASPECT))
+        if self.projection == "equidistant":
+            return math.hypot(self.fov_h, self.fov_v)
+        th = math.tan(math.radians(self.fov_h / 2))
+        tv = math.tan(math.radians(self.fov_v / 2))
+        return 2 * math.degrees(math.atan(math.hypot(th, tv)))
+
+    @property
+    def consistent_v(self) -> float:
+        """The vertical the pair's horizontal implies, under its projection."""
+        return implied_v(self.fov_h, self.projection)
 
     @property
     def consistent(self) -> bool:
-        """Whether the declared pair agrees with the sensor's own shape."""
+        """Whether the pair used agrees with the sensor's own shape."""
         return abs(self.consistent_v - self.fov_v) <= CONSISTENCY_TOL
 
+    @property
+    def hyperfocal(self) -> float:
+        """DERIVED at COC, from the focal length and F number carried."""
+        return hyperfocal(self.focal_length, self.f_number)
 
+    @property
+    def min_object_distance(self) -> float:
+        """The declared near end of the focus range, in millimetres."""
+        return self.near
+
+    def blur(self, z: float) -> tuple[float, float]:
+        """How soft a fixed lens is at *z*: see :func:`blur`."""
+        if self.focus_at is None:
+            raise ValueError(f"{self.name} focuses itself")
+        return blur(z, self.focus_at, self.focal_length, self.f_number)
+
+
+#: The stock lens: Raspberry Pi's Camera Module v1.3, which Arducam's B0033
+#: copies.  Every figure but the diagonal is Raspberry Pi's own.
 LENS_65 = Lens(
     key="65",
-    name="65 deg (stock lens)",
-    subtitle="Camera Module OV5647, stock fixed-focus lens",
+    name="65 deg, stock",
+    short="65",
+    product="Raspberry Pi Camera Module v1.3",
     fov_h=53.50,
     fov_v=41.41,
+    projection="rectilinear",
+    basis="Raspberry Pi's own pair, which comes back out of their own 3.60 "
+          "mm and the active array to 0.01 deg under tan().",
+    figures=(
+        Figure("Raspberry Pi", "DECLARED", 53.50, 41.41),
+        Figure("Arducam B0033", "DECLARED", 54.0, 41.0),
+        Figure("3.60 mm on the active array", "DERIVED",
+               *angles_from_focal(3.60, "rectilinear")),
+    ),
+    alternatives=(Figure("Arducam B0033", "DECLARED", 54.0, 41.0),),
+    focal_length=3.60,
+    focal_basis="DECLARED",
+    f_number=2.9,
+    f_basis="DECLARED",
     focus="Fixed",
-    min_object_distance=1000.0,
-    mod_note='Raspberry Pi give the depth of field as "Approx 1 m to '
-             'infinity", so 1000 mm is the nearest this lens focuses.',
-    sources=(RPI_DOC, ARDUCAM_DOC),
+    near=1000.0,
+    near_quote="Approx 1 m to infinity",
+    focus_at=2000.0,
+    sources=(RPI_DOC, OV5647_DATASHEET, ARDUCAM_DOC),
 )
 
-LENS_120 = Lens(
-    key="120",
-    name="120 deg (wide lens)",
-    subtitle="Camera Module OV5647, wide fixed-focus lens",
-    fov_h=120.0,
-    fov_v=90.0,
-    focus="Fixed",
-    min_object_distance=None,
-    mod_note="Arducam publish no focus distance for this lens, so no height "
-             "on this sheet can be checked against one.",
-    sources=(ARDUCAM_DOC,),
-)
+#: Arducam's motorised-focus OV5647, the B0176, which is the autofocus
+#: version of the stock camera: the same sensor and much the same angle, on a
+#: voice-coil lens.  Its declared pair is not self-consistent -- 54 across a
+#: 4:3 rectilinear picture implies 41.80 down, not 44 -- and its
+#: predecessor's page says 41, so the sheets take the lower: the picture is
+#: then no smaller than the height assumes on either axis.  Its focal length
+#: is not published; Arducam's "35 mm" full-frame equivalent gives 3.67 mm,
+#: DERIVED over the 43.27 mm full-frame diagonal, which is 52.6 x 40.7 under
+#: tan() -- an alternative the margin is checked to absorb.  No F number is
+#: published; the stock lens's F2.9 is ASSUMED, and it is used only for the
+#: depth of field once the lens has focused.
+FULL_FRAME_DIAGONAL = math.hypot(36.0, 24.0)
+AF_FOCAL = 35.0 * ARRAY_DIAGONAL / FULL_FRAME_DIAGONAL
 
-LENSES = {LENS_65.key: LENS_65, LENS_120.key: LENS_120}
-
-#: The autofocus variant, which is a statement rather than a lens to compute
-#: with: Arducam declare a field of view for it and nothing else, so no
-#: height on these sheets is worked out from it.
 AUTOFOCUS = Lens(
     key="af",
-    name="Autofocus",
-    subtitle="Arducam B0176, OV5647 with a motorised lens",
+    name="65 deg, autofocus",
+    short="AF",
+    product="Arducam B0176, OV5647 with a motorised lens",
     fov_h=54.0,
-    fov_v=44.0,
-    focus="Auto",
-    min_object_distance=None,
-    mod_note="Arducam publish no near limit and no lens height for it.",
-    sources=(ARDUCAM_DOC, ARDUCAM_AF),
+    fov_v=41.0,
+    projection="rectilinear",
+    basis="54 is on every Arducam page; of the two verticals they print, "
+          "44 on the B0176's and 41 on its predecessor's, the lower.",
+    figures=(
+        Figure("Arducam B0176", "DECLARED", 54.0, 44.0),
+        Figure("Arducam B0121", "DECLARED", 54.0, 41.0),
+        Figure("3.67 mm, from the 35 mm equivalent", "DERIVED",
+               *angles_from_focal(AF_FOCAL, "rectilinear")),
+    ),
+    alternatives=(
+        Figure("3.67 mm, from the 35 mm equivalent", "DERIVED",
+               *angles_from_focal(AF_FOCAL, "rectilinear")[:2]),
+        Figure("Arducam B0176", "DECLARED", 54.0, 44.0),
+    ),
+    focal_length=AF_FOCAL,
+    focal_basis="DERIVED",
+    f_number=2.9,
+    f_basis="ASSUMED",
+    focus="Motorized",
+    near=80.0,
+    near_quote="80mm to infinity",
+    focus_at=None,
+    sources=(UCTRONICS_B0176, ARDUCAM_B0121, ARDUCAM_DOC, ARDUCAM_AF),
+)
+
+#: The wide lens: Arducam's B006604, the OV5647 sold as 120 degrees.  Its
+#: product page gives the 120 as a DIAGONAL; the catalogue table gives the
+#: same camera "120(H) x 90(V)", which cannot be right under any projection
+#: -- the horizontal is shorter than the diagonal on the sensor, so no lens
+#: can see as far across as it does to the corner -- and gives the same camera
+#: without its IR filter "96(H) x 72(V)".  That second pair is exactly what a
+#: 120 degree diagonal splits into under the equidistant projection, and
+#: Commonlands, working from a real 2.2 mm fisheye's distortion data on this
+#: sensor's active area, get 96 x 72 for a 122 degree lens.  So the sheets
+#: use 96 x 72.
+#:
+#: The bound on that.  For a fixed diagonal, the rectilinear split is the
+#: widest, 108.36 x 92.20, and puts the picture further out than drawn: the
+#: safe side.  The equisolid split, 94.31 x 69.83, and YXF's M6 lens for OV5647
+#: modules, 92.4 x 73.9, are narrower than 96 x 72 on one axis each, and are
+#: the alternatives the frame margin is checked to absorb.
+#:
+#: Neither the focal length nor the F number is published for the B006604.
+#: The focal length is DERIVED, 2.17 mm, from the 120 diagonal under the
+#: equidistant projection -- a fisheye's paraxial focal length is its f in
+#: r = f theta -- beside YXF's 1.79 and Commonlands' 2.2 for lenses of the
+#: same angle.  The F number is ASSUMED, F2.4, YXF's for their 120 degree M6
+#: lens made for these modules; it only enters the depth of field.
+LENS_120 = Lens(
+    key="120",
+    name="120 deg, wide",
+    short="120",
+    product="Arducam B006604, OV5647 with a wide M6 lens",
+    fov_h=96.0,
+    fov_v=72.0,
+    projection="equidistant",
+    basis="Arducam's own 96 x 72, the equidistant split of their declared "
+          "120 diagonal, which Commonlands reproduce from a real lens.",
+    figures=(
+        Figure("Arducam B006604 page", "DECLARED", None, None, 120.0),
+        Figure("Arducam catalogue, B006604", "DECLARED", 120.0, 90.0,
+               rejected="its H is the page's own diagonal"),
+        Figure("Arducam catalogue, B006604N", "DECLARED", 96.0, 72.0),
+        Figure("120 diagonal, equidistant", "DERIVED",
+               *split_diagonal(120.0, "equidistant"), 120.0),
+        Figure("120 diagonal, rectilinear", "DERIVED",
+               *split_diagonal(120.0, "rectilinear"), 120.0),
+        Figure("120 diagonal, equisolid", "DERIVED",
+               *split_diagonal(120.0, "equisolid"), 120.0),
+        Figure("Commonlands CIL282, 2.2 mm", "DECLARED", 96.0, 72.0, 122.0),
+        Figure("YXF4Y001A1, 1.79 mm", "DECLARED", 92.4, 73.9, 119.9),
+    ),
+    alternatives=(
+        Figure("120 diagonal, rectilinear", "DERIVED",
+               *split_diagonal(120.0, "rectilinear")),
+        Figure("120 diagonal, equisolid", "DERIVED",
+               *split_diagonal(120.0, "equisolid")),
+        Figure("YXF4Y001A1, 1.79 mm", "DECLARED", 92.4, 73.9),
+    ),
+    focal_length=focal_from_diagonal(120.0, "equidistant"),
+    focal_basis="DERIVED",
+    f_number=2.4,
+    f_basis="ASSUMED",
+    focus="Fixed",
+    near=1000.0,
+    near_quote="Focus Distance 1 m to infinity",
+    focus_at=2000.0,
+    sources=(ARDUCAM_B006604, ARDUCAM_DOC, COMMONLANDS, YXF_M6),
+)
+
+#: The two lenses every sheet draws, by key.
+LENSES = {LENS_65.key: LENS_65, LENS_120.key: LENS_120}
+
+#: Every lens a height is worked out for: the two drawn, and the autofocus
+#: version of the stock one, whose height is in the tables.
+ALL_LENSES = {LENS_65.key: LENS_65, AUTOFOCUS.key: AUTOFOCUS,
+              LENS_120.key: LENS_120}
+
+#: The autofocus version of each drawn lens, where one is sold.  Nobody
+#: publishes a motorised OV5647 of about 120 degrees: Arducam's wide
+#: autofocus OV5647, the B0370, is "155(H) x 116(V)", a different lens.
+AUTOFOCUS_OF = {LENS_65.key: AUTOFOCUS, LENS_120.key: None}
+
+#: Waveshare's RPi Camera (G): the Camera Module v1 sized OV5647 with a
+#: fisheye, and the other thing sold as "120 degrees" -- horizontally, on The
+#: Pi Hut's listing of it, and 160 diagonally on Waveshare's own page.  Not
+#: drawn, and here for the record: its declared "3.15mm" cannot put 160
+#: degrees on this sensor under any projection a lens has -- equidistant, it
+#: gives 82.5 -- so its figures do not hold together, and nothing is worked
+#: from them.  Its focus is adjustable, "Approximately 10cm to infinity".
+WAVESHARE_G_FIGURES = (
+    Figure("Waveshare, diagonal", "DECLARED", None, None, 160.0),
+    Figure("The Pi Hut, horizontal", "DECLARED", 120.0, None, 160.0),
+    Figure("3.15 mm, equidistant", "DERIVED",
+           *angles_from_focal(3.15, "equidistant")),
 )
 
 #: The figure the stock lens is sold under, which is its DIAGONAL and which no
-#: vendor prints: see DIAGONAL_FROM_IMAGE_AREA.  Kept as a number only so the
-#: sheets can show what goes wrong if it is used as if it were the angle
-#: across the picture, which is the mistake the name invites.
+#: vendor prints.  Kept as a number only so the sheets can show what goes
+#: wrong if it is used as if it were the angle across the picture, which is
+#: the mistake the name invites.
 NOMINAL_DIAGONAL = 65.0
 
-#: ASSUMED: where the stock fixed-focus lens is focused.  Raspberry Pi give
-#: its depth of field as "Approx 1 m to infinity".  A depth of field whose far
-#: end is infinity is what a lens focused at its hyperfocal distance H gives,
-#: and its near end is then H / 2; so H is taken as twice the published near
-#: limit.  Nobody publishes the figure itself.  It is used for one thing, an
-#: estimate of how soft a board at the heights on these sheets comes out, and
-#: that estimate is labelled as resting on it.
-FIXED_FOCUS_DISTANCE = 2 * LENS_65.min_object_distance
-
-
-def blur(z: float, focus: float = FIXED_FOCUS_DISTANCE) -> tuple[float, float]:
-    """How big a point on a subject Z away comes out, on a lens focused at *focus*.
-
-    DERIVED, thin lens: the subject images at ``v = f z / (z - f)`` behind
-    the lens and the sensor sits where *focus* images, so a point spreads to
-    a disc of the aperture ``f / N`` scaled by how far short of its own image
-    the sensor is.  Returned as (diameter on the sensor, the same disc
-    projected back onto the subject), both in millimetres.
-    """
-    f = FOCAL_LENGTH
-    v_subject = f * z / (z - f)
-    v_sensor = f * focus / (focus - f)
-    on_sensor = (f / F_NUMBER) * abs(v_subject - v_sensor) / v_subject
-    return on_sensor, on_sensor * z / v_subject
-
+#: The circle of confusion Raspberry Pi's "Approx 1 m to infinity" implies,
+#: if the stock lens is focused at its hyperfocal distance and the metre is
+#: half of it: DERIVED, f^2 / (N (2000 - f)).
+IMPLIED_COC = (LENS_65.focal_length ** 2
+               / (LENS_65.f_number
+                  * (LENS_65.focus_at - LENS_65.focal_length)))
 
 #: The near limits Raspberry Pi publish for their own focusable modules.
 #: Different sensors -- IMX219 and IMX708, not OV5647 -- so they cannot be
-#: read as an OV5647 figure. They are here because they are the only published
-#: close limits for any Raspberry Pi camera, and because they say what order
-#: of distance a focusable module reaches: a tenth of the stock lens's metre.
+#: read as an OV5647 figure. They are here because they say what order of
+#: distance a focusable Raspberry Pi module reaches.
 RPI_NEAR_LIMITS = (
     ("Camera Module 2, IMX219, adjustable", "Approx 10 cm to infinity"),
     ("Camera Module 3, IMX708, motorized", "Approx 10 cm to infinity"),
