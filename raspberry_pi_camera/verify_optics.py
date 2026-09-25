@@ -80,12 +80,12 @@ QUOTES = {
     "arducam-motorized-focus-camera.html": [
         "you can understand it the same as autofocus",
     ],
-    # The OV5647 guide the AUTOFOCUS note sends a reader to.  The sheets no
-    # longer print these two strings -- they are what the words look like
-    # after the spacing in the rendered page is flattened, and anyone
-    # copying them would get a config.txt that does nothing -- but the note
-    # still says that guide adds a voice-coil device tree line and a close
-    # focus range, and this is the page that has to go on saying it.
+    # Arducam's OV5647 motorized focus guide.  The sheets do not print these
+    # two strings -- they are what the words look like after the spacing in
+    # the rendered page is flattened, and anyone copying them would get a
+    # config.txt that does nothing -- but this family's README says that
+    # guide adds a voice-coil device tree line and a close focus range, and
+    # this is the page that has to go on saying it.
     "arducam-ov5647-motorized-focus-camera.html": [
         "dtoverlay = ov5647 , vcm",
         "autofocus - range macro",

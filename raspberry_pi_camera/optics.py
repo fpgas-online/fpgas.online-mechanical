@@ -136,8 +136,7 @@ ARDUCAM_AF = Source(
     label="Arducam motorized focus camera",
     ref="https://docs.arducam.com/Raspberry-Pi-Camera/Motorized-Focus-Camera/"
         "Motorized-Focus-Camera/",
-    note='Quoted: "you can understand it the same as autofocus"; its OV5647 '
-         "guide adds a voice-coil device tree line and a close-focus range.",
+    note='Quoted: "you can understand it the same as autofocus".',
 )
 
 # ---------------------------------------------------------------------------
@@ -724,11 +723,10 @@ def _plate_subject() -> Subject:
         subject_field="TT Mounting Plate",
         targets=(
             Target("boards", "Every board, any revision", ex0, ey0, ex1, ey1,
-                   note="The union of every revision's assembled envelope -- "
-                        "outline, connectors and the Pmod bodies over the "
-                        "front edge -- in plate coordinates. No one board "
-                        "needs all of it; a camera fixed over the plate has "
-                        "to serve every one.",
+                   note="Every revision's assembled envelope -- outline, "
+                        "connectors, Pmod bodies -- in plate coordinates, "
+                        "in one: a camera fixed over the plate serves them "
+                        "all.",
                    plane_name=plane, plane_above_subject=hi,
                    plane_note=plane_note),
             Target("leds", "Every LED and 7-seg", lx0, ly0, lx1, ly1,

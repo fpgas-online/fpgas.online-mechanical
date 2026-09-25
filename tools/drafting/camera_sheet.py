@@ -62,20 +62,26 @@ NO_BAND = 2.0
 #: Room left of the end elevation and the plan: the datum labels.
 LEFT = 20.0
 #: Room under the plan, for the leader that points at two frame edges too
-#: close together to draw as two lines.
+#: close together to draw as two lines, where a sheet has one.
 PLAN_BOTTOM = 12.0
+PLAN_BOTTOM_BARE = 9.0
+
+
+def _plan_bottom(subject: Subject) -> float:
+    return PLAN_BOTTOM if any(coincident_edges(subject.frames())) \
+        else PLAN_BOTTOM_BARE
 
 #: Room round the elevations, in sheet millimetres.  Each carries its height
 #: dimensions on its outer side and its lateral dimension underneath, and a
 #: caption above.
 ELEV_OUTER = 26.0       # the side the height dimensions stand on
-ELEV_UNDER = 17.0       # the lateral dimension, under the lowest line drawn
+ELEV_UNDER = 15.0       # the lateral dimension, under the lowest line drawn
 CAPTION = 7.0           # above every view
 GAP = 10.0              # between the two elevations
 
 #: How far above the lens the elevations reach, in model millimetres: room
 #: for the camera module drawn over it.
-ABOVE_LENS = 14.0
+ABOVE_LENS = 12.0
 
 #: Radius of the arc that marks the angle at the lens, in sheet millimetres.
 ARC_R = 11.0
@@ -192,14 +198,17 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     changes, and the whole point of that module is that its numbers are
     checkable.
     """
+    from raspberry_pi_camera import v1
     frames = subject.frames()
     stock = LENSES["65"]
     a = place(frames[0], stock)
     notes = [
-        "First angle; the end elevation is seen from the right. The camera "
-        "looks straight down. Z is to the lens's entrance pupil, which no "
-        "vendor locates but which is behind the lens's front face: set the "
-        "FRONT FACE at Z and the picture can only be larger.",
+        "First angle; the end elevation is seen from the right. The camera, "
+        "a Camera Module v1.3 from its own data, looks straight down. Z is "
+        "to its entrance pupil, which nobody locates but which is behind the "
+        f"lens face by at most the lens's {v1.LENS_TOP_Z:.2f} mm: set the "
+        f"FACE at Z and the picture is up to {100 * v1.LENS_TOP_Z / a.z:.1f}%"
+        " larger, never smaller.",
         "A frame is the smallest rectangle of the sensor's own 4:3 holding "
         f"its target plus {optics.FRAME_MARGIN:.2f} mm all round, turned "
         "whichever way needs the lower camera; LONG says which. The margin "
@@ -236,9 +245,9 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
             f"{place(frames[0], ln).headroom(box):.1f} mm at {ln.key} deg"
             for ln in LENSES.values())
         notes.append(
-            f"HEADROOM: {label} lies inside frame {FRAME_LETTERS[0]} in plan "
-            "but stands above the plane its height is set from, and stays in "
-            f"the picture only up to {reach}. Above that, raise the camera.")
+            f"HEADROOM: {label[0].lower()}{label[1:]} stays in frame "
+            f"{FRAME_LETTERS[0]}'s picture up to {reach} above the plane Z is "
+            "set from. Higher, raise the camera.")
 
     # The one thing a reader has to be told before building anything, so it
     # goes above the derivations.
@@ -263,13 +272,12 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
             "OV5647 the board is OUT OF FOCUS: at frame "
             f"{FRAME_LETTERS[0]}'s Z a point spreads to "
             f"{on_sensor / optics.PIXEL_PITCH:.0f} pixels, about "
-            f"{on_subject:.1f} mm on the board (DERIVED on a thin lens "
-            "ASSUMED set at the "
-            f"{optics.FIXED_FOCUS_DISTANCE / 1000:.0f} m that implies). "
-            "Raspberry Pi's focusable modules, other sensors, are given as "
-            + " and ".join(reach) + f". The OV5647 that focuses is "
-            f"Arducam's B0176, declared {af.fov_h:.0f} x {af.fov_v:.0f} deg; "
-            f"{af.mod_note[0].lower()}{af.mod_note[1:]}")
+            f"{on_subject:.1f} mm on the board (DERIVED, thin lens ASSUMED "
+            f"set at the {optics.FIXED_FOCUS_DISTANCE / 1000:.0f} m that "
+            "implies). "
+            "Raspberry Pi's focusable modules, other sensors: "
+            + "; ".join(reach) + f". The OV5647 that focuses is Arducam's "
+            f"B0176, {af.fov_h:.0f} x {af.fov_v:.0f} deg. {af.mod_note}")
 
     # The wide lens's declared pair does not agree with the sensor's shape,
     # so the picture runs over the rectangle drawn -- on the axis the height
@@ -523,7 +531,7 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
                 ["start", "end", "end", "start", "end"])
 
 
-def _note_columns(sheet: Sheet, end: View, front: View,
+def _note_columns(sheet: Sheet, subject: Subject, end: View, front: View,
                   plan: View) -> list[Rect]:
     """The paper the notes can have: what the three views leave.
 
@@ -537,7 +545,7 @@ def _note_columns(sheet: Sheet, end: View, front: View,
     base = f.y + 3.0
     x0, x1 = f.x + 4.0, sheet.area.x1 - 2.0
     elev_bottom = min(end.rect.y, front.rect.y) - ELEV_UNDER
-    plan_bottom = plan.rect.y - PLAN_BOTTOM
+    plan_bottom = plan.rect.y - _plan_bottom(subject)
     cols = []
     beside = plan.rect.x1 + 10.0
     if elev_bottom - plan_bottom >= 20.0:
@@ -643,7 +651,9 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
     # The optical axis.
     c.line(*v.pt(cu, -1.5), *v.pt(cu, z + ABOVE_LENS - 3.0),
            w=style.W_CENTRE, colour=style.C_LINE, dash=style.D_CENTRE)
-    _draw_camera(c, v, cu, z)
+    long_x = subject.frames()[0].long_axis == "X"
+    # ASSUMED, as on the holder: the long image axis along the board's width.
+    _draw_camera(c, v, cu, z, "u" if (axis == "X") == long_x else "v")
 
     # The angle, at the lens, and its value outside the cone on the left,
     # where neither elevation has anything else: the heights are dimensioned
@@ -657,11 +667,36 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
     return apex[0]
 
 
-def _draw_camera(c, v: View, cu: float, z: float) -> None:
-    """The lens, face down at Z.  A line the width of a lens holder, for as
-    long as there is no drawing of the module to draw from."""
-    half = 4.0
-    c.line(*v.pt(cu - half, z), *v.pt(cu + half, z), w=style.W_OUTLINE + 0.2)
+def _draw_camera(c, v: View, cu: float, z: float, along: str) -> None:
+    """The Camera Module v1.3, lens face down at Z, from its own data.
+
+    *along* is which of the board's two axes lies across this elevation: its
+    25 mm width ("u") or its 23.9 mm height ("v").  The lens axis is
+    ``v1.OPTICAL_AXIS``, so the board is drawn off centre along its height,
+    with the FFC connector on its far face at the edge the axis is nearer.
+    """
+    from raspberry_pi_camera import v1
+    au, av = v1.OPTICAL_AXIS
+    if along == "u":
+        lo, hi = cu - au, cu + (v1.BOARD_WIDTH - au)
+        flo, fhi = cu - au + v1.FFC[0], cu - au + v1.FFC[2]
+    else:
+        lo, hi = cu - av, cu + (v1.BOARD_HEIGHT - av)
+        flo, fhi = cu - av + v1.FFC[1], cu - av + v1.FFC[3]
+    front = z + v1.LENS_TOP_Z
+    back = front + v1.BOARD_THICKNESS
+    kw = dict(weight=style.W_COMPONENT, colour=style.C_HIGHLIGHT)
+
+    def box(u0, u1, z0, z1):
+        a, b = v.pt(u0, z0), v.pt(u1, z1)
+        c.rect(a[0], a[1], b[0] - a[0], b[1] - a[1], fill="#ffffff", **kw)
+
+    box(lo, hi, front, back)
+    below = 0.0
+    for top, size, _ in v1.LENS_PROFILE:
+        box(cu - size / 2, cu + size / 2, front - top, front - below)
+        below = top
+    box(flo, fhi, back, back - v1.FFC_BOTTOM_Z - v1.BOARD_THICKNESS)
 
 
 def _dimension_front(sheet: Sheet, subject: Subject, v: View,
@@ -741,7 +776,8 @@ def _layout(subject: Subject, scale: float, sp: float, area: Rect):
     plan_w, plan_h = (px1 - px0) * sp, (py1 - py0) * sp
     width = LEFT + max(end_w, plan_w) + GAP + front_w + ELEV_OUTER \
         + (style.DIM_STEP if subject.key == "tt-mounting-plate" else 0.0)
-    height = CAPTION + elev_h + ELEV_UNDER + CAPTION + plan_h + PLAN_BOTTOM
+    height = (CAPTION + elev_h + ELEV_UNDER + CAPTION + plan_h
+              + _plan_bottom(subject))
     if width > area.w or height > area.h:
         return None
     left = area.x + LEFT
@@ -836,6 +872,6 @@ def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
     _tables(sheet, subject)
     draw_legend(sheet, _legend(subject))
     _place_text(sheet, subject, notes, src,
-                _note_columns(sheet, end, front, plan))
+                _note_columns(sheet, subject, end, front, plan))
     sheet.draw_title_block()
     return sheet
