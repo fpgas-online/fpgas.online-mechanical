@@ -744,13 +744,13 @@ class Target:
     """A rectangle on the subject that has to end up inside the picture.
 
     The rectangle is in the subject's own plan frame, but it need not lie in
-    the subject's own top face, and on the mounting plate's sheet it does
-    not: the demo boards' indicators are on a board standing on standoffs
-    above the plate.  A camera height measured to the wrong plane covers
-    less at the right one -- the picture at ``h`` above the frame plane is
-    ``(Z - h) / Z`` of what is drawn -- so ``Z`` on these sheets is always
-    quoted above the TARGET's plane, and ``plane_name`` says which plane that
-    is.
+    the subject's own top face, and on two of these sheets it does not: the
+    demo boards' indicators are on a board standing on standoffs above the
+    mounting plate, and the Acorn is a card seated in a HAT above a Pi.  A
+    camera height measured to the wrong plane covers less at the right one --
+    the picture at ``h`` above the frame plane is ``(Z - h) / Z`` of what is
+    drawn -- so ``Z`` on these sheets is always quoted above the TARGET's
+    plane, and ``plane_name`` says which plane that is.
 
     ``plane_above_subject`` is how far that plane sits above the subject's own
     top face, where anyone publishes it, and None where nobody does.  It is
@@ -862,8 +862,9 @@ def coincident_edges(frames, tol: float = COINCIDENT):
     """Pairs of frame edges too close together to be drawn as two lines.
 
     Two frames on one sheet are not nested and need not be: on
-    RPICAM-OVER-ARTY frame B's lower edge is 0.43 mm below frame A's.
-    Where two edges land within a chain line's own width of each other,
+    RPICAM-OVER-ARTY frame B's lower edge is 0.43 mm below frame A's, and
+    on RPICAM-OVER-ACORN neither frame contains the other at all.  Where
+    two edges land within a chain line's own width of each other,
     the drawing cannot show two, so the sheet says which they are instead of
     leaving the reader to guess.
 
@@ -1244,7 +1245,112 @@ def _arty_subject() -> Subject:
     )
 
 
+# --- The Acorn ------------------------------------------------------------
+#
+# Nothing restated.  The card, where it is seated and how far the HAT's 2280
+# standoff reaches past the board edge are accessories/parts.py's, which is
+# what the assembly sheet is drawn from too: the card on this sheet and the
+# card on that one are one rectangle in one place, so they cannot drift
+# apart.
+#
+# What that module does not carry is a height for anything, because nobody
+# publishes one.
+
+#: The plane both Acorn frames are set from, and why it is the card's and
+#: not the Pi's.  The highest plane either target reaches: frame A's target
+#: is the assembly's plan envelope, most of which is the Pi, but the card
+#: stands above it, and a height set at the Pi's face covers less at the
+#: card's.  Set from the card, everything below it is covered by more than
+#: the frame, which is the safe direction.
+CARD_PLANE = "the ACORN CARD's top face, not the Pi's"
+CARD_PLANE_NOTE = (
+    "nobody publishes how far the card stands above the Pi, so measure the "
+    "stack. Set from the Pi's face the camera sits too low, and the picture "
+    "at the card loses the ends of it"
+)
+
+
+def _hat_sheet() -> str:
+    """What the sheet that draws the assembly the Acorn sits in is called.
+
+    Derived from the stem accessories/ writes it to, like every other cross
+    reference here.
+
+    A function rather than a module constant, and the import inside it,
+    because every other family's data module is imported inside the subject
+    that wants it: importing this module to ask about a lens should not pull
+    in the accessories.
+    """
+    from accessories.parts import POE_M2_HAT_WITH_ACORN
+    from tools.layout import acc_stem
+    return drawing_name("accessories", acc_stem(POE_M2_HAT_WITH_ACORN.key))
+
+
+def _acorn_subject() -> Subject:
+    from accessories.parts import (ACORN_CARD, POE_M2_HAT_WIDTH,
+                                   POE_M2_STANDOFF_OVERHANG)
+    from raspberry_pi.boards import BOARDS as RPI
+    hat_sheet = _hat_sheet()
+    pi = RPI["rpi5"]
+    card = ACORN_CARD
+    spec = replace(pi, features=pi.features + (card,))
+    bx = [(0.0, 0.0, pi.outline.width, pi.outline.height)]
+    bx += [(f.x0, f.y0, f.x1, f.y1) for f in pi.features]
+    ex0, ey0, ex1, ey1 = _union(bx)
+    # The HAT's 2280 standoff boss reaches further across than anything on the
+    # Pi, and it is the far edge of the assembly.
+    ex1 = max(ex1, POE_M2_HAT_WIDTH + POE_M2_STANDOFF_OVERHANG)
+    return Subject(
+        key="acorn-cle-215-plus",
+        title="Camera over the Acorn CLE-215+",
+        subtitle="Camera Module OV5647, 65 and 120 degree lenses",
+        spec=spec,
+        subject_field="Acorn CLE-215+, Pi 5",
+        targets=(
+            Target("assembly", "Whole assembly", ex0, ey0, ex1, ey1,
+                   note="Pi 5 with a Waveshare PoE M.2 HAT+ (B) and the "
+                        "Acorn seated in it; the HAT is the Pi's own 85 x 56 "
+                        "mm and its 2280 standoff reaches 88.00.",
+                   plane_name=CARD_PLANE, plane_above_subject=None,
+                   plane_note=CARD_PLANE_NOTE),
+            Target("card", "Acorn card", card.x0, card.y0, card.x1, card.y1,
+                   note="23 x 80 mm: the M.2 specification's Type 2280 "
+                        "outline with SQRL's own extra millimetre of width.",
+                   plane_name=CARD_PLANE, plane_above_subject=None,
+                   plane_note=CARD_PLANE_NOTE),
+        ),
+        sources=(
+            Source(label="Board geometry", ref="raspberry_pi/boards.py",
+                   note="Pi 5 outline and connectors; see "
+                        f"{drawing_name('raspberry-pi', slug(pi.key))}."),
+            Source(label="PCI Express M.2 Specification",
+                   ref="PCI-SIG, Revision 1.0, 1 November 2013",
+                   note="Figure 13: Type 2280 is 22 x 80, both +/-0.15."),
+            Source(label="SQRL Acorn CLE-215+ product page",
+                   ref="https://web.archive.org/web/2020/"
+                       "http://www.squirrelsresearch.com/acorn-cle-215-plus/",
+                   note='Captured 2020; the site is gone. Quoted: "it is '
+                        'one millimeter wider than the official '
+                        'specifications."'),
+            Source(label="Waveshare PoE M.2 HAT+ (B) dimension drawing",
+                   ref="https://www.waveshare.com/w/upload/d/d9/"
+                       "PoE-M.2-HAT-Plus-B-details-size.jpg",
+                   note='Annotated 85.00, 56.00 and 3.00, "Unit: mm": the '
+                        "3.00 is the standoff past the board edge. It "
+                        "dimensions no height."),
+        ),
+        tolerance="Pi 5 +/-0.20, card +/-0.20 DERIVED, Z DERIVED",
+        notes=(
+            "The Acorn's own LED positions are not published: SQRL issued "
+            "no mechanical drawing and their site is gone, so frame B is the "
+            "card, not its indicators. Its seated position and the "
+            "assembly's far edge are accessories/parts.py's, which "
+            f"{hat_sheet} is drawn from too.",
+        ),
+    )
+
+
 def subjects() -> dict[str, Subject]:
     """Every camera position sheet's subject, in reading order."""
-    out = (_plate_subject(), _arty_subject())
+    out = (_plate_subject(), _arty_subject(), _acorn_subject())
     return {s.key: s for s in out}

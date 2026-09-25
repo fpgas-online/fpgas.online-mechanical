@@ -164,7 +164,8 @@ def _below_plane(subject: Subject) -> list[tuple[str, float, float]]:
     because an elevation is a scale drawing and a guessed slab would be
     measured off it.  The plate is drawn under the demo boards because its
     standoff is the plate's own figure; the Arty's thickness is not in its
-    data, so that sheet draws the plane and the target on it and nothing
+    data, and nothing publishes how far the Acorn's card stands above its
+    Pi, so those sheets draw the plane and the target on it and nothing
     below.
     """
     plane = subject.frames()[0].target.plane_above_subject
@@ -381,6 +382,19 @@ def _draw_plan(sheet: Sheet, subject: Subject, view: View) -> None:
     for s in spec.slots:
         draw_slot(c, view, s, colour=style.C_HIGHLIGHT)
     for f in spec.features:
+        if f.kind == "outline":
+            # An informational body, not a part of the subject: the Acorn
+            # card lying in its HAT is the only one here.  Drawn in the
+            # component red it read as something soldered to the Pi under it.
+            x0, y0 = view.pt(f.x0, f.y0)
+            x1, y1 = view.pt(f.x1, f.y1)
+            c.rect(x0, y0, x1 - x0, y1 - y0, weight=style.W_PHANTOM,
+                   colour=style.C_PHANTOM, dash=style.D_PHANTOM)
+            # Low in the body, clear of the witness lines that run out to
+            # the dimension stacks from the camera axes above it.
+            c.text(x0 + 2.0, y0 + 2.0, f.designator or f.label,
+                   size=style.T_LABEL, colour=style.C_PHANTOM, bold=True)
+            continue
         draw_feature(c, view, f)
     for p in spec.pmods:
         draw_pmod(c, view, p, spec)
@@ -913,9 +927,10 @@ def _layout(subject: Subject, scale: float, sp: float, area: Rect):
 def _legend(subject: Subject) -> list:
     spec = subject.spec
     legend = [("outline", "Subject outline")]
-    if spec.features or spec.slots:
+    if any(f.kind != "outline" for f in spec.features) or spec.slots:
         legend.append(("component", "LED, display or connector"))
-    if (any(p.body_x1 > p.body_x0 for p in spec.pmods)
+    if (any(f.kind == "outline" for f in spec.features)
+            or any(p.body_x1 > p.body_x0 for p in spec.pmods)
             or any(h.keepout_dia for h in spec.holes)
             or any(w == "board" for w, _, _ in _below_plane(subject))):
         legend.append(("phantom", "Adjacent part or connector body"))
