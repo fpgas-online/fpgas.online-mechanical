@@ -1,49 +1,84 @@
 """Camera position sheets: where to put an OV5647 camera over a board.
 
 Every other sheet in this repository draws a part.  These draw a part and a
-place to stand: the plan view is the subject, and over it are the footprints
-the picture covers, one per thing worth framing, with the camera's X, Y and
-height beside them.
+place to stand, and the place to stand is a height first: the question the
+sheet answers is how far above the board the camera goes and over which
+point, so the ELEVATIONS are the primary views and the plan is the smaller
+one.
 
-One sheet per SUBJECT, both lenses on it, rather than one sheet per lens.
-The person reading it has one board in front of them and wants to know where
-the camera goes; what changes between the two lenses is a number in a table,
-while what changes between subjects is the whole drawing.  A per-lens sheet
-would have had to put two different subjects on one page, at two scales,
-and would still have made anyone setting up a rig turn to a second page to
-find out what the other lens does.
+Three views, first angle:
 
-The frame footprints do not depend on the lens.  A frame is the sensor's own
-4:3 aspect round its target -- that is the shape of the file that comes out,
-whatever is in front of it -- so a subject has exactly as many rectangles as
-it has things worth framing, and the lens only decides how high above them
-the camera has to be.  See :mod:`raspberry_pi_camera.optics`.
+* the front elevation, looking along +Y, with the subject's X across it;
+* the end elevation, seen from the right and so drawn on the left, with Y
+  across it, at the front elevation's scale;
+* the plan, at a smaller scale under the end elevation, with the footprints
+  the picture covers, one per thing worth framing.  It is the view that
+  says which way the picture lies over the subject and where the second
+  frame is; the table carries every figure in it, and at the elevations'
+  own scale it took the paper the notes need.
+
+The two elevations are the two axes of the picture.  The 65 degree figure the
+stock lens is sold under is its DIAGONAL; what reaches the edge of the
+picture is the declared angle along each axis, 53.50 across the sensor's long
+side and 41.41 along its short side, and which of the two lies along the
+subject's X depends on which way the camera is turned.  Each elevation draws
+the angle that lies in its own plane, from the lens to the edges of the frame,
+and dimensions the height and the lateral position of the lens.  Only the
+stock 65 degree lens is drawn: the 120 degree lens's declared pair
+contradicts itself, so either of its two cones would be a drawing of one of
+two figures that cannot both be right, and it has no published near limit
+to check a height against.  Its heights are in the table.
+
+One sheet per SUBJECT, both lenses in its tables, rather than one per lens:
+the person reading it has one board in front of them.  The frame footprints
+do not depend on the lens -- a frame is the sensor's own 4:3 round its target,
+which is the shape of the file that comes out -- so a subject has exactly as
+many rectangles as it has things worth framing, and the lens only decides how
+high above them the camera goes.  See :mod:`raspberry_pi_camera.optics`.
 """
 
 from __future__ import annotations
 
+import math
+
 from raspberry_pi_camera import optics
 from raspberry_pi_camera.optics import (LENSES, Subject,  # noqa: E501
-                                        coincident_edges, place)
+                                        blur, coincident_edges, place)
 
 from . import dims, style
-from .board_sheet import (_place_notes_and_sources, draw_feature, draw_holes,
-                          draw_legend, draw_pmod, note_blocks,
-                          notes_spill_needed, outline_path)
+from .board_sheet import (draw_feature, draw_holes, draw_legend, draw_pmod,
+                          note_blocks, outline_path)
 from .plate_sheet import draw_slot
-from .sheet import Sheet, TitleBlock
-from .view import View
+from .sheet import Rect, Sheet, TitleBlock
+from .view import STANDARD_SCALES, View, scale_text
 
-#: Room round the plan view.  The left and the bottom carry one dimension per
-#: frame, stacked, and the bottom also carries the coincident-edge leader;
-#: nothing goes above or to the right but the frame markers.  The bottom
-#: figure has to cover the outermost lane, which is 22 mm out plus its
-#: arrowheads -- at 27 it reached two millimetres past the space it had
-#: reserved, into the gap above the notes band.
-MARGIN_LEFT = 34.0
-MARGIN_BOTTOM = 30.0
-MARGIN_TOP = 5.0
-MARGIN_RIGHT = 12.0
+#: The lens every view draws.  The other is in the tables only.
+DRAWN = "65"
+
+#: The library's notes band, shrunk to nothing: these sheets put their notes
+#: in the paper the views leave instead.  See ``_note_columns``.
+NO_BAND = 2.0
+
+#: Room left of the end elevation and the plan: the datum labels.
+LEFT = 20.0
+#: Room under the plan, for the leader that points at two frame edges too
+#: close together to draw as two lines.
+PLAN_BOTTOM = 12.0
+
+#: Room round the elevations, in sheet millimetres.  Each carries its height
+#: dimensions on its outer side and its lateral dimension underneath, and a
+#: caption above.
+ELEV_OUTER = 26.0       # the side the height dimensions stand on
+ELEV_UNDER = 17.0       # the lateral dimension, under the lowest line drawn
+CAPTION = 7.0           # above every view
+GAP = 10.0              # between the two elevations
+
+#: How far above the lens the elevations reach, in model millimetres: room
+#: for the camera module drawn over it.
+ABOVE_LENS = 14.0
+
+#: Radius of the arc that marks the angle at the lens, in sheet millimetres.
+ARC_R = 11.0
 
 #: A frame's colour, its legend style and its letter, by its position in the
 #: subject's list.  Two of each, because no subject has three things worth
@@ -55,6 +90,10 @@ FRAME_LEGEND = ("frame_a", "frame_b")
 FRAME_LETTERS = "AB"
 MAX_FRAMES = len(FRAME_COLOURS)
 
+#: The rays from the lens to the edge of frame A: solid, thin, frame A's
+#: colour.  Solid so they are not read as the chain-double-dot footprint in
+#: the plan, which is the same colour.
+RAY = ("line", style.W_THIN, style.C_FRAME_A, None)
 
 #: Radius of the lettered marker that names a frame at its own corner.
 MARKER_R = 3.2
@@ -64,16 +103,13 @@ MARKER_R = 3.2
 DATUM_LABEL_R = 6.5
 DATUM_DIRS = ((-1, -1), (1, -1), (-1, 1), (1, 1))
 
-#: The annotation column stays at the library's own width.  Narrowing it
-#: would widen every line of the notes band beside it, which these sheets
-#: want -- their notes are mostly optics, a subject the drawing cannot show
-#: at all -- but the title block is the column, and below about 157 mm the
-#: VERSION cell can no longer hold a `git describe` string.  The notes were
-#: cut to fit instead.
+
+class DoesNotFit(Exception):
+    """This scale leaves the notes nowhere to go; try the next one down."""
 
 
-def _bbox(subject: Subject) -> tuple[float, float, float, float]:
-    """Everything the view has to cover: the subject and every frame."""
+def _plan_bbox(subject: Subject) -> tuple[float, float, float, float]:
+    """Everything the plan has to cover: the subject and every frame."""
     spec = subject.spec
     xs = [0.0, spec.outline.width]
     ys = [0.0, spec.outline.height]
@@ -91,6 +127,47 @@ def _bbox(subject: Subject) -> tuple[float, float, float, float]:
         xs += [fr.x0, fr.x1]
         ys += [fr.y0, fr.y1]
     return min(xs), min(ys), max(xs), max(ys)
+
+
+def _below_plane(subject: Subject) -> list[tuple[str, float, float]]:
+    """What the elevations draw under the plane Z is measured from.
+
+    Each is (what, top, bottom), in millimetres above that plane, and only
+    what is known: a slab whose height nobody publishes is not drawn at all,
+    because an elevation is a scale drawing and a guessed slab would be
+    measured off it.  The plate is drawn under the demo boards because its
+    standoff is the plate's own figure; the Arty's thickness is not in its
+    data, so that sheet draws the plane and the target on it and nothing
+    below.
+    """
+    plane = subject.frames()[0].target.plane_above_subject
+    spec = subject.spec
+    t = spec.outline.thickness
+    out = []
+    if subject.key == "tt-mounting-plate":
+        lo, hi = optics.plate_board_plane()
+        out.append(("board", 0.0, -(hi - optics.plate_standoff())))
+        out.append(("subject", -hi, -hi - t))
+    elif plane == 0.0 and t:
+        out.append(("subject", 0.0, -t))
+    return out
+
+
+def _elev_extent(subject: Subject, axis: str) -> tuple[float, float]:
+    """The model range an elevation along *axis* covers, across the page."""
+    fr = subject.frames()[0]
+    lo, hi = (fr.x0, fr.x1) if axis == "X" else (fr.y0, fr.y1)
+    o = subject.spec.outline
+    if _below_plane(subject):
+        lo, hi = min(lo, 0.0), max(hi, o.width if axis == "X" else o.height)
+    return lo, hi
+
+
+def _elev_heights(subject: Subject) -> tuple[float, float]:
+    """The model range both elevations cover, up the page."""
+    p = place(subject.frames()[0], LENSES[DRAWN])
+    below = _below_plane(subject)
+    return (min([b for _, _, b in below] + [0.0]) - 1.0, p.z + ABOVE_LENS)
 
 
 def _fmt_mod(lens) -> str:
@@ -117,15 +194,18 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     """
     frames = subject.frames()
     stock = LENSES["65"]
+    a = place(frames[0], stock)
     notes = [
-        "The camera looks straight down. X and Y locate the optical axis in "
-        "the subject's plan frame; Z is the lens height above the plane its "
-        "target lies in. ASSUMED: Z is to the entrance pupil, which no "
-        "vendor locates; set it from the lens face.",
-        f"A frame is the smallest rectangle of the sensor's own 4:3 holding "
-        f"its target plus {optics.FRAME_MARGIN:.2f} mm all round; LONG says "
-        "which way the camera is turned. It is the shape of the picture, not "
-        "of the optics, so both lenses share it and differ only in Z.",
+        "First angle; the end elevation is seen from the right. The camera "
+        "looks straight down. Z is to the lens's entrance pupil, which no "
+        "vendor locates but which is behind the lens's front face: set the "
+        "FRONT FACE at Z and the picture can only be larger.",
+        "A frame is the smallest rectangle of the sensor's own 4:3 holding "
+        f"its target plus {optics.FRAME_MARGIN:.2f} mm all round, turned "
+        "whichever way needs the lower camera; LONG says which. The margin "
+        "is what absorbs where the stand ends up: "
+        f"{optics.FRAME_MARGIN:.2f} mm of lateral error, or a lean of "
+        f"{a.aim_tilt:.1f} deg at frame {FRAME_LETTERS[0]}'s Z, not both.",
     ]
 
     # Which plane each frame's height is set from.  One note, because a
@@ -165,21 +245,31 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     verdicts = {_focus_verdict(place(fr, ln))
                 for fr in frames for ln in LENSES.values()}
     if "TOO CLOSE" in verdicts:
+        on_sensor, on_subject = blur(a.z)
+        # Against the only close limits anyone publishes for a Raspberry Pi
+        # camera, which are other sensors': the question a reader has once
+        # the stock lens is ruled out is whether a focusable module would do.
+        reach = []
+        for quote, mm in optics.near_limits():
+            ins = [FRAME_LETTERS[i] for i, fr in enumerate(frames)
+                   if place(fr, stock).z >= mm]
+            said = ("every Z here inside it" if len(ins) == len(frames)
+                    else "no Z here inside it" if not ins
+                    else "/".join(ins) + " inside it")
+            reach.append(f'"{quote}", {said}')
+        af = optics.AUTOFOCUS
         notes.append(
-            f"FOCUS: {stock.mod_note} Every height here is nearer than "
-            "that, so a stock OV5647 cannot focus on any of these boards. "
-            "Use one whose lens focuses closer.")
-
-    af = optics.AUTOFOCUS
-    notes.append(
-        "AUTOFOCUS: an autofocus OV5647 is a different part -- Arducam's "
-        f"B0176, declared {af.fov_h:.0f} x {af.fov_v:.0f} deg against the "
-        f"stock lens's {stock.fov_h:.2f} x {stock.fov_v:.2f}, with a "
-        f"motorised lens and a close focus setting. {af.mod_note} Raspberry "
-        "Pi's focusable modules, other sensors, are given as "
-        + " and ".join(f'"{q}"' for q in
-                       dict.fromkeys(q for _, q in optics.RPI_NEAR_LIMITS))
-        + ".")
+            f"FOCUS: {stock.mod_note} Every Z here is nearer, so on a stock "
+            "OV5647 the board is OUT OF FOCUS: at frame "
+            f"{FRAME_LETTERS[0]}'s Z a point spreads to "
+            f"{on_sensor / optics.PIXEL_PITCH:.0f} pixels, about "
+            f"{on_subject:.1f} mm on the board (DERIVED on a thin lens "
+            "ASSUMED set at the "
+            f"{optics.FIXED_FOCUS_DISTANCE / 1000:.0f} m that implies). "
+            "Raspberry Pi's focusable modules, other sensors, are given as "
+            + " and ".join(reach) + f". The OV5647 that focuses is "
+            f"Arducam's B0176, declared {af.fov_h:.0f} x {af.fov_v:.0f} deg; "
+            f"{af.mod_note[0].lower()}{af.mod_note[1:]}")
 
     # The wide lens's declared pair does not agree with the sensor's shape,
     # so the picture runs over the rectangle drawn -- on the axis the height
@@ -203,20 +293,22 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
             "rectangle -- " + ", ".join(runs) + " -- which is still covered.")
 
     notes.append(
-        f'The "{stock.key} deg" name is the stock lens\'s diagonal, which no '
-        "vendor prints. DERIVED: 2 x atan(sqrt("
+        f'The "{stock.key} deg" name is the stock lens\'s DIAGONAL, which '
+        "no vendor prints: 2 x atan(sqrt("
         f"{optics.IMAGE_AREA[0]:.2f}^2 + {optics.IMAGE_AREA[1]:.2f}^2) / 2 / "
         f"{optics.FOCAL_LENGTH:.2f}) = {optics.DIAGONAL_FROM_IMAGE_AREA:.2f} "
         f"deg from the image area, {optics.DIAGONAL_FROM_ARRAY:.2f} from the "
-        "pixel array.")
+        "pixel array. Every Z here is from the declared angle along each "
+        f"axis instead. {optics.NOMINAL_DIAGONAL:.0f} deg across frame "
+        f"{FRAME_LETTERS[0]}'s long side would give Z {a.naive_z:.1f} and "
+        f"lose {a.naive_shortfall:.1f} mm off each end of it.")
 
     # The sheets are lettered in ASCII, and the pages they quote are not.
     # Nothing here is a character-for-character quote, so say so once rather
     # than let a reader take "1.4 um x 1.4 um" for what the page prints.
     notes.append(
-        "Quotes here are transliterated to ASCII: x for the multiplication "
-        "sign, um for micro, infinity for its symbol. The cached pages carry "
-        "them as printed.")
+        "Quotes are transliterated to ASCII: x, um and infinity for the "
+        "signs the cached pages print.")
 
     for letter, fr in zip(FRAME_LETTERS, frames):
         if fr.target.note:
@@ -338,8 +430,8 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
             f"{MAX_FRAMES} colours, {MAX_FRAMES} legend entries and "
             f"{MAX_FRAMES} letters. Add a third of each, or split the sheet.")
     x0m, y0m, x1m, y1m = bbox
-    left = view.x(x0m) - MARGIN_LEFT + 20.0
-    bottom = view.y(y0m) - MARGIN_BOTTOM + 20.0
+    bottom = view.y(y0m) - 2.0
+    placed: list[tuple[float, float]] = []
     for i, fr in enumerate(frames):
         colour = FRAME_COLOURS[i]
         p0 = view.pt(fr.x0, fr.y0)
@@ -351,22 +443,24 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
         ax, ay = view.pt(fr.cx, fr.cy)
         c.circle(ax, ay, 1.6, w=style.W_CENTRE, colour=colour, fill="#ffffff")
         dims.centre_mark(c, ax, ay, 1.6, colour=colour, over=2.6)
-        # The letter at the frame's own top-right corner.  Those corners are
-        # far apart on every sheet in this set -- the closest pair is 12 mm
-        # -- but that is a property of these subjects and not a
-        # guarantee, so check_sheets reports the collision if one ever lands
-        # on another.
-        c.circle(p1[0], p1[1], MARKER_R, fill="#ffffff", colour=colour,
+        # The letter at one of the frame's own corners: the top right, unless
+        # a letter already placed is there.  At 1:1 those corners were well
+        # apart; at the plan's smaller scale the plate's are three
+        # millimetres apart, and two rings that close read as one.
+        corners = [(p1[0], p1[1]), (p0[0], p1[1]), (p1[0], p0[1]),
+                   (p0[0], p0[1])]
+        mx, my = next(
+            (q for q in corners
+             if all(math.dist(q, m) >= 2 * MARKER_R + 1.5 for m in placed)),
+            corners[0])
+        placed.append((mx, my))
+        c.circle(mx, my, MARKER_R, fill="#ffffff", colour=colour,
                  w=style.W_THIN)
-        c.text(p1[0], p1[1], FRAME_LETTERS[i], size=style.T_LABEL,
+        c.text(mx, my, FRAME_LETTERS[i], size=style.T_LABEL,
                colour=colour, anchor="middle", baseline="middle", bold=True)
-        # X and Y from the subject datum to that axis, one lane per frame.
-        d0 = view.pt(0.0, 0.0)
-        lane = 14.0 + i * style.DIM_STEP
-        dims.linear(c, d0, (ax, ay), (bottom - lane) - min(d0[1], ay),
-                    horizontal=True, value=fr.cx, colour=colour)
-        dims.linear(c, d0, (ax, ay), (left - lane) - min(d0[0], ax),
-                    horizontal=False, value=fr.cy, colour=colour)
+        # No dimensions: frame A's axis is dimensioned on the elevations
+        # and every frame's is in the table, and at the plan's scale a
+        # second set would be a second copy of each figure, smaller.
 
     # Where two frame edges are too close to draw as two lines, point at them
     # and say so.  One leader, into the clear band between the drawing and
@@ -379,8 +473,8 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
         elbow_x = min(tip[0] + 8.0,
                       sheet.area.x1 - 6.0 - style.text_width(text,
                                                              style.T_LABEL))
-        dims.leader(c, tip, (max(elbow_x, tip[0] + 4.0), bottom - 7.0), text,
-                    dot=True, colour=style.C_PHANTOM)
+        dims.leader(c, tip, (max(elbow_x, tip[0] + 4.0), bottom - 6.0),
+                    text, dot=True, colour=style.C_PHANTOM)
 
     dx, dy = _datum_label_offset(subject, view)
     dims.datum_marker(c, *view.pt(0.0, 0.0), label="X0 Y0",
@@ -429,72 +523,319 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
                 ["start", "end", "end", "start", "end"])
 
 
-def _place_text(sheet: Sheet, subject: Subject, notes: list[str],
-                src: list[str], band_cols: int) -> None:
-    """Notes and sources along the foot, spilling into the annotation column.
+def _note_columns(sheet: Sheet, end: View, front: View,
+                  plan: View) -> list[Rect]:
+    """The paper the notes can have: what the three views leave.
 
-    The same flow the rest of the set uses.  It is called out here only to
-    carry a message that says which sheet ran out of room: these carry more
-    prose than any other in the repository -- optics is a subject the drawing
-    cannot show at all -- and the mounting plate's band is the shortest in
-    the set, because its view is the tallest.
+    Not a band across the foot.  The elevations take the top of the drawing
+    area and the small plan sits under the end elevation, so the notes run
+    first down the paper beside the plan, then across the full width under
+    it in two columns, and then -- as on every other sheet -- into the foot
+    of the annotation column.
     """
-    spill = notes_spill_needed(sheet, notes, src, band_cols)
-    if spill and spill + 4.0 > sheet.column_remaining:
-        raise SystemExit(
-            f"{subject.key}: neither the notes band nor the annotation "
-            f"column can hold this sheet's text ({spill + 4.0:.0f} mm of "
-            f"tail wanted, {sheet.column_remaining:.0f} mm left); shorten "
-            "the notes")
-    _place_notes_and_sources(sheet, notes, src, columns=band_cols,
-                             spill=spill)
+    f = sheet.frame
+    base = f.y + 3.0
+    x0, x1 = f.x + 4.0, sheet.area.x1 - 2.0
+    elev_bottom = min(end.rect.y, front.rect.y) - ELEV_UNDER
+    plan_bottom = plan.rect.y - PLAN_BOTTOM
+    cols = []
+    beside = plan.rect.x1 + 10.0
+    if elev_bottom - plan_bottom >= 20.0:
+        cols.append(Rect(beside, plan_bottom, x1 - beside,
+                         elev_bottom - plan_bottom))
+    gutter = 8.0
+    w = (x1 - x0 - gutter) / 2
+    cols += [Rect(x0 + i * (w + gutter), base, w, plan_bottom - base)
+             for i in range(2)]
+    return cols
 
 
-def render_camera_position(subject: Subject, *, drawing_no: str, version: str,
-                           sheet_size: str = "A3") -> Sheet:
-    bbox = _bbox(subject)
-    view_h = (bbox[3] - bbox[1]) + MARGIN_TOP + MARGIN_BOTTOM
-    notes, src = _text(subject)
-    band_h, band_cols = Sheet.plan_notes_band(
-        sheet_size, note_blocks(notes, src),
-        max_height=style.SHEET_SIZES[sheet_size][1]
-        - 2 * style.FRAME_MARGIN - view_h - 4.0)
+def _place_text(sheet: Sheet, subject: Subject, notes: list[str],
+                src: list[str], cols: list[Rect]) -> None:
+    """Notes and sources in what the views leave, then the column's foot.
 
-    sheet = Sheet(sheet_size, TitleBlock(
-        title=subject.title.upper(), subtitle=subject.subtitle,
-        drawing_no=drawing_no, rev="A", version=version,
-        drawn_by="generated",
-        material=subject.subject_field or subject.spec.title,
-        material_label="SUBJECT",
-        tolerance=subject.tolerance), notes_band_height=band_h)
-    sheet.draw_frame()
+    A sheet whose text will not go anywhere at this scale says so by raising
+    :class:`DoesNotFit`, and the caller tries the next scale down.
+    """
+    blocks = note_blocks(notes, src)
+    if not cols:
+        raise DoesNotFit("the views leave no paper for the notes")
+    if not sheet.notes_columns(cols, blocks, dry=True):
+        spare = sheet.column_remaining - 4.0
+        h = 20.0
+        while True:
+            if h > spare:
+                raise DoesNotFit(
+                    f"{subject.key}: neither the paper beside the views nor "
+                    f"the annotation column can hold this sheet's text "
+                    f"({spare:.0f} mm of column left)")
+            probe = Rect(sheet.column.x, sheet.column.y,
+                         sheet.column.w - sheet.COLUMN_GUTTER, h)
+            if sheet.notes_columns(cols + [probe], blocks, dry=True):
+                break
+            h += 2.0
+        cols = cols + [sheet.column_block_bottom(h)]
+    sheet.notes_columns(cols, blocks)
 
-    view = View.fit(sheet.area, bbox, margin=MARGIN_LEFT,
-                    margin_top=MARGIN_TOP, margin_bottom=MARGIN_BOTTOM,
-                    margin_right=MARGIN_RIGHT)
-    sheet.title.scale = view.scale_label
 
-    _draw_plan(sheet, subject, view)
-    _draw_frames(sheet, subject, view, bbox)
-    _tables(sheet, subject)
+# ---------------------------------------------------------------------------
+# the elevations
+# ---------------------------------------------------------------------------
 
-    # Only the styles this particular sheet uses: an entry for a line the
-    # reader cannot find on the drawing is worse than no legend at all.
+def _along(subject: Subject, axis: str):
+    """Frame A, its target, the lens and the subject, along one axis.
+
+    Returns (frame lo, frame hi, target lo, target hi, lens position, the
+    declared angle in this plane and which one it is, the subject's size).
+    """
+    fr = subject.frames()[0]
+    t = fr.target
+    lens = LENSES[DRAWN]
+    p = place(fr, lens)
+    o = subject.spec.outline
+    if axis == "X":
+        angle = p.angle_x
+        return (fr.x0, fr.x1, t.x0, t.x1, p.x, angle,
+                "H" if fr.long_axis == "X" else "V", o.width)
+    angle = p.angle_y
+    return (fr.y0, fr.y1, t.y0, t.y1, p.y, angle,
+            "V" if fr.long_axis == "X" else "H", o.height)
+
+
+def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
+                    axis: str) -> float:
+    """One elevation: the subject edge on, the lens over it, and its rays.
+
+    Returns the sheet position of the lens axis, which the caller
+    dimensions from the datum.
+    """
+    c = sheet.canvas
+    f_lo, f_hi, t_lo, t_hi, cu, angle, which, size = _along(subject, axis)
+    p = place(subject.frames()[0], LENSES[DRAWN])
+    z = p.z
+
+    # Under the plane: only what has a published or specified height.
+    for what, top, bottom in _below_plane(subject):
+        if what == "board":
+            x0, y0, x1, y1 = optics.plate_boards_union()
+            lo, hi = (x0, x1) if axis == "X" else (y0, y1)
+            kw = dict(weight=style.W_PHANTOM, colour=style.C_PHANTOM,
+                      dash=style.D_PHANTOM)
+        else:
+            lo, hi = 0.0, size
+            kw = dict(weight=style.W_OUTLINE)
+        a, b = v.pt(lo, bottom), v.pt(hi, top)
+        c.rect(a[0], a[1], b[0] - a[0], b[1] - a[1], **kw)
+
+    # The plane Z is measured from, a little past everything on it, and the
+    # target lying in it.
+    span_lo = min(f_lo, 0.0) - 3.0
+    span_hi = max(f_hi, size) + 3.0
+    c.line(*v.pt(span_lo, 0.0), *v.pt(span_hi, 0.0), w=style.W_THIN,
+           colour=style.C_PHANTOM, dash=style.D_CENTRE)
+    c.line(*v.pt(t_lo, 0.0), *v.pt(t_hi, 0.0), w=style.W_OUTLINE + 0.2,
+           colour=style.C_HIGHLIGHT)
+
+    # The rays, from the lens to the edges of the frame.
+    apex = v.pt(cu, z)
+    for edge in (f_lo, f_hi):
+        c.line(*apex, *v.pt(edge, 0.0), w=RAY[1], colour=RAY[2])
+    # The optical axis.
+    c.line(*v.pt(cu, -1.5), *v.pt(cu, z + ABOVE_LENS - 3.0),
+           w=style.W_CENTRE, colour=style.C_LINE, dash=style.D_CENTRE)
+    _draw_camera(c, v, cu, z)
+
+    # The angle, at the lens, and its value outside the cone on the left,
+    # where neither elevation has anything else: the heights are dimensioned
+    # on the front elevation's right.
+    half = math.radians(angle / 2)
+    left = (apex[0] - ARC_R * math.sin(half), apex[1] - ARC_R * math.cos(half))
+    right = (apex[0] + ARC_R * math.sin(half), apex[1] - ARC_R * math.cos(half))
+    c.arc(*left, *right, ARC_R, sweep=1, w=style.W_THIN, colour=style.C_DIM)
+    c.text(left[0] - 1.5, left[1] + 1.0, f"{angle:.2f} deg, {which}",
+           size=style.T_DIM, colour=style.C_DIM, anchor="end")
+    return apex[0]
+
+
+def _draw_camera(c, v: View, cu: float, z: float) -> None:
+    """The lens, face down at Z.  A line the width of a lens holder, for as
+    long as there is no drawing of the module to draw from."""
+    half = 4.0
+    c.line(*v.pt(cu - half, z), *v.pt(cu + half, z), w=style.W_OUTLINE + 0.2)
+
+
+def _dimension_front(sheet: Sheet, subject: Subject, v: View,
+                     lens_x: float) -> None:
+    """Z, up the right-hand side, and X, under the view.
+
+    Z is dimensioned here and not again on the end elevation: it is one
+    height, seen twice.  On the mounting plate the plate face gets a second
+    figure, because the plate is what a stand is built on and the plane Z
+    is measured from is a board standing on it.
+    """
+    c = sheet.canvas
+    f_lo, f_hi, t_lo, t_hi, cu, angle, which, size = _along(subject, "X")
+    p = place(subject.frames()[0], LENSES[DRAWN])
+    right = v.pt(v.model_x1, 0.0)
+    dims.linear(c, right, v.pt(cu, p.z), 8.0, horizontal=False,
+                value=p.z, places=1)
+    below = _below_plane(subject)
+    if subject.key == "tt-mounting-plate":
+        plate_top = below[-1][1]
+        dims.linear(c, v.pt(size, plate_top), v.pt(cu, p.z),
+                    8.0 + style.DIM_STEP + (v.x(v.model_x1) - v.x(size)),
+                    horizontal=False, value=p.z - plate_top, places=1)
+    # X of the lens, from the datum, under the lowest thing drawn.
+    bottom = min([b for _, _, b in below] + [0.0])
+    dims.linear(c, v.pt(0.0, bottom), (lens_x, v.y(0.0)),
+                -(8.0 + (v.y(0.0) - v.y(bottom))), horizontal=True, value=cu)
+
+
+def _dimension_end(sheet: Sheet, subject: Subject, v: View,
+                   lens_y: float) -> None:
+    """Y of the lens, from the datum, under the view."""
+    c = sheet.canvas
+    f_lo, f_hi, t_lo, t_hi, cu, angle, which, size = _along(subject, "Y")
+    below = _below_plane(subject)
+    bottom = min([b for _, _, b in below] + [0.0])
+    dims.linear(c, v.pt(0.0, bottom), (lens_y, v.y(0.0)),
+                -(8.0 + (v.y(0.0) - v.y(bottom))), horizontal=True, value=cu)
+
+
+# ---------------------------------------------------------------------------
+# the sheet
+# ---------------------------------------------------------------------------
+
+def plan_scales(scale: float) -> list[float]:
+    """The scales the plan may take under elevations at *scale*, best first.
+
+    The plan is the smaller view: it says which way the picture lies over
+    the subject and where the second frame is, and the table gives every
+    figure in it.  So it is always at a smaller standard scale than the
+    elevations, the next one down if the notes still fit and the one after
+    that if not -- the elevations keep their scale before the plan does.
+    """
+    return [num / den for num, den in STANDARD_SCALES
+            if num / den < scale - 1e-9][:2]
+
+
+def _label(scale: float) -> str:
+    return scale_text(1, 1 / scale) if scale < 1 else scale_text(scale, 1)
+
+
+def _layout(subject: Subject, scale: float, sp: float, area: Rect):
+    """Where the three views go at *scale*, or None if they do not fit.
+
+    The two elevations side by side across the top, the end elevation on
+    the left as first angle puts a view from the right; the plan, at its
+    own smaller scale, under the end elevation.  Returns (end, front, plan).
+    """
+    ex_lo, ex_hi = _elev_extent(subject, "X")
+    ey_lo, ey_hi = _elev_extent(subject, "Y")
+    w_lo, w_hi = _elev_heights(subject)
+    px0, py0, px1, py1 = _plan_bbox(subject)
+    s = scale
+    end_w = (ey_hi - ey_lo) * s
+    front_w = (ex_hi - ex_lo) * s
+    elev_h = (w_hi - w_lo) * s
+    plan_w, plan_h = (px1 - px0) * sp, (py1 - py0) * sp
+    width = LEFT + max(end_w, plan_w) + GAP + front_w + ELEV_OUTER \
+        + (style.DIM_STEP if subject.key == "tt-mounting-plate" else 0.0)
+    height = CAPTION + elev_h + ELEV_UNDER + CAPTION + plan_h + PLAN_BOTTOM
+    if width > area.w or height > area.h:
+        return None
+    left = area.x + LEFT
+    top = area.y1 - CAPTION
+    end = View(Rect(left, top - elev_h, end_w, elev_h), ey_lo, w_lo, ey_hi,
+               w_hi, s, _label(s), left - ey_lo * s, top - w_hi * s)
+    fx = left + max(end_w, plan_w) + GAP
+    front = View(Rect(fx, top - elev_h, front_w, elev_h), ex_lo, w_lo,
+                 ex_hi, w_hi, s, _label(s), fx - ex_lo * s, top - w_hi * s)
+    ptop = top - elev_h - ELEV_UNDER - CAPTION
+    plan = View(Rect(left, ptop - plan_h, plan_w, plan_h), px0, py0, px1,
+                py1, sp, _label(sp), left - px0 * sp, ptop - py1 * sp)
+    return end, front, plan
+
+
+def _legend(subject: Subject) -> list:
     spec = subject.spec
     legend = [("outline", "Subject outline")]
     if spec.features or spec.slots:
         legend.append(("component", "LED, display or connector"))
     if (any(p.body_x1 > p.body_x0 for p in spec.pmods)
-            or any(h.keepout_dia for h in spec.holes)):
+            or any(h.keepout_dia for h in spec.holes)
+            or any(w == "board" for w, _, _ in _below_plane(subject))):
         legend.append(("phantom", "Adjacent part or connector body"))
+    legend.append((("line", style.W_OUTLINE + 0.2, style.C_HIGHLIGHT, None),
+                   f"Frame {FRAME_LETTERS[0]}'s target, on the plane Z is "
+                   "measured from"))
+    legend.append((RAY, f"The {DRAWN} deg lens's field of view, to frame "
+                        f"{FRAME_LETTERS[0]}'s edges"))
     for i in range(len(subject.targets)):
         legend.append((FRAME_LEGEND[i],
                        f"Frame {FRAME_LETTERS[i]}, the rectangle the picture "
                        "must cover"))
     legend.append(("dimension", "Dimension, extension and leader"))
+    return legend
 
-    draw_legend(sheet, legend)
-    _place_text(sheet, subject, notes, src, band_cols)
 
+def render_camera_position(subject: Subject, *, drawing_no: str, version: str,
+                           sheet_size: str = "A3") -> Sheet:
+    """The largest standard scale at which the views and the text both fit."""
+    why = []
+    for num, den in STANDARD_SCALES:
+        scale = num / den
+        for sp in plan_scales(scale):
+            try:
+                return _render(subject, scale, sp, drawing_no=drawing_no,
+                               version=version, sheet_size=sheet_size)
+            except DoesNotFit as e:
+                why.append(f"{_label(scale)}, plan {_label(sp)}: {e}")
+    raise SystemExit(f"{subject.key}: no scale fits.\n  " + "\n  ".join(why))
+
+
+def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
+            version: str, sheet_size: str) -> Sheet:
+    frames = subject.frames()
+    if len(frames) > MAX_FRAMES:
+        raise SystemExit(
+            f"{subject.key}: {len(frames)} frames, and this sheet has "
+            f"{MAX_FRAMES} colours, {MAX_FRAMES} legend entries and "
+            f"{MAX_FRAMES} letters. Add a third of each, or split the sheet.")
+    notes, src = _text(subject)
+    label = f"{_label(scale)}, PLAN {_label(sp)}"
+    # No notes band of the library's kind: the notes go where the views
+    # leave paper, which _note_columns works out once the views are placed.
+    sheet = Sheet(sheet_size, TitleBlock(
+        title=subject.title.upper(), subtitle=subject.subtitle,
+        drawing_no=drawing_no, rev="A", version=version,
+        drawn_by="generated", scale=label, projection="first angle",
+        material=subject.subject_field or subject.spec.title,
+        material_label="SUBJECT",
+        tolerance=subject.tolerance), notes_band_height=NO_BAND)
+    got = _layout(subject, scale, sp, sheet.area)
+    if got is None:
+        raise DoesNotFit("the views do not fit the drawing area")
+    end, front, plan = got
+    sheet.draw_frame()
+    c = sheet.canvas
+
+    lens_x = _draw_elevation(sheet, subject, front, "X")
+    lens_y = _draw_elevation(sheet, subject, end, "Y")
+    _dimension_front(sheet, subject, front, lens_x)
+    _dimension_end(sheet, subject, end, lens_y)
+
+    _draw_plan(sheet, subject, plan)
+    _draw_frames(sheet, subject, plan, _plan_bbox(subject))
+
+    for v, name in ((end, "END ELEVATION"), (front, "FRONT ELEVATION"),
+                    (plan, f"PLAN, {plan.scale_label}")):
+        c.text(v.rect.cx, v.rect.y1 + 3.0, name, size=style.T_LABEL,
+               anchor="middle", bold=True)
+
+    _tables(sheet, subject)
+    draw_legend(sheet, _legend(subject))
+    _place_text(sheet, subject, notes, src,
+                _note_columns(sheet, end, front, plan))
     sheet.draw_title_block()
     return sheet
