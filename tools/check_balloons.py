@@ -71,10 +71,12 @@ def _next_id() -> int:
     return _state["ids"]
 
 
-def _spy_place(items, obstacles, bounds, c, passes=12, position_only=None):
+def _spy_place(items, obstacles, bounds, c, passes=12, position_only=None,
+               crossing_only=None):
     _state["pending"] = []
     _state["placing"] = obstacles
-    out = _place(items, obstacles, bounds, c, passes, position_only)
+    out = _place(items, obstacles, bounds, c, passes, position_only,
+                 crossing_only)
     # place_balloons draws its balloons in the order of *items*, so the n-th
     # balloon drawn during this call is items[n].
     for item, (label, tip, end, centre) in zip(items, _state["pending"]):
@@ -332,23 +334,28 @@ def _on_a_feature() -> list[tuple[str, str]]:
 #: the right, across the extension line that the overall dimension on that
 #: corner runs out from; ``_radius_callout`` draws it there on every board
 #: sheet, and where the extension line and the callout miss each other it
-#: is because the width dimension is on the other edge.  The three balloons
+#: is because the width dimension is on the other edge.  The two balloons
 #: are ruled across an overall dimension or its extension line because
 #: ``reserve_overall_dimensions`` holds those lines against where a balloon
-#: sits and not against where a leader runs: reserving them against leaders
-#: as well boxed the balloons into the board's interior.
+#: sits and only charges a leader for crossing one: reserving them against
+#: leaders outright boxed the balloons into the board's interior, and on
+#: these two sheets the charge is the cheapest way out.
 #:
 #: The micro-HDMI connectors on the Pi 4B and Pi 5, which sat underneath the
 #: Pmod HAT Adapter's host JC, used to be here too; they are no longer drawn.
+#: So did the Pi 4B's balloon 5, until crossing an overall dimension cost a
+#: leader something; and the Orange Pi PC's microSD socket and power button,
+#: whose leaders crossed the adapter's host JB while the ordinate chains
+#: walled their edge of the board off.
 ACCEPTED: dict[str, set[tuple[str, str]]] = {
     name: {(f'callout "R{r} (4 places), board outline"', "dimension")}
     for name, r in (("TT-DB-V121", "3.00"), ("TT-DB-V201", "3.00"),
                     ("TT-DB-V212", "3.00"), ("TT-DB-V32", "3.20"),
                     ("TT-DB-V33", "3.20"), ("RPI-3B", "3.00"),
                     ("RPI-4B", "3.00"), ("RPI-5", "3.00"),
-                    ("FPGA-BUTTERSTICK", "3.00"), ("FPGA-CYNTHION", "3.00"))
+                    ("RPI-OPIPC", "2.30"), ("FPGA-BUTTERSTICK", "3.00"),
+                    ("FPGA-CYNTHION", "3.00"))
 }
-ACCEPTED["RPI-4B"].add(("balloon 5", "dimension"))
 ACCEPTED["FPGA-BUTTERSTICK"].add(("balloon 1", "dimension"))
 ACCEPTED["FPGA-CYNTHION"].add(("balloon 9", "dimension"))
 

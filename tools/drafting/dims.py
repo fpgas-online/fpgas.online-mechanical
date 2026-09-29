@@ -403,6 +403,44 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
     Returns the outermost extent used, so the caller can place the overall
     dimensions clear of it.
     """
+    plan = ordinate_plan(values, base, line_pos, horizontal=horizontal,
+                         size=size, text_gap=text_gap, stagger=stagger,
+                         zero_label=zero_label, zero_pos=zero_pos,
+                         zero_from=zero_from, blockers=blockers)
+    out = 1 if line_pos > base else -1
+    extent = line_pos
+    for pos, label, start, end, box, reach in plan:
+        others = list(blockers) + [b for _, _, _, _, b, _ in plan if b is not box]
+        if horizontal:
+            broken_line(c, pos, start, pos, end, others,
+                        w=style.W_THIN, colour=colour)
+            c.text(pos, (box[1] + box[3]) / 2, label, size=size, colour=colour,
+                   anchor="middle", rotate=90)
+        else:
+            broken_line(c, start, pos, end, pos, others,
+                        w=style.W_THIN, colour=colour)
+            c.text(end + (text_gap if out > 0 else -text_gap), pos, label,
+                   size=size, colour=colour,
+                   anchor="start" if out > 0 else "end", baseline="middle")
+        extent = max(extent, reach) if out > 0 else min(extent, reach)
+    return extent
+
+
+def ordinate_plan(values, base: float, line_pos: float, *, horizontal: bool,
+                  size: float = style.T_DIM, text_gap: float = 2.0,
+                  stagger: float | None = None, zero_label: str = "0",
+                  zero_pos: float | None = None,
+                  zero_from: float | None = None,
+                  blockers=()) -> list[tuple]:
+    """Where ``ordinate_chain`` puts each witness line and label, undrawn.
+
+    One ``(pos, label, start, end, box, reach)`` per ordinate: its witness
+    line runs from *start* to *end* at *pos* along the chain, and its label
+    fills *box*, ``(x0, y0, x1, y1)``, reaching out to *reach*.  The
+    arguments are ``ordinate_chain``'s.  Apart from the drawing so that a
+    sheet can keep its balloons off the labels before either is drawn, from
+    the same sums: see "Reserve, then draw" in the README.
+    """
     out = 1 if line_pos > base else -1
 
     # Two labels closer along the chain than a label is tall would overprint,
@@ -475,20 +513,4 @@ def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
                    max(tx, tx + out * width), pos + tall / 2)
             reach = tx + out * width
         plan.append((pos, label, start, end, box, reach))
-
-    extent = line_pos
-    for pos, label, start, end, box, reach in plan:
-        others = list(blockers) + [b for _, _, _, _, b, _ in plan if b is not box]
-        if horizontal:
-            broken_line(c, pos, start, pos, end, others,
-                        w=style.W_THIN, colour=colour)
-            c.text(pos, (box[1] + box[3]) / 2, label, size=size, colour=colour,
-                   anchor="middle", rotate=90)
-        else:
-            broken_line(c, start, pos, end, pos, others,
-                        w=style.W_THIN, colour=colour)
-            c.text(end + (text_gap if out > 0 else -text_gap), pos, label,
-                   size=size, colour=colour,
-                   anchor="start" if out > 0 else "end", baseline="middle")
-        extent = max(extent, reach) if out > 0 else min(extent, reach)
-    return extent
+    return plan

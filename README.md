@@ -7,7 +7,8 @@ templates made to mount them.
 
 The drawings are for designing the things the boards mount into -- plates,
 brackets, enclosures, rack shelves. Every dimension is traceable to an
-official source, and each sheet lists its sources.
+official source or, where a maker publishes none, was measured and checked,
+and the sheet says so and to what tolerance. Each sheet lists its sources.
 
 Adding hardware is the normal case. Each family lives in its own directory
 with its data, the extractor that produces it and the sheets rendered from
@@ -20,7 +21,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
 | [`tinytapeout/camera_holder/`](tinytapeout/camera_holder/README.md) | `TT-MP-CAM65`, `TT-MP-CAM120` -- A printed stand on the plate that holds a Camera Module v1.3 over whichever board is on it, one per lens, with STEP solids and a DXF |
-| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, each with a Digilent Pmod HAT Adapter overlaid, and all of them on the one outline they share |
+| [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, and boards that take their HATs, each with a Digilent Pmod HAT Adapter overlaid, and the Raspberry Pis all on the one outline they share |
 | [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; the OV5647's stock, autofocus and 120 degree lenses, every figure declared and derived, and their focus; then where to put an OV5647 camera over a board to frame it: how high, in two elevations drawing both lenses' fields of view, whether it is in focus there, and where |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Parts that are none of the boards above but turn up in the same assemblies, such as Pi-to-Pmod adapters and PoE splitters, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
@@ -73,9 +74,11 @@ are, and only the name is cut:
   the plate's prefix, since they bolt through the plate's own fixings, and
   CAM and the lens's angle from `HOLDER_NAMES`: `TT-MP-CAM65` and
   `TT-MP-CAM120`.
-- a Raspberry Pi sheet is named for its model, `RPI-5`, and the one sheet
-  that is no model's own, the three models superimposed, is `RPI-ALL`: a
-  one-row table, `RPI_NAMES`, since `models-compared` is a title too.
+- a Raspberry Pi sheet is named for its model, `RPI-5`, and a sheet that is
+  no model's own takes its name from a table, `RPI_NAMES`, since its stem is
+  words: the three models superimposed, `models-compared`, are `RPI-ALL`,
+  and a board that is not a Raspberry Pi but takes its HATs has a stem
+  saying whose it is, so `orangepi-pc.pdf` is `RPI-OPIPC`.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
@@ -130,7 +133,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </tr>
 </table>
 
-### Raspberry Pi
+### Raspberry Pi, and boards that take its HATs
 
 <table>
 <tr>
@@ -152,7 +155,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="raspberry_pi/output/rpi-models-compared.pdf"><img src="raspberry_pi/output/previews/rpi-models-compared.png" width="270" alt="RPI-ALL Raspberry Pi 3B/3B+, 4B and 5 compared"></a><br>
 <b>RPI-ALL</b> Raspberry Pi 3B/3B+, 4B and 5 compared<br>One 85 x 56 outline: what is shared and what moves
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi/output/orangepi-pc.pdf"><img src="raspberry_pi/output/previews/orangepi-pc.png" width="270" alt="RPI-OPIPC Xunlong Orange Pi PC"></a><br>
+<b>RPI-OPIPC</b> Xunlong Orange Pi PC<br>Allwinner H3, v1.2 and v1.3, 85 x 56 mm
+</td>
 <td width="33%"></td>
 </tr>
 </table>
@@ -367,6 +373,7 @@ derived from keep their own licences:
 | Camera Module v1.3 hand-measured drawing | Gert van Loo's |
 | Cynthion board file | Great Scott Gadgets' under the CERN-OHL-P v2 |
 | Icepi Zero board files | Solderpad Hardware Licence 2.1 |
+| Orange Pi PC photographs | Xunlong's, and linux-sunxi's contributors' |
 | PYNQ-Z2 model | TUL's |
 | Raspberry Pi camera mechanical drawings | Raspberry Pi Ltd's |
 | Raspberry Pi mechanical drawings | Raspberry Pi Ltd's |

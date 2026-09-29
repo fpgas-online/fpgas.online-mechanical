@@ -20,6 +20,7 @@ Imported, not run.
 | `kicad_pcb.py` | Minimal reader for KiCad `.kicad_pcb` s-expression files |
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
+| `photo_frame.py` | Measuring a board off a square-on photograph: its edges, a homography onto its known size, and circles, blobs and ruled grids in that frame |
 | `render_svg.py` | SVG to PDF and PNG via Inkscape, text exported as paths |
 | `reproducible.py` | Pins the clocks, tool version strings and GUIDs that cairo, Inkscape, pypdf and ezdxf stamp into their output, and the export clock, the absolute path and the per-process product counter OpenCascade stamps into a STEP |
 
@@ -30,6 +31,7 @@ Imported, not run.
 | `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's board mechanical drawings into `tmp/` |
 | `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/`, what stands in for a drawing of the Camera Module 1, and every vendor page and datasheet the lens and camera position sheets quote their optics from, pinned Internet Archive captures where there are any |
 | `fetch_fpga.sh` | Clones the repositories and downloads the drawings and models the FPGA boards are read from into `tmp/`; [`fpga/README.md`](../fpga/README.md) says which board is read from what |
+| `fetch_orangepi_pc.sh` | Downloads the photographs the Orange Pi PC is measured from, and the models it is checked against, into `tmp/` |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
 
@@ -64,6 +66,11 @@ with its family, and not every one of those has caught something yet.
   touches no board, standoff or cable, and that every fastener fits; and
   that the holders share their beam and carrier.  Newer than anything it
   could have caught.
+- [`raspberry_pi/verify_orangepi_pc.py`](../raspberry_pi/README.md)
+  holds the Orange Pi PC's figures, measured off photographs, to checks the
+  measurement was not fitted to: the sizes of standard parts on other
+  vendors' drawings, and Xunlong's drawing and other people's models and
+  cases of the board.
 - [`raspberry_pi_camera/verify_optics.py`](../raspberry_pi_camera/README.md)
   has not caught one yet -- it is newer than the sheets it checks. It proves
   that every figure quoted in `raspberry_pi_camera/optics.py` is in the

@@ -392,14 +392,18 @@ def rpicam_name(rest: str) -> str:
             "or five characters saying which subject")
 
 
-#: The one Raspberry Pi sheet that is not a model's own, by what is left of
-#: its stem once ``rpi`` has been taken off.  The model sheets need no row:
-#: ``rpi5`` leaves ``5`` and the name is RPI-5, which is as short as a name
-#: gets.  The comparison sheet's stem says what it shows in words,
+#: The Raspberry Pi family sheets that are not a Pi model's own, by what is
+#: left of the stem once ``rpi`` has been taken off.  The model sheets need
+#: no row: ``rpi5`` leaves ``5`` and the name is RPI-5, which is as short as
+#: a name gets.  The comparison sheet's stem says what it shows in words,
 #: ``rpi-models-compared``, and the word for every model on one outline is
-#: ALL.
+#: ALL.  A board that is not a Raspberry Pi but takes its HATs is drawn in
+#: the family too, and its stem says whose board it is, which is right for a
+#: file name and too long behind ``RPI-``: ``orangepi-pc`` would be
+#: ``RPI-ORANGEPI-PC``.
 RPI_NAMES = {
     "models-compared": "all",  # the models superimposed on one outline
+    "orangepi-pc": "opipc",    # Xunlong's Orange Pi PC
 }
 
 #: What a model sheet's stem leaves behind the lead: a digit and a letter or
@@ -438,7 +442,9 @@ def rpi_name(rest: str) -> str:
 #: stem is not:
 #:
 #: * a demo board's stem carries every revision the sheet covers
-#: * a Pi sheet that is no model's own has a stem saying what it shows
+#: * a Pi family sheet that is no model's own has a stem saying what it
+#:   shows -- ``models-compared`` -- or whose board it is, when it is
+#:   not a Raspberry Pi -- ``orangepi-pc``
 #: * an accessory's says in words what the part is
 #: * a mounting plate sheet's says its title -- ``chassis-drill-template``
 #: * a camera position sheet's says its subject in full
@@ -464,12 +470,13 @@ def drawing_name(family: str, stem: str) -> str:
     ``raspberry_pi/output/rpi5.svg`` is ``RPI-5``.
 
     A family may shorten what is left of its stem instead, by having a rule
-    in ``FAMILY_NAME_RULES``: the demo boards, the accessories and the
-    mounting plate do, so
+    in ``FAMILY_NAME_RULES``: the demo boards, the accessories, the mounting
+    plate and the Raspberry Pis do, so
     ``tinytapeout/output/tt-demo-board-v1p2p1-v1p2p3.svg`` is ``TT-DB-V121``,
-    ``accessories/output/pmod-hat.svg`` is ``ACC-HAT-PMOD`` and the plate's
+    ``accessories/output/pmod-hat.svg`` is ``ACC-HAT-PMOD``, the plate's
     ``tt-generic-mounting-plate-chassis-drill-template.svg`` is
-    ``TT-MP-CHASSIS``.  The rule is a function of the stem and nothing
+    ``TT-MP-CHASSIS`` and ``raspberry_pi/output/orangepi-pc.svg`` is
+    ``RPI-OPIPC``.  The rule is a function of the stem and nothing
     else, because ``drawing_name_for`` has to answer from a rendered sheet's
     path alone.
 
@@ -493,12 +500,12 @@ def drawing_name(family: str, stem: str) -> str:
     is created, and nothing else in the set can take it away.
 
     Two sheets in a family with no rule collide only if their stems differ by
-    something ``slug`` and ``upper`` throw away -- ``rpi5``, ``rpi-5`` and
-    ``rpi_5`` all give ``RPI-5`` -- so uniqueness is very nearly the file
+    something ``slug`` and ``upper`` throw away -- ``arty-a7`` and ``arty_a7``
+    both give ``FPGA-ARTY-A7`` -- so uniqueness is very nearly the file
     system's, but not quite.  A rule throws away more than that by design: two
     demo board sheets starting at one revision would both take its name, and
-    two rows of ``ACC_NAMES`` or of ``PLATE_NAMES`` could be given the same
-    value.  Neither is reachable today, and neither is argued about here,
+    two rows of ``ACC_NAMES``, ``PLATE_NAMES`` or ``RPI_NAMES`` could be given
+    the same value.  Neither is reachable today, and neither is argued about here,
     because
     ``tools/check_sheets.py`` checks the whole set rather than assuming it.
 

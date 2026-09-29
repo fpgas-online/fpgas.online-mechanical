@@ -38,8 +38,10 @@ per board by `_x_chain_edge` in `board_sheet.py` (the bottom unless a majority
 of the dimensioned features sit on the top edge, as the Arty A7's Pmod hosts
 do); schedules go in the right-hand column; notes and sources flow into a band
 across the bottom, plus whatever is left at the foot of the column. Balloons
-are placed inside the view against an obstacle list, so a leader is never
-routed through a neighbouring feature. A sheet that knows better where its
+are placed against an obstacle list, so a leader is never routed through a
+neighbouring feature, anywhere in the drawing area: beside the part, in the
+strip between the board and an ordinate chain, or out past the chain with the
+leader running between its witness lines. A sheet that knows better where its
 balloons belong can hand the placer a balloon already placed, and several
 balloons on one leader; `RPI-ALL` does both.
 
