@@ -13,6 +13,7 @@ reader has to be able to see which.
 
 from __future__ import annotations
 
+import itertools
 import math
 
 from fpga.light_pipe import adapter as A
@@ -554,34 +555,49 @@ def _dimension_section(c: Canvas, v: View, r: Rect) -> None:
     dims.linear(c, v.pt(JACK_BACK, 0.0), v.pt(JACK_BACK, A.ROOF_Z0), 19.0,
                 horizontal=False, value=A.ROOF_Z0, ext_start=r.x1 + 2.0)
 
+    # Every callout but the roof's points at something left of the column
+    # its elbows stack in.  Stacked in the order the features were listed,
+    # their leaders fanned out and crossed each other eighteen times, which
+    # is what tools/check_balloons.py exists to catch.  They take the slots
+    # that make the leaders shortest in total instead: if two of those
+    # leaders crossed, swapping their slots would make the pair shorter, so
+    # none can.
     below = r.y - 20.0
-    seat = v.pt(*bore_point(A.PIPE_LEN, A.PRESS_DIA / 2))
-    dims.leader(c, seat, (r.x + CALLOUT_X, below),
-                f"Ø{A.PRESS_DIA:.2f} x {A.PRESS_LEN:.2f} press fit")
-    mid = v.pt(*bore_point((A.PIPE_LEN - A.PRESS_LEN) / 2, A.BORE_DIA / 2))
-    dims.leader(c, mid, (r.x + CALLOUT_X, below - CALLOUT_STEP),
-                f"Ø{A.BORE_DIA:.2f} bore, {A.BORE_ANGLE:g} deg")
-    dims.leader(c, v.pt(A.POCKET_X0, (A.POCKET_Z0 + A.POCKET_Z1) / 2),
-                (r.x + CALLOUT_X, below - 2 * CALLOUT_STEP),
-                f"pocket {-A.POCKET_X0:.2f} deep")
     nearest = A.BORE_X + A.PIPE_DIA / 2 * H
-    dims.leader(c, v.pt(nearest / 2, A.BORE_Z),
-                (r.x + CALLOUT_X, below - 3 * CALLOUT_STEP),
-                f"{A.WINDOW_FACE_X - nearest:.2f} to the window")
-    dims.leader(c, v.pt(0.0, A.APERTURE_Z1),
-                (r.x + CALLOUT_X, below - 4 * CALLOUT_STEP),
-                f"{A.CHEEK_Z0 - A.APERTURE_Z1:.2f} clear of the plug")
-    dims.leader(c, v.pt(0.5, A.SHIELD_H),
-                (r.x + CALLOUT_X, below - 5 * CALLOUT_STEP),
-                f"{A.ROOF_Z0 - A.SHIELD_H:.2f} clear of the shield")
-    dims.leader(c, v.pt(A.ROOF_X1 * 0.35, A.ROOF_Z1),
-                (r.x + CALLOUT_X, below - 6 * CALLOUT_STEP),
+    callouts = [
+        (v.pt(*bore_point(A.PIPE_LEN, A.PRESS_DIA / 2)),
+         f"Ø{A.PRESS_DIA:.2f} x {A.PRESS_LEN:.2f} press fit", {}),
+        (v.pt(*bore_point((A.PIPE_LEN - A.PRESS_LEN) / 2, A.BORE_DIA / 2)),
+         f"Ø{A.BORE_DIA:.2f} bore, {A.BORE_ANGLE:g} deg", {}),
+        (v.pt(A.POCKET_X0, (A.POCKET_Z0 + A.POCKET_Z1) / 2),
+         f"pocket {-A.POCKET_X0:.2f} deep", {}),
+        (v.pt(nearest / 2, A.BORE_Z),
+         f"{A.WINDOW_FACE_X - nearest:.2f} to the window", {}),
+        (v.pt(0.0, A.APERTURE_Z1),
+         f"{A.CHEEK_Z0 - A.APERTURE_Z1:.2f} clear of the plug", {}),
+        (v.pt(0.5, A.SHIELD_H),
+         f"{A.ROOF_Z0 - A.SHIELD_H:.2f} clear of the shield", {}),
+        (v.pt(0.3, (A.WINDOW_Z0 + A.WINDOW_Z1) / 2),
+         f"LED window in {A.JACK_DESIGNATOR}", {"colour": style.C_HIGHLIGHT}),
+    ]
+    slots = [(r.x + CALLOUT_X, below - k * CALLOUT_STEP)
+             for k in range(len(callouts))]
+    order = min(itertools.permutations(callouts),
+                key=lambda o: sum(math.dist(tip, slot)
+                                  for (tip, _, _), slot in zip(o, slots)))
+    for (tip, text, kw), slot in zip(order, slots):
+        dims.leader(c, tip, slot, text, **kw)
+    # The roof is the one tip right of the column.  Brought to the column,
+    # its leader ran across the tails of the callouts above its slot, and
+    # its own tail, written leftwards, across the leaders coming the other
+    # way; bent just right of its own tip, a slot above the others, it
+    # crosses nothing.
+    roof = v.pt(A.ROOF_X1 * 0.35, A.ROOF_Z1)
+    dims.leader(c, roof, (roof[0] + 1.4, below + CALLOUT_STEP),
                 f"roof {A.ROOF_Z1 - A.ROOF_Z0:.2f} thick")
-    dims.leader(c, v.pt(0.3, (A.WINDOW_Z0 + A.WINDOW_Z1) / 2),
-                (r.x + CALLOUT_X, below - 7 * CALLOUT_STEP),
-                f"LED window in {A.JACK_DESIGNATOR}",
-                colour=style.C_HIGHLIGHT)
-    dims.datum_marker(c, *v.pt(0.0, 0.0), label="X0 Z0", label_dx=-7.5,
+    # Its label well left of the marker: the leaders to the lowest slots
+    # pass just left of it, and a label nearer ran under one of them.
+    dims.datum_marker(c, *v.pt(0.0, 0.0), label="X0 Z0", label_dx=-13.0,
                       label_dy=-5.2)
 
 
