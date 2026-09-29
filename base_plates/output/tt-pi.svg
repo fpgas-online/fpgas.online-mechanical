@@ -469,7 +469,7 @@
 <text x="308" y="69.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
 <text x="312.542" y="69.8675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">FITS a Raspberry Pi 3 Model B or a Raspberry Pi 5. NOT a</text>
 <text x="312.542" y="74.3942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi 4 Model B or a Raspberry Pi 3 Model B+: their</text>
-<text x="312.542" y="78.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">PoE header (8.5 mm) is under the adapter.</text>
+<text x="312.542" y="78.921" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">PoE header is under the adapter.</text>
 <text x="308" y="84.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
 <text x="312.542" y="84.4477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">DO NOT BUILD ACC-HAT-DRMOD AS DRAWN: its pin mapping</text>
 <text x="312.542" y="88.9745" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">is mirrored, plug pin 1 on host pin 6. Its copper is to be</text>
@@ -514,7 +514,7 @@
 <text x="418.6" y="384.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">generated</text>
 <line x1="458.25" y1="386" x2="458.25" y2="375" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="459.85" y="378.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">VERSION</text>
-<text x="459.85" y="384.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-433-gfa66092</text>
+<text x="459.85" y="384.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-428-ge99aeaa</text>
 <line x1="499.5" y1="386" x2="499.5" y2="375" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="501.1" y="378.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">UNITS</text>
 <text x="501.1" y="384.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">mm</text>
