@@ -21,6 +21,7 @@ sys.path.insert(0, str(ROOT))
 from accessories.parts import (ACCESSORIES, GENERIC_POE,  # noqa: E402
                                PMOD_HAT, PMOD_HAT_TOL, WAVESHARE_POE)
 from accessories.raspmod import RASPMOD  # noqa: E402
+from accessories.raspmod_direct import RASPMOD_DIRECT  # noqa: E402
 from fpga.boards import BOARDS as FPGA_BOARDS  # noqa: E402
 from fpga.boards import FEATURE_NUMBERS as FPGA_NUMBERS  # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI_BOARDS  # noqa: E402
@@ -32,6 +33,8 @@ from raspberry_pi_camera.boards import (  # noqa: E402
 from raspberry_pi_camera.optics import subjects as rpicam_subjects  # noqa: E402
 from tinytapeout.boards import BOARDS as TT_BOARDS  # noqa: E402
 from tinytapeout.boards import FEATURE_NUMBERS as TT_NUMBERS  # noqa: E402
+from base_plates.plates import PLATES as BASE_PLATES  # noqa: E402
+from tools.drafting.baseplate_sheet import render_baseplate  # noqa: E402
 from tools.drafting.board_sheet import (planned_band_height,  # noqa: E402
                                         render_board)
 from tools.drafting.camera_sheet import render_camera_position  # noqa: E402
@@ -597,6 +600,21 @@ def holder_sheets() -> list[tuple[str, Path, str, "Holder"]]:
     return out
 
 
+def baseplate_sheets() -> list[tuple[str, Path, str, "Plate"]]:
+    """The base plates' sheets: drawing name, path, outline entry, plate.
+
+    A family of their own: each carries a Raspberry Pi and an FPGA board
+    with the direct Raspmod between them, so they belong to neither board's
+    family.  Bound into no copy: two sheets, read on their own.
+    """
+    out = []
+    for key, p in BASE_PLATES.items():
+        name = drawing_name("base-plates", key)
+        out.append((name, FAMILY_DIRS["base-plates"] / f"{key}.svg",
+                    f"{name}  {p.title}  -  {p.subtitle}", p))
+    return out
+
+
 #: The lens sheet's title and subtitle, which the README grid prints too.
 LENS_TITLE = "OV5647 Lenses and Focus"
 LENS_SUBTITLE = "Camera Module v1: stock, autofocus and 120 degree lenses"
@@ -778,6 +796,13 @@ def draw_sheets():
     sheet = render_board(RASPMOD, version=VERSION, drawing_no=raspmod_name)
     yield sheet, acc_dir / f"{raspmod_stem}.svg", raspmod_name
 
+    # And the same board altered to sit on the Pi's header, which the base
+    # plates are built round.
+    direct_stem = acc_stem(RASPMOD_DIRECT.key)
+    direct_name = drawing_name("accessories", direct_stem)
+    sheet = render_board(RASPMOD_DIRECT, version=VERSION, drawing_no=direct_name)
+    yield sheet, acc_dir / f"{direct_stem}.svg", direct_name
+
     plate_dir = FAMILY_DIRS["mounting-plate"]
     # The two A3 plate sheets are drawn by a function each rather than by one
     # renderer over a list, so they are rendered one at a time; where each
@@ -812,6 +837,12 @@ def draw_sheets():
         sheet = render_holder(h, title=title, subtitle=sub,
                               drawing_no=h_name, version=VERSION)
         yield sheet, h_path, f"{h_name} ({title})"
+
+    # The base plates: a Pi and an FPGA board on one plate, from their own
+    # data module rather than from a BoardSpec.
+    for bp_name, bp_path, _, p in baseplate_sheets():
+        sheet = render_baseplate(p, drawing_no=bp_name, version=VERSION)
+        yield sheet, bp_path, f"{bp_name} ({p.title})"
 
 
 def main() -> None:

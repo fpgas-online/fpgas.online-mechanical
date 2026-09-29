@@ -375,3 +375,24 @@ checker that measures the finished PDFs rather than trusting them.
       face further than that and cuts the boards' edges off. Either a
       carrier for the B006604, a Pi Zero spy camera, from a measured drawing
       of it, or bosses cut to a measured lens
+
+## The direct Raspmod, and a base plate for each board it joins to a Pi
+- [x] `ACC-HAT-DRMOD`: Pat Deegan's board forked, the 2x20 box header
+      swapped for an SMT socket on the underside (Adafruit 2187) and the
+      three plugs for right-angle headers, 10 mm cut off the pin-40 end so
+      it clears a Pi's Ethernet and USB stack; read from the fork at a
+      pinned commit, the socket's pin 1 with it
+- [x] `base_plates/`: `BP-TT` and `BP-ARTY`, every height summed from the
+      connector datasheets and a measured Pi PCB thickness, the Pi at the
+      front of both, the Arty a half turn round in four printed corner cups;
+      `verify.py` proves the rows meet, the plugs land, nothing clashes
+- [ ] The pin mapping. Swapping the footprints mirrors each plug's mating
+      with a host: pin 1 on pin 6, the ports reversed. The 36 links between
+      the plugs and the sockets have to be re-routed, once the mechanical
+      layout is confirmed; nothing on the base plates moves when they are
+- [ ] The Arty's Pmod sockets are ASSUMED to stand on 3.3 mm legs like the
+      demoboard's Wurth part; Digilent name no part and the STEP has a box.
+      Measure one, and re-derive the cups if the body sits on the board
+- [ ] The Pi's PCB thickness is measured off the Pi 5 drawing's side
+      elevation (1.41); measure a board
+- [ ] Build one of each and put an adapter in it

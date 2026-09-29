@@ -8,7 +8,8 @@ up in the same assemblies.
 | `parts.py` | Hand-curated, with per-value provenance: every part here that has no machine-readable source, and the Pmod HAT Adapter's pin map |
 | `measure_pmod_hat.py` | Photogrammetry for the Pmod HAT Adapter |
 | `raspmod.py` | **Generated.** The Raspmod's geometry and pin map |
-| `extract.py` | Reads the Raspmod's KiCad board file and writes `raspmod.py` |
+| `raspmod_direct.py` | **Generated.** The direct Raspmod's geometry, its plugs and where the Pi's pin 1 is under it |
+| `extract.py` | Reads both Raspmods' KiCad board files and writes `raspmod.py` and `raspmod_direct.py` |
 | `compare.py` | Rewrites the tables in `raspmod-vs-pmod-hat.md` from the two data modules |
 | [`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md) | The two ways of putting Pmods on a Raspberry Pi, compared: pin maps and mechanics |
 | `output/` | The `ACC-…` sheets, as SVG and PDF |
@@ -38,7 +39,8 @@ Raspmod's key is already what the thing is called.
 The drawing name is not that stem in capitals. A drawing number is quoted in
 notes, on orders and out loud, so `ACC_NAMES`, beside `ACC_STEMS`, gives each
 stem a name of two short words: the kind of part, then which one of that kind.
-`pmod-hat` is `ACC-HAT-PMOD` and `raspmod` is `ACC-HAT-RMOD`, the two ways of
+`pmod-hat` is `ACC-HAT-PMOD`, `raspmod` is `ACC-HAT-RMOD` and `raspmod-direct`
+is `ACC-HAT-DRMOD`, the three ways of
 putting Pmod ports on a Raspberry Pi; `poe-usbc` is `ACC-POE-USBC` and
 `poe-microusb` is `ACC-POE-MUSB`, the two splitters. A table rather than a
 rule, because these stems are words and not codes and nothing mechanical
@@ -74,7 +76,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="output/raspmod.pdf"><img src="output/previews/raspmod.png" width="270" alt="ACC-HAT-RMOD Raspmod"></a><br>
 <b>ACC-HAT-RMOD</b> Raspmod<br>TT Demoboard To Raspi rev 1.0, silkscreen v1.1: a frontplate for the demoboard's three Pmod hosts
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="output/raspmod-direct.pdf"><img src="output/previews/raspmod-direct.png" width="270" alt="ACC-HAT-DRMOD Raspmod, direct"></a><br>
+<b>ACC-HAT-DRMOD</b> Raspmod, direct<br>TT Demoboard To Raspi Direct rev 2.0: on the Pi's GPIO header, flat beside the demoboard or an Arty
+</td>
 <td width="33%"></td>
 </tr>
 </table>
@@ -114,6 +119,29 @@ which the extractor checks. The pin map comes from the same file, because
 KiCad writes each pad's net into it. Which demoboard it fits, and how it
 differs from the Digilent adapter, is in
 [`raspmod-vs-pmod-hat.md`](raspmod-vs-pmod-hat.md).
+
+## Raspmod, direct (`ACC-HAT-DRMOD`)
+
+The Raspmod with its ribbon cable taken out: the same board, its 2x20 box
+header swapped for an SMT socket on the underside (Adafruit 2187, 3.8 mm
+tall) so that it sits straight on a Raspberry Pi's GPIO header, and its
+three plugs turned to right-angle headers that go sideways into a board's
+Pmod hosts, the Pi lying flat beside that board. The 10 mm at the pin-40
+end -- the clock and reset header and the push button -- is cut off so the
+board clears the Pi's Ethernet and USB stack. It is a fork of Pat Deegan's
+board at a pinned commit, `direct-gpio` on
+[mithro/tinytapeout-demoboard-to-raspi](https://github.com/mithro/tinytapeout-demoboard-to-raspi),
+and the extractor reads it as it reads the original, plus one more thing:
+where the socket's pin 1 is, which is what places the Pi under it.
+
+Two base plates carry a Pi, this adapter and an FPGA board at the heights
+that make the plugs meet the hosts: see [`base_plates/`](../base_plates/README.md).
+
+**The pin mapping is not yet right.** Swapping the footprints mirrors each
+plug's mating with a host -- pin 1 lands on pin 6, and the ports come out
+reversed -- so the copper between the plugs and the sockets has to be
+re-routed before the board is made. Nothing mechanical moves when it is; the
+sheet says so.
 
 ## PoE splitters (`ACC-POE-USBC`, `ACC-POE-MUSB`)
 
