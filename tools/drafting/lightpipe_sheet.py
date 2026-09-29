@@ -410,8 +410,7 @@ def render_light_pipe(*, drawing_no: str, version: str,
     area = sheet.area
 
     # Left-aligned, not centred: the dimensions that cannot go anywhere but
-    # beside the front elevation go in the gutter this leaves on the right,
-    # and the section's callouts go in the paper it leaves under the section.
+    # beside the front elevation go in the gutter this leaves on the right.
     left = area.x + 2.0
     top = area.y1 - TOP_ROOM
 
@@ -516,8 +515,7 @@ def _dimension_plan(c: Canvas, v: View, r: Rect) -> None:
         return v.pt(y, -x)
 
     # One dimension each side: the gutter on the right is nine millimetres
-    # to the annotation column, and the paper on the left is the section's
-    # callouts.
+    # to the annotation column.
     dims.linear(c, pt(A.CHEEK_X0, -A.ROOF_Y1), pt(A.ROOF_X1, -A.ROOF_Y1),
                 -10.0, horizontal=False, value=A.ROOF_X1 - A.CHEEK_X0)
     dims.linear(c, pt(A.CHEEK_X0, A.ROOF_Y1), pt(0.0, A.ROOF_Y1), 7.0,
@@ -525,8 +523,12 @@ def _dimension_plan(c: Canvas, v: View, r: Rect) -> None:
     dims.linear(c, pt(A.SLOT_X1, 0.0), pt(A.SLOT_X1, A.BORE_Y),
                 r.y - 9.0 - v.y(-A.SLOT_X1), horizontal=True,
                 value=A.BORE_Y, ext_start=r.y - 2.0)
-    dims.leader(c, pt(A.SLOT_X1 * 0.75, -(A.SLOT_Y0 + A.SLOT_Y1) / 2),
-                (r.x - 6.0, v.y(-A.SLOT_X1) - 6.0),
+    # Out through the bottom edge and written leftwards under the view.
+    # From the paper on the left its leader had to cross the overall depth,
+    # which is dimensioned down that side; under the view, left of the
+    # bore's dimension, it crosses nothing but the part's own edge.
+    slot = pt(A.SLOT_X1 * 0.75, -(A.SLOT_Y0 + A.SLOT_Y1) / 2)
+    dims.leader(c, slot, (slot[0] - 5.0, r.y - 7.0),
                 f"2 slots {A.SLOT_Y1 - A.SLOT_Y0:.2f} x {A.SLOT_X1:.2f}, "
                 "clear of the top EMI springs")
     # Beside the marker, as in the elevation: directly under it is
@@ -535,11 +537,13 @@ def _dimension_plan(c: Canvas, v: View, r: Rect) -> None:
                       label_dy=-5.2)
 
 
-#: Where the section's callouts stack.  Far enough right of the bore that a
-#: leader's text, which is written on the far side of its elbow, runs into
-#: the empty paper under the section rather than off the frame.
-CALLOUT_X = 44.0
-CALLOUT_STEP = 7.0
+#: Where the section's callouts stack: X, in the part's own millimetres, of
+#: the column their elbows share, just right of every tip but the roof's, so
+#: that a leader's text, which is written on the far side of its elbow, runs
+#: into the jack's empty outline under its LED window; and the pitch of the
+#: rows, from just under that window down towards the board.
+CALLOUT_X = 1.0
+CALLOUT_STEP = 6.0
 
 
 def _dimension_section(c: Canvas, v: View, r: Rect) -> None:
@@ -556,13 +560,16 @@ def _dimension_section(c: Canvas, v: View, r: Rect) -> None:
                 horizontal=False, value=A.ROOF_Z0, ext_start=r.x1 + 2.0)
 
     # Every callout but the roof's points at something left of the column
-    # its elbows stack in.  Stacked in the order the features were listed,
-    # their leaders fanned out and crossed each other eighteen times, which
-    # is what tools/check_balloons.py exists to catch.  They take the slots
-    # that make the leaders shortest in total instead: if two of those
-    # leaders crossed, swapping their slots would make the pair shorter, so
-    # none can.
-    below = r.y - 20.0
+    # its elbows stack in, and the column is in the jack's outline, under
+    # its LED window, which is empty paper right beside the tips: stacked
+    # under the whole view instead, twenty millimetres below the board, each
+    # leader was longer than the view is tall and they bunched through the
+    # datum marker.  Stacked in the order the features were listed,
+    # their leaders fanned out and crossed each other, which is what
+    # tools/check_balloons.py exists to catch.  They take the slots that make
+    # the leaders shortest in total instead: if two of those leaders
+    # crossed, swapping their slots would make the pair shorter, so none can.
+    top = v.y(A.WINDOW_Z0) - 4.5
     nearest = A.BORE_X + A.PIPE_DIA / 2 * H
     callouts = [
         (v.pt(*bore_point(A.PIPE_LEN, A.PRESS_DIA / 2)),
@@ -580,24 +587,23 @@ def _dimension_section(c: Canvas, v: View, r: Rect) -> None:
         (v.pt(0.3, (A.WINDOW_Z0 + A.WINDOW_Z1) / 2),
          f"LED window in {A.JACK_DESIGNATOR}", {"colour": style.C_HIGHLIGHT}),
     ]
-    slots = [(r.x + CALLOUT_X, below - k * CALLOUT_STEP)
+    col = v.pt(CALLOUT_X, 0.0)[0]
+    slots = [(col, top - (k + 1) * CALLOUT_STEP)
              for k in range(len(callouts))]
     order = min(itertools.permutations(callouts),
                 key=lambda o: sum(math.dist(tip, slot)
                                   for (tip, _, _), slot in zip(o, slots)))
     for (tip, text, kw), slot in zip(order, slots):
         dims.leader(c, tip, slot, text, **kw)
-    # The roof is the one tip right of the column.  Brought to the column,
-    # its leader ran across the tails of the callouts above its slot, and
-    # its own tail, written leftwards, across the leaders coming the other
-    # way; bent just right of its own tip, a slot above the others, it
-    # crosses nothing.
-    roof = v.pt(A.ROOF_X1 * 0.35, A.ROOF_Z1)
-    dims.leader(c, roof, (roof[0] + 1.4, below + CALLOUT_STEP),
+    # The roof is called out on its underside, just right of the LED
+    # window, and its leader drops straight down through the gap over the
+    # shield to the top row: the one tip right of the column, so the one
+    # elbow that is not in it.
+    roof = v.pt(1.6, A.ROOF_Z0)
+    dims.leader(c, roof, (roof[0], top),
                 f"roof {A.ROOF_Z1 - A.ROOF_Z0:.2f} thick")
-    # Its label well left of the marker: the leaders to the lowest slots
-    # pass just left of it, and a label nearer ran under one of them.
-    dims.datum_marker(c, *v.pt(0.0, 0.0), label="X0 Z0", label_dx=-13.0,
+    # Beside the marker, as in the other two views.
+    dims.datum_marker(c, *v.pt(0.0, 0.0), label="X0 Z0", label_dx=-6.0,
                       label_dy=-5.2)
 
 
