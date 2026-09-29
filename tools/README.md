@@ -27,7 +27,8 @@ Imported, not run.
 
 | | |
 |---|---|
-| `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's mechanical drawings into `tmp/` |
+| `fetch_raspberry_pi.sh` | Downloads Raspberry Pi Ltd's board mechanical drawings into `tmp/` |
+| `fetch_raspberry_pi_camera.sh` | Downloads Raspberry Pi Ltd's camera mechanical drawings into `tmp/` |
 | `fetch_fpga.sh` | Clones the repositories and downloads the drawings and models the FPGA boards are read from into `tmp/`; [`fpga/README.md`](../fpga/README.md) says which board is read from what |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
@@ -37,6 +38,7 @@ The extractors are not here. Each lives with its subject:
 - [`accessories/extract.py`](../accessories/README.md)
 - [`fpga/extract.py`](../fpga/README.md)
 - [`raspberry_pi/extract.py`](../raspberry_pi/README.md)
+- [`raspberry_pi_camera/extract.py`](../raspberry_pi_camera/README.md)
 - [`tinytapeout/extract.py`](../tinytapeout/README.md)
 - [`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md)
 

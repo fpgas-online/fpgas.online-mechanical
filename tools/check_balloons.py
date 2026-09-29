@@ -52,6 +52,7 @@ dims.balloon = _spy_balloon
 from accessories.parts import ACCESSORIES, PMOD_HAT        # noqa: E402
 from fpga.boards import BOARDS as FPGA               # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI        # noqa: E402
+from raspberry_pi_camera.boards import BOARDS as RPICAM  # noqa: E402
 from tinytapeout.boards import BOARDS as TT          # noqa: E402
 
 
@@ -156,6 +157,8 @@ def check(name: str, spec, overlay=None) -> tuple[set[str], set[str]]:
 def main() -> int:
     sheets = [(f"tinytapeout/{k}", v, None) for k, v in TT.items()]
     sheets += [(f"raspberry-pi/{k}", v, PMOD_HAT) for k, v in RPI.items()]
+    sheets += [(f"raspberry-pi-camera/{k}", v, None)
+               for k, v in RPICAM.items()]
     sheets += [(f"fpga/{k}", v, None) for k, v in FPGA.items()]
     sheets.append(("accessories/pmod-hat", PMOD_HAT, None))
     sheets += [(f"accessories/{k}", v, None) for k, v in ACCESSORIES.items()

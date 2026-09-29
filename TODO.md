@@ -179,3 +179,16 @@ checker that measures the finished PDFs rather than trusting them.
       `tinytapeout-sheets.pdf` rebuilt with it, so it is a change of its own.
       Cynthion states its own figure through `BoardSpec.envelope_note`
       meanwhile; that field should go when this is fixed.
+
+## Raspberry Pi camera modules  -- DONE
+- [x] `RPICAM-2`, Camera Module 2, from `RPI-CAM-V2_1`, a 1.5055:1 plot with
+      every figure outlined; scale recovered from the 21 x 12.5 hole rectangle
+- [x] `RPICAM-3`, Camera Module 3 standard and wide, from `RP-008153-DS-1` and
+      `RP-008155-DS-1`, true 1:1, one sheet after the two were read separately
+      and required to agree
+- [x] A `lens` feature kind, drawn with a centre mark at the optical axis
+- [x] `raspberry-pi-camera-sheets.pdf`, the two bound into one document
+- [ ] The High Quality Camera, `RP-008200-DS-1`: needs a round feature and a
+      profiled outline before `render_board` can draw its ø36 C/CS mount and
+      its tripod boss honestly, and its FFC connector is in no plan view
+- [ ] The Global Shutter Camera, `RP-008195-DS-1`, if anyone wants it
