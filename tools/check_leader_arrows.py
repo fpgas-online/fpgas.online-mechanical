@@ -65,8 +65,10 @@ def balloons(text: str) -> list:
 
     The radius is the whole test, so a dashed phantom circle that happens to
     be the balloon radius comes back here as well; seven sheets carry one.
-    What keeps those out of the leader count is the colour test in
-    ``leaders_of``, because no line of their colour ends on them.
+    So does the solid ring a camera position sheet letters its frames A and
+    B in, in each frame's own colour.  What keeps those out of the leader
+    count is the colour test in ``leaders_of``, because no line of their
+    colour ends on them.
     """
     return [(float(cx), float(cy), stroke)
             for cx, cy, radius, stroke in CIRCLE.findall(text)
@@ -81,8 +83,8 @@ def leaders_of(text: str, rings: list) -> list:
     balloon's centre.  Position alone is not enough: forty-four lines across
     seven sheets end on a circle of the balloon radius that is not drawn in
     their colour, which is the dashed phantom circle those sheets carry and
-    not a balloon.  Without the colour test the set reads as 151 leaders
-    rather than 107.
+    not a balloon.  Without the colour test every one of those lines would
+    be read as a leader.
     """
     out = []
     for a, b, c, d, colour in LINE.findall(text):
