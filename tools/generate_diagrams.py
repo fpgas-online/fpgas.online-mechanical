@@ -35,6 +35,8 @@ from tinytapeout.boards import BOARDS as TT_BOARDS  # noqa: E402
 from tinytapeout.boards import FEATURE_NUMBERS as TT_NUMBERS  # noqa: E402
 from base_plates.plates import PLATES as BASE_PLATES  # noqa: E402
 from tools.drafting.baseplate_sheet import render_baseplate  # noqa: E402
+from tools.drafting.baseplate_template import (  # noqa: E402
+    render_baseplate_template)
 from tools.drafting.board_sheet import (planned_band_height,  # noqa: E402
                                         render_board)
 from tools.drafting.camera_sheet import render_camera_position  # noqa: E402
@@ -46,6 +48,7 @@ from tools.drafting import rpi_compare_sheet  # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
+                          bp_template_stem,
                           FITTING_GUIDE_SHEET, FITTING_GUIDE_STEM,
                           LENS_STEM, holder_stem,
                           PLATE_SHEET, PLATE_STEM, PMOD_HAT_SHEET,
@@ -615,6 +618,17 @@ def baseplate_sheets() -> list[tuple[str, Path, str, "Plate"]]:
     return out
 
 
+def baseplate_template_sheets() -> list[tuple[str, Path, str, "Plate"]]:
+    """Each base plate's A4 drill template: drawing name, path, label, plate."""
+    out = []
+    for key, p in BASE_PLATES.items():
+        stem = bp_template_stem(key)
+        name = drawing_name("base-plates", stem)
+        out.append((name, FAMILY_DIRS["base-plates"] / f"{stem}.svg",
+                    f"{name}  Drill template: {p.title}", p))
+    return out
+
+
 #: The lens sheet's title and subtitle, which the README grid prints too.
 LENS_TITLE = "OV5647 Lenses and Focus"
 LENS_SUBTITLE = "Camera Module v1: stock, autofocus and 120 degree lenses"
@@ -843,6 +857,10 @@ def draw_sheets():
     for bp_name, bp_path, _, p in baseplate_sheets():
         sheet = render_baseplate(p, drawing_no=bp_name, version=VERSION)
         yield sheet, bp_path, f"{bp_name} ({p.title})"
+    # And each plate's A4 drill template, 1:1 like the mounting plate's.
+    for t_name, t_path, _, p in baseplate_template_sheets():
+        sheet = render_baseplate_template(p, drawing_no=t_name, version=VERSION)
+        yield sheet, t_path, f"{t_name} (drill template, {p.title})"
 
 
 def main() -> None:

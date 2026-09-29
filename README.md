@@ -63,7 +63,8 @@ are, and only the name is cut:
   because these stems are words rather than codes and nothing mechanical
   shortens them.
 - a base plate is named for the board the Pi is paired with, since every one
-  carries a Pi: `BP-TT` and `BP-ARTY`, from `BP_NAMES`.
+  carries a Pi: `BP-TT` and `BP-ARTY`, from `BP_NAMES`; its A4 drill template
+  puts DRILL first, `BP-DRILL-TT`, so that neither name extends the other.
 - a mounting plate sheet is named for which of the family's four it is, in one
   word: `TT-MP-PLATE` is the fabrication drawing, `TT-MP-FIT` the fitting
   guide, `TT-MP-DRILL` and `TT-MP-CHASSIS` the two A4 drill templates. What is
@@ -323,6 +324,16 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <td width="50%" valign="top" align="center">
 <a href="base_plates/output/arty-pi.pdf"><img src="base_plates/output/previews/arty-pi.png" width="270" alt="BP-ARTY Base Plate, Arty A7 and Raspberry Pi"></a><br>
 <b>BP-ARTY</b> Base Plate, Arty A7 and Raspberry Pi<br>An Arty A7 in corner cups, a Pi, and the direct Raspmod between them
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top" align="center">
+<a href="base_plates/output/tt-pi-drill-template.pdf"><img src="base_plates/output/previews/tt-pi-drill-template.png" width="270" alt="BP-DRILL-TT Drill Template: Base Plate, TT Plate and Raspberry Pi"></a><br>
+<b>BP-DRILL-TT</b> Drill Template: Base Plate, TT Plate and Raspberry Pi<br>A4 at 1:1 - print, tape down and drill through
+</td>
+<td width="50%" valign="top" align="center">
+<a href="base_plates/output/arty-pi-drill-template.pdf"><img src="base_plates/output/previews/arty-pi-drill-template.png" width="270" alt="BP-DRILL-ARTY Drill Template: Base Plate, Arty A7 and Raspberry Pi"></a><br>
+<b>BP-DRILL-ARTY</b> Drill Template: Base Plate, Arty A7 and Raspberry Pi<br>A4 at 1:1 - print, tape down and drill through
 </td>
 </tr>
 </table>

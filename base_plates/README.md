@@ -22,7 +22,7 @@ every level dimensioned from the plate's top face.
 | `design.py` | Works out both plates from the adapter, the Pi, the TT plate, the Arty and the connectors, and writes `plates.py` |
 | `plates.py` | **Generated.** The two plates |
 | `verify.py` | Proves the rows meet, the plugs land on the hosts, nothing on the Pi is in the adapter's way, nothing overlaps, and every hole is where it should be |
-| `output/` | `BP-TT` and `BP-ARTY`, as SVG and PDF |
+| `output/` | `BP-TT` and `BP-ARTY`, as SVG and PDF, and an A4 drill template for each, `BP-DRILL-TT` and `BP-DRILL-ARTY` |
 
 ```sh
 uv run --no-project --with pdfplumber --with cadquery python base_plates/design.py
@@ -44,6 +44,16 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <td width="50%" valign="top" align="center">
 <a href="output/arty-pi.pdf"><img src="output/previews/arty-pi.png" width="270" alt="BP-ARTY Base Plate, Arty A7 and Raspberry Pi"></a><br>
 <b>BP-ARTY</b> Base Plate, Arty A7 and Raspberry Pi<br>An Arty A7 in corner cups, a Pi, and the direct Raspmod between them
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top" align="center">
+<a href="output/tt-pi-drill-template.pdf"><img src="output/previews/tt-pi-drill-template.png" width="270" alt="BP-DRILL-TT Drill Template: Base Plate, TT Plate and Raspberry Pi"></a><br>
+<b>BP-DRILL-TT</b> Drill Template: Base Plate, TT Plate and Raspberry Pi<br>A4 at 1:1 - print, tape down and drill through
+</td>
+<td width="50%" valign="top" align="center">
+<a href="output/arty-pi-drill-template.pdf"><img src="output/previews/arty-pi-drill-template.png" width="270" alt="BP-DRILL-ARTY Drill Template: Base Plate, Arty A7 and Raspberry Pi"></a><br>
+<b>BP-DRILL-ARTY</b> Drill Template: Base Plate, Arty A7 and Raspberry Pi<br>A4 at 1:1 - print, tape down and drill through
 </td>
 </tr>
 </table>

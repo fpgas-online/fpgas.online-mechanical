@@ -37,6 +37,7 @@ from tools.generate_diagrams import (FPGA_ORDER, LENS_SUBTITLE,  # noqa: E402
                                      RPI_OTHERS, holder_title, position_stem,
                                      tt_sheets)
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
+                          bp_template_stem,
                           FITTING_GUIDE_STEM, LENS_STEM, PLATE_STEM,
                           holder_stem,
                           PMOD_HAT_STEM,
@@ -132,7 +133,10 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
                                  for k, h in HOLDER_VARIANTS.items()])),
         ("Base plates", "base-plates", 2,
          named("base-plates", [(k, p.title, p.subtitle)
-                               for k, p in BASE_PLATES.items()])),
+                               for k, p in BASE_PLATES.items()]
+               + [(bp_template_stem(k), f"Drill Template: {p.title}",
+                   "A4 at 1:1 - print, tape down and drill through")
+                  for k, p in BASE_PLATES.items()])),
     ]
 
 

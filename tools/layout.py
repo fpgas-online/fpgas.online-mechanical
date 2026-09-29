@@ -446,7 +446,18 @@ def rpi_name(rest: str) -> str:
 BP_NAMES = {
     "tt-pi": "tt",          # the TT mounting plate, and so any demoboard
     "arty-pi": "arty",      # the Digilent Arty A7
+    # Each plate's A4 drill template: DRILL and the plate's word.  DRILL
+    # first, because a name that merely extends the plate's own, BP-TT-DRILL
+    # after BP-TT, is one no test that reads a sheet's name can tell from
+    # it, and check_sheets refuses such a pair.
+    "tt-pi-drill-template": "drill-tt",
+    "arty-pi-drill-template": "drill-arty",
 }
+
+
+def bp_template_stem(key: str) -> str:
+    """The file stem of the drill template for the base plate *key*."""
+    return f"{key}-drill-template"
 
 
 def bp_name(stem: str) -> str:
