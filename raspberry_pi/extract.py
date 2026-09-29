@@ -349,10 +349,20 @@ def render(rec: dict) -> str:
         f"label={h['label']!r}, kind={h['kind']!r}, "
         f"keepout_dia={h['keepout_dia']}, tol={m.get('hole_tol')})"
         for h in rec["holes"])
+    def pin_field(f) -> str:
+        # The 40-pin header pin by pin: 2x20 on the 2.54 pitch filling its
+        # 50.8 x 5.08 box, pin 1 the inner-row pin at the SD-card end --
+        # the square pad on the Pi 5 drawing, and where the Orange Pi PC's
+        # photographs put it too.
+        if f["key"] != "gpio40":
+            return ""
+        return (f",\n                pins=(20, 2), "
+                f"pin1=({round(f['x0'] + 1.27, 2)}, {round(f['y0'] + 1.27, 2)})")
+
     feats = ",\n".join(
         f"        Feature(key={f['key']!r}, label={f['label']!r}, kind={f['kind']!r},\n"
         f"                x0={f['x0']}, y0={f['y0']}, x1={f['x1']}, y1={f['y1']},\n"
-        f"                number={f['number']})"
+        f"                number={f['number']}{pin_field(f)})"
         for f in rec["features"])
 
     # Only what the sheet cannot show.  Provenance is in SOURCES; the hole

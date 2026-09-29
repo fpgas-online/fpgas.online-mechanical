@@ -117,10 +117,18 @@ PMOD_HAT = BoardSpec(
                    columns=PMOD_COLUMNS, rows=PMOD_ROWS),
     ),
     features=(
+        # The Pi's own header box and pin 1, not a measurement of the socket:
+        # the specification fixes the connector against the holes so that
+        # it mates pin for pin, and a socket drawn half a millimetre off
+        # the pins it sits on would be a measuring error presented as a
+        # fact.  The socket body is a millimetre or so larger than the pin
+        # field each way and is not what the drawing is about.
         Feature(key="gpio40", label="40-pin GPIO socket (mates with the Pi)",
-                kind="header", x0=7.1, y0=50.5, x1=57.9, y1=55.5,
+                kind="header", x0=7.1, y0=50.0, x1=57.9, y1=55.0,
+                pins=(20, 2), pin1=(8.37, 51.27),
                 note="Position follows the HAT specification, which fixes the "
-                     "40-way connector so the HAT mates with the Pi."),
+                     "40-way connector so the HAT mates with the Pi; drawn as "
+                     "the Pi's pin field, pin 1 at the SD-card end, inner row."),
         Feature(key="barrel", label="5 V barrel jack J2", kind="connector",
                 x0=45.0, y0=1.0, x1=57.5, y1=13.5,
                 note="Approximate; measured from the product photo, +/-1.5 mm.",

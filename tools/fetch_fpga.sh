@@ -38,6 +38,15 @@ test -d "tmp/src/arty_a7/mechanical_drawing/Arty A7" || \
     unzip -q -o "$f" -d tmp/src/arty_a7/mechanical_drawing
 printf '%-40s %9s bytes\n' "$(basename "$f")" "$(wc -c < "$f")"
 
+# Digilent's Arty rev C STEP model: the board's thickness and its four rubber
+# feet, which the base plate that carries an Arty is built on.
+f=tmp/src/arty_a7/arty_revc_cad.zip
+test -s "$f" || curl -sSL -A "$UA" -o "$f" \
+    https://digilent.com/reference/_media/reference/programmable-logic/arty/arty_revc_cad.zip
+test -f "tmp/src/arty_a7/arty_revc_cad/ARTY For Web/Arty Rev C.stp" || \
+    unzip -q -o "$f" -d tmp/src/arty_a7/arty_revc_cad
+printf '%-40s %9s bytes\n' "$(basename "$f")" "$(wc -c < "$f")"
+
 f=tmp/src/pynq/PYNQ_Z2_20220218.zip
 test -s "$f" || curl -sSL -o "$f" \
     https://discuss.pynq.io/uploads/short-url/qjtW7Vu29ih0nugzuDuR5k33uWQ.zip

@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT))
 
 from accessories.parts import GENERIC_POE, PMOD_HAT, WAVESHARE_POE  # noqa: E402
 from accessories.raspmod import RASPMOD                       # noqa: E402
+from accessories.raspmod_direct import RASPMOD_DIRECT         # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE                              # noqa: E402
 from fpga.boards import BOARDS as FPGA                        # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
@@ -35,7 +36,10 @@ from tools.generate_diagrams import (FPGA_ORDER, LENS_SUBTITLE,  # noqa: E402
                                      RPICAM_POSITION_ORDER, RPI_ORDER,
                                      RPI_OTHERS, holder_title, position_stem,
                                      tt_sheets)
+from tools.drafting.fit_sheet import SUBTITLE as FIT_SUBTITLE  # noqa: E402
+from tools.drafting.fit_sheet import TITLE as FIT_TITLE  # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
+                          FIT_DRMOD_STEM, bp_template_stem,
                           FITTING_GUIDE_STEM, LENS_STEM, PLATE_STEM,
                           holder_stem,
                           PMOD_HAT_STEM,
@@ -43,6 +47,7 @@ from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
 
 from tinytapeout.camera_holder.holder import (  # noqa: E402
     VARIANTS as HOLDER_VARIANTS)
+from base_plates.plates import PLATES as BASE_PLATES  # noqa: E402
 
 #: Built once: each subject walks another family's data modules.
 _SUBJECTS = RPICAM_SUBJECTS()
@@ -111,7 +116,10 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
                  WAVESHARE_POE.subtitle),
                 (acc_stem(GENERIC_POE.key), GENERIC_POE.title,
                  GENERIC_POE.subtitle),
-                (acc_stem(RASPMOD.key), RASPMOD.title, RASPMOD.subtitle)])),
+                (acc_stem(RASPMOD.key), RASPMOD.title, RASPMOD.subtitle),
+                (acc_stem(RASPMOD_DIRECT.key), RASPMOD_DIRECT.title,
+                 RASPMOD_DIRECT.subtitle),
+                (FIT_DRMOD_STEM, FIT_TITLE, FIT_SUBTITLE)])),
         ("Mounting plate", "mounting-plate", 2,
          named("mounting-plate",
                [(PLATE_STEM, PLATE.title, PLATE.subtitle),
@@ -126,6 +134,12 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
         ("Camera holder", "camera-holder", COLUMNS,
          named("camera-holder", [(holder_stem(k), *holder_title(h.LENS))
                                  for k, h in HOLDER_VARIANTS.items()])),
+        ("Base plates", "base-plates", 2,
+         named("base-plates", [(k, p.title, p.subtitle)
+                               for k, p in BASE_PLATES.items()]
+               + [(bp_template_stem(k), f"Drill Template: {p.title}",
+                   "A4 at 1:1 - print, tape down and drill through")
+                  for k, p in BASE_PLATES.items()])),
     ]
 
 
@@ -194,6 +208,7 @@ FAMILY_READMES = {
     "accessories": ROOT / "accessories" / "README.md",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "README.md",
     "camera-holder": ROOT / "tinytapeout" / "camera_holder" / "README.md",
+    "base-plates": ROOT / "base_plates" / "README.md",
 }
 
 

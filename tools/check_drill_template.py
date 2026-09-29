@@ -28,11 +28,13 @@ import pdfplumber
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from base_plates.plates import PLATES                                  # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE                      # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
-                          drawing_name, rel)
-from tools.drafting.template_sheet import (A4_PORTRAIT,  # noqa: E402
-                                           BAR_LEN, BAR_THICK,
+                          bp_template_stem, drawing_name, rel)
+from tools.drafting.baseplate_template import (  # noqa: E402
+    render_baseplate_template)
+from tools.drafting.template_sheet import (BAR_LEN, BAR_THICK,  # noqa: E402
                                            render_drill_template)
 
 PT = 25.4 / 72.0
@@ -50,10 +52,27 @@ BAR_TOL = 0.02
 #: A4 tray, and a template is worthless if a hole falls in that strip.
 PRINTER_MARGIN = 4.32
 
-#: Taken from the generator rather than written out again, so a renamed sheet
-#: cannot leave this checking a file that no longer exists.
-SHEETS = {kind: FAMILY_DIRS["mounting-plate"] / f"{stem}.pdf"
-          for kind, stem in DRILL_TEMPLATE_STEMS.items()}
+#: Every drill template: what to call it, its PDF, how to render it again
+#: (with the real drawing name, so a name that will not fit its header line
+#: is a failure this check sees), and the holes it must print.  Taken from
+#: the generator's own tables rather than written out again, so a renamed
+#: sheet cannot leave this checking a file that no longer exists.
+SHEETS = []
+for _kind, _stem in DRILL_TEMPLATE_STEMS.items():
+    _name = drawing_name("mounting-plate", _stem)
+    SHEETS.append((
+        _kind, FAMILY_DIRS["mounting-plate"] / f"{_stem}.pdf",
+        lambda kind=_kind, name=_name: render_drill_template(kind, drawing_no=name,
+                                                              version="-"),
+        [h for h in PLATE.holes if _kind == "plate" or h.kind == "plate"]))
+for _key, _plate in PLATES.items():
+    _stem = bp_template_stem(_key)
+    _name = drawing_name("base-plates", _stem)
+    SHEETS.append((
+        f"base plate {_key}", FAMILY_DIRS["base-plates"] / f"{_stem}.pdf",
+        lambda plate=_plate, name=_name: render_baseplate_template(
+            plate, drawing_no=name, version="-"),
+        list(_plate.spec.holes)))
 
 
 def circles(page, dia: float) -> list[tuple[float, float]]:
@@ -91,26 +110,21 @@ def bar_runs(page, long_axis: str) -> list[float]:
     return [max(b[3] for b in blocks) - min(b[2] for b in blocks)]
 
 
-def check(kind: str, path: Path) -> list[str]:
+def check(kind: str, path: Path, render, wanted) -> list[str]:
     bad: list[str] = []
-    # The real drawing name, not a placeholder: the header line has to hold
-    # it beside the title, and a name that will not fit is a failure this
-    # check should see rather than step around.
-    name = drawing_name("mounting-plate", DRILL_TEMPLATE_STEMS[kind])
-    page_obj = render_drill_template(kind, drawing_no=name, version="-")
+    page_obj = render()
     view = page_obj.view
+    size = (page_obj.w, page_obj.h)
 
     with pdfplumber.open(path) as pdf:
         if len(pdf.pages) != 1:
             return [f"{len(pdf.pages)} pages; a template is one sheet"]
         page = pdf.pages[0]
         w, h = page.width * PT, page.height * PT
-        if abs(w - A4_PORTRAIT[0]) > 0.01 or abs(h - A4_PORTRAIT[1]) > 0.01:
-            bad.append(f"page is {w:.3f} x {h:.3f} mm, not A4 portrait "
-                       f"{A4_PORTRAIT[0]} x {A4_PORTRAIT[1]}")
+        if abs(w - size[0]) > 0.01 or abs(h - size[1]) > 0.01:
+            bad.append(f"page is {w:.3f} x {h:.3f} mm, not the "
+                       f"{size[0]} x {size[1]} it was drawn as")
 
-        wanted = [h for h in PLATE.holes
-                  if kind == "plate" or h.kind == "plate"]
         for dia in sorted({h.dia for h in wanted}):
             expect = [h for h in wanted if h.dia == dia]
             found = circles(page, dia)
@@ -142,13 +156,13 @@ def check(kind: str, path: Path) -> list[str]:
                 + page.lines:
             # Every canvas lays a white rectangle over the whole page first,
             # which is not ink and is meant to reach the edges.
-            if ((obj["x1"] - obj["x0"]) * PT >= A4_PORTRAIT[0] - 0.01
-                    and (obj["y1"] - obj["y0"]) * PT >= A4_PORTRAIT[1] - 0.01):
+            if ((obj["x1"] - obj["x0"]) * PT >= size[0] - 0.01
+                    and (obj["y1"] - obj["y0"]) * PT >= size[1] - 0.01):
                 continue
             if (obj["x0"] * PT < PRINTER_MARGIN
-                    or obj["x1"] * PT > A4_PORTRAIT[0] - PRINTER_MARGIN
+                    or obj["x1"] * PT > size[0] - PRINTER_MARGIN
                     or obj["y0"] * PT < PRINTER_MARGIN
-                    or obj["y1"] * PT > A4_PORTRAIT[1] - PRINTER_MARGIN):
+                    or obj["y1"] * PT > size[1] - PRINTER_MARGIN):
                 bad.append(f"something reaches ({obj['x0'] * PT:.2f}, "
                            f"{obj['y0'] * PT:.2f}) mm, inside the "
                            f"{PRINTER_MARGIN} mm the printer cannot reach")
@@ -158,12 +172,12 @@ def check(kind: str, path: Path) -> list[str]:
 
 def main() -> int:
     total = 0
-    for kind, path in SHEETS.items():
+    for kind, path, render, wanted in SHEETS:
         if not path.exists():
             print(f"{kind}: {rel(path)} missing; run tools/generate_diagrams.py")
             total += 1
             continue
-        problems = check(kind, path)
+        problems = check(kind, path, render, wanted)
         total += len(problems)
         if problems:
             print(f"{kind}: {len(problems)} problem(s)")

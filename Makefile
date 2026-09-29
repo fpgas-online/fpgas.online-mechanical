@@ -30,6 +30,10 @@ fetch:
 	@test -d tmp/src/tinytapeout-demoboard-to-raspi || git clone --quiet \
 		https://github.com/psychogenic/tinytapeout-demoboard-to-raspi \
 		tmp/src/tinytapeout-demoboard-to-raspi
+	@test -d tmp/src/tinytapeout-demoboard-to-raspi-direct || git clone --quiet \
+		--branch direct-gpio \
+		https://github.com/mithro/tinytapeout-demoboard-to-raspi \
+		tmp/src/tinytapeout-demoboard-to-raspi-direct
 
 ## data: re-extract the mechanical database from those sources
 data:
@@ -40,6 +44,7 @@ data:
 	$(EXTRACT) --with cadquery python fpga/extract.py
 	$(UV) python accessories/extract.py
 	$(UV) python tinytapeout/mounting_plate/design.py
+	$(UV) --with pdfplumber --with cadquery python base_plates/design.py
 
 ## diagrams: render every sheet as SVG, PDF and PNG, plus the plate cut file
 diagrams:
@@ -57,6 +62,7 @@ check: diagrams
 	$(UV) --with pypdf python raspberry_pi_camera/verify_optics.py
 	$(UV) python tinytapeout/camera_holder/verify.py
 	$(UV) python raspberry_pi/verify_orangepi_pc.py
+	$(UV) python base_plates/verify.py
 	$(DRAW) python tools/check_balloons.py
 	$(UV) --with pillow python tools/check_leader_arrows.py
 	$(UV) --with pdfplumber --with pillow python tools/check_drill_template.py
@@ -71,4 +77,4 @@ clean:
 	rm -rf accessories/output raspberry_pi/output fpga/output \
 	       raspberry_pi_camera/output \
 	       tinytapeout/output tinytapeout/mounting_plate/output \
-	       tinytapeout/camera_holder/output
+	       tinytapeout/camera_holder/output base_plates/output

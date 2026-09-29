@@ -20,6 +20,7 @@ header is along the upper edge, matching how Raspberry Pi Ltd draw them.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field, replace
 
 
@@ -128,6 +129,36 @@ class Feature:
     #: Pin 1 of a header or connector whose orientation matters, where the
     #: drawing marks it with a dot.  None for a part drawn by its body alone.
     pin1: tuple[float, float] | None = None
+    #: A pin header's field, (columns, rows) on ``pitch``, centred in the
+    #: box, which the drawing then shows pin by pin as it shows a Pmod
+    #: host's.  The columns run along the box's longer side.  None for a
+    #: part that is its body alone.
+    pins: tuple[int, int] | None = None
+    pitch: float = 2.54
+
+    def __post_init__(self) -> None:
+        # A pin field is drawn centred in the box, so a box that is not
+        # centred on the pins draws them in the wrong place; pin 1, given
+        # from the part's own data, has to land on one of them.
+        if self.pins is not None and self.pin1 is not None:
+            near = min(math.dist(self.pin1, p) for p in self.pin_centres())
+            if near > 0.05:
+                raise ValueError(
+                    f"{self.key}: pin 1 at {self.pin1} is {near:.2f} mm from the "
+                    f"nearest pin of a {self.pins[0]}x{self.pins[1]} field centred "
+                    f"in its box ({self.x0}, {self.y0})-({self.x1}, {self.y1})")
+
+    def pin_centres(self) -> list[tuple[float, float]]:
+        """Every pin of the field, or nothing for a part without one."""
+        if self.pins is None:
+            return []
+        cols, rows = self.pins
+        along_x = self.width >= self.height
+        n_x, n_y = (cols, rows) if along_x else (rows, cols)
+        x0 = self.cx - (n_x - 1) / 2 * self.pitch
+        y0 = self.cy - (n_y - 1) / 2 * self.pitch
+        return [(round(x0 + i * self.pitch, 3), round(y0 + j * self.pitch, 3))
+                for j in range(n_y) for i in range(n_x)]
 
     @property
     def width(self) -> float:
@@ -321,6 +352,57 @@ PCB_HOLE_POS_TOL = 0.10     # mm, drilled hole position
 PCB_HOLE_DIA_TOL = 0.08     # mm, plated hole diameter
 
 
+def turned(spec: BoardSpec, cx: float, cy: float) -> BoardSpec:
+    """*spec* turned a half turn about (cx, cy): every (x, y) to (2cx-x, 2cy-y).
+
+    For a board drawn under another that sits on it the other way round:
+    an adapter on a Raspberry Pi's header, pin 1 on pin 1, lies a half turn
+    to the Pi, so the Pi in the adapter's frame is the Pi turned about the
+    midpoint of the two pins 1.  A half turn keeps an arc's sweep, so the
+    outline's edges only move; a mirror would not, and there is none here.
+    The edges a Pmod faces swap, bottom with top and left with right.
+    """
+    o = spec.outline
+    x0, y0, x1, y1 = o.extent()
+    edges = o.edges or rounded_rect(x0, y0, x1 - x0, y1 - y0, o.corner_radius)
+
+    def t(x, y):
+        return (round(2 * cx - x, 3), round(2 * cy - y, 3))
+
+    def turn_edge(e):
+        (ax, ay), (bx, by) = t(e[1], e[2]), t(e[3], e[4])
+        return (e[0], ax, ay, bx, by) + tuple(e[5:])
+
+    def box(bx0, by0, bx1, by1):
+        (ax, ay), (bx_, by_) = t(bx0, by0), t(bx1, by1)
+        return min(ax, bx_), min(ay, by_), max(ax, bx_), max(ay, by_)
+
+    across = {"bottom": "top", "top": "bottom", "left": "right", "right": "left"}
+    features = []
+    for f in spec.features:
+        fx0, fy0, fx1, fy1 = box(f.x0, f.y0, f.x1, f.y1)
+        features.append(replace(f, x0=fx0, y0=fy0, x1=fx1, y1=fy1,
+                                pin1=t(*f.pin1) if f.pin1 else None))
+    pmods = []
+    for p in spec.pmods:
+        fields = dict(zip(("cx", "cy"), t(p.cx, p.cy)))
+        fields.update(zip(("pin1_x", "pin1_y"), t(p.pin1_x, p.pin1_y)))
+        fields["edge"] = across[p.edge]
+        if p.body_x1 > p.body_x0:
+            fields.update(zip(("body_x0", "body_y0", "body_x1", "body_y1"),
+                              box(p.body_x0, p.body_y0, p.body_x1, p.body_y1)))
+        pmods.append(replace(p, **fields))
+    return replace(
+        spec,
+        outline=replace(o, edges=tuple(turn_edge(e) for e in edges)),
+        holes=tuple(replace(h, **dict(zip(("x", "y"), t(h.x, h.y)))) for h in spec.holes),
+        slots=tuple(replace(s, **dict(zip(("x0", "y0", "x1", "y1"), box(s.x0, s.y0, s.x1, s.y1))))
+                    for s in spec.slots),
+        features=tuple(features),
+        pmods=tuple(pmods),
+    )
+
+
 def moved(spec: BoardSpec, dx: float, dy: float) -> BoardSpec:
     """*spec* with every coordinate in it moved by (dx, dy).
 
@@ -343,7 +425,10 @@ def moved(spec: BoardSpec, dx: float, dy: float) -> BoardSpec:
         slots=tuple(replace(s, x0=s.x0 + dx, y0=s.y0 + dy, x1=s.x1 + dx,
                             y1=s.y1 + dy) for s in spec.slots),
         features=tuple(replace(f, x0=f.x0 + dx, y0=f.y0 + dy, x1=f.x1 + dx,
-                               y1=f.y1 + dy) for f in spec.features),
+                               y1=f.y1 + dy,
+                               pin1=((round(f.pin1[0] + dx, 3), round(f.pin1[1] + dy, 3))
+                                     if f.pin1 else None))
+                       for f in spec.features),
         pmods=tuple(replace(p, cx=p.cx + dx, cy=p.cy + dy, pin1_x=p.pin1_x + dx,
                             pin1_y=p.pin1_y + dy,
                             **({"body_x0": p.body_x0 + dx, "body_y0": p.body_y0 + dy,

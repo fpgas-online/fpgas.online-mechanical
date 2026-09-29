@@ -3295,3 +3295,73 @@ restamped after merge. That is deliberate. Restamping the whole set to add
 one sheet makes a pull request that cannot be read and conflicts with every
 other branch in flight; the stale stamps are a day's inconvenience and the
 conflicts are not.
+## The direct Raspmod, and the base plates: BP-TT and BP-ARTY
+
+- A base plate is not a board and has no family to sit in: it carries a Pi
+  and an FPGA board and belongs to neither. It got a directory and a
+  prefix of its own, `BP`, and a name from the board the Pi is paired with,
+  since every one carries a Pi.
+- Every height on a plate is summed up the stack from datasheet figures:
+  the Pi's header body (2.54), the SMT socket (3.8), the adapter's PCB
+  (1.6), the right-angle plug's rows above its board (1.27 / 3.81) and the
+  right-angle host socket's rows above its own (4.53 / 7.07, legs 3.3 and
+  body 5.0). So the host board's top face goes 4.68 above the Pi's, and the
+  standoffs follow. `verify.py` sums it again independently and proves the
+  sheet's residual is that figure.
+- Raspberry Pi Ltd do not publish the Pi's PCB thickness. It is measured off
+  the Pi 5 drawing's 1:1 side elevation with pdfplumber: two horizontal
+  lines 1.41 mm apart.
+- The Arty is a half turn round on its plate. Its hosts face off its far
+  edge, and turning it puts them at the front, where the Pi is on the TT
+  plate too: every base plate has its Pi at the front, y small, and the
+  FPGA board behind, and the two sheets read alike. The first draft had the
+  Arty the other way and the Pi behind it, and the two sheets read as two
+  different drawings of the same idea.
+- The sheets are A2, the only ones in the repository. At A3 the plan had to
+  be 1:2, and at 1:2 a plate 135 x 192 has no room for its own hole labels
+  and the board names collide; the elevation at 1:1 then did not line up
+  with it. At A2 the elevation and the plan are both 1:1, one above the
+  other with the plate's Y running left to right in both, and the joint --
+  where a 1.4 mm board and a 3.8 mm socket have to be legible -- is drawn
+  again at 2:1 as a detail, with every level as an ordinate from the plate's
+  top face. The tables went to the column, the notes beside the views.
+- Two X ordinate chains on the plan, the front half's holes on the left and
+  the back half's on the right: one chain put witness lines the length of
+  the plate through the boards.
+- The direct adapter's plugs, as drawn, mate in mirror image: swapping the
+  footprints turned the plug over, so its pin 1 meets a host's pin 6 and the
+  ports come out reversed. Found by mating the pin fields numerically, not
+  by looking. The copper fix is parked until the mechanical layout is
+  confirmed, since nothing on the plates depends on which pin is which.
+
+## The GPIO header pin by pin, and the direct Raspmod drawn on the Pi: ACC-FIT-DRMOD
+
+- A `Feature` can carry a pin field now, `pins=(columns, rows)` on a pitch,
+  centred in its box and drawn a circle per pin as a Pmod host's is, with
+  `pin1` dotted. Every 40-pin header in the set has one: the Pi sheets,
+  the Orange Pi PC, RPI-ALL, the Pmod HAT's socket, both Raspmods' J1.
+  The Pi's pin 1 is the inner-row pin at the SD-card end -- the square pad
+  on the Pi 5 drawing, and where the Orange Pi PC's photographs put it.
+- `Feature.__post_init__` refuses a pin 1 that is not on the field, and
+  caught a real bug at once: `moved()` shifted a feature's box and left
+  its `pin1` behind, so the HAT carried onto the Orange Pi PC had its
+  socket 1.5 mm from its own pin 1. It moves both now; `turned()` -- a
+  half turn about a point, the counterpart of `moved()` -- was written
+  with it, for a board drawn under the one that sits on it.
+- The mating view was tried first as an overlay on the adapter's own
+  sheet, which is what `overlay` is for. With an 85 mm Pi in the view the
+  sheet fell from 2:1 to 1:1 and its annotation, laid out for 2:1, ran
+  into everything: the plug-depth values, the balloons, the ordinates
+  into the notes. It is its own sheet, ACC-FIT-DRMOD, on the fitting
+  guide's precedent, and keeps 2:1 with the view the width of the sheet
+  and the names on leaders up into the Pi's empty half.
+- Which Pis fit is a list now, `accessories/pi_under.py`: the parts some
+  model puts inside the adapter's footprint, read off the drawings, that
+  the fit sheet draws and `base_plates/design.py` judges by. The Pi 5's
+  UART connector was found on its drawing this way -- 0.4 mm inside the
+  footprint, 4.3 tall at most, so it clears -- and the Pi 5's PoE header
+  is at the bottom edge by the Ethernet jack, nowhere near.
+- The Pi drawings label no PoE header: the Pi 4's is placed by its
+  dimensions (25.75 from the header centre, 6.14 from the edge), and the
+  Pi 5's parts are read from the drawing's vectors, since its pins are
+  not circles pdfplumber can pick out on their own.

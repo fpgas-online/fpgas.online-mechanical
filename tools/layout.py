@@ -33,6 +33,7 @@ FAMILY_DIRS = {
     "accessories": ROOT / "accessories" / "output",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "output",
     "camera-holder": ROOT / "tinytapeout" / "camera_holder" / "output",
+    "base-plates": ROOT / "base_plates" / "output",
 }
 
 #: Every demo board sheet's file stem is this and the revisions it covers,
@@ -59,14 +60,21 @@ TT_STEM_LEAD = "tt-demo-board"
 #:   the vendor, because the data is a catalogue of parts somebody has to buy
 #:   and that is what they buy.  The stem drops it.
 #: * ``raspmod`` is already what the thing is called; nothing to drop.
+#: * ``raspmod-direct`` likewise: the Raspmod altered to sit on the Pi's
+#:   header, and the word is the branch it lives on.
 ACC_STEMS = {
     "pmod-hat-adapter": "pmod-hat",
     "waveshare-poe-usbc": "poe-usbc",
     "generic-poe-microusb": "poe-microusb",
     "raspmod": "raspmod",
+    "raspmod-direct": "raspmod-direct",
 }
 
 PMOD_HAT_STEM = ACC_STEMS["pmod-hat-adapter"]
+
+#: The direct Raspmod on a Raspberry Pi: a sheet of the accessory family
+#: drawn from two boards, so it has no part key of its own.
+FIT_DRMOD_STEM = "raspmod-direct-on-pi"
 
 #: What each accessory sheet is called, by the file stem it is written to.
 #: ``acc_name`` reads it, and ``drawing_name`` puts ``ACC-`` in front.
@@ -85,9 +93,16 @@ PMOD_HAT_STEM = ACC_STEMS["pmod-hat-adapter"]
 #: other way of getting Pmod ports onto a Pi, though it is not a HAT in the
 #: Raspberry Pi specification's sense and reaches the Pi over a ribbon cable
 #: instead -- which is what ``accessories/raspmod-vs-pmod-hat.md`` is about.
+#: The direct Raspmod is filed under HAT as well, and this time on the
+#: specification's own test: it sits on the Pi's 40-pin header.  DRMOD, the
+#: Raspmod with a D in front, so the two read as the same board twice.
 ACC_NAMES = {
     "pmod-hat": "hat-pmod",      # Digilent's Pmod HAT Adapter
     "raspmod": "hat-rmod",       # the Raspmod, the other Pi-to-Pmod board
+    "raspmod-direct": "hat-drmod",  # the Raspmod on the Pi's header
+    # The direct Raspmod drawn on the Pi it sits on, every model at once:
+    # FIT, as the mounting plate's fitting guide is TT-MP-FIT.
+    "raspmod-direct-on-pi": "fit-drmod",
     "poe-usbc": "poe-usbc",      # Waveshare's splitter, Type-C output
     "poe-microusb": "poe-musb",  # the generic splitter, micro-USB output
 }
@@ -159,6 +174,10 @@ FAMILY_PREFIXES = {
     # families share is safe because check_sheets.py tests every name
     # against every other across the whole set.
     "camera-holder": ("TT-MP", ""),
+    # The base plates carry a Raspberry Pi and an FPGA board joined by the
+    # direct Raspmod, so they belong to no one family above; BP is theirs,
+    # and BP_NAMES says which board the Pi is paired with in one word.
+    "base-plates": ("BP", ""),
 }
 
 
@@ -428,6 +447,35 @@ def rpi_name(rest: str) -> str:
             f"{rest!r}; a model sheet is named for its model, and any other "
             "sheet wants a row in RPI_NAMES in tools/layout.py of four or "
             "five characters saying what it is")
+#: The base plates, by file stem.  A stem says which two boards a plate
+#: carries -- ``tt-pi``, ``arty-pi`` -- where every plate carries a Pi, so
+#: the name is the other board alone: ``BP-TT``, ``BP-ARTY``.
+BP_NAMES = {
+    "tt-pi": "tt",          # the TT mounting plate, and so any demoboard
+    "arty-pi": "arty",      # the Digilent Arty A7
+    # Each plate's A4 drill template: DRILL and the plate's word.  DRILL
+    # first, because a name that merely extends the plate's own, BP-TT-DRILL
+    # after BP-TT, is one no test that reads a sheet's name can tell from
+    # it, and check_sheets refuses such a pair.
+    "tt-pi-drill-template": "drill-tt",
+    "arty-pi-drill-template": "drill-arty",
+}
+
+
+def bp_template_stem(key: str) -> str:
+    """The file stem of the drill template for the base plate *key*."""
+    return f"{key}-drill-template"
+
+
+def bp_name(stem: str) -> str:
+    """What the base plate sheet written to *stem* is called: see BP_NAMES."""
+    try:
+        return BP_NAMES[stem]
+    except KeyError:
+        raise SystemExit(
+            f"no drawing name for the base plate sheet {stem!r}; add one to "
+            "BP_NAMES in tools/layout.py, as four or five characters saying "
+            "which board the Pi is paired with")
 
 
 #: How a family cuts what is left of a stem down to a drawing name, for the
@@ -449,6 +497,7 @@ def rpi_name(rest: str) -> str:
 #: * a mounting plate sheet's says its title -- ``chassis-drill-template``
 #: * a camera position sheet's says its subject in full
 #: * a camera holder's says what it is and what it is on
+#: * a base plate's says both boards it carries
 #:
 #: Each is right for a file name and too long for a drawing number.
 FAMILY_NAME_RULES = {
@@ -458,6 +507,7 @@ FAMILY_NAME_RULES = {
     "mounting-plate": plate_name,
     "raspberry-pi-camera": rpicam_name,
     "camera-holder": holder_name,
+    "base-plates": bp_name,
 }
 
 

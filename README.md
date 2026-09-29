@@ -25,6 +25,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; the OV5647's stock, autofocus and 120 degree lenses, every figure declared and derived, and their focus; then where to put an OV5647 camera over a board to frame it: how high, in two elevations drawing both lenses' fields of view, whether it is in focus there, and where |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Parts that are none of the boards above but turn up in the same assemblies, such as Pi-to-Pmod adapters and PoE splitters, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
+| [`base_plates/`](base_plates/README.md) | `BP-*` -- A plate carrying a Raspberry Pi and an FPGA board with the direct Raspmod between them, one per board: the TT plate with any demoboard, and the Arty A7 in printed corner cups; every height derived and the standoffs dimensioned |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
 
 Which boards and parts a family holds is in its own README, and every sheet
@@ -56,10 +57,14 @@ are, and only the name is cut:
   they are the v1.2.1 board -- while the sheet's title, subtitle and notes list
   every revision and shuttle in full.
 - an accessory is named for what kind of part it is and which one of that kind:
-  `ACC-HAT-PMOD` and `ACC-HAT-RMOD` are the two ways of putting Pmod ports on a
-  Raspberry Pi, `ACC-POE-USBC` and `ACC-POE-MUSB` the two PoE splitters. That
-  one is a table, `ACC_NAMES`, keyed by file stem, because these stems are
-  words rather than codes and nothing mechanical shortens them.
+  `ACC-HAT-PMOD`, `ACC-HAT-RMOD` and `ACC-HAT-DRMOD` are the three ways of
+  putting Pmod ports on a Raspberry Pi, `ACC-POE-USBC` and `ACC-POE-MUSB` the
+  two PoE splitters. That one is a table, `ACC_NAMES`, keyed by file stem,
+  because these stems are words rather than codes and nothing mechanical
+  shortens them.
+- a base plate is named for the board the Pi is paired with, since every one
+  carries a Pi: `BP-TT` and `BP-ARTY`, from `BP_NAMES`; its A4 drill template
+  puts DRILL first, `BP-DRILL-TT`, so that neither name extends the other.
 - a mounting plate sheet is named for which of the family's four it is, in one
   word: `TT-MP-PLATE` is the fabrication drawing, `TT-MP-FIT` the fitting
   guide, `TT-MP-DRILL` and `TT-MP-CHASSIS` the two A4 drill templates. What is
@@ -259,8 +264,14 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="accessories/output/raspmod.pdf"><img src="accessories/output/previews/raspmod.png" width="270" alt="ACC-HAT-RMOD Raspmod"></a><br>
 <b>ACC-HAT-RMOD</b> Raspmod<br>TT Demoboard To Raspi rev 1.0, silkscreen v1.1: a frontplate for the demoboard's three Pmod hosts
 </td>
-<td width="33%"></td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="accessories/output/raspmod-direct.pdf"><img src="accessories/output/previews/raspmod-direct.png" width="270" alt="ACC-HAT-DRMOD Raspmod, direct"></a><br>
+<b>ACC-HAT-DRMOD</b> Raspmod, direct<br>TT Demoboard To Raspi Direct rev 2.0: on the Pi's GPIO header, flat beside the demoboard or an Arty
+</td>
+<td width="33%" valign="top" align="center">
+<a href="accessories/output/raspmod-direct-on-pi.pdf"><img src="accessories/output/previews/raspmod-direct-on-pi.png" width="270" alt="ACC-FIT-DRMOD Raspmod, direct, on a Raspberry Pi"></a><br>
+<b>ACC-FIT-DRMOD</b> Raspmod, direct, on a Raspberry Pi<br>Every Model B sized Pi under the adapter, pin 1 on pin 1, and where a fourth plug would go
+</td>
 </tr>
 </table>
 
@@ -302,6 +313,31 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>TT-MP-CAM120</b> Camera Holder, 120 deg Lens<br>Holds a Camera Module over every demo board revision
 </td>
 <td width="33%"></td>
+</tr>
+</table>
+
+### Base plates
+
+<table>
+<tr>
+<td width="50%" valign="top" align="center">
+<a href="base_plates/output/tt-pi.pdf"><img src="base_plates/output/previews/tt-pi.png" width="270" alt="BP-TT Base Plate, TT Plate and Raspberry Pi"></a><br>
+<b>BP-TT</b> Base Plate, TT Plate and Raspberry Pi<br>A demoboard on the TT plate, a Pi, and the direct Raspmod between them
+</td>
+<td width="50%" valign="top" align="center">
+<a href="base_plates/output/arty-pi.pdf"><img src="base_plates/output/previews/arty-pi.png" width="270" alt="BP-ARTY Base Plate, Arty A7 and Raspberry Pi"></a><br>
+<b>BP-ARTY</b> Base Plate, Arty A7 and Raspberry Pi<br>An Arty A7 in corner cups, a Pi, and the direct Raspmod between them
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top" align="center">
+<a href="base_plates/output/tt-pi-drill-template.pdf"><img src="base_plates/output/previews/tt-pi-drill-template.png" width="270" alt="BP-DRILL-TT Drill Template: Base Plate, TT Plate and Raspberry Pi"></a><br>
+<b>BP-DRILL-TT</b> Drill Template: Base Plate, TT Plate and Raspberry Pi<br>A4 at 1:1 - print, tape down and drill through
+</td>
+<td width="50%" valign="top" align="center">
+<a href="base_plates/output/arty-pi-drill-template.pdf"><img src="base_plates/output/previews/arty-pi-drill-template.png" width="270" alt="BP-DRILL-ARTY Drill Template: Base Plate, Arty A7 and Raspberry Pi"></a><br>
+<b>BP-DRILL-ARTY</b> Drill Template: Base Plate, Arty A7 and Raspberry Pi<br>A4 at 1:1 - print, tape down and drill through
+</td>
 </tr>
 </table>
 
@@ -376,7 +412,9 @@ derived from keep their own licences:
 
 | Upstream source | Its licence, or whose it is |
 |---|---|
+| Adafruit 2187 product page | Adafruit's |
 | Arty A7 drawing | Digilent's |
+| Arty A7 rev C STEP model | Digilent's |
 | ButterStick board files | Its maker's open hardware licence |
 | Camera Module v1.3 hand-measured drawing | Gert van Loo's |
 | Cynthion board file | Great Scott Gadgets' under the CERN-OHL-P v2 |
@@ -386,6 +424,8 @@ derived from keep their own licences:
 | Raspberry Pi camera mechanical drawings | Raspberry Pi Ltd's |
 | Raspberry Pi mechanical drawings | Raspberry Pi Ltd's |
 | Raspberry Pi Spy camera module diagram | Raspberry Pi Spy's |
+| Raspmod board files, and the direct variant forked from them | Pat Deegan's; the repository carries no licence file |
 | Tiny Tapeout board files | Apache 2.0 |
 | Ultra96-V2 drawing | Avnet's, republished by Linaro with the 96Boards Consumer Edition specification |
 | ULX3S board files | Its maker's open hardware licence |
+| Wurth WR-PHD connector datasheets | Wurth Elektronik's |
