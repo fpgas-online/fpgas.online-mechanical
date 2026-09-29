@@ -307,11 +307,11 @@ def pi_tall_parts(pi) -> list[tuple[str, float, float, float, float, float]]:
             out.append((f.label, f.x0, f.y0, f.x1, f.y1, 16.0))
         elif f.kind == "ethernet":
             out.append((f.label, f.x0, f.y0, f.x1, f.y1, 13.5))
-    if pi.key in ("rpi3b+", "rpi4b"):
-        # (25.75 + 32.5, 56 - 6.14) on the Pi 4 drawing; the 3B+ drawing's
-        # PoE silk sits at the same place.
-        cx, cy = 58.25, 49.86
-        out.append(("PoE header", cx - 2.54, cy - 2.54, cx + 2.54, cy + 2.54, PI_HEADER_H))
+    # The parts inside the adapter's footprint, read off the drawings once,
+    # in accessories/pi_under.py, which the adapter's own sheet draws.
+    from accessories.pi_under import parts_on
+    for p in parts_on(pi.key):
+        out.append((p.label, p.x0, p.y0, p.x1, p.y1, p.z))
     return out
 
 

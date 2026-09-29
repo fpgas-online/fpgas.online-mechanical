@@ -80,7 +80,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="output/raspmod-direct.pdf"><img src="output/previews/raspmod-direct.png" width="270" alt="ACC-HAT-DRMOD Raspmod, direct"></a><br>
 <b>ACC-HAT-DRMOD</b> Raspmod, direct<br>TT Demoboard To Raspi Direct rev 2.0: on the Pi's GPIO header, flat beside the demoboard or an Arty
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="output/raspmod-direct-on-pi.pdf"><img src="output/previews/raspmod-direct-on-pi.png" width="270" alt="ACC-FIT-DRMOD Raspmod, direct, on a Raspberry Pi"></a><br>
+<b>ACC-FIT-DRMOD</b> Raspmod, direct, on a Raspberry Pi<br>Every Model B sized Pi under the adapter, pin 1 on pin 1, and where a fourth plug would go
+</td>
 </tr>
 </table>
 
@@ -136,6 +139,16 @@ where the socket's pin 1 is, which is what places the Pi under it.
 
 Two base plates carry a Pi, this adapter and an FPGA board at the heights
 that make the plugs meet the hosts: see [`base_plates/`](../base_plates/README.md).
+
+`ACC-FIT-DRMOD` draws it where it lives: on the Pi, every Model B sized
+model at once, pin 1 on pin 1, with the parts some model puts under it --
+the 3B+ and 4B's PoE header, which stops it seating, and the Pi 5's UART
+connector, which clears -- each named with its height, and a fourth plug in
+phantom one host pitch beyond P3 with the edge a board four plugs wide would
+have. `pi_under.py` is the list of those parts, read off the Pi drawings,
+and the composite; `base_plates/design.py` uses the same list to say which
+Pis fit. It is the sheet a board reshaped to fit every model, with a plug for
+each of the Arty's four hosts, is drawn against.
 
 **The pin mapping is not yet right.** Swapping the footprints mirrors each
 plug's mating with a host -- pin 1 lands on pin 6, and the ports come out

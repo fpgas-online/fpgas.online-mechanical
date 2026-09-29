@@ -36,8 +36,10 @@ from tools.generate_diagrams import (FPGA_ORDER, LENS_SUBTITLE,  # noqa: E402
                                      RPICAM_POSITION_ORDER, RPI_ORDER,
                                      RPI_OTHERS, holder_title, position_stem,
                                      tt_sheets)
+from tools.drafting.fit_sheet import SUBTITLE as FIT_SUBTITLE  # noqa: E402
+from tools.drafting.fit_sheet import TITLE as FIT_TITLE  # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
-                          bp_template_stem,
+                          FIT_DRMOD_STEM, bp_template_stem,
                           FITTING_GUIDE_STEM, LENS_STEM, PLATE_STEM,
                           holder_stem,
                           PMOD_HAT_STEM,
@@ -116,7 +118,8 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
                  GENERIC_POE.subtitle),
                 (acc_stem(RASPMOD.key), RASPMOD.title, RASPMOD.subtitle),
                 (acc_stem(RASPMOD_DIRECT.key), RASPMOD_DIRECT.title,
-                 RASPMOD_DIRECT.subtitle)])),
+                 RASPMOD_DIRECT.subtitle),
+                (FIT_DRMOD_STEM, FIT_TITLE, FIT_SUBTITLE)])),
         ("Mounting plate", "mounting-plate", 2,
          named("mounting-plate",
                [(PLATE_STEM, PLATE.title, PLATE.subtitle),

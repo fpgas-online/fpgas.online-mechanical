@@ -72,6 +72,10 @@ ACC_STEMS = {
 
 PMOD_HAT_STEM = ACC_STEMS["pmod-hat-adapter"]
 
+#: The direct Raspmod on a Raspberry Pi: a sheet of the accessory family
+#: drawn from two boards, so it has no part key of its own.
+FIT_DRMOD_STEM = "raspmod-direct-on-pi"
+
 #: What each accessory sheet is called, by the file stem it is written to.
 #: ``acc_name`` reads it, and ``drawing_name`` puts ``ACC-`` in front.
 #:
@@ -96,6 +100,9 @@ ACC_NAMES = {
     "pmod-hat": "hat-pmod",      # Digilent's Pmod HAT Adapter
     "raspmod": "hat-rmod",       # the Raspmod, the other Pi-to-Pmod board
     "raspmod-direct": "hat-drmod",  # the Raspmod on the Pi's header
+    # The direct Raspmod drawn on the Pi it sits on, every model at once:
+    # FIT, as the mounting plate's fitting guide is TT-MP-FIT.
+    "raspmod-direct-on-pi": "fit-drmod",
     "poe-usbc": "poe-usbc",      # Waveshare's splitter, Type-C output
     "poe-microusb": "poe-musb",  # the generic splitter, micro-USB output
 }

@@ -268,7 +268,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="accessories/output/raspmod-direct.pdf"><img src="accessories/output/previews/raspmod-direct.png" width="270" alt="ACC-HAT-DRMOD Raspmod, direct"></a><br>
 <b>ACC-HAT-DRMOD</b> Raspmod, direct<br>TT Demoboard To Raspi Direct rev 2.0: on the Pi's GPIO header, flat beside the demoboard or an Arty
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="accessories/output/raspmod-direct-on-pi.pdf"><img src="accessories/output/previews/raspmod-direct-on-pi.png" width="270" alt="ACC-FIT-DRMOD Raspmod, direct, on a Raspberry Pi"></a><br>
+<b>ACC-FIT-DRMOD</b> Raspmod, direct, on a Raspberry Pi<br>Every Model B sized Pi under the adapter, pin 1 on pin 1, and where a fourth plug would go
+</td>
 </tr>
 </table>
 

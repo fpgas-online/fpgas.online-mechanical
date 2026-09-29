@@ -3333,3 +3333,35 @@ conflicts are not.
   ports come out reversed. Found by mating the pin fields numerically, not
   by looking. The copper fix is parked until the mechanical layout is
   confirmed, since nothing on the plates depends on which pin is which.
+
+## The GPIO header pin by pin, and the direct Raspmod drawn on the Pi: ACC-FIT-DRMOD
+
+- A `Feature` can carry a pin field now, `pins=(columns, rows)` on a pitch,
+  centred in its box and drawn a circle per pin as a Pmod host's is, with
+  `pin1` dotted. Every 40-pin header in the set has one: the Pi sheets,
+  the Orange Pi PC, RPI-ALL, the Pmod HAT's socket, both Raspmods' J1.
+  The Pi's pin 1 is the inner-row pin at the SD-card end -- the square pad
+  on the Pi 5 drawing, and where the Orange Pi PC's photographs put it.
+- `Feature.__post_init__` refuses a pin 1 that is not on the field, and
+  caught a real bug at once: `moved()` shifted a feature's box and left
+  its `pin1` behind, so the HAT carried onto the Orange Pi PC had its
+  socket 1.5 mm from its own pin 1. It moves both now; `turned()` -- a
+  half turn about a point, the counterpart of `moved()` -- was written
+  with it, for a board drawn under the one that sits on it.
+- The mating view was tried first as an overlay on the adapter's own
+  sheet, which is what `overlay` is for. With an 85 mm Pi in the view the
+  sheet fell from 2:1 to 1:1 and its annotation, laid out for 2:1, ran
+  into everything: the plug-depth values, the balloons, the ordinates
+  into the notes. It is its own sheet, ACC-FIT-DRMOD, on the fitting
+  guide's precedent, and keeps 2:1 with the view the width of the sheet
+  and the names on leaders up into the Pi's empty half.
+- Which Pis fit is a list now, `accessories/pi_under.py`: the parts some
+  model puts inside the adapter's footprint, read off the drawings, that
+  the fit sheet draws and `base_plates/design.py` judges by. The Pi 5's
+  UART connector was found on its drawing this way -- 0.4 mm inside the
+  footprint, 4.3 tall at most, so it clears -- and the Pi 5's PoE header
+  is at the bottom edge by the Ethernet jack, nowhere near.
+- The Pi drawings label no PoE header: the Pi 4's is placed by its
+  dimensions (25.75 from the header centre, 6.14 from the edge), and the
+  Pi 5's parts are read from the drawing's vectors, since its pins are
+  not circles pdfplumber can pick out on their own.

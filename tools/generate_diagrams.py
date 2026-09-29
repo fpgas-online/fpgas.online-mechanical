@@ -37,6 +37,7 @@ from base_plates.plates import PLATES as BASE_PLATES  # noqa: E402
 from tools.drafting.baseplate_sheet import render_baseplate  # noqa: E402
 from tools.drafting.baseplate_template import (  # noqa: E402
     render_baseplate_template)
+from tools.drafting.fit_sheet import render_fit  # noqa: E402
 from tools.drafting.board_sheet import (planned_band_height,  # noqa: E402
                                         render_board)
 from tools.drafting.camera_sheet import render_camera_position  # noqa: E402
@@ -48,7 +49,7 @@ from tools.drafting import rpi_compare_sheet  # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
-                          bp_template_stem,
+                          FIT_DRMOD_STEM, bp_template_stem,
                           FITTING_GUIDE_SHEET, FITTING_GUIDE_STEM,
                           LENS_STEM, holder_stem,
                           PLATE_SHEET, PLATE_STEM, PMOD_HAT_SHEET,
@@ -816,6 +817,12 @@ def draw_sheets():
     direct_name = drawing_name("accessories", direct_stem)
     sheet = render_board(RASPMOD_DIRECT, version=VERSION, drawing_no=direct_name)
     yield sheet, acc_dir / f"{direct_stem}.svg", direct_name
+
+    # And the same board on the Pi it sits on, every model at once, with
+    # what is under it and where a fourth plug would go.
+    fit_name = drawing_name("accessories", FIT_DRMOD_STEM)
+    sheet = render_fit(drawing_no=fit_name, version=VERSION)
+    yield sheet, acc_dir / f"{FIT_DRMOD_STEM}.svg", fit_name
 
     plate_dir = FAMILY_DIRS["mounting-plate"]
     # The two A3 plate sheets are drawn by a function each rather than by one

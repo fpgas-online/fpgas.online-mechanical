@@ -396,3 +396,9 @@ checker that measures the finished PDFs rather than trusting them.
 - [ ] The Pi's PCB thickness is measured off the Pi 5 drawing's side
       elevation (1.41); measure a board
 - [ ] Build one of each and put an adapter in it
+- [ ] The Pi 5's UART connector beside MT4 is 0.4 mm inside the adapter's
+      footprint; its height (ASSUMED 4.3, a JST SH) is not on the drawing.
+      Measure one, or find the part; the sheet says which
+- [ ] Reshape the adapter to fit every Pi and carry four plugs, against
+      ACC-FIT-DRMOD: the PoE header of the 3B+ and 4B is 2.16 too tall
+      under it, and a fourth plug goes beyond P3, away from the USB end
