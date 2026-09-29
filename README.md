@@ -142,6 +142,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/cm1.pdf"><img src="raspberry_pi_camera/output/previews/cm1.png" width="270" alt="RPICAM-1 Raspberry Pi Camera Module 1 (v1.3)"></a><br>
+<b>RPICAM-1</b> Raspberry Pi Camera Module 1 (v1.3)<br>25 x 23.9 mm, OmniVision OV5647, hand measured
+</td>
+<td width="33%" valign="top" align="center">
 <a href="raspberry_pi_camera/output/cm2.pdf"><img src="raspberry_pi_camera/output/previews/cm2.png" width="270" alt="RPICAM-2 Raspberry Pi Camera Module 2"></a><br>
 <b>RPICAM-2</b> Raspberry Pi Camera Module 2<br>25 x 23.862 mm, Sony IMX219
 </td>
@@ -149,7 +153,6 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="raspberry_pi_camera/output/cm3.pdf"><img src="raspberry_pi_camera/output/previews/cm3.png" width="270" alt="RPICAM-3 Raspberry Pi Camera Module 3"></a><br>
 <b>RPICAM-3</b> Raspberry Pi Camera Module 3<br>25 x 23.862 mm, standard and wide, Sony IMX708
 </td>
-<td width="33%"></td>
 </tr>
 </table>
 
@@ -309,10 +312,12 @@ derived from keep their own licences:
 |---|---|
 | Arty A7 drawing | Digilent's |
 | ButterStick board files | Its maker's open hardware licence |
+| Camera Module v1.3 hand-measured drawing | Gert van Loo's |
 | Cynthion board file | Great Scott Gadgets' under the CERN-OHL-P v2 |
 | Icepi Zero board files | Solderpad Hardware Licence 2.1 |
 | PYNQ-Z2 model | TUL's |
 | Raspberry Pi camera mechanical drawings | Raspberry Pi Ltd's |
 | Raspberry Pi mechanical drawings | Raspberry Pi Ltd's |
+| Raspberry Pi Spy camera module diagram | Raspberry Pi Spy's |
 | Tiny Tapeout board files | Apache 2.0 |
 | ULX3S board files | Its maker's open hardware licence |

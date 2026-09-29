@@ -16,6 +16,10 @@ The board is 25 mm across and 23.862 mm up.  The camera FFC connector is on
 the underside, against the upper edge; the lens is near that same edge, at
 14.4 mm up; the four mounting holes are 21 mm apart across and 12.5 mm apart
 up, the lower pair 2 mm in from the lower and side edges.
+
+The Camera Module 1, the v1.3 board, is the exception: Raspberry Pi never
+drew it, so it is not extracted but written by hand in ``v1.py``, and joins
+the others at the foot of this file.
 """
 
 from __future__ import annotations
@@ -107,3 +111,9 @@ BOARDS['cm3'] = BoardSpec(
         'The standard and wide drawings agree on the outline, holes and lens module within 0.05, so one sheet covers both.',
     ),
 )
+
+# The Camera Module 1, v1.3: not extracted, since Raspberry Pi never drew it.
+# Written by hand, with the provenance of every figure, in v1.py.
+from raspberry_pi_camera.v1 import CM1  # noqa: E402
+
+BOARDS[CM1.key] = CM1
