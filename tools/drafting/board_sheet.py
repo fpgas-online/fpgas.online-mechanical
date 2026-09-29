@@ -965,7 +965,9 @@ LEGEND_STYLES = {
     "hidden": ("line", style.W_COMPONENT, style.C_HIGHLIGHT, style.D_HIDDEN),
     "centre": ("line", style.W_CENTRE, style.C_LINE, style.D_CENTRE),
     "dimension": ("arrow", style.W_THIN, style.C_DIM, None),
-    "usbc": ("line", style.W_PHANTOM, "#7a4a00", style.D_PHANTOM),
+    "usbc": ("line", style.W_PHANTOM, style.C_FRAME_B, style.D_PHANTOM),
+    "frame_a": ("line", style.W_PHANTOM, style.C_FRAME_A, style.D_PHANTOM),
+    "frame_b": ("line", style.W_PHANTOM, style.C_FRAME_B, style.D_PHANTOM),
 }
 
 

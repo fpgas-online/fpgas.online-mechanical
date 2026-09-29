@@ -19,8 +19,9 @@ it, so a new board is a new directory and does not disturb the others.
 |-----------|------------------------------|
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
+| [`tinytapeout/camera_holder/`](tinytapeout/camera_holder/README.md) | `TT-MP-CAM65`, `TT-MP-CAM120` -- A printed stand on the plate that holds a Camera Module v1.3 over whichever board is on it, one per lens, with STEP solids and a DXF |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, each with a Digilent Pmod HAT Adapter overlaid |
-| [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked |
+| [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; the OV5647's stock, autofocus and 120 degree lenses, every figure declared and derived, and their focus; then where to put an OV5647 camera over a board to frame it: how high, in two elevations drawing both lenses' fields of view, whether it is in focus there, and where |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Parts that are none of the boards above but turn up in the same assemblies, such as Pi-to-Pmod adapters and PoE splitters, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
@@ -64,6 +65,14 @@ are, and only the name is cut:
   left of these stems once `TT-MP` has said `tt-generic-mounting-plate` is the
   sheet's title (`chassis-drill-template`), which the sheet already carries in
   full, so that one is a table as well, `PLATE_NAMES`.
+- a camera sheet is named for its module, `RPICAM-3`, the lens sheet
+  `RPICAM-LENS`, and those that put a camera over a subject are OVER and
+  one word for the subject, `RPICAM-OVER-ARTY`: a table, `RPICAM_NAMES`,
+  since the stem says the subject in full.
+- the camera holders, a made part filed in a directory of their own, take
+  the plate's prefix, since they bolt through the plate's own fixings, and
+  CAM and the lens's angle from `HOLDER_NAMES`: `TT-MP-CAM65` and
+  `TT-MP-CAM120`.
 
 Nothing is numbered. A number is a position in a list, so it depends on what
 else is in the list: two branches each adding a board sheet gave it the same
@@ -154,6 +163,20 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>RPICAM-3</b> Raspberry Pi Camera Module 3<br>25 x 23.862 mm, standard and wide, Sony IMX708
 </td>
 </tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/ov5647-lenses.pdf"><img src="raspberry_pi_camera/output/previews/ov5647-lenses.png" width="270" alt="RPICAM-LENS OV5647 Lenses and Focus"></a><br>
+<b>RPICAM-LENS</b> OV5647 Lenses and Focus<br>Camera Module v1: stock, autofocus and 120 degree lenses
+</td>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/over-tt-mounting-plate.pdf"><img src="raspberry_pi_camera/output/previews/over-tt-mounting-plate.png" width="270" alt="RPICAM-OVER-PLATE Camera over the TT Mounting Plate"></a><br>
+<b>RPICAM-OVER-PLATE</b> Camera over the TT Mounting Plate<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/over-arty-a7.pdf"><img src="raspberry_pi_camera/output/previews/over-arty-a7.png" width="270" alt="RPICAM-OVER-ARTY Camera over the Arty A7"></a><br>
+<b>RPICAM-OVER-ARTY</b> Camera over the Arty A7<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+</tr>
 </table>
 
 ### FPGA development boards
@@ -241,6 +264,22 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </tr>
 </table>
 
+### Camera holder
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="tinytapeout/camera_holder/output/tt-camera-holder-65.pdf"><img src="tinytapeout/camera_holder/output/previews/tt-camera-holder-65.png" width="270" alt="TT-MP-CAM65 Camera Holder, 65 deg Lens"></a><br>
+<b>TT-MP-CAM65</b> Camera Holder, 65 deg Lens<br>Holds a Camera Module over every demo board revision
+</td>
+<td width="33%" valign="top" align="center">
+<a href="tinytapeout/camera_holder/output/tt-camera-holder-120.pdf"><img src="tinytapeout/camera_holder/output/previews/tt-camera-holder-120.png" width="270" alt="TT-MP-CAM120 Camera Holder, 120 deg Lens"></a><br>
+<b>TT-MP-CAM120</b> Camera Holder, 120 deg Lens<br>Holds a Camera Module over every demo board revision
+</td>
+<td width="33%"></td>
+</tr>
+</table>
+
 <!-- sheets:end -->
 
 ## Printing at true size
@@ -287,7 +326,9 @@ the data the drawing was made from. A `+` on the end means it was rendered
 with uncommitted changes.
 
 Every check that runs over the output has caught a real defect, from text
-colliding on a sheet to a mounting hole no M3 screw actually fits.
+colliding on a sheet to a mounting hole no M3 screw actually fits. The
+camera family's and the camera holder's own checks, which read their data
+rather than the output, have caught nothing yet.
 [`tools/README.md`](tools/README.md) says what each one does and what it
 found.
 

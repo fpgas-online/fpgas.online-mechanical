@@ -32,6 +32,7 @@ FAMILY_DIRS = {
     "fpga": ROOT / "fpga" / "output",
     "accessories": ROOT / "accessories" / "output",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "output",
+    "camera-holder": ROOT / "tinytapeout" / "camera_holder" / "output",
 }
 
 #: Every demo board sheet's file stem is this and the revisions it covers,
@@ -150,6 +151,14 @@ FAMILY_PREFIXES = {
     "fpga": ("FPGA", ""),
     "accessories": ("ACC", ""),
     "mounting-plate": ("TT-MP", PLATE_STEM),
+    # The camera holder is a made part built on the plate, and filed in a
+    # directory of its own: its checks and its STEP solids do not belong
+    # among the plate's generated data.  It takes the plate's prefix because
+    # it is a sheet of the plate's set -- it bolts through the plate's own
+    # fixings -- and HOLDER_NAMES says which in one word.  A prefix two
+    # families share is safe because check_sheets.py tests every name
+    # against every other across the whole set.
+    "camera-holder": ("TT-MP", ""),
 }
 
 
@@ -314,6 +323,75 @@ def plate_name(stem_tail: str) -> str:
             "sheet itself already carries in full")
 
 
+#: The camera holders' sheets, one per lens, by file stem: the stem says
+#: what it is, what it is on and for which lens, where the prefix has already
+#: said the plate.  CAM and the lens's own angle: CAMERA with a lens after
+#: it would have made the holder for one lens a prefix of the other's.
+HOLDER_STEM = "tt-camera-holder"
+
+
+def holder_stem(lens_key: str) -> str:
+    """The file stem of the holder sheet for the lens keyed *lens_key*."""
+    return f"{HOLDER_STEM}-{lens_key}"
+
+
+HOLDER_NAMES = {
+    holder_stem("65"): "cam65",     # the holder for the stock 65 deg lens
+    holder_stem("120"): "cam120",   # the holder for the 120 deg lens
+}
+
+
+def holder_name(stem: str) -> str:
+    """What the camera holder sheet written to *stem* is called."""
+    try:
+        return HOLDER_NAMES[stem]
+    except KeyError:
+        raise SystemExit(
+            f"no drawing name for the camera holder sheet {stem!r}; add one "
+            "to HOLDER_NAMES in tools/layout.py, one word saying what it is "
+            "on the plate for")
+
+
+#: The OV5647's lens sheet: every lens option's field of view and focus,
+#: declared and derived, which the position sheets compute with and cite.
+#: Its stem says what it is of; its name, RPICAM-LENS, says which sheet.
+LENS_STEM = "ov5647-lenses"
+
+#: The camera family's other sheets, by file stem.  A camera module's own
+#: sheet needs no row: ``cm3`` leaves ``3`` behind the lead and the name is
+#: RPICAM-3.  A position sheet's stem is ``over-`` and its subject's key,
+#: which says the subject in full -- ``over-tt-mounting-plate`` -- where
+#: the drawing number wants OVER and one word for which subject.
+RPICAM_NAMES = {
+    LENS_STEM: "lens",                         # the OV5647's lens options
+    "over-tt-mounting-plate": "over-plate",    # the TT mounting plate
+    "over-arty-a7": "over-arty",               # the Arty A7
+}
+
+#: What a camera module sheet's stem leaves behind the lead: the module
+#: number, ``1``, ``2`` or ``3``.
+RPICAM_MODULE_RE = re.compile(r"\d+")
+
+
+def rpicam_name(rest: str) -> str:
+    """What the camera sheet whose stem ends in *rest* is called.
+
+    A module's own sheet keeps the module number; anything else is looked up
+    in ``RPICAM_NAMES``, and a stem that is neither stops the render rather
+    than passing a stem-shaped name through.
+    """
+    if RPICAM_MODULE_RE.fullmatch(rest):
+        return rest
+    try:
+        return RPICAM_NAMES[rest]
+    except KeyError:
+        raise SystemExit(
+            f"no drawing name for the camera sheet whose stem ends {rest!r}; "
+            "a module sheet is named for its module, and a position sheet "
+            "wants a row in RPICAM_NAMES in tools/layout.py, OVER and four "
+            "or five characters saying which subject")
+
+
 #: How a family cuts what is left of a stem down to a drawing name, for the
 #: families that need it.  A separate table rather than a third column
 #: of FAMILY_PREFIXES: several branches are open at once each adding a row to
@@ -328,12 +406,16 @@ def plate_name(stem_tail: str) -> str:
 #: * a demo board's stem carries every revision the sheet covers
 #: * an accessory's says in words what the part is
 #: * a mounting plate sheet's says its title -- ``chassis-drill-template``
+#: * a camera position sheet's says its subject in full
+#: * a camera holder's says what it is and what it is on
 #:
 #: Each is right for a file name and too long for a drawing number.
 FAMILY_NAME_RULES = {
     "tinytapeout": tt_name,
     "accessories": acc_name,
     "mounting-plate": plate_name,
+    "raspberry-pi-camera": rpicam_name,
+    "camera-holder": holder_name,
 }
 
 

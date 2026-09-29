@@ -27,16 +27,21 @@ from raspberry_pi.boards import BOARDS as RPI_BOARDS  # noqa: E402
 from raspberry_pi.boards import FEATURE_NUMBERS as RPI_NUMBERS  # noqa: E402
 from raspberry_pi_camera.boards import (  # noqa: E402
     BOARDS as RPICAM_BOARDS, FEATURE_NUMBERS as RPICAM_NUMBERS)
+from raspberry_pi_camera.optics import subjects as rpicam_subjects  # noqa: E402
 from tinytapeout.boards import BOARDS as TT_BOARDS  # noqa: E402
 from tinytapeout.boards import FEATURE_NUMBERS as TT_NUMBERS  # noqa: E402
 from tools.drafting.board_sheet import (planned_band_height,  # noqa: E402
                                         render_board)
+from tools.drafting.camera_sheet import render_camera_position  # noqa: E402
 from tools.drafting.enclosure_sheet import render_enclosure  # noqa: E402
+from tools.drafting.holder_sheet import render_holder  # noqa: E402
+from tools.drafting.lens_sheet import render_lenses  # noqa: E402
 from tools.drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE  # noqa: E402
 from tools.drafting.template_sheet import render_drill_template  # noqa: E402
 from tools.layout import (DRILL_TEMPLATE_STEMS, FAMILY_DIRS,  # noqa: E402
                           FITTING_GUIDE_SHEET, FITTING_GUIDE_STEM,
+                          LENS_STEM, holder_stem,
                           PLATE_SHEET, PLATE_STEM, PMOD_HAT_SHEET,
                           PMOD_HAT_STEM, acc_stem, drawing_name,
                           preview_for, rel, slug, tt_stem)
@@ -64,7 +69,8 @@ TT_BUNDLE = "tinytapeout-sheets.pdf"
 RPI_BUNDLE = "raspberry-pi-sheets.pdf"
 
 #: And the camera sheets, which are a set: boards on one hole pattern, with
-#: the lens module the thing that moves between them.
+#: the lens module the thing that moves between them; and then the sheets
+#: that say where to put a camera once it is mounted.
 RPICAM_BUNDLE = "raspberry-pi-camera-sheets.pdf"
 
 #: And the FPGA development boards.
@@ -83,6 +89,15 @@ RPI_ORDER = ["rpi3b", "rpi4b", "rpi5"]
 #: notes band and the board holds still between them: what moves is the
 #: lens module, which is the whole point of drawing them as a set.
 RPICAM_ORDER = ["cm1", "cm2", "cm3"]
+#: The camera POSITION sheets, which follow the board sheets in the same
+#: family: they are about the same modules, and a reader who has just found
+#: out where the optical axis sits on the board is the reader who wants to
+#: know where to put the board.  The plate first, because it is the thing
+#: this repository is mostly about, then the Arty.  Each entry is the key of
+#: a subject in ``raspberry_pi_camera.optics``, which is the thing the camera
+#: is pointed at; ``position_stem`` says what the sheet drawn for it is
+#: called.
+RPICAM_POSITION_ORDER = ["tt-mounting-plate", "arty-a7"]
 #: In the order they were asked for.  No shared frame: unlike the demo
 #: boards, which register on their Pmod hosts, and the Pis, which share an
 #: outline, these have nothing in common to hold still, so each sheet is
@@ -120,6 +135,25 @@ RPI_NOTES = (
 RPICAM_NOTES = (
     "The component side is the lens side; the connector is on the far face.",
 )
+
+
+def position_stem(key: str) -> str:
+    """The file stem of the camera position sheet for subject *key*.
+
+    The subject's own key behind ``over-``, so the sheet that draws the
+    camera over the Arty A7 is written to ``over-arty-a7.svg``.  Its name
+    comes from ``tools.layout.RPICAM_NAMES``, keyed by that stem:
+    ``RPICAM-OVER-ARTY``, the family prefix, the word the title shares with
+    the other position sheets, and one word for the subject, as ``RPICAM-2``
+    does not say camera twice either.  The widest of them,
+    ``RPICAM-OVER-PLATE``, is 36.03 mm of lettering at the ISO 3098 floor in
+    the 79.30 mm the DRAWING NO cell has.
+
+    Here rather than in ``tools/layout.py``, which holds the stems that notes
+    on OTHER sheets cite: nothing cites these, and the camera board sheets
+    take their stems from the generator too.
+    """
+    return f"over-{key}"
 
 
 def tt_sheets() -> list[tuple[str, "BoardSpec"]]:
@@ -402,6 +436,33 @@ def rpicam_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
             for key in RPICAM_ORDER]
 
 
+def rpicam_position_sheets() -> list[tuple[str, Path, "Subject"]]:
+    """The camera position sheets: drawing name, path, subject.
+
+    Beside ``rpicam_sheets`` and read after it: those are one board each,
+    rendered by ``render_board`` from a ``BoardSpec``; these draw no part at
+    all and are rendered by a module of their own from a subject in
+    ``raspberry_pi_camera.optics``.  They bind into the same family's copy
+    because they are about the same modules -- a reader who has just found
+    out where the optical axis sits on the board is the reader who wants to
+    know where to put the board.
+    """
+    cam_dir = FAMILY_DIRS["raspberry-pi-camera"]
+    subjects = rpicam_subjects()
+    # A subject in the data and not in the reading order is a sheet nobody
+    # draws, the way a demo board missing from TT_ORDER was.
+    missing = [k for k in subjects if k not in RPICAM_POSITION_ORDER]
+    if missing:
+        raise SystemExit(
+            f"raspberry_pi_camera/optics.py defines {', '.join(missing)}, "
+            "which RPICAM_POSITION_ORDER does not list, so no sheet would be "
+            "drawn for it. Add it to RPICAM_POSITION_ORDER, in the order the "
+            "sheets should be read.")
+    return [(drawing_name("raspberry-pi-camera", position_stem(key)),
+             cam_dir / f"{position_stem(key)}.svg", subjects[key])
+            for key in RPICAM_POSITION_ORDER]
+
+
 def fpga_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
     """The FPGA development board sheets: drawing name, path, spec."""
     fpga_dir = FAMILY_DIRS["fpga"]
@@ -433,6 +494,47 @@ def plate_sheets() -> list[tuple[str, Path, str]]:
     ]
 
 
+def holder_title(lens) -> tuple[str, str]:
+    """A camera holder sheet's title and subtitle, which the README grid
+    prints too."""
+    return (f"Camera Holder, {lens.short} deg Lens",
+            "Holds a Camera Module over every demo board revision")
+
+
+def holder_sheets() -> list[tuple[str, Path, str, "Holder"]]:
+    """The camera holders' sheets: drawing name, path, outline entry, holder.
+
+    One per lens.  A made part on the plate, so they bind with the plate's
+    own A3 sheets, after them: a reader meets the plate, which boards go on
+    it, and then what stands over them.
+    """
+    from tinytapeout.camera_holder.holder import VARIANTS
+    out = []
+    for key, h in VARIANTS.items():
+        stem = holder_stem(key)
+        name = drawing_name("camera-holder", stem)
+        title, sub = holder_title(h.LENS)
+        out.append((name, FAMILY_DIRS["camera-holder"] / f"{stem}.svg",
+                    f"{name}  {title}  -  {sub}", h))
+    return out
+
+
+#: The lens sheet's title and subtitle, which the README grid prints too.
+LENS_TITLE = "OV5647 Lenses and Focus"
+LENS_SUBTITLE = "Camera Module v1: stock, autofocus and 120 degree lenses"
+
+
+def lens_sheet() -> tuple[str, Path, str]:
+    """The lens sheet: drawing name, path, outline entry.
+
+    Bound after the camera board sheets and before the position sheets
+    that compute with its figures.
+    """
+    name = drawing_name("raspberry-pi-camera", LENS_STEM)
+    return (name, FAMILY_DIRS["raspberry-pi-camera"] / f"{LENS_STEM}.svg",
+            f"{name}  {LENS_TITLE}  -  {LENS_SUBTITLE}")
+
+
 def bundles() -> list[Bundle]:
     """Every bound copy the generator writes, without rendering anything.
 
@@ -442,10 +544,19 @@ def bundles() -> list[Bundle]:
     """
     tt_pages = [(path.with_suffix(".pdf"), label)
                 for _, path, label in plate_sheets()]
+    tt_pages += [(path.with_suffix(".pdf"), label)
+                 for _, path, label, _ in holder_sheets()]
     tt_pages += [(path.with_suffix(".pdf"), _label(name, spec))
                  for name, _, path, spec in tt_board_sheets()]
+    # The board sheets, the lenses, then the ones that say where to put the
+    # camera once it is on something: the order RPICAM_POSITION_ORDER
+    # explains.
     cam_pages = [(path.with_suffix(".pdf"), _label(name, spec))
                  for name, path, spec in rpicam_sheets()]
+    _, lens_path, lens_label = lens_sheet()
+    cam_pages.append((lens_path.with_suffix(".pdf"), lens_label))
+    cam_pages += [(path.with_suffix(".pdf"), _label(name, subject))
+                  for name, path, subject in rpicam_position_sheets()]
     return [
         Bundle(FAMILY_DIRS["tinytapeout"] / TT_BUNDLE,
                "Tiny Tapeout - mechanical drawings", tuple(tt_pages)),
@@ -552,6 +663,23 @@ def main() -> None:
                              view_bbox=cam_frame, band_height=cam_band)
         save(sheet, path, f"{name} ({spec.title})")
 
+    # The lens sheet, from the same module: every lens figure the position
+    # sheets compute with, and where it came from.
+    l_name, l_path, _ = lens_sheet()
+    sheet = render_lenses(title=LENS_TITLE, subtitle=LENS_SUBTITLE,
+                          drawing_no=l_name, version=VERSION)
+    save(sheet, l_path, f"{l_name} ({LENS_TITLE})")
+
+    # The camera position sheets, drawn from the same family's optics module
+    # rather than from a BoardSpec: they are not drawings of a part.  No
+    # shared frame and no shared band with the board sheets above --
+    # nothing about a 25 mm camera module holds still against a 135 mm plate
+    # -- so each is fitted to its own subject.
+    for name, path, subject in rpicam_position_sheets():
+        sheet = render_camera_position(subject, drawing_no=name,
+                                       version=VERSION)
+        save(sheet, path, f"{name} ({subject.title})")
+
     fpga_dir = FAMILY_DIRS["fpga"]
     fpga_dir.mkdir(parents=True, exist_ok=True)
     for name, path, spec in fpga_sheets():
@@ -604,6 +732,16 @@ def main() -> None:
         name = drawing_name("mounting-plate", stem)
         sheet = render_drill_template(kind, drawing_no=name, version=VERSION)
         save(sheet, plate_dir / f"{stem}.svg", name)
+
+    # The camera holder: a made part on the plate, drawn from its own module
+    # rather than from a BoardSpec.
+    holder_dir = FAMILY_DIRS["camera-holder"]
+    holder_dir.mkdir(parents=True, exist_ok=True)
+    for h_name, h_path, _, h in holder_sheets():
+        title, sub = holder_title(h.LENS)
+        sheet = render_holder(h, title=title, subtitle=sub,
+                              drawing_no=h_name, version=VERSION)
+        save(sheet, h_path, f"{h_name} ({title})")
 
     for path in made:
         print(f"  {rel(path)}")

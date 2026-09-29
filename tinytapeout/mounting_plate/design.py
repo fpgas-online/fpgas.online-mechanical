@@ -52,6 +52,24 @@ MERGE_BELOW = HOLE_DIA - M3_DIA
 PLATE_HOLE_DIA = 4.30      # M4 clearance, for fixing the plate down
 PLATE_HOLE_CLEAR = 6.0     # keep plate fixings this far from any board hole
 
+#: What a board stands on, plate face to board underside.  A CHOICE, not a
+#: figure anyone publishes: until the camera holder the plate said "on
+#: standoffs" and left the length to the builder, which left every height
+#: above a board -- a camera's, first of all -- unanswerable.
+#:
+#: Eight millimetres, because it is not less than what Tiny Tapeout's own
+#: printed base gives the board.  That base, ``case/tt06_demo_base.scad`` in
+#: tt-demo-pcb, is ``Height = 8`` overall with a ``1.6`` mm PCB let into its
+#: top, so its studs stand the board's underside 6.4 mm off the base's floor,
+#: and the pocket under the board is 4.9 mm deep "for PTH pins and rubber
+#: feet" -- the through-hole pins that stick out of the underside.  An 8 mm
+#: M3 standoff clears everything that base clears, with 1.6 mm to spare.
+STANDOFF_HEIGHT = 8.0
+UPSTREAM_BASE_STUD = 6.4   # Height - pcb_thickness, 8 - 1.6, in that .scad
+UPSTREAM_BASE_REF = ("https://github.com/TinyTapeout/tt-demo-pcb/blob/"
+                     "521108f4abad8e7a57e517b170d3d62ceb06667f/case/"
+                     "tt06_demo_base.scad")
+
 #: Each entry is one mechanically distinct group of board revisions, in board
 #: order: the group's name, the revision whose geometry the plate is registered
 #: against, and every revision the group covers.  A group's revisions share
@@ -366,6 +384,14 @@ PMOD_SLOT_X = {pmod_x}
 PMOD_ROW_Y = {pmod_y}
 PMOD_PITCH = {pitch}
 
+#: Plate face to board underside: what every board stands on.  A choice, not
+#: a published figure; design.py says why it is at least what Tiny Tapeout's
+#: own printed base gives the board.  UPSTREAM_BASE_STUD is that base's stud,
+#: from the file UPSTREAM_BASE_REF, and verify.py reads the file back.
+STANDOFF_HEIGHT = {standoff}
+UPSTREAM_BASE_STUD = {stud}
+UPSTREAM_BASE_REF = {stud_ref!r}
+
 #: The Pmod connector body relative to its pin-field centre, as
 #: (dx0, dx1, dy0, dy1).  Identical on every revision; the generator checks it
 #: rather than assuming it.  dy0 is negative because the body overhangs the
@@ -406,6 +432,11 @@ PLATE = BoardSpec(
                note="Board outlines, mounting holes and Pmod host positions "
                     "for every Tiny Tapeout demo board revision, extracted "
                     "from the upstream KiCad files."),
+        Source(label="Standoff height",
+               ref={stud_ref!r},
+               note="Tiny Tapeout's own printed base: Height = 8 with a 1.6 "
+                    "mm PCB let into it, so its studs stand the board "
+                    "{stud} mm up. The plate's {standoff:g} mm is not less."),
         Source(label="Pmod host pitch",
                ref="https://mith.ro/pmod-spec/",
                note="Digilent mandate .90 in (22.86 mm) between adjacent host "
@@ -418,6 +449,8 @@ PLATE = BoardSpec(
         "boards whose holes are too close together to drill separately.",
         "Pmod connector bodies overhang the front (lower) edge by {fc} mm; "
         "keep it clear so a peripheral can plug in.",
+        "Boards stand on M3 x {standoff:g} mm standoffs, plate face to "
+        "board underside.",
         "Cut file: tt-generic-mounting-plate.dxf. Sizes are finished sizes.",
     ),
 )
@@ -425,6 +458,11 @@ PLATE = BoardSpec(
 
 
 def main() -> None:
+    if STANDOFF_HEIGHT < UPSTREAM_BASE_STUD:
+        raise SystemExit(
+            f"a {STANDOFF_HEIGHT} mm standoff stands the board lower than "
+            f"Tiny Tapeout's own base does ({UPSTREAM_BASE_STUD} mm), so the "
+            "through-hole pins under it are no longer known to clear")
     place, holes, slots = build()
     check_fasteners(place, holes, slots)
     fixings = plate_fixings(place, holes, slots)
@@ -507,7 +545,9 @@ def main() -> None:
         datum_x=DATUM_X, datum_y=DATUM_Y,
         placements=place_src(), holes=hole_src(), slots=slot_src(),
         w=PLATE_WIDTH, h=PLATE_HEIGHT, r=PLATE_CORNER_R,
-        dia=HOLE_DIA, fc=FRONT_CLEARANCE, pdia=PLATE_HOLE_DIA)
+        dia=HOLE_DIA, fc=FRONT_CLEARANCE, pdia=PLATE_HOLE_DIA,
+        standoff=STANDOFF_HEIGHT, stud=UPSTREAM_BASE_STUD,
+        stud_ref=UPSTREAM_BASE_REF)
     out = ROOT / "tinytapeout" / "mounting_plate" / "plate.py"
     out.write_text(text)
     print(f"\nwrote {out.relative_to(ROOT)}")

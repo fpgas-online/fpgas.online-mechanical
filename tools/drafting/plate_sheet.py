@@ -38,7 +38,9 @@ BOARD_HOLE = "#a00000"
 PLATE_HOLE = "#006060"
 #: The USB-C outlines.  Distinct from both hole colours because it is neither
 #: a hole nor a plate feature: it is an opening a chassis has to provide.
-USB_MARK = "#7a4a00"
+#: Named in style.py, where the camera sheets take the same colour for their
+#: second frame: one value, one spelling.
+USB_MARK = style.C_FRAME_B
 #: A light wash of the same colour, so a five millimetre rectangle on the
 #: fitting guide reads as a marked area rather than an empty box.
 USB_FILL = "#f2e6d0"

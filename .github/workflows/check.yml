@@ -47,13 +47,17 @@ jobs:
       # a tarball when it finds no git, and a tarball has no history to
       # describe.  Both DejaVu packages: the condensed faces the sheets letter
       # in are in -extra, and tools/drafting/style.py opens them by path.
-      - name: Install Inkscape, the DejaVu fonts, git and make
+      # libgl1 is for the camera holder's STEP export, which `make diagrams`
+      # runs: cadquery reaches OpenCascade through OCP, whose libTKOpenGl
+      # links libGL.so.1, so `import cadquery` fails on a container without
+      # it even though nothing here opens a window.
+      - name: Install Inkscape, the DejaVu fonts, libGL, git and make
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
           apt-get update
           apt-get install --yes --no-install-recommends \
-            ca-certificates git make \
+            ca-certificates git make libgl1 \
             inkscape fonts-dejavu-core fonts-dejavu-extra
 
       # Full history and the tags, and on a pull request the branch's own head
@@ -127,6 +131,7 @@ jobs:
             raspberry_pi/output/
             tinytapeout/output/
             tinytapeout/mounting_plate/output/
+            tinytapeout/camera_holder/output/
             tmp/check-pdfs/
           if-no-files-found: warn
           retention-days: 14

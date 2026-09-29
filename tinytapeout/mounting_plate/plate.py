@@ -23,6 +23,14 @@ PMOD_SLOT_X = (38.75, 61.61, 84.47)
 PMOD_ROW_Y = 9.0
 PMOD_PITCH = 22.86
 
+#: Plate face to board underside: what every board stands on.  A choice, not
+#: a published figure; design.py says why it is at least what Tiny Tapeout's
+#: own printed base gives the board.  UPSTREAM_BASE_STUD is that base's stud,
+#: from the file UPSTREAM_BASE_REF, and verify.py reads the file back.
+STANDOFF_HEIGHT = 8.0
+UPSTREAM_BASE_STUD = 6.4
+UPSTREAM_BASE_REF = 'https://github.com/TinyTapeout/tt-demo-pcb/blob/521108f4abad8e7a57e517b170d3d62ceb06667f/case/tt06_demo_base.scad'
+
 #: The Pmod connector body relative to its pin-field centre, as
 #: (dx0, dx1, dy0, dy1).  Identical on every revision; the generator checks it
 #: rather than assuming it.  dy0 is negative because the body overhangs the
@@ -96,6 +104,11 @@ PLATE = BoardSpec(
                note="Board outlines, mounting holes and Pmod host positions "
                     "for every Tiny Tapeout demo board revision, extracted "
                     "from the upstream KiCad files."),
+        Source(label="Standoff height",
+               ref='https://github.com/TinyTapeout/tt-demo-pcb/blob/521108f4abad8e7a57e517b170d3d62ceb06667f/case/tt06_demo_base.scad',
+               note="Tiny Tapeout's own printed base: Height = 8 with a 1.6 "
+                    "mm PCB let into it, so its studs stand the board "
+                    "6.4 mm up. The plate's 8 mm is not less."),
         Source(label="Pmod host pitch",
                ref="https://mith.ro/pmod-spec/",
                note="Digilent mandate .90 in (22.86 mm) between adjacent host "
@@ -108,6 +121,8 @@ PLATE = BoardSpec(
         "boards whose holes are too close together to drill separately.",
         "Pmod connector bodies overhang the front (lower) edge by 2.78 mm; "
         "keep it clear so a peripheral can plug in.",
+        "Boards stand on M3 x 8 mm standoffs, plate face to "
+        "board underside.",
         "Cut file: tt-generic-mounting-plate.dxf. Sizes are finished sizes.",
     ),
 )
