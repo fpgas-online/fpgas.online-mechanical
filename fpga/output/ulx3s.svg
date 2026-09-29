@@ -72,19 +72,19 @@
 <line x1="90.4" y1="83.3975" x2="90.4" y2="76.9975" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <circle cx="79.42" cy="101.8075" r="1.05" fill="#ffffff" stroke="#ffffff" stroke-width="0.05"/>
 <circle cx="79.42" cy="101.8075" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="79.42" y1="101.8075" x2="93.2327" y2="105.5086" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="96.3237" cy="106.3368" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="96.3237" y="107.5868" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">6</text>
-<circle cx="177.58" cy="101.7675" r="1.05" fill="#ffffff" stroke="#ffffff" stroke-width="0.05"/>
-<circle cx="177.58" cy="101.7675" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="177.58" y1="101.7675" x2="163.7673" y2="98.0664" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="160.6763" cy="97.2382" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="160.6763" y="98.4882" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">7</text>
+<line x1="79.42" y1="101.8075" x2="68.0221" y2="98.7534" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="64.9311" cy="97.9252" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="64.9311" y="99.1752" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">6</text>
+<circle cx="173.955" cy="114.7175" r="1.05" fill="#ffffff" stroke="#ffffff" stroke-width="0.05"/>
+<circle cx="173.955" cy="114.7175" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
+<line x1="173.955" y1="114.7175" x2="173.955" y2="132.5175" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="173.955" cy="135.7175" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="173.955" y="136.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">7</text>
 <circle cx="99.29" cy="94.5665" r="1.05" fill="#ffffff" stroke="#ffffff" stroke-width="0.05"/>
 <circle cx="99.29" cy="94.5665" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
-<line x1="99.29" y1="94.5665" x2="102.19" y2="99.5894" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
-<circle cx="103.79" cy="102.3607" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
-<text x="103.79" y="103.6107" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">4</text>
+<line x1="99.29" y1="94.5665" x2="96.39" y2="99.5894" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="94.79" cy="102.3607" r="3.2" fill="#ffffff" stroke="#a00000" stroke-width="0.25"/>
+<text x="94.79" y="103.6107" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#a00000" text-anchor="middle" font-weight="bold">4</text>
 <circle cx="99.29" cy="78.5925" r="1.05" fill="#ffffff" stroke="#ffffff" stroke-width="0.05"/>
 <circle cx="99.29" cy="78.5925" r="0.65" fill="#a00000" stroke="#a00000" stroke-width="0.05"/>
 <line x1="99.29" y1="78.5925" x2="107.777" y2="73.6925" stroke="#a00000" stroke-width="0.25" stroke-linecap="round"/>
@@ -288,7 +288,7 @@
 <text x="244.6" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">generated</text>
 <line x1="284.25" y1="263" x2="284.25" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="285.85" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">VERSION</text>
-<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-270-gc2d9e2f</text>
+<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-400-g80d77dd</text>
 <line x1="325.5" y1="263" x2="325.5" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="327.1" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">UNITS</text>
 <text x="327.1" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">mm</text>
