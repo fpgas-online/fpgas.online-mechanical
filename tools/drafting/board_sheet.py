@@ -550,7 +550,8 @@ def _feature_anchors(view: View, f) -> tuple[tuple[float, float], ...]:
 
 def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
                    bounds: Rect, c: Canvas, passes: int = 12,
-                   position_only: Obstacles | None = None) -> None:
+                   position_only: Obstacles | None = None,
+                   crossing_only: Obstacles | None = None) -> None:
     """Put each balloon near its feature, clear of everything else.
 
     A single greedy sweep is very order-sensitive: whichever balloon is placed
@@ -559,6 +560,10 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
     a third.  So the greedy pass is followed by relaxation sweeps that re-place
     each balloon in turn against the others' final positions.  It converges in
     a couple of passes on drawings this size.
+
+    *position_only* holds lines a balloon may not sit on and a leader may
+    cross; *crossing_only* the reverse, segments a leader is charged for
+    crossing, by their weight, and a balloon may sit beside.
     """
     # A balloon the drawing has fixed is in place before the first sweep, so
     # the greedy pass already routes round it.
@@ -634,9 +639,14 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
                 # own, tighter clearance; they are not in *world*.
                 lines = (position_only.hits(cx, cy, BALLOON_R + LINE_GAP)
                          if position_only is not None else 0.0)
+                if crossing_only is not None:
+                    lines_crossed = crossing_only.crossings(tx, ty, cx, cy)
+                else:
+                    lines_crossed = 0.0
                 score = (world.hits(cx, cy, BALLOON_R + 2.0) * 200
                          + lines * 200
-                         + route.crossings(tx, ty, cx, cy) * 60
+                         + (route.crossings(tx, ty, cx, cy)
+                            + lines_crossed) * 60
                          + route.leader_hits(tx, ty, cx, cy) * 30
                          + radius * 2.0)
                 if best_score is None or score < best_score:
@@ -803,7 +813,8 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
                                board: Rect, obstacles: "Obstacles",
                                edge_only: "Obstacles",
                                chain_edge: str = "bottom",
-                               height_edge: str = "right") -> None:
+                               height_edge: str = "right",
+                               crossing: "Obstacles | None" = None) -> None:
     """Hold the board outline and the two overall dimensions.
 
     The board outline first.  A balloon straddling it breaks the one line on
@@ -822,6 +833,11 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
     *height_edge* says which vertical edge the overall height goes up.  The
     right, on every sheet with an ordinate chain, because the chain has the
     left; a sheet with no chain may want the right for something else.
+
+    *crossing*, if given, gets the two dimension lines and their extension
+    lines as segments a leader is charged for crossing, at twice what a
+    witness line costs: ``tools/check_balloons.py`` reports a leader across
+    either, and it does not report one across a witness line.
     """
     o = spec.outline
     for edge in ((0, 0, o.width, 0), (o.width, 0, o.width, o.height),
@@ -856,6 +872,15 @@ def reserve_overall_dimensions(sheet: Sheet, view: View, spec: BoardSpec,
     for y in (board.y, board.y1):
         edge_only.add_segment(board.x1, y, board.x1 + OVERALL_GAP, y,
                               weight=HARD)
+    if crossing is not None:
+        line_x = _height_line(board, height_edge)
+        edge_x = board.x1 if height_edge == "right" else board.x
+        crossing.add_segment(board.x, overall_y, board.x1, overall_y, 2.0)
+        crossing.add_segment(line_x, board.y, line_x, board.y1, 2.0)
+        for x in (board.x, board.x1):
+            crossing.add_segment(x, edge_y, x, overall_y, 2.0)
+        for y in (board.y, board.y1):
+            crossing.add_segment(edge_x, y, line_x, y, 2.0)
 
 
 def _height_line(board: Rect, height_edge: str) -> float:
@@ -1674,12 +1699,20 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # a board like the Raspberry Pi 5, whose micro-HDMI connectors sit under
     # the Pmod HAT's host JC, that strip is the only clear space a leader from
     # those connectors can reach without being ruled across the host.
-    # The chain is a floor or a ceiling depending on which edge it took; the
-    # rest of the sheet, out to the frame, is the balloons' to use.
     b_lo = sheet.area.y if chain_edge == "top" else chain_y + 4.0
     b_hi = chain_y - 4.0 if chain_edge == "top" else sheet.area.y1
-    balloon_bounds = Rect(chain_x + 4.0, b_lo,
-                          sheet.area.x1 - chain_x - 4.0, b_hi - b_lo)
+    strip = Rect(chain_x + 4.0, b_lo,
+                 sheet.area.x1 - chain_x - 4.0, b_hi - b_lo)
+    # And past the chains, out to the frame, between their labels.  The
+    # chains used to be a floor and a wall: on the Orange Pi PC, whose
+    # micro-USB, microSD socket and power button sit on the left edge and
+    # whose barrel, HDMI and audio jacks sit on the bottom one, no balloon
+    # could be put beside its part, and six of them went up and over the
+    # board on leaders that crossed parts, hosts and each other.  A drafter
+    # puts those balloons out past the chain, their leaders running between
+    # the witness lines; the labels and the witness lines out there are
+    # reserved below, once the chains are planned.
+    balloon_bounds = sheet.area
 
     obstacles = Obstacles()
     feature_rect: dict[int, int] = {}
@@ -1730,8 +1763,9 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
             obstacles.add_rect(*view.pt(p.body_x0, p.body_y0),
                                *view.pt(p.body_x1, p.body_y1), pad=0.8)
     edge_only = Obstacles()
+    crossing_only = Obstacles()
     reserve_overall_dimensions(sheet, view, spec, board, obstacles,
-                               edge_only, chain_edge)
+                               edge_only, chain_edge, crossing=crossing_only)
 
     # The ordinate witness lines are drawn after the balloons but stand in
     # their way all the same: a balloon sitting on one reads as though it
@@ -1743,13 +1777,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # feature costs to sit on, and on the Pi 3A+ a balloon chose to cover a
     # neighbouring connector rather than cross the witness line beside it.
     xvals, yvals = _ordinate_values(spec, overlay)
-    witness_end = (balloon_bounds.y1 if chain_edge == "top"
-                   else balloon_bounds.y)
+    witness_end = strip.y1 if chain_edge == "top" else strip.y
     for v, f in xvals.items():
         edge_only.add_segment(view.x(v), view.y(f), view.x(v),
                               witness_end, weight=HARD)
     for v, f in yvals.items():
-        edge_only.add_segment(view.x(f), view.y(v), balloon_bounds.x,
+        edge_only.add_segment(view.x(f), view.y(v), strip.x,
                               view.y(v), weight=HARD)
 
     # The host spacing dimensions are drawn after the balloons, and a balloon
@@ -1808,6 +1841,50 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         edge_only.add_rect(*geom.text_box, pad=1.2, weight=HARD)
         obstacles.add_rect(*geom.text_box, pad=1.2, weight=HARD)
 
+    # The ordinate chains, planned where they will be drawn, with the same
+    # arguments, so that what lies past the strip can be reserved.  Nothing
+    # may cover or cross a label.  Out to the chain's line a witness line is
+    # what it is in the strip, somewhere a balloon may not sit; from the
+    # line on, where the labels are, a leader has to go between the witness
+    # lines rather than across them, so there they are hard to a leader too,
+    # and run on through their labels, so that a leader cannot slip through
+    # the gap between a line's end and its value.
+    #
+    # Short of that a leader crossing a witness line is charged as well, as
+    # much as crossing another leader and less than a balloon covering a
+    # part: priced above that, a balloon on the Pi 3A+ covered a
+    # neighbouring connector rather than cross the line beside it.
+    #
+    # The zero ordinates' lines are reserved throughout, which nothing above
+    # does: every other line in the strip already is.
+    #
+    # The zero ordinate starts from the same edge the rest of the chain does:
+    # X=0 is the whole left edge of the board, so any point on it will do, and
+    # the corner nearest the chain is the one that does not rule a line the
+    # height of the board to get there.
+    x_base = board.y1 if chain_edge == "top" else board.y
+    x_line, y_line = plan_out + x_out * 9.0, plan_left - 9.0
+    x_plan = dims.ordinate_plan(
+        [(view.x(v), f"{v:.2f}", view.y(f)) for v, f in xvals.items()],
+        x_base, x_line, horizontal=True,
+        zero_pos=board.x, zero_from=x_base, blockers=blockers)
+    y_plan = dims.ordinate_plan(
+        [(view.y(v), f"{v:.2f}", view.x(f)) for v, f in yvals.items()],
+        board.x, y_line, horizontal=False,
+        zero_pos=board.y, zero_from=board.x, blockers=blockers)
+    for pos, label, start, _, box, reach in x_plan:
+        obstacles.add_rect(*box, pad=1.2, weight=HARD)
+        obstacles.add_segment(pos, x_line, pos, reach, weight=HARD)
+        edge_only.add_segment(pos, start if label == "0" else witness_end,
+                              pos, x_line, weight=HARD)
+        crossing_only.add_segment(pos, start, pos, x_line)
+    for pos, label, start, _, box, reach in y_plan:
+        obstacles.add_rect(*box, pad=1.2, weight=HARD)
+        obstacles.add_segment(y_line, pos, reach, pos, weight=HARD)
+        edge_only.add_segment(start if label == "0" else strip.x, pos,
+                              y_line, pos, weight=HARD)
+        crossing_only.add_segment(start, pos, y_line, pos)
+
     items: list[_Ballooned] = []
     schedule: list[list[str]] = []
     # Largest features first: they have the least freedom, and placing them
@@ -1835,7 +1912,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         items.append(_Ballooned(str(f.number or i + 1), view.pt(f.cx, f.cy),
                                 _feature_anchors(view, f), feature_rect[i]))
     place_balloons(items, obstacles, balloon_bounds, c,
-                   position_only=edge_only)
+                   position_only=edge_only, crossing_only=crossing_only)
 
     # --- dimensions ---------------------------------------------------------
     outermost, leftmost = dim_x_edge, dim_left
@@ -1887,11 +1964,11 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         _pin_row_centre_line(c, view, group, edge, lane)
         dims.linear(c, *call[:3], **call[3])
 
-    # The zero ordinate starts from the same edge the rest of the chain does:
-    # X=0 is the whole left edge of the board, so any point on it will do, and
-    # the corner nearest the chain is the one that does not rule a line the
-    # height of the board to get there.
-    x_base = board.y1 if chain_edge == "top" else board.y
+    if (outermost, leftmost) != (plan_out, plan_left):
+        raise SystemExit(
+            f"{spec.key}: the ordinate chains are drawn at "
+            f"({outermost:.2f}, {leftmost:.2f}) and were reserved against "
+            f"the balloons at ({plan_out:.2f}, {plan_left:.2f})")
     x_extent = dims.ordinate_chain(
         c, [(view.x(v), f"{v:.2f}", view.y(f)) for v, f in xvals.items()],
         x_base, outermost + x_out * 9.0, horizontal=True,
