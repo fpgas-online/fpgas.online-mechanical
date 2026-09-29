@@ -1101,8 +1101,8 @@ def _view_margins(spec: BoardSpec, overlay: BoardSpec | None,
     pays for most of a staggered ordinate lane.  Every sheet here leans on
     that: measured against `_chain_room`, every board sheet `render_board`
     draws wants more than `VIEW_MARGIN_BOTTOM` except the ULX3S, the Icepi
-    Zero and the Pmod HAT Adapter, all at 19.83, and all but the Zybo Z7 and
-    the Cynthion are given it by the centring alone.
+    Zero, the Pmod HAT Adapter and the camera modules, all at 19.83, and all
+    but the Zybo Z7 and the Cynthion are given it by the centring alone.
 
     So nothing moves unless the centring leaves a sheet short.  When it does,
     the board is pushed away from the chain: the chain's margin is raised by
