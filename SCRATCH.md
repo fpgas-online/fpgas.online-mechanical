@@ -3078,3 +3078,43 @@ number is.
   hosts. They are in `check_balloons.py`'s ACCEPTED with the reason: three
   parts on the left edge, hosts inboard, a chain on each other side, and one
   strip out, which the micro-USB takes.
+
+## The Orange Pi PC's balloons, beside their parts
+
+"The bubbles on the orange pi diagram are all in weird places -- they should
+be as close as possible to the item."  Five of them sat up and to the right
+of the board, their leaders across the board, other parts and each other,
+and two were in ACCEPTED for crossing the adapter's host JB.  Nothing was
+wrong with the placer's scoring of those places; it had no nearer ones.  The
+ordinate chains bounded it, the Y chain a wall on the left and the X chain a
+floor below, and this board has its micro-USB, microSD socket and power
+button on the left edge and its barrel, HDMI and audio jacks on the bottom
+one, all overhanging, with the chains nine millimetres off them.  A balloon
+wants more than that once it is kept clear of the part and of the chain's
+labels.
+
+Three ways were weighed.  Fixing the balloons by hand, which #19 made
+possible, would have fixed this sheet and nothing else, and been undone by
+the next change to the board.  Moving a chain away from the connectors, as
+the Arty's X chain moved to the edge its features are nearest, does not help
+here: the Y chain has four of its six features on the left, and every edge
+of this board has parts on it.  What a drafter does is put the balloon out
+past the chain, the leader running between the witness lines, so that is
+what the placer may now do.  The chains are planned before the balloons from
+the call that draws them, and past the chain line their labels and witness
+lines are hard.
+
+That brought the bottom edge in at once and left the left edge's balloons
+out past the labels, 34 and 42 mm from their parts: the strip beside them
+was clean only in slivers a few tenths of a millimetre wide, and a clean
+leader, however long, stopped the placer trying a dot anywhere but the
+part's centre.  Three small changes brought them in; each alone does not.
+
+Charging a leader for crossing a witness line and an overall dimension came
+out of the same work.  Without it the first version sent a right-hand
+balloon on each Pi sheet across the overall height to reach the space past
+the chain; with it the Pi 4B's balloon 5, which had crossed the height since
+the check was written, stopped.
+
+The balloon for the camera connector and the debug UART header, which are
+still not drawn, has not been tried again.
