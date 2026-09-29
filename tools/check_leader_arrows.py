@@ -2,8 +2,9 @@
 """Report every balloon leader ruled through a dimension arrowhead.
 
 A leader crossing a dimension LINE is ordinary and the balloon placer allows
-it: the line is thin, the two are different colours, and pricing the whole
-dimension band against leaders boxes the balloons into the board's interior.
+it at a price: the line is thin, the two are different colours, and ruling
+the whole dimension band out to leaders boxes the balloons into the board's
+interior.
 An arrowhead is not ordinary.  It is a solid filled triangle, and a leader
 through one stops it reading as an arrowhead at all.
 
@@ -16,12 +17,12 @@ What counts as a leader is read off the sheet: a balloon is a ring of the
 balloon radius, and its leader is a line in that ring's colour with an end on
 that ring.  Both halves of that matter.  Colour alone finds too much: the Pmod
 pin-row centre line is drawn in the balloon colour, and it runs along the lane
-the pin-field depth dimension is drawn in, so on three sheets --
-FPGA-ARTY-A7, ACC-HAT-PMOD and ACC-HAT-RMOD -- it reads as a leader through
-the arrowhead of the very dimension that measures to it.  Position alone
-finds too much the other way: seven sheets draw a dashed phantom circle of
-exactly the balloon radius, and forty-four lines end on one of those without
-being anything's leader.  The colour comes off the ring rather than being
+the pin-field depth dimension is drawn in, so on FPGA-ARTY-A7, ACC-HAT-PMOD
+and ACC-HAT-RMOD it reads as a leader through the arrowhead of the very
+dimension that measures to it.  Position alone finds too much the other way:
+the Tiny Tapeout demo boards and the ButterStick draw a dashed phantom circle
+of exactly the balloon radius, and lines end on those without being
+anything's leader.  The colour comes off the ring rather than being
 fixed at ``style.C_HIGHLIGHT``, which every board sheet's balloons but
 RPI-ALL's are drawn in, so that a sheet colouring its balloons some other way
 is examined rather than passed for having nothing on it to check.
@@ -71,7 +72,8 @@ def balloons(text: str) -> list:
     failure mode a checker must not have.
 
     The radius is the whole test, so a dashed phantom circle that happens to
-    be the balloon radius comes back here as well; seven sheets carry one.
+    be the balloon radius comes back here as well, from every sheet that
+    carries one.
     So does the solid ring a camera position sheet letters its frames A and
     B in, in each frame's own colour.  What keeps those out of the leader
     count is the colour test in ``leaders_of``, because no line of their
@@ -87,11 +89,10 @@ def leaders_of(text: str, rings: list) -> list:
 
     A leader is drawn in its balloon's colour and stops on the ring, so it
     is a line of that colour with an end the balloon radius from that
-    balloon's centre.  Position alone is not enough: forty-four lines across
-    seven sheets end on a circle of the balloon radius that is not drawn in
-    their colour, which is the dashed phantom circle those sheets carry and
-    not a balloon.  Without the colour test every one of those lines would
-    be read as a leader.
+    balloon's centre.  Position alone is not enough: lines end on a circle
+    of the balloon radius that is not drawn in their colour, which is the
+    dashed phantom circle some sheets carry and not a balloon.  Without the
+    colour test every one of those lines would be read as a leader.
 
     The price is a leader drawn in another colour from its ring, which this
     does not read: the leaders RPI-ALL's balloons share are in the line
