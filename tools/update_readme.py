@@ -29,6 +29,7 @@ from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from raspberry_pi_camera.boards import BOARDS as RPICAM       # noqa: E402
 from raspberry_pi_camera.optics import subjects as RPICAM_SUBJECTS  # noqa: E402
 from tinytapeout.boards import BOARDS as TT                   # noqa: E402
+from tools.drafting import rpi_compare_sheet              # noqa: E402
 from tools.generate_diagrams import (FPGA_ORDER, LENS_SUBTITLE,  # noqa: E402
                                      LENS_TITLE, RPICAM_ORDER,
                                      RPICAM_POSITION_ORDER, RPI_ORDER,
@@ -77,10 +78,16 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
         ("Tiny Tapeout demo boards", "tinytapeout", COLUMNS,
          named("tinytapeout", [(stem, spec.title, spec.subtitle)
                                for stem, spec in tt_sheets()])),
-        ("Raspberry Pi, with a Digilent Pmod HAT Adapter overlaid",
-         "raspberry-pi", COLUMNS,
-         named("raspberry-pi", [(slug(k), RPI[k].title, RPI[k].subtitle)
-                                for k in RPI_ORDER])),
+        # The heading no longer says "with a Digilent Pmod HAT Adapter
+        # overlaid": that is true of the three per-model sheets and not of
+        # the comparison sheet, which leaves the adapter off so the three
+        # models can be read against each other.  Each sheet's own subtitle
+        # says what it is.
+        ("Raspberry Pi", "raspberry-pi", COLUMNS,
+         named("raspberry-pi",
+               [(slug(k), RPI[k].title, RPI[k].subtitle) for k in RPI_ORDER]
+               + [(rpi_compare_sheet.STEM, rpi_compare_sheet.TITLE,
+                   rpi_compare_sheet.SUBTITLE)])),
         ("Raspberry Pi camera modules", "raspberry-pi-camera", COLUMNS,
          named("raspberry-pi-camera",
                [(slug(k), RPICAM[k].title, RPICAM[k].subtitle)
