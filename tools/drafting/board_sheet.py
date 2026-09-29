@@ -99,6 +99,14 @@ BALLOON_GAP = 1.2
 #: ruled out every spot beside an LED cluster four millimetres from the edge,
 #: and the last LED's balloon went 34 mm up through the width dimension.
 LINE_GAP = 1.0
+#: What an ordinate label's box is padded by as an obstacle: nothing, because
+#: the placer already keeps a balloon 2 mm clear of any obstacle, and the
+#: 1.2 mm pad the other values get on top of that put 3.2 mm of paper
+#: between a rim and a label.  Two ordinate labels 13 mm apart then left no
+#: room for a balloon between them, and the Orange Pi PC's power button,
+#: which sits between the 3.00 and the 16.28, had its balloon sent 42 mm
+#: out past the chain.
+LABEL_PAD = 0.0
 BALLOON_STEP = 8.4
 BALLOON_OFFSET = 13.0
 
@@ -435,12 +443,13 @@ _ANGLES = [i * 15 for i in range(24)]
 # it.
 _RADII = [9.0, 11.0, 13.0, 15.0, 17.5, 21.0, 27.0, 34.0, 42.0, 52.0, 64.0]
 
-#: A leader that clears everything scores only its own length, so anything
-#: above the longest clean leader means it is running over something.
-CLEAN_SCORE = _RADII[-1] * 2.0 + 1.0
-
-#: What an off-centre leader dot has to save before it is worth taking.
-TIP_PENALTY = 45.0
+#: What an off-centre leader dot has to save before it is worth taking, as
+#: twice the millimetres of leader it must save.  It was 45, which kept the
+#: Orange Pi PC's micro-USB balloon out past the ordinate chain's labels on a
+#: 27 mm leader rather than take a spot 11 mm away from a dot 1.4 mm along
+#: the connector; at 20 a dot moves for a leader 10 mm shorter.  The dots are all inside the feature, a quarter of its size from
+#: its centre, so none of them can be taken for a neighbour's.
+TIP_PENALTY = 20.0
 
 
 def _ordinate_values(spec: BoardSpec, overlay: BoardSpec | None
@@ -666,9 +675,14 @@ def place_balloons(items: list[_Ballooned], obstacles: Obstacles,
         tip = tips[0]
         # Moving the dot off the centre of a feature is legitimate but it is
         # not free: an off-centre dot is slightly harder to associate with its
-        # feature, so it has to buy a real improvement, and the whole search is
-        # skipped when the centre already gives a clean leader.
-        if score is not None and score > CLEAN_SCORE:
+        # feature, so it has to buy a real improvement.  The search is skipped
+        # only when no other dot could buy one: when the centre's leader is
+        # already no longer than the shortest one tried plus that penalty.
+        # Skipping it whenever the centre's leader was clean, however long,
+        # sent the Orange Pi PC's power button balloon 34 mm out past the
+        # ordinate chain's labels, when a dot 1.4 mm along the button had a
+        # clean spot 9 mm away.
+        if score is not None and score > _RADII[0] * 2.0 + TIP_PENALTY:
             for alt in tips[1:]:
                 apos, ascore = best_for_tip(world, route, alt)
                 if apos is None:
@@ -1873,13 +1887,13 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         board.x, y_line, horizontal=False,
         zero_pos=board.y, zero_from=board.x, blockers=blockers)
     for pos, label, start, _, box, reach in x_plan:
-        obstacles.add_rect(*box, pad=1.2, weight=HARD)
+        obstacles.add_rect(*box, pad=LABEL_PAD, weight=HARD)
         obstacles.add_segment(pos, x_line, pos, reach, weight=HARD)
         edge_only.add_segment(pos, start if label == "0" else witness_end,
                               pos, x_line, weight=HARD)
         crossing_only.add_segment(pos, start, pos, x_line)
     for pos, label, start, _, box, reach in y_plan:
-        obstacles.add_rect(*box, pad=1.2, weight=HARD)
+        obstacles.add_rect(*box, pad=LABEL_PAD, weight=HARD)
         obstacles.add_segment(y_line, pos, reach, pos, weight=HARD)
         edge_only.add_segment(start if label == "0" else strip.x, pos,
                               y_line, pos, weight=HARD)
