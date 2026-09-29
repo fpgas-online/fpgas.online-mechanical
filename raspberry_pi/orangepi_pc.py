@@ -262,7 +262,8 @@ ORANGEPI_PC = BoardSpec(
     features=(
         (Feature(key="gpio40", label="40-pin GPIO header", kind="header",
                  x0=HEADER_BOX[0], y0=HEADER_BOX[1], x1=HEADER_BOX[2],
-                 y1=HEADER_BOX[3], number=1, designator="CON3", pin1=PIN1),)
+                 y1=HEADER_BOX[3], number=1, designator="CON3", pin1=PIN1,
+                 pins=(20, 2)),)
         + tuple(Feature(key=key, label=label, kind=kind, designator=ref,
                         number=number, x0=b[0], y0=b[1], x1=b[2], y1=b[3])
                 for key, number, label, kind, ref in _PARTS

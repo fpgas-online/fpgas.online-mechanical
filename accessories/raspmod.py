@@ -153,7 +153,7 @@ RASPMOD = BoardSpec(
     features=(
         Feature(key='ribbon', label='40-way ribbon header J1 to the Raspberry Pi GPIO, 2x20 box', kind='header',
                 designator='J1', x0=17.23, y0=22.69, x1=69.08, y1=28.84,
-                note='Pin 1 at (67.28, 27.04), the right-hand end of the upper row. Courtyard of the 2x20 box header; the ribbon plugs in from the front.', side='top', number=1),
+                note='Pin 1 at (67.28, 27.04), the right-hand end of the upper row. Courtyard of the 2x20 box header; the ribbon plugs in from the front.', side='top', number=1, pins=(20, 2), pin1=(67.28, 27.04)),
         Feature(key='clkrst_socket', label='Clock and reset socket J8, 1x2', kind='header',
                 designator='J8', x0=24.87, y0=11.27, x1=30.97, y1=14.82,
                 note='', side='top', number=2),

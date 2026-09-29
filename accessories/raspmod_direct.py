@@ -161,7 +161,7 @@ RASPMOD_DIRECT = BoardSpec(
     features=(
         Feature(key='socket', label='40-way socket J1 onto the Raspberry Pi GPIO, 2x20 SMT, underside', kind='header',
                 designator='J1', x0=6.6, y0=20.59, x1=59.7, y1=30.95,
-                note="Pin 1 at (57.28, 27.04), the right-hand end of the upper row. Courtyard of the SMT socket on the underside, 3.8 mm tall; the Pi's pins come up through the plated holes.", side='top', number=1),
+                note="Pin 1 at (57.28, 27.04), the right-hand end of the upper row. Courtyard of the SMT socket on the underside, 3.8 mm tall; the Pi's pins come up through the plated holes.", side='top', number=1, pins=(20, 2), pin1=(57.28, 27.04)),
         Feature(key='clkrst_socket', label='Clock and reset socket J8, 1x2', kind='header',
                 designator='J8', x0=14.87, y0=11.27, x1=20.97, y1=14.82,
                 note='', side='top', number=2),

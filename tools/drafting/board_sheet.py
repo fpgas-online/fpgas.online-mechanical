@@ -248,11 +248,26 @@ def draw_feature(c: Canvas, view: View, f: Feature) -> None:
         # schedule marks every hole centre for the same reason.
         cx, cy = view.pt(f.cx, f.cy)
         dims.centre_mark(c, cx, cy, view.d(min(f.width, f.height)) / 4)
+    draw_pins(c, view, f, colour, dash)
     if f.pin1 is not None:
         # A filled dot, the size of a pin, on pin 1: which way round a header
         # goes is the one thing its body outline cannot say.
         px, py = view.pt(*f.pin1)
         c.circle(px, py, view.d(0.5), w=0.05, colour=colour, fill=colour)
+
+
+def draw_pins(c: Canvas, view: View, f: Feature, colour: str,
+              dash: str | None = None) -> None:
+    """A header's pin field, a circle per pin, as a Pmod host's is drawn.
+
+    A 40-pin GPIO header drawn as a box says where the part is; drawn pin
+    by pin it says which pin an adapter's hole sits over, which is what a
+    mating drawing is for.
+    """
+    for x, y in f.pin_centres():
+        px, py = view.pt(x, y)
+        c.circle(px, py, view.d(0.5), w=style.W_COMPONENT, colour=colour,
+                 fill="#ffffff", dash=dash)
 
 
 def draw_pmod(c: Canvas, view: View, p, spec: BoardSpec) -> None:
@@ -1217,7 +1232,7 @@ def _legend_entries(spec: BoardSpec, overlay: BoardSpec | None
         entries.append(("hidden", "On the underside, seen through the board"))
     phantom = ["Pmod connector body" if spec.pmods else ""]
     if overlay is not None:
-        phantom.append("adjacent part")
+        phantom.append("adjacent part, and what is on it")
     if any(h.keepout_dia for h in spec.holes):
         phantom.append("hole keep-out")
     phantom = [t for t in phantom if t]
@@ -1236,8 +1251,13 @@ def _join(items) -> str:
 
 
 def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
-                extra_notes: tuple[str, ...]) -> tuple[list[str], list[str]]:
-    """The notes and sources this sheet will carry."""
+                extra_notes: tuple[str, ...],
+                overlay_under: bool = False) -> tuple[list[str], list[str]]:
+    """The notes and sources this sheet will carry.
+
+    *overlay_under* says the overlay is the board this one sits on rather
+    than a part fitted to it, and its own notes say what it shows.
+    """
     o = spec.outline
     # Every note here is something the drawing cannot show.  Units are in the
     # title block, the datum symbol and the ordinate chains show the origin
@@ -1246,7 +1266,11 @@ def _sheet_text(spec: BoardSpec, overlay: BoardSpec | None,
     # mirror image, which is the one mistake a plate cut from this sheet
     # cannot recover from.
     notes = ["Viewed from the component side."]
-    if overlay is not None:
+    if overlay is not None and overlay_under:
+        notes.append(f"Phantom outline is the {overlay.title}, which this board "
+                     "sits on, its pin 1 on the Pi's pin 1.")
+        notes += list(overlay.notes)
+    elif overlay is not None:
         # Said from the geometry rather than asserted: it is true of every
         # Raspberry Pi, and of a board whose header is somewhere else it is
         # the first thing a plate designer needs to know is false.
@@ -1364,15 +1388,79 @@ def _place_notes_and_sources(sheet: Sheet, notes: list[str],
     sheet.notes_columns(cols, blocks)
 
 
-def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
+def draw_overlay(c: Canvas, view: View, spec: BoardSpec,
+                 parts: bool = False, names: str = "side") -> None:
     """Draw an adjacent part in phantom line, ISO 128 style.
 
     Used to show where a Digilent Pmod HAT Adapter's host connectors land once
     it is plugged onto a Raspberry Pi.  Phantom line is the convention for a
     part that is not the subject of the drawing but constrains it.
+
+    With *parts*, its holes and its features too: a board drawn under the
+    subject shows what the subject sits on and what it has to clear, each
+    box named, with its pins where it has them.  A part fitted on top shows
+    its outline and its hosts alone, as before.
     """
     outline_path(c, view, spec, colour=style.C_PHANTOM, w=style.W_PHANTOM,
                  dash=style.D_PHANTOM)
+    for h in spec.holes if parts else ():
+        px, py = view.pt(h.x, h.y)
+        c.circle(px, py, view.d(h.dia / 2), w=style.W_PHANTOM,
+                 colour=style.C_PHANTOM, fill="#ffffff")
+        dims.centre_mark(c, px, py, view.d(h.dia / 2), colour=style.C_PHANTOM)
+    named: list[tuple] = []
+    for f in spec.features if parts else ():
+        x0, y0 = view.pt(f.x0, f.y0)
+        x1, y1 = view.pt(f.x1, f.y1)
+        x0, x1, y0, y1 = min(x0, x1), max(x0, x1), min(y0, y1), max(y0, y1)
+        c.rect(x0, y0, x1 - x0, y1 - y0, weight=style.W_PHANTOM, colour=style.C_PHANTOM,
+               dash=None if f.kind == "header" else style.D_PHANTOM)
+        draw_pins(c, view, f, style.C_PHANTOM)
+        if f.pin1 is not None:
+            px, py = view.pt(*f.pin1)
+            c.circle(px, py, view.d(0.5), w=0.05, colour=style.C_PHANTOM,
+                     fill=style.C_PHANTOM)
+        if f.kind == "header" and f.pins is not None:
+            continue            # its pins say what it is
+        if f.kind == "outline":
+            # An outline's name inside its box, at the lower right, where
+            # a box that is only an edge has nothing.
+            c.text(x1 - 1.5, y0 + 1.5, f.label, size=style.T_TINY,
+                   colour=style.C_PHANTOM, anchor="end")
+            continue
+        named.append((f, x0, y0, x1, y1))
+    # The parts' names on leaders, in rows, since a name beside a small
+    # part in a crowded place sits on something, and what the reader wants
+    # is which box is which.  Beside the parts, left of the subject's
+    # origin to the left and else to the right; or, with *names* "up",
+    # straight up from each part into the room above, the left-most part
+    # to the top row so no name runs across another's leader, and the
+    # right-most part's name to the left so it stays inside the view.
+    rows: list[float] = []
+    if names == "up" and named:
+        top = max(n[4] for n in named)
+        ordered = sorted(named, key=lambda n: (n[1] + n[3]) / 2)
+        step = style.T_TINY + 2.4
+        for i, (f, x0, y0, x1, y1) in enumerate(ordered):
+            tip = ((x0 + x1) / 2, y1)
+            y = top + 6.0 + (len(ordered) - 1 - i) * step
+            last = i == len(ordered) - 1
+            elbow = (tip[0] - (2.0 if last else -2.0), y)
+            dims.leader(c, tip, elbow, f.label, size=style.T_TINY,
+                        colour=style.C_PHANTOM)
+    else:
+        for f, x0, y0, x1, y1 in sorted(named, key=lambda n: -(n[2] + n[4]) / 2):
+            leftward = (x0 + x1) / 2 < view.x(0)
+            edge = ((min(x0, x1), (y0 + y1) / 2) if leftward
+                    else (max(x0, x1), (y0 + y1) / 2))
+            far = (min(n[1] for n in named) - 6.0 if leftward
+                   else max(n[3] for n in named) + 6.0)
+            y = edge[1]
+            while any(abs(y - r) < style.T_TINY + 1.6 for r in rows):
+                y -= style.T_TINY + 1.6
+            rows.append(y)
+            dims.leader(c, edge, (far, y), f.label, size=style.T_TINY,
+                        colour=style.C_PHANTOM)
     for p in spec.pmods:
         horizontal = p.edge in ("bottom", "top")
         half_span, half_rows = p.pin_span / 2, p.row_span / 2
@@ -1574,10 +1662,14 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
                  sheet_size: str = "A3", extra_notes: tuple[str, ...] = (),
                  force_scale: float | None = None,
                  overlay: BoardSpec | None = None,
+                 overlay_under: bool = False,
                  view_bbox: tuple[float, float, float, float] | None = None,
                  band_height: float | None = None,
                  family_numbers: dict[int, str] | None = None) -> Sheet:
     """Build a complete drawing sheet for *spec* and return it.
+
+    *overlay* is a board drawn in phantom with this one: a part fitted to
+    it, or with *overlay_under*, the board this one sits on.
 
     *view_bbox* overrides the area the view is fitted to, in this board's own
     coordinates.  A caller drawing a family of boards passes each one the same
@@ -1610,7 +1702,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
     # The notes are known before anything is drawn, and their height decides
     # how much of the sheet is left for the view, so they are built first and
     # the band is sized to them.
-    notes, src_lines = _sheet_text(spec, overlay, extra_notes)
+    notes, src_lines = _sheet_text(spec, overlay, extra_notes, overlay_under)
     view_needs = _view_height_needed(spec, overlay, view_bbox)
     band_h, band_cols = Sheet.plan_notes_band(
         sheet_size, note_blocks(notes, src_lines),
@@ -1701,7 +1793,7 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
 
     # --- geometry -----------------------------------------------------------
     if overlay is not None:
-        draw_overlay(c, view, overlay)
+        draw_overlay(c, view, overlay, parts=overlay_under)
     for f in spec.features:
         draw_feature(c, view, f)
     for p in spec.pmods:
@@ -1774,6 +1866,12 @@ def render_board(spec: BoardSpec, *, drawing_no: str, version: str,
         # The phantom part is drawn on this view, so a balloon must keep off it
         # too.  Its Pmod hosts, and the labels beside them, are what gets in
         # the way.
+        # A board drawn under the subject: its parts are what a reader is
+        # checking the subject against, so a leader keeps off them as it
+        # keeps off the subject's own bodies.
+        for f in overlay.features if overlay_under else ():
+            obstacles.add_rect(*view.pt(f.x0, f.y0), *view.pt(f.x1, f.y1),
+                               pad=1.0)
         for p in overlay.pmods:
             half_a, half_b = p.pin_span / 2 + 1.6, p.row_span / 2 + 1.6
             if p.edge in ("bottom", "top"):

@@ -268,10 +268,16 @@ def extract(v: Variant) -> dict:
             note = ("Underside. Falls on pins 2 and 3 of the demoboard's "
                     "clock/reset SIL header; the maker's README says a 2-pin "
                     "header has to be added to the demoboard there.")
+        # J1 is the 2x20 that meets the Pi's header, drawn pin by pin with
+        # pin 1 where its pad is, so its holes can be read against the
+        # Pi's pins on a mating drawing.
+        pins = (", pins=(20, 2), pin1=("
+                f"{round(j1_pads['1'][0], 2)}, {round(j1_pads['1'][1], 2)})"
+                if ref == "J1" else "")
         features.append(dict(key=fkey, kind=kind, designator=ref, label=label,
                              x0=b[0], y0=b[1], x1=b[2], y1=b[3], note=note,
                              side="bottom" if fp.layer == "B.Cu" else "top",
-                             number=n))
+                             number=n, pins=pins))
 
     j1 = by_ref["J1"]
     pi_header = {int(n): (j1[n][1], "" if _unconnected(j1[n][0]) else j1[n][0])
@@ -382,7 +388,8 @@ def render(rec: dict, name: str) -> str:
             f"        Feature(key={f['key']!r}, label={f['label']!r}, kind={f['kind']!r},\n"
             f"                designator={f['designator']!r}, x0={f['x0']}, y0={f['y0']}, "
             f"x1={f['x1']}, y1={f['y1']},\n"
-            f"                note={f['note']!r}, side={f['side']!r}, number={f['number']})"
+            f"                note={f['note']!r}, side={f['side']!r}, number={f['number']}"
+            f"{f['pins']})"
             for f in rec["features"])
 
     def sources():

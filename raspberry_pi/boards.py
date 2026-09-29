@@ -52,7 +52,8 @@ BOARDS['rpi3b'] = BoardSpec(
     features=(
         Feature(key='gpio40', label='40-pin GPIO header', kind='header',
                 x0=7.1, y0=50.0, x1=57.9, y1=55.0,
-                number=1),
+                number=1,
+                pins=(20, 2), pin1=(8.37, 51.27)),
         Feature(key='usb_power', label='micro-USB power input', kind='usb_power',
                 x0=6.85, y0=-0.6, x1=14.35, y1=4.71,
                 number=2),
@@ -100,7 +101,8 @@ BOARDS['rpi4b'] = BoardSpec(
     features=(
         Feature(key='gpio40', label='40-pin GPIO header', kind='header',
                 x0=7.1, y0=50.0, x1=57.9, y1=55.0,
-                number=1),
+                number=1,
+                pins=(20, 2), pin1=(8.37, 51.27)),
         Feature(key='usb_power', label='USB-C power input', kind='usb_power',
                 x0=6.875, y0=-1.25, x1=15.525, y1=6.15,
                 number=2),
@@ -147,7 +149,8 @@ BOARDS['rpi5'] = BoardSpec(
     features=(
         Feature(key='gpio40', label='40-pin GPIO header', kind='header',
                 x0=7.1, y0=50.0, x1=57.9, y1=55.0,
-                number=1),
+                number=1,
+                pins=(20, 2), pin1=(8.37, 51.27)),
         Feature(key='usb_power', label='USB-C power input', kind='usb_power',
                 x0=7.839, y0=-1.32, x1=14.52, y1=6.0,
                 number=2),

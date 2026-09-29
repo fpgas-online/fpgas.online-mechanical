@@ -576,8 +576,14 @@ def render_rpi_comparison(*, drawing_no: str, version: str,
     # require_shared has already proved the three are the same box, so the
     # first model's is drawn rather than a union of them, which would have
     # quietly widened to cover a disagreement.
-    shared_box = _box(_features(shared_number)[0][1])
+    shared_feature = _features(shared_number)[0][1]
+    shared_box = _box(shared_feature)
     _rect(c, view, shared_box, style.C_LINE, None)
+    # Pin by pin, as each model's own sheet draws it, pin 1 dotted.
+    bs.draw_pins(c, view, shared_feature, style.C_LINE)
+    if shared_feature.pin1 is not None:
+        px, py = view.pt(*shared_feature.pin1)
+        c.circle(px, py, view.d(0.5), w=0.05, colour=style.C_LINE, fill=style.C_LINE)
 
     aux = [h for h in BOARDS["rpi5"].holes if h.kind == "aux"]
     aux_colour, aux_dash = MODEL_LINE["rpi5"]
