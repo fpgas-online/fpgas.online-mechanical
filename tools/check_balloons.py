@@ -334,12 +334,13 @@ def _on_a_feature() -> list[tuple[str, str]]:
 #: the right, across the extension line that the overall dimension on that
 #: corner runs out from; ``_radius_callout`` draws it there on every board
 #: sheet, and where the extension line and the callout miss each other it
-#: is because the width dimension is on the other edge.  The two balloons
-#: are ruled across an overall dimension or its extension line because
+#: is because the width dimension is on the other edge.  The balloons are
+#: ruled across an overall dimension or its extension line because
 #: ``reserve_overall_dimensions`` holds those lines against where a balloon
 #: sits and only charges a leader for crossing one: reserving them against
 #: leaders outright boxed the balloons into the board's interior, and on
-#: these two sheets the charge is the cheapest way out.
+#: these sheets the charge is the cheapest way out.  Only the arrowheads at
+#: the two ends are held hard against leaders, so none of these crosses one.
 #:
 #: The micro-HDMI connectors on the Pi 4B and Pi 5, which sat underneath the
 #: Pmod HAT Adapter's host JC, used to be here too; they are no longer drawn.
