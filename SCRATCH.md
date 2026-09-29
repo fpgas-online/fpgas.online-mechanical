@@ -3856,7 +3856,8 @@ to what the drawing cannot say. The A3 drawing area is 217 mm wide and the
 three views take 199 of it, so every dimension lives in one of three gutters:
 the nine millimetres right of the front elevation, the sixteen between the
 section and the plan -- shared, because the section is above and the plan
-below -- and the paper under the section, where the bore's callouts stack.
+below -- and the jack's empty outline under its LED window, where the
+section's callouts stack.
 Two dimensions were moved out of the annotation column after `check_sheets`
 found a line ruled through `NOTES (continued)`, and the front elevation's
 widths went above the view after the same check found them crossing the
@@ -3968,3 +3969,28 @@ group for the rest of the tag to read the dash from. Run over all 23 sheets it
 reports exactly those three and nothing else, which is the answer a new rule
 wants: it finds the thing it was written for, and it does not turn the rest of
 the set red.
+
+## The light pipe's callouts, beside what they point at
+
+Rebuilt on main after the Orange Pi PC merged, the light pipe sheet was
+looked at again for the complaint that balloons sat in weird places rather
+than next to their parts. Its callouts are placed by hand, not by the board
+placer, so the placer's changes did not move them. They had the same fault,
+though. The section's callouts were stacked twenty millimetres below
+the board line, under the whole view. Each leader was longer than the view
+is tall, and they bunched together through the X0 Z0 datum marker.
+
+They now stack in the jack's outline, under its LED window. That paper is
+empty and sits right beside the tips. The rows start just under the window
+and step down towards the board. The slots are still given out so that the
+total leader length is least, so no two leaders cross. The roof's callout
+points at the roof's underside and drops straight through the gap over the
+shield to the top row.
+
+The plan's slot callout came out of the paper on the left, and to get there
+its leader had to cross the overall depth dimension. That crossing was on
+the accepted list in `tools/check_balloons.py`. Its leader now leaves
+through the bottom edge and is written leftwards under the view, left of the
+bore's dimension. It crosses nothing but the part's own edge, and the
+accepted entry is gone. `check_balloons` finds nothing on the sheet and
+`check_sheets` passes it clean.
