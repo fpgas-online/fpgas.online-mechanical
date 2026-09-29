@@ -342,6 +342,9 @@ def _on_a_feature() -> list[tuple[str, str]]:
 #: these sheets the charge is the cheapest way out.  Only the arrowheads at
 #: the two ends are held hard against leaders, so none of these crosses one.
 #:
+#: ACC-HAT-M2POE is the Pi 5's outline and overall dimensions under the M.2
+#: HAT, so it has the Pi sheets' corner radius callout.
+#:
 #: The micro-HDMI connectors on the Pi 4B and Pi 5, which sat underneath the
 #: Pmod HAT Adapter's host JC, used to be here too; they are no longer drawn.
 #: So did the Pi 4B's balloon 5, until crossing an overall dimension cost a
@@ -354,8 +357,8 @@ ACCEPTED: dict[str, set[tuple[str, str]]] = {
                     ("TT-DB-V212", "3.00"), ("TT-DB-V32", "3.20"),
                     ("TT-DB-V33", "3.20"), ("RPI-3B", "3.00"),
                     ("RPI-4B", "3.00"), ("RPI-5", "3.00"),
-                    ("RPI-OPIPC", "2.30"), ("FPGA-BUTTERSTICK", "3.00"),
-                    ("FPGA-CYNTHION", "3.00"))
+                    ("RPI-OPIPC", "2.30"), ("ACC-HAT-M2POE", "3.00"),
+                    ("FPGA-BUTTERSTICK", "3.00"), ("FPGA-CYNTHION", "3.00"))
 }
 ACCEPTED["FPGA-BUTTERSTICK"].add(("balloon 1", "dimension"))
 ACCEPTED["FPGA-CYNTHION"].add(("balloon 9", "dimension"))
