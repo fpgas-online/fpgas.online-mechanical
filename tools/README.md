@@ -155,9 +155,11 @@ the tree with nothing wrong.
   balloon colour and lies along the dimension that measures to it, as a
   leader through that dimension's arrowhead on three sheets, and position
   alone sees the dashed phantom circle seven sheets draw at exactly the
-  balloon radius as a balloon. It says how many leaders it
-  examined as well as how many were through an arrowhead, because a rule that
-  finds no leaders on a sheet otherwise reports it clean.
+  balloon radius as a balloon. A leader in another colour from its ring --
+  the ones RPI-ALL's balloons share -- is therefore not read here;
+  `check_balloons.py` holds those against the dimension lines. It says how
+  many leaders it examined as well as how many were through an arrowhead,
+  because a rule that finds no leaders on a sheet otherwise reports it clean.
 
 - **`check_drill_template.py`** measures the drill template PDFs instead of
   trusting them. It reads each page back, finds every hole as a circle, and

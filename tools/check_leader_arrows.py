@@ -22,9 +22,16 @@ the arrowhead of the very dimension that measures to it.  Position alone
 finds too much the other way: seven sheets draw a dashed phantom circle of
 exactly the balloon radius, and forty-four lines end on one of those without
 being anything's leader.  The colour comes off the ring rather than being
-fixed at ``style.C_HIGHLIGHT``, which every balloon in the set happens to be
-drawn in today, so that a sheet colouring its balloons some other way is
-examined rather than passed for having nothing on it to check.
+fixed at ``style.C_HIGHLIGHT``, which every board sheet's balloons but
+RPI-ALL's are drawn in, so that a sheet colouring its balloons some other way
+is examined rather than passed for having nothing on it to check.
+
+What it does not read is a leader in another colour from its ring.  RPI-ALL
+draws each model's balloons in that model's colour, and the leader that
+several of them share in the line colour, which belongs to none of them;
+those shared leaders are not examined here.  ``check_balloons.py``, which
+works from the drawing rather than the SVG, holds every leader on RPI-ALL
+against every dimension line and finds none crossing one.
 
 It passes on every sheet in the set, and runs in ``make check`` with the
 others.
@@ -58,10 +65,10 @@ def balloons(text: str) -> list:
     A balloon is a ring of the balloon radius, so the rings say what a
     balloon looks like on this sheet without anything having to be told.
 
-    Every balloon in the set is ``style.C_HIGHLIGHT`` today, but asking for
-    that colour by name would pass a sheet whose balloons were drawn in any
-    other for having nothing on it to check, which is the failure mode a
-    checker must not have.
+    Every board sheet's balloons but RPI-ALL's are ``style.C_HIGHLIGHT``,
+    and asking for that colour by name would pass a sheet whose balloons
+    were drawn in any other for having nothing on it to check, which is the
+    failure mode a checker must not have.
 
     The radius is the whole test, so a dashed phantom circle that happens to
     be the balloon radius comes back here as well; seven sheets carry one.
@@ -85,6 +92,10 @@ def leaders_of(text: str, rings: list) -> list:
     their colour, which is the dashed phantom circle those sheets carry and
     not a balloon.  Without the colour test every one of those lines would
     be read as a leader.
+
+    The price is a leader drawn in another colour from its ring, which this
+    does not read: the leaders RPI-ALL's balloons share are in the line
+    colour, to rings in each model's colour.
     """
     out = []
     for a, b, c, d, colour in LINE.findall(text):

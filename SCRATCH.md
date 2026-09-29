@@ -3247,19 +3247,30 @@ Those three were written up as a deferred defect and were never one.
 So a leader is now read off the sheet: a balloon is a ring of the balloon
 radius, and its leader is a line in that ring's colour with an end on that
 ring. Both halves are load-bearing here and both were measured. Without the
-end-on-a-ring half the three centre lines come back. Without the colour half
-the set reads 151 leaders instead of 107: seven sheets -- the six demo boards
-and FPGA-BUTTERSTICK -- draw a dashed grey circle of exactly the balloon
-radius, and forty-four black lines stop on one of those without being its
-leader. Taking the colour off the ring rather than fixing it at
-`style.C_HIGHLIGHT` costs nothing on this set, where every balloon is that
-colour, and is what stops a sheet that coloured its balloons some other way
-passing for having nothing on it to check. With both, the checker reports
-nothing across the set -- which is why it goes into `make check` beside
-`check_balloons.py` rather than waiting outside it for a defect to justify
-it. Its summary line counts the leaders it examined as well as the problems
-it found, because a rule that matches none of a sheet's leaders reports that
-sheet clean and nothing else printed would say it had looked at nothing.
+end-on-a-ring half the three centre lines come back. Without the colour half,
+seven sheets -- the six demo boards and FPGA-BUTTERSTICK -- draw a dashed grey
+circle of exactly the balloon radius, and forty-four black lines stop on one
+of those without being its leader. Taking the colour off the ring rather than
+fixing it at `style.C_HIGHLIGHT` is what stops a sheet that coloured its
+balloons some other way passing for having nothing on it to check. With
+both, the checker reports nothing across the set -- which is why it goes into
+`make check` beside `check_balloons.py` rather than waiting outside it for a
+defect to justify it. Its summary line counts the leaders it examined as well
+as the problems it found, because a rule that matches none of a sheet's
+leaders reports that sheet clean and nothing else printed would say it had
+looked at nothing.
+
+RPI-ALL, merged while this branch was open, is such a sheet, and shows how
+far that goes. Its balloons are in each model's colour, but the leader several
+of them share is drawn in the line colour, which is not the colour of the
+ring it ends on, so the colour half does not read it: the check examines one
+of RPI-ALL's balloon leaders and not the four shared ones. Main's
+`check_balloons.py`, which works from the drawing rather than the SVG, holds
+every leader on RPI-ALL against every dimension line and finds none crossing
+one. A rule that did read them -- a balloon is a filled ring, and the phantom
+circle is not filled -- was tried on the set: it reads exactly those four more
+and nothing else, and none of them is through an arrowhead. It replaces the
+argument above, so it is left for a change of its own.
 
 The reservation began as an obstacle and not only a test, so it could move
 a balloon on a sheet already issued, and it moved one: balloon 9 on
