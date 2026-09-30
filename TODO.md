@@ -299,10 +299,10 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] A sheet per subject, each named for what it is over:
       `RPICAM-OVER-PLATE`, `RPICAM-OVER-ARTY`, and `RPICAM-OVER-ACORN` for
       an Acorn CLE-215+ in a Waveshare PoE M.2 HAT+ (B) on a Pi 5
-- [x] Two frames per subject, whole subject and indicators, each the smallest
-      4:3 rectangle holding its target plus 5.00 mm all round, with the camera
-      height for both lenses and the focus verdict against the published near
-      limit
+- [x] Two frames per subject, whole subject and indicators, and one on the
+      Acorn's, its LEDs: each the smallest 4:3 rectangle holding its target
+      plus 5.00 mm all round, with the camera height for both lenses and the
+      focus verdict against the published near limit
 - [x] Z measured from the plane the frame's target lies in, not the subject's
       own top face: the demo boards' indicators are on a board standing on
       standoffs above the plate, and the Acorn is a card seated above a Pi
@@ -348,13 +348,28 @@ checker that measures the finished PDFs rather than trusting them.
       from `fpga/light_pipe/adapter.py`, so it waits for the light pipe
       branch (issue #8, PR #29) to be on its base, then re-renders
 - [x] The Acorn taken from `accessories/parts.py` rather than restated: the
-      card feature, its seated position and the HAT's standoff overhang are
-      that module's, which `ACC-HAT-M2POE` is drawn from too, so the card is
-      one rectangle in one place
+      card feature, its seated position and its LEDs are that module's, which
+      `ACC-HAT-M2POE` is drawn from too, so the card is one rectangle in one
+      place
+- [x] `RPICAM-OVER-ACORN` frames the Acorn's LEDs alone, A1 to A4 and PWR
+      at the card's far end, with the camera over them: measured off SQRL's
+      own product photograph by `accessories/measure_acorn_leds.py`, to
+      +/-1.0 mm
 - [ ] A Pi-to-card stack height for the Acorn. Waveshare dimension no height
       and the CLE-215+'s heatsink is unpublished, so
       `RPICAM-OVER-ACORN` can only say to measure the stack and
       which way the error goes.
+- [ ] The Acorn's heatsink and blower height. The blower stands just short
+      of the LEDs and the camera board overhangs it in plan, so the sheet
+      can only give where the board's underside is and say to raise the
+      camera if the blower is taller
+- [ ] The Acorn's LEDs measured on a card in hand, which would take the
+      +/-1.0 mm off them: the photograph's own scale checks come out up to
+      7 % short of the specification
+- [ ] Nothing focuses on the Acorn's LEDs at the height that frames them,
+      24.5 mm for the autofocus module against its 80 mm. At 80 mm it is
+      sharp and the LED column is still 460 pixels long, so a sheet for that
+      height, or a lens that focuses at 25 mm, is what a sharp picture needs
 
 ## A camera holder on the TT plate  -- DONE, unprinted
 - [x] `tinytapeout/camera_holder/holder.py`: a portal of two window-shaped

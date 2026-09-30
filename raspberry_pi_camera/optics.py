@@ -862,9 +862,8 @@ def coincident_edges(frames, tol: float = COINCIDENT):
     """Pairs of frame edges too close together to be drawn as two lines.
 
     Two frames on one sheet are not nested and need not be: on
-    RPICAM-OVER-ARTY frame B's lower edge is 0.43 mm below frame A's, and
-    on RPICAM-OVER-ACORN neither frame contains the other at all.  Where
-    two edges land within a chain line's own width of each other,
+    RPICAM-OVER-ARTY frame B's lower edge is 0.43 mm below frame A's.
+    Where two edges land within a chain line's own width of each other,
     the drawing cannot show two, so the sheet says which they are instead of
     leaving the reader to guess.
 
@@ -1252,21 +1251,27 @@ def _arty_subject() -> Subject:
 
 # --- The Acorn ------------------------------------------------------------
 #
-# Nothing restated.  The card, where it is seated and how far the HAT's 2280
-# standoff reaches past the board edge are accessories/parts.py's, which is
-# what the assembly sheet is drawn from too: the card on this sheet and the
-# card on that one are one rectangle in one place, so they cannot drift
-# apart.
+# Nothing restated.  The card, where it is seated and where its LEDs are are
+# accessories/parts.py's, which is what the assembly sheet is drawn from too:
+# the card on this sheet and the card on that one are one rectangle in one
+# place, so they cannot drift apart.
+#
+# The one thing framed is the LEDs, because they are the only part of the
+# Acorn anyone needs to see: A1 to A4 and PWR, at the card's far end.  Not the
+# card and not the whole assembly, which this sheet framed first and which put
+# the camera nearly four times as high, the LEDs that much smaller in the
+# picture.  The camera's axis is over the LEDs, as it is over any frame's
+# target, and here that matters: the heatsink's blower stands just short of
+# them on the connector side, and from over the LEDs no ray to one of them
+# passes over it, where from over the card's middle every ray would.
 #
 # What that module does not carry is a height for anything, because nobody
-# publishes one.
+# publishes one: not the card's above the Pi, and not the blower's above the
+# card.
 
-#: The plane both Acorn frames are set from, and why it is the card's and
-#: not the Pi's.  The highest plane either target reaches: frame A's target
-#: is the assembly's plan envelope, most of which is the Pi, but the card
-#: stands above it, and a height set at the Pi's face covers less at the
-#: card's.  Set from the card, everything below it is covered by more than
-#: the frame, which is the safe direction.
+#: The plane the Acorn's frame is set from, and why it is the card's and not
+#: the Pi's: the LEDs are on the card's top face, which stands above the Pi,
+#: and a height set at the Pi's face covers less at the card's.
 CARD_PLANE = "the ACORN CARD's top face, not the Pi's"
 CARD_PLANE_NOTE = (
     "nobody publishes how far the card stands above the Pi, so measure the "
@@ -1292,63 +1297,64 @@ def _hat_sheet() -> str:
 
 
 def _acorn_subject() -> Subject:
-    from accessories.parts import (ACORN_CARD, ACORN_LENGTH, ACORN_WIDTH,
-                                   POE_M2_HAT, POE_M2_HAT_HEIGHT,
-                                   POE_M2_HAT_TOL, POE_M2_HAT_WIDTH,
-                                   POE_M2_STANDOFF_OVERHANG)
+    from accessories.parts import ACORN_CARD, ACORN_LED_TOL, ACORN_LEDS
     from raspberry_pi.boards import BOARDS as RPI
+    from raspberry_pi_camera import v1
     hat_sheet = _hat_sheet()
     pi = RPI["rpi5"]
-    card = ACORN_CARD
-    spec = replace(pi, features=pi.features + (card,))
-    bx = [(0.0, 0.0, pi.outline.width, pi.outline.height)]
-    bx += [(f.x0, f.y0, f.x1, f.y1) for f in pi.features]
-    ex0, ey0, ex1, ey1 = _union(bx)
-    # The HAT's 2280 standoff boss reaches further across than anything on the
-    # Pi, and it is the far edge of the assembly.
-    ex1 = max(ex1, POE_M2_HAT_WIDTH + POE_M2_STANDOFF_OVERHANG)
+    spec = replace(pi, features=pi.features + (ACORN_CARD,) + ACORN_LEDS)
+    lx0, ly0, lx1, ly1 = _union([(f.x0, f.y0, f.x1, f.y1) for f in ACORN_LEDS])
+    names = [f.designator for f in ACORN_LEDS]
+    target = Target(
+        "leds", f"{names[0]}-{names[-2]} and {names[-1]}", lx0, ly0, lx1, ly1,
+        note=f"The card's LEDs, all at its far end: {names[0]} to "
+             f"{names[-2]} in a column on the +Y side of the retention "
+             f"screw, {names[-1]} on the -Y side. Measured off SQRL's own "
+             f"photograph to +/-{ACORN_LED_TOL:.1f} mm, which the margin "
+             "holds; SQRL published no drawing.",
+        plane_name=CARD_PLANE, plane_above_subject=None,
+        plane_note=CARD_PLANE_NOTE)
+    frame = frame_for(target)
+    # Where the camera board's underside is: the lens face at Z, and the
+    # board the lens's own height above it.
+    underside = ", ".join(
+        f"{place(frame, lens).z + v1.LENS_TOP_Z:.1f} at {lens.short}"
+        for lens in (LENS_65, LENS_120))
     return Subject(
         key="acorn-cle-215-plus",
         title="Camera over the Acorn CLE-215+",
         subtitle="Camera Module OV5647, 65 and 120 degree lenses",
         spec=spec,
         subject_field="Acorn CLE-215+, Pi 5",
-        targets=(
-            Target("assembly", "Whole assembly", ex0, ey0, ex1, ey1,
-                   note=f"Pi 5 with a {POE_M2_HAT.title} and the Acorn "
-                        "seated in it; the HAT is the Pi's own "
-                        f"{POE_M2_HAT_WIDTH:.0f} x {POE_M2_HAT_HEIGHT:.0f} "
-                        f"mm and its 2280 standoff reaches {ex1:.2f}.",
-                   plane_name=CARD_PLANE, plane_above_subject=None,
-                   plane_note=CARD_PLANE_NOTE),
-            Target("card", "Acorn card", card.x0, card.y0, card.x1, card.y1,
-                   note=f"{ACORN_WIDTH:.0f} x {ACORN_LENGTH:.0f} mm: the M.2 "
-                        "specification's Type 2280 outline with SQRL's own "
-                        "extra millimetre of width.",
-                   plane_name=CARD_PLANE, plane_above_subject=None,
-                   plane_note=CARD_PLANE_NOTE),
-        ),
+        targets=(target,),
+        plan_callout=f"LEDs {target.label}",
         sources=(
             Source(label="Board geometry", ref="raspberry_pi/boards.py",
                    note="Pi 5 outline and connectors; see "
                         f"{drawing_name('raspberry-pi', slug(pi.key))}."),
-            # One line for the card and the HAT, as the Arty's sheet cites
-            # fpga/boards.py and not Digilent: the M.2 specification, SQRL's
-            # page and Waveshare's drawing are the part's own sources, and
-            # the assembly sheet prints them.
-            Source(label="Card and HAT", ref="accessories/parts.py",
-                   note="The Acorn, where it is seated and the HAT's 2280 "
-                        f"standoff overhang; see {hat_sheet}, which cites "
-                        "the M.2 specification, SQRL and Waveshare."),
+            # One line for the card, its LEDs and the HAT, as the Arty's
+            # sheet cites fpga/boards.py and not Digilent: the M.2
+            # specification, SQRL's page and photograph and Waveshare's
+            # drawing are the part's own sources.
+            Source(label="Card, LEDs and HAT", ref="accessories/parts.py",
+                   note="The Acorn, where it is seated and its LEDs, "
+                        "measured off SQRL's photograph by "
+                        "accessories/measure_acorn_leds.py; see "
+                        f"{hat_sheet}, which cites the M.2 specification, "
+                        "SQRL and Waveshare."),
         ),
-        tolerance=(f"Pi 5 +/-0.20, card +/-{POE_M2_HAT_TOL:.2f} DERIVED, "
+        tolerance=(f"Pi 5 +/-0.20, LEDs +/-{ACORN_LED_TOL:.1f} DERIVED, "
                    "Z DERIVED"),
         notes=(
-            "The Acorn's own LED positions are not published: SQRL issued "
-            "no mechanical drawing and their site is gone, so frame B is the "
-            "card, not its indicators. Its seated position and the "
-            "assembly's far edge are accessories/parts.py's, which "
-            f"{hat_sheet} is drawn from too.",
+            "The camera is over the LEDs, not the card: the heatsink's "
+            "blower stands just short of them on the connector side, and "
+            "from here no ray to an LED passes over it. Nobody publishes the "
+            "blower's height, and the camera board overhangs it in plan: "
+            f"the board's underside is at Z + {v1.LENS_TOP_Z:.2f}, "
+            f"{underside} above the card. If the blower stands higher, "
+            "raise the camera; the picture only grows. The card's seated "
+            f"position is accessories/parts.py's, which {hat_sheet} is drawn "
+            "from too.",
         ),
     )
 

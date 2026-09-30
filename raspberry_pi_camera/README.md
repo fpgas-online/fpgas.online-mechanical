@@ -545,15 +545,20 @@ the error always loses the edges.
 | `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 101.2 | 52.1 |
 | `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 129.7 | 66.8 |
 | `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 32.8 | 16.9 |
-| `RPICAM-OVER-ACORN` | The whole assembly | 98.00 x 73.50 | the Acorn card's top face | 97.2 | 98.3 | 50.6 |
-| `RPICAM-OVER-ACORN` | The Acorn card | 90.00 x 67.50 | the Acorn card's top face | 89.3 | 90.3 | 46.5 |
+| `RPICAM-OVER-ACORN` | The Acorn's LEDs, A1-A4 and PWR | 18.35 x 24.47 | the Acorn card's top face | 24.3 | 24.5 | 12.6 |
 
 **In focus there?** On either fixed lens, at no height here: all of them are
 inside "1 m". On the autofocus lens, at every height of 80 mm or more -- both
-plate frames, the whole Arty and both Acorn frames -- and not at the Arty's LED row, 32.8,
-which is nearer than even the B0121's 4 cm. Each sheet's table says which,
-frame by frame, and `verify_optics.py` checks every verdict against the
-arithmetic.
+plate frames and the whole Arty -- and not at the Arty's LED row, 32.8, or
+the Acorn's LEDs, 24.5, both nearer than even the B0121's 4 cm. Each sheet's
+table says which, frame by frame, and `verify_optics.py` checks every verdict
+against the arithmetic.
+
+The Acorn's LEDs are the one target nothing here focuses on at the height
+that frames it. What would: the autofocus module raised to its own 80 mm,
+where it is sharp from 76.5 to 83.9 (DERIVED, F2.9 ASSUMED) and its picture
+is 81.5 x 59.8 mm, which still puts the 14.47 mm LED column across 460 of the
+sensor's 2592 columns.
 
 So a rig built to these sheets frames the board with either lens and focuses
 on it with neither fixed one: a sharp picture needs the motorised module at
@@ -605,7 +610,11 @@ less.
 The plan is at the next standard scale down, under the end elevation. It is
 the one view that shows which way the picture lies over the subject and
 where frame B is; frame A's position is dimensioned on the elevations, and
-the plan dimensions nothing.
+the plan dimensions nothing. Where frame A is far across the subject from
+its datum, as the Acorn's LEDs are, a dimension back to the datum would run
+out of the elevation and across the next one, so the elevations give the
+axis's coordinate at the end of its own extension line instead, and the plan
+names the LEDs with a leader, since at its scale they are a millimetre wide.
 
 ### What the sheets assume
 
@@ -624,14 +633,26 @@ the plan dimensions nothing.
   13.2 mm at 65 deg, 6.9 mm at 120 deg.
 - **The Pi-to-card stack on `RPICAM-OVER-ACORN` is
   unpublished.** Waveshare dimension no height on their drawing and
-  `accessories/parts.py` carries none either, so both frames are set from
-  the card's own top face -- the highest plane either target reaches, so
-  everything below it is covered by more than the frame. Measure the stack.
-  A stand set from the Pi's face instead sits too low and loses the ends of
-  the card.
-- **The Acorn's own LED positions are not published.** SQRL issued no
-  mechanical drawing and their site is gone, so the second frame on
-  `RPICAM-OVER-ACORN` is the card, not its indicators.
+  `accessories/parts.py` carries none either, so the frame is set from the
+  card's own top face, which the LEDs are on. Measure the stack. A stand set
+  from the Pi's face instead sits too low and loses the ends of the column.
+- **The Acorn's LEDs are measured, not published.** SQRL issued no drawing
+  and no board file, and their site is gone, so `accessories/parts.py` takes
+  the five LEDs -- A1 to A4 in a column on the +Y side of the retention
+  screw, PWR on the -Y side -- off SQRL's own product photograph, to
+  +/-1.0 mm; [`accessories/README.md`](../accessories/README.md) says how.
+  The frame's 5.00 mm margin holds that, and the LEDs are the only part of
+  the Acorn the frame is for: framing the card or the whole assembly put
+  the camera 3.7 and 4.0 times as high, and the LEDs that much smaller in
+  the picture.
+- **Nothing publishes the height of the Acorn's heatsink and blower**, and
+  the blower stands just short of the LEDs on the connector side. The camera
+  is over the LEDs rather than the card, which keeps every ray to an LED off
+  the blower, but its board overhangs the blower in plan: its underside is at
+  Z + 5.20, 29.5 mm above the card at 65 deg and 17.8 at 120. If the blower
+  stands higher, raise the camera; the picture only grows. The HAT's
+  retention screw stands between A4 and PWR, and its head is not published
+  either.
 
 ### Where each subject's geometry comes from
 
@@ -641,7 +662,7 @@ Nothing is restated that some family already extracted:
 |---|---|
 | TT mounting plate | [`tinytapeout/mounting_plate/plate.py`](../tinytapeout/mounting_plate/README.md) for the outline and the standoff, [`tinytapeout/boards.py`](../tinytapeout/README.md) for every revision's envelope, LEDs, 7-segment displays and thickness, moved into plate coordinates by the placement offsets |
 | Arty A7 | [`fpga/boards.py`](../fpga/README.md), which is Digilent's own DXF and PDF plot |
-| Acorn assembly | [`raspberry_pi/boards.py`](../raspberry_pi/README.md) for the Pi 5, and [`accessories/parts.py`](../accessories/README.md) for the card, where it sits and the HAT it sits in |
+| Acorn assembly | [`raspberry_pi/boards.py`](../raspberry_pi/README.md) for the Pi 5, and [`accessories/parts.py`](../accessories/README.md) for the card, where it sits, its LEDs and the HAT it sits in |
 
 The Acorn is no exception either. Its card is the PCI Express M.2
 specification's Type 2280 outline, 22 x 80 mm, widened by the one millimetre
@@ -650,8 +671,9 @@ specifications", [Internet Archive, 2020](https://web.archive.org/web/2020/http:
 that rectangle, where it is seated, the HAT's own width and how far its 2280
 standoff reaches past the board edge are all `accessories/parts.py`'s, which
 `ACC-HAT-M2POE` is drawn from as well, so the card on that sheet and the card
-on this one cannot drift apart. The assembly's 88.00 mm far edge falls out of
-this repository's own Pi 5 data and that standoff.
+on this one cannot drift apart. The LEDs are there too, put on the HAT by the
+same connector datum and M.2 axis: along the card from its mating edge, and
+across it from the retention screw.
 
 ## What is not here, and why
 

@@ -3760,3 +3760,100 @@ strip with both camera axes in its middle, and no part of it clear of them
 is as wide as "Acorn" at the ISO 3098 floor. So the legend names it -- the
 phantom line is "Adjacent part or connector body, and the Acorn CLE-215+" --
 and frame B, whose target it is, marks it on the view.
+
+### Only the LEDs, 30 September 2026
+
+Asked for on the PR: "The only part of the acorn that needs to be seen is
+the leds at the end of the acorn." So the sheet frames them alone, and the
+whole assembly and the card go, with everything above that says the LEDs are
+not published and that frame B is the card. They are not published, but
+they can be measured.
+
+**Where they are.** Five, at the card's far end on its component side, the
+heatsink side, which is up in the HAT: four silkscreened A1 to A4 in a
+column on the +Y side of the retention screw's half-moon, and one
+silkscreened PWR on the -Y side. The Internet Archive kept the banner off
+SQRL's Acorn page, `images/acornBanner@2x.png` captured 28 September 2019: a
+CLE-215 and a CLE-215+ side by side, cut out of their background at about
+15 px/mm, with the far end of each clear of the heatsink. That is what
+`accessories/measure_acorn_leds.py` measures. Its own product renders are
+no use: `acorn-final@2x.png` is an earlier layout, with a connector strip
+and two plated holes by the LEDs, and `product-diagram-215@2x.png` shows the
+underside, and the top only under its heatsink.
+
+What else was looked for, and what it gave:
+
+- RHS Research's NiteFury and LiteFury repository has a schematic PDF and a
+  bill of materials, no board file. The four user LEDs are D5 to D8 there,
+  green 0402s, with a red NOT READY and a green POWER besides; the Acorn's
+  photographs show D8 to D5 beside A1 to A4. The connector end of the
+  LiteFury and NiteFury looks the same as the Acorn's in the photographs;
+  their LED end is under their heatsink in both product photographs, so the
+  layout is not shown to be shared there, and nothing positional is taken
+  from them. Their 0402 is not the Acorn's LED either, which is visibly
+  larger.
+- Enjoy-Digital's shop photograph of the LiteX Acorn baseboard with a
+  shipping CLE-215+ in it show the same column and PWR at the same end,
+  clear of the heatsink and just past its blower; a tweet of theirs on the
+  LiteX wiki shows them lit, green.
+- A Hackaday project's photograph shows a green board with the same A1 to
+  A4 and PWR arrangement lit, but it is a different board -- wider than an
+  M.2 card, with the earlier render's connector strip -- and is not used.
+- eBay listings could not be read without a browser, and were not needed.
+
+**How well.** The two cards are fitted separately, 80 x 23, the heatsink's
+overhang, the cable loop and the narrower finger strip excluded from the
+edges; rms 0.2 to 0.3 px an edge. The photograph leans 11 and 15 degrees,
+which the homography takes out. Scale checks the fit does not use: the
+finger pitch, 0.494 and 0.4865 against 0.50, and the half-moon cutout, 3.32
+and 3.24 against 3.50 -- the retoucher painted the cutout black, so its
+edge is the plating's, and it is the worse of the two. The two cards agree
+to 0.22 mm, the readings by eye against an automatic reading to 0.15. The
+worst scale error, 7.3 %, at A1's far edge 10.62 mm from the half-moon, is
+0.78 mm; with the 0.22 that is +/-1.0 mm. The two cards are one shoot, so
+their agreement is a check, not an error bar.
+
+The photographs also put the half-moon 0.31 and 0.49 mm to +Y of the card's
+own centreline. That is inside the scale error across 11.5 mm, and the card
+stays drawn centred on the HAT's axis; the LEDs are located from the
+half-moon, which is where the screw is, so it does not move them.
+
+**The frame.** The LEDs' union is 2.26 x 14.47 mm, so the frame is 18.35 x
+24.47 with its long side along Y, over X 83.59, Y 21.65. The heights are
+24.3 at 65 degrees, 24.5 on the autofocus module, 12.6 at 120, all from the
+card's top face, and none in focus: the autofocus module's 80 mm is more
+than three times as far. At 80 it is sharp and the column is 460 of the
+sensor's 2592 columns long; TODO has it.
+
+**Occlusion.** The camera is over the LEDs, which is what the frame model
+does anyway, and it is the right place: the blower stands just short of the
+column on the connector side, and from above the column no ray to an LED
+passes over it. The camera board, 25 mm across, does overhang the blower in
+plan; the sheet gives the board's underside, Z + 5.20, and says to raise
+the camera if the blower is taller. Nothing is above the card in the HAT:
+the Pi's USB and Ethernet jacks are under the HAT, not over the card.
+
+**The sheet.** One frame, as `issue-7-camera-over-arty-ethernet` has for the
+Arty's Ethernet LEDs, and the first single-frame sheet to be rendered. Three
+things in `camera_sheet.py` had never met a frame this small or this far
+from the datum:
+
+- the lateral dimension ran from X0 Y0, 74 mm outside the front elevation,
+  across the end elevation. Where the datum is not in the view it is now an
+  ordinate: the axis's extension line carried down, "X 83.59" at its end;
+- the 120 lens's camera, 12 mm under the stock lens's, covered the stock
+  lens's arc and angle, so where a lower camera is in the way the arc comes
+  up into the gap above it;
+- at the plan's 1:2 the LEDs are a millimetre wide and the axis mark, filled
+  white, sat on A4. The mark is left unfilled where an indicator is under
+  it, and `Subject.plan_callout` names the target with a leader, arrowed
+  rather than dotted so as not to hide PWR.
+
+Each only acts where the datum is out of the view, a camera is in the way,
+an indicator is under the mark or a subject asks for a callout. Only the
+third reaches another sheet: frame B's axis mark on `RPICAM-OVER-ARTY`
+reaches over the Arty's LED rows, and is unfilled now too.
+
+`ACC-HAT-M2POE` does not draw the LEDs. It is the plan envelope of the
+assembly, for an enclosure; an indicator inside the card changes nothing
+about that.
