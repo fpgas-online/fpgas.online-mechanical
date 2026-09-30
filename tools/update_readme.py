@@ -26,6 +26,7 @@ from accessories.parts import (GENERIC_POE, PMOD_HAT,  # noqa: E402
 from accessories.raspmod import RASPMOD                       # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE                              # noqa: E402
 from fpga.boards import BOARDS as FPGA                        # noqa: E402
+from fpga.light_pipe.adapter import ADAPTER as LIGHT_PIPE     # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI                 # noqa: E402
 from raspberry_pi_camera.boards import BOARDS as RPICAM       # noqa: E402
 from raspberry_pi_camera.optics import subjects as RPICAM_SUBJECTS  # noqa: E402
@@ -106,6 +107,9 @@ def groups() -> list[tuple[str, str, int, list[tuple[str, str, str, str]]]]:
         ("FPGA development boards", "fpga", COLUMNS,
          named("fpga", [(slug(k), FPGA[k].title, FPGA[k].subtitle)
                         for k in FPGA_ORDER])),
+        ("Arty A7 Ethernet light pipe", "light-pipe", COLUMNS,
+         named("light-pipe", [(LIGHT_PIPE.key, LIGHT_PIPE.title,
+                               LIGHT_PIPE.subtitle)])),
         ("Accessories", "accessories", COLUMNS,
          named("accessories",
                [(PMOD_HAT_STEM, PMOD_HAT.title, PMOD_HAT.subtitle),
@@ -195,6 +199,7 @@ FAMILY_READMES = {
     "raspberry-pi": ROOT / "raspberry_pi" / "README.md",
     "raspberry-pi-camera": ROOT / "raspberry_pi_camera" / "README.md",
     "fpga": ROOT / "fpga" / "README.md",
+    "light-pipe": ROOT / "fpga" / "light_pipe" / "README.md",
     "accessories": ROOT / "accessories" / "README.md",
     "mounting-plate": ROOT / "tinytapeout" / "mounting_plate" / "README.md",
     "camera-holder": ROOT / "tinytapeout" / "camera_holder" / "README.md",

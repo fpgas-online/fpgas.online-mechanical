@@ -30,6 +30,7 @@ from accessories.parts import (ACCESSORIES, ACORN_WIDTH,  # noqa: E402
 from accessories.raspmod import RASPMOD  # noqa: E402
 from fpga.boards import BOARDS as FPGA_BOARDS  # noqa: E402
 from fpga.boards import FEATURE_NUMBERS as FPGA_NUMBERS  # noqa: E402
+from fpga.light_pipe.adapter import ADAPTER as LIGHT_PIPE  # noqa: E402
 from raspberry_pi.boards import BOARDS as RPI_BOARDS  # noqa: E402
 from raspberry_pi.boards import FEATURE_NUMBERS as RPI_NUMBERS  # noqa: E402
 from raspberry_pi.orangepi_pc import FEATURE_NUMBERS as OPI_NUMBERS  # noqa: E402
@@ -45,6 +46,7 @@ from tools.drafting.camera_sheet import render_camera_position  # noqa: E402
 from tools.drafting.enclosure_sheet import render_enclosure  # noqa: E402
 from tools.drafting.holder_sheet import render_holder  # noqa: E402
 from tools.drafting.lens_sheet import render_lenses  # noqa: E402
+from tools.drafting.lightpipe_sheet import render_light_pipe  # noqa: E402
 from tools.drafting.plate_sheet import render_fitting_guide, render_plate  # noqa: E402
 from tools.drafting import rpi_compare_sheet  # noqa: E402
 from tinytapeout.mounting_plate.plate import PLATE  # noqa: E402
@@ -84,7 +86,9 @@ RPI_BUNDLE = "raspberry-pi-sheets.pdf"
 #: that say where to put a camera once it is mounted.
 RPICAM_BUNDLE = "raspberry-pi-camera-sheets.pdf"
 
-#: And the FPGA development boards.
+#: And the FPGA development boards, with the light pipe adapter after them:
+#: it is a part for one of those boards, so a reader of the set meets the
+#: board first and the thing that clips onto it second.
 FPGA_BUNDLE = "fpga-sheets.pdf"
 
 # Reading order: what a bound copy pages through and what the README grid
@@ -604,6 +608,25 @@ def fpga_sheets() -> list[tuple[str, Path, "BoardSpec"]]:
             for key in FPGA_ORDER]
 
 
+def light_pipe_sheet() -> tuple[str, Path, str]:
+    """The light pipe adapter's sheet: drawing name, path, outline entry.
+
+    A made part rather than a board, so it has a directory and a family row
+    of its own -- its design script, its checks and its STEP solid do not
+    belong among the extracted board data -- but its prefix begins with the
+    boards', ``FPGA-LP``, and it binds with them, because that is where it
+    is read.  See ``tools.layout.FAMILY_PREFIXES``.
+
+    Beside ``fpga_sheets`` rather than in it: those are a board each,
+    rendered by ``render_board`` from a ``BoardSpec``; this one is a part,
+    rendered by a module of its own.  Its title and subtitle do come from its
+    data module, so ``_label`` reads them the way it does for a board.
+    """
+    name = drawing_name("light-pipe", LIGHT_PIPE.key)
+    return (name, FAMILY_DIRS["light-pipe"] / f"{LIGHT_PIPE.key}.svg",
+            _label(name, LIGHT_PIPE))
+
+
 def plate_sheets() -> list[tuple[str, Path, str]]:
     """The two A3 mounting plate sheets: drawing name, path, outline label.
 
@@ -699,6 +722,12 @@ def bundles() -> list[Bundle]:
     cam_pages.append((lens_path.with_suffix(".pdf"), lens_label))
     cam_pages += [(path.with_suffix(".pdf"), _label(name, subject))
                   for name, path, subject in rpicam_position_sheets()]
+    # The boards, then the light pipe: it is a part for one of them, so a
+    # reader meets the board first and the thing that clips onto it second.
+    fpga_pages = [(path.with_suffix(".pdf"), _label(name, spec))
+                  for name, path, spec in fpga_sheets()]
+    _, lp_path, lp_label = light_pipe_sheet()
+    fpga_pages.append((lp_path.with_suffix(".pdf"), lp_label))
     return [
         Bundle(FAMILY_DIRS["tinytapeout"] / TT_BUNDLE,
                "Tiny Tapeout - mechanical drawings", tuple(tt_pages)),
@@ -709,8 +738,7 @@ def bundles() -> list[Bundle]:
                tuple(cam_pages)),
         Bundle(FAMILY_DIRS["fpga"] / FPGA_BUNDLE,
                "FPGA development boards - mechanical drawings",
-               tuple((path.with_suffix(".pdf"), _label(name, spec))
-                     for name, path, spec in fpga_sheets())),
+               tuple(fpga_pages)),
     ]
 
 
@@ -815,6 +843,14 @@ def draw_sheets():
         sheet = render_board(spec, drawing_no=name, version=VERSION,
                              family_numbers=FPGA_NUMBERS)
         yield sheet, path, f"{name} ({spec.title})"
+
+    # The light pipe adapter: a made part for the Arty A7's Ethernet jack, so
+    # it sits under fpga/ the way the mounting plate sits under tinytapeout/,
+    # and binds into the FPGA set after the boards.  Its own directory, but
+    # the boards' prefix, so the name says which board it clips onto.
+    lp_name, lp_path, _ = light_pipe_sheet()
+    sheet = render_light_pipe(drawing_no=lp_name, version=VERSION)
+    yield sheet, lp_path, f"{lp_name} ({LIGHT_PIPE.title})"
 
     acc_dir = FAMILY_DIRS["accessories"]
     sheet = render_board(PMOD_HAT, drawing_no=PMOD_HAT_SHEET, version=VERSION)

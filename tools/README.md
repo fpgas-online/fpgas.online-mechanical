@@ -39,6 +39,7 @@ The extractors are not here. Each lives with its subject:
 
 - [`accessories/extract.py`](../accessories/README.md)
 - [`fpga/extract.py`](../fpga/README.md)
+- [`fpga/light_pipe/design.py`](../fpga/light_pipe/README.md)
 - [`raspberry_pi/extract.py`](../raspberry_pi/README.md)
 - [`raspberry_pi_camera/extract.py`](../raspberry_pi_camera/README.md)
 - [`tinytapeout/extract.py`](../tinytapeout/README.md)
@@ -90,6 +91,10 @@ with its family, and not every one of those has caught something yet.
   is right -- the angle each labels lies along its axis, the camera is turned
   the way that needs it lower, and the figures the notes derive come out the
   same by another route.
+- [`fpga/light_pipe/verify.py`](../fpga/light_pipe/README.md) proves, from
+  the data the Arty A7 light pipe's sheet is drawn from, that a cable still
+  goes into the jack past it, that each pipe's tip lands on its LED window
+  without touching it, and that the pipes and the part fit the jack.
 
 GitHub Actions runs `make check` on every push to `main` and on every pull
 request: [`.github/workflows/check.yml`](../.github/workflows/check.yml). The
