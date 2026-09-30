@@ -390,10 +390,12 @@ def _draw_plan(sheet: Sheet, subject: Subject, view: View) -> None:
             x1, y1 = view.pt(f.x1, f.y1)
             c.rect(x0, y0, x1 - x0, y1 - y0, weight=style.W_PHANTOM,
                    colour=style.C_PHANTOM, dash=style.D_PHANTOM)
-            # Low in the body, clear of the witness lines that run out to
-            # the dimension stacks from the camera axes above it.
-            c.text(x0 + 2.0, y0 + 2.0, f.designator or f.label,
-                   size=style.T_LABEL, colour=style.C_PHANTOM, bold=True)
+            # Named in the legend, not on the view.  At the plan's scale
+            # the card is a strip the two camera axes' centre marks stand
+            # in the middle of, with the Pi's RJ45 and USB bodies at its
+            # far end, and no part of it clear of them is as wide as even
+            # "Acorn" at the ISO 3098 floor: written on the card, its name
+            # ran through frame B's axis and into a connector.
             continue
         draw_feature(c, view, f)
     for p in spec.pmods:
@@ -933,7 +935,10 @@ def _legend(subject: Subject) -> list:
             or any(p.body_x1 > p.body_x0 for p in spec.pmods)
             or any(h.keepout_dia for h in spec.holes)
             or any(w == "board" for w, _, _ in _below_plane(subject))):
-        legend.append(("phantom", "Adjacent part or connector body"))
+        bodies = [f.designator or f.label for f in spec.features
+                  if f.kind == "outline"]
+        legend.append(("phantom", "Adjacent part or connector body"
+                       + "".join(f", and the {b}" for b in bodies)))
     legend.append((("line", style.W_OUTLINE + 0.2, style.C_HIGHLIGHT, None),
                    f"Frame {FRAME_LETTERS[0]}'s target, on the plane Z is "
                    "measured from"))

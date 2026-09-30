@@ -3753,3 +3753,10 @@ own geometry, the 2280 standoff at 5.07 + 80 with half its ø5.87 boss, puts
 it at 88.005, which is the same number at two decimals, and which
 `ACC-HAT-M2POE`'s note prints as 88.00. The frames and every height came out
 as the README had them.
+
+Rendered for the first time, the card's name written on it ran through frame
+B's axis mark and into the Pi's RJ45 body: at 1:2.5 the card is a 32 x 9 mm
+strip with both camera axes in its middle, and no part of it clear of them
+is as wide as "Acorn" at the ISO 3098 floor. So the legend names it -- the
+phantom line is "Adjacent part or connector body, and the Acorn CLE-215+" --
+and frame B, whose target it is, marks it on the view.
