@@ -1287,7 +1287,9 @@ def _hat_sheet() -> str:
 
 
 def _acorn_subject() -> Subject:
-    from accessories.parts import (ACORN_CARD, POE_M2_HAT_WIDTH,
+    from accessories.parts import (ACORN_CARD, ACORN_LENGTH, ACORN_WIDTH,
+                                   POE_M2_HAT, POE_M2_HAT_HEIGHT,
+                                   POE_M2_HAT_TOL, POE_M2_HAT_WIDTH,
                                    POE_M2_STANDOFF_OVERHANG)
     from raspberry_pi.boards import BOARDS as RPI
     hat_sheet = _hat_sheet()
@@ -1308,14 +1310,16 @@ def _acorn_subject() -> Subject:
         subject_field="Acorn CLE-215+, Pi 5",
         targets=(
             Target("assembly", "Whole assembly", ex0, ey0, ex1, ey1,
-                   note="Pi 5 with a Waveshare PoE M.2 HAT+ (B) and the "
-                        "Acorn seated in it; the HAT is the Pi's own 85 x 56 "
-                        "mm and its 2280 standoff reaches 88.00.",
+                   note=f"Pi 5 with a {POE_M2_HAT.title} and the Acorn "
+                        "seated in it; the HAT is the Pi's own "
+                        f"{POE_M2_HAT_WIDTH:.0f} x {POE_M2_HAT_HEIGHT:.0f} "
+                        f"mm and its 2280 standoff reaches {ex1:.2f}.",
                    plane_name=CARD_PLANE, plane_above_subject=None,
                    plane_note=CARD_PLANE_NOTE),
             Target("card", "Acorn card", card.x0, card.y0, card.x1, card.y1,
-                   note="23 x 80 mm: the M.2 specification's Type 2280 "
-                        "outline with SQRL's own extra millimetre of width.",
+                   note=f"{ACORN_WIDTH:.0f} x {ACORN_LENGTH:.0f} mm: the M.2 "
+                        "specification's Type 2280 outline with SQRL's own "
+                        "extra millimetre of width.",
                    plane_name=CARD_PLANE, plane_above_subject=None,
                    plane_note=CARD_PLANE_NOTE),
         ),
@@ -1323,23 +1327,17 @@ def _acorn_subject() -> Subject:
             Source(label="Board geometry", ref="raspberry_pi/boards.py",
                    note="Pi 5 outline and connectors; see "
                         f"{drawing_name('raspberry-pi', slug(pi.key))}."),
-            Source(label="PCI Express M.2 Specification",
-                   ref="PCI-SIG, Revision 1.0, 1 November 2013",
-                   note="Figure 13: Type 2280 is 22 x 80, both +/-0.15."),
-            Source(label="SQRL Acorn CLE-215+ product page",
-                   ref="https://web.archive.org/web/2020/"
-                       "http://www.squirrelsresearch.com/acorn-cle-215-plus/",
-                   note='Captured 2020; the site is gone. Quoted: "it is '
-                        'one millimeter wider than the official '
-                        'specifications."'),
-            Source(label="Waveshare PoE M.2 HAT+ (B) dimension drawing",
-                   ref="https://www.waveshare.com/w/upload/d/d9/"
-                       "PoE-M.2-HAT-Plus-B-details-size.jpg",
-                   note='Annotated 85.00, 56.00 and 3.00, "Unit: mm": the '
-                        "3.00 is the standoff past the board edge. It "
-                        "dimensions no height."),
+            # One line for the card and the HAT, as the Arty's sheet cites
+            # fpga/boards.py and not Digilent: the M.2 specification, SQRL's
+            # page and Waveshare's drawing are the part's own sources, and
+            # the assembly sheet prints them.
+            Source(label="Card and HAT", ref="accessories/parts.py",
+                   note="The Acorn, where it is seated and the HAT's 2280 "
+                        f"standoff overhang; see {hat_sheet}, which cites "
+                        "the M.2 specification, SQRL and Waveshare."),
         ),
-        tolerance="Pi 5 +/-0.20, card +/-0.20 DERIVED, Z DERIVED",
+        tolerance=(f"Pi 5 +/-0.20, card +/-{POE_M2_HAT_TOL:.2f} DERIVED, "
+                   "Z DERIVED"),
         notes=(
             "The Acorn's own LED positions are not published: SQRL issued "
             "no mechanical drawing and their site is gone, so frame B is the "

@@ -3724,10 +3724,32 @@ envelope then falls out of this repository's own Pi 5 data: the Pi's own
 assembled *envelope*, connectors included, is 87.960 x 57.320 over an
 85 x 56 board, and the standoff takes the 87.960 to 88.00.
 
-The boss itself is not drawn. Drawing it would have meant restating a fourth
-figure, its ø5.87, for a circle 2 mm outside the Pi's own Ethernet jack; the
-note carries the 88.00 instead.
+The boss itself is not drawn. When this was written, drawing it would have
+meant restating a fourth figure, its ø5.87, for a circle 2 mm outside the
+Pi's own Ethernet jack; the note carries the 88.00 instead.
 
 Its LEDs are simply not published. SQRL issued no mechanical drawing and the
 company's site is gone, so there is no indicator frame for the Acorn: frame B
 is the card. The sheet says that rather than inventing one.
+
+### Rebased onto #25, 30 September 2026
+
+`accessories/parts.py` as it merged carries more than this sheet was written
+against: the boss is `POE_M2_BOSS_DIA`, the card's size is `ACORN_WIDTH` and
+`ACORN_LENGTH`, and the M.2 specification, SQRL's page and Waveshare's
+drawing are `Source`s of the part's own, which `ACC-HAT-M2POE` prints. The
+sheet had its own shorter copies of those three. Printing the part's instead
+made the sources column long enough to push the plan from 1:2.5 to 1:5, so
+the sheet now cites the module and that sheet in one line, the way the Arty's
+cites `fpga/boards.py` and not Digilent, and "both citations on the sheet"
+above is no longer so: they are one cross reference away. The figures in its
+frame notes and tolerance are interpolated from the module rather than typed.
+With no quotation left on the sheet from a page this family does not fetch,
+`verify_optics.py` no longer lists any as cited from elsewhere.
+
+Nothing moved: the card is still 23 x 80 at X 5.07 and Y 18.26, and the far
+edge is still 88.00. That edge is the declared 85.00 + 3.00; the module's
+own geometry, the 2280 standoff at 5.07 + 80 with half its ø5.87 boss, puts
+it at 88.005, which is the same number at two decimals, and which
+`ACC-HAT-M2POE`'s note prints as 88.00. The frames and every height came out
+as the README had them.
