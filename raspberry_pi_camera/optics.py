@@ -1035,6 +1035,11 @@ class Subject:
     #: The sheet turns it into a headroom note: how high it may stand before
     #: it leaves the picture.  Only the mounting plate has one.
     standing: tuple[tuple[str, tuple[float, float, float, float]], ...] = ()
+    #: What the plan names frame A's target with a leader, where the target
+    #: is too small at the plan's scale to be told from what is round it.
+    #: Only the Acorn's LEDs need one: a column 2.3 mm wide, lying in plan
+    #: over the Pi's own Ethernet and USB bodies, which are under the HAT.
+    plan_callout: str = ""
     sources: tuple[Source, ...] = ()
     notes: tuple[str, ...] = ()
     #: What the title block's SUBJECT field says.  Short: it is a title block

@@ -85,14 +85,20 @@ NO_BAND = 2.0
 #: Room left of the end elevation and the plan: the datum labels.
 LEFT = 20.0
 #: Room under the plan, for the leader that points at two frame edges too
-#: close together to draw as two lines, where a sheet has one.
+#: close together to draw as two lines, or names a target too small to see,
+#: where a sheet has one.
 PLAN_BOTTOM = 12.0
 PLAN_BOTTOM_BARE = 9.0
 
 
+def _plan_leader(subject: Subject) -> bool:
+    """Whether the plan carries a leader out under it, into the paper beside."""
+    return bool(subject.plan_callout
+                or any(coincident_edges(subject.frames())))
+
+
 def _plan_bottom(subject: Subject) -> float:
-    return PLAN_BOTTOM if any(coincident_edges(subject.frames())) \
-        else PLAN_BOTTOM_BARE
+    return PLAN_BOTTOM if _plan_leader(subject) else PLAN_BOTTOM_BARE
 
 #: Room round the elevations, in sheet millimetres.  Each carries its height
 #: dimensions on its outer side and its lateral dimension underneath, and a
@@ -111,6 +117,9 @@ ARC_R = 11.0
 #: The wide lens's arc, smaller: its label goes under it, inside its own
 #: cone, where the stock lens's rays cannot reach it.
 ARC_R_WIDE = 10.0
+#: The least the stock lens's arc may shrink to, to clear a lower camera:
+#: room for its value's height and a millimetre over.
+ARC_R_MIN = style.T_DIM + 1.5
 
 #: A frame's colour, its legend style and its letter, by its position in the
 #: subject's list.  Two of each, because no subject has three things worth
@@ -390,12 +399,11 @@ def _draw_plan(sheet: Sheet, subject: Subject, view: View) -> None:
             x1, y1 = view.pt(f.x1, f.y1)
             c.rect(x0, y0, x1 - x0, y1 - y0, weight=style.W_PHANTOM,
                    colour=style.C_PHANTOM, dash=style.D_PHANTOM)
-            # Named in the legend, not on the view.  At the plan's scale
-            # the card is a strip the two camera axes' centre marks stand
-            # in the middle of, with the Pi's RJ45 and USB bodies at its
-            # far end, and no part of it clear of them is as wide as even
-            # "Acorn" at the ISO 3098 floor: written on the card, its name
-            # ran through frame B's axis and into a connector.
+            # Named in the legend, not on the view.  What a reader looks
+            # for on the card is its LEDs, at its far end, which the plan
+            # names with a leader; a second name on the view, on a strip
+            # the plan draws at a reduced scale, would only be one more
+            # thing to tell them from.
             continue
         draw_feature(c, view, f)
     for p in spec.pmods:
@@ -501,7 +509,16 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
         # The optical axis: a centre mark in the frame's own colour, which is
         # the point of the whole sheet and the thing a stand is set over.
         ax, ay = view.pt(fr.cx, fr.cy)
-        c.circle(ax, ay, 1.6, w=style.W_CENTRE, colour=colour, fill="#ffffff")
+        # Filled white, so the lines under it do not run through the mark --
+        # unless an indicator is under it, which the mark must not hide: the
+        # axis over the Acorn's LED column lands on A4.
+        r = 1.6 / view.scale
+        under = any(f.kind in ("led", "display7")
+                    and f.x0 < fr.cx + r and f.x1 > fr.cx - r
+                    and f.y0 < fr.cy + r and f.y1 > fr.cy - r
+                    for f in subject.spec.features)
+        c.circle(ax, ay, 1.6, w=style.W_CENTRE, colour=colour,
+                 fill="none" if under else "#ffffff")
         dims.centre_mark(c, ax, ay, 1.6, colour=colour, over=2.6)
         # The letter at one of the frame's own corners: the top right, unless
         # a letter already placed is there.  At 1:1 those corners were well
@@ -535,6 +552,21 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
                                                              style.T_LABEL))
         dims.leader(c, tip, (max(elbow_x, tip[0] + 4.0), bottom - 6.0),
                     text, dot=True, colour=style.C_PHANTOM)
+
+    # A target too small to tell from what is round it at this scale, named
+    # by a leader from its lower edge into the same band, arrowed rather
+    # than dotted: a dot the size of the LED it lands on would hide it.  The
+    # Acorn's LEDs are the one: a column the plan draws a millimetre wide,
+    # lying over the Pi's own Ethernet and USB bodies.
+    if subject.plan_callout:
+        t = frames[0].target
+        tip = view.pt((t.x0 + t.x1) / 2, t.y0)
+        text = subject.plan_callout
+        elbow_x = min(tip[0] + 8.0,
+                      sheet.area.x1 - 6.0 - style.text_width(text,
+                                                             style.T_LABEL))
+        dims.leader(c, tip, (max(elbow_x, tip[0] + 4.0), bottom - 6.0),
+                    text, colour=style.C_HIGHLIGHT)
 
     dx, dy = _datum_label_offset(subject, view)
     dims.datum_marker(c, *view.pt(0.0, 0.0), label="X0 Y0",
@@ -617,11 +649,12 @@ def _note_columns(sheet: Sheet, subject: Subject, end: View, front: View,
     plan_bottom = plan.rect.y - _plan_bottom(subject)
     cols = []
     beside = plan.rect.x1 + 10.0
-    # Where the plan carries a leader to two coincident frame edges, its
-    # text runs out to the right under the plan, into the paper beside it:
-    # the column beside the plan stops above it.
-    beside_bottom = (plan.rect.y - 3.0 if any(coincident_edges(
-        subject.frames())) else plan_bottom)
+    # Where the plan carries a leader -- to two coincident frame edges, or
+    # naming a small target -- its text runs out to the right under the
+    # plan, into the paper beside it: the column beside the plan stops
+    # above it.
+    beside_bottom = (plan.rect.y - 3.0 if _plan_leader(subject)
+                     else plan_bottom)
     if elev_bottom - beside_bottom >= 20.0:
         cols.append(Rect(beside, beside_bottom, x1 - beside,
                          elev_bottom - beside_bottom))
@@ -749,6 +782,8 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
         # the stock lens's cone, so its value goes under its own arc, inside
         # its own cone, which the stock lens's rays cannot cross.
         r = ARC_R if lens.key == DRAWN else ARC_R_WIDE
+        if lens.key == DRAWN:
+            r = _arc_clear_of_cameras(subject, v, cu, z, apex, r)
         left = (apex[0] - r * math.sin(half), apex[1] - r * math.cos(half))
         right = (apex[0] + r * math.sin(half), apex[1] - r * math.cos(half))
         c.arc(*left, *right, r, sweep=1, w=style.W_THIN, colour=style.C_DIM)
@@ -854,8 +889,7 @@ def _dimension_front(sheet: Sheet, subject: Subject, v: View,
             lane += style.DIM_STEP
     # X of the lens, from the datum, under the lowest thing drawn.
     bottom = min([b for _, _, b in below] + [0.0])
-    dims.linear(c, v.pt(0.0, bottom), (lens_x, v.y(0.0)),
-                -(8.0 + (v.y(0.0) - v.y(bottom))), horizontal=True, value=cu)
+    _lateral(c, v, lens_x, bottom, cu, "X")
 
 
 def _dimension_end(sheet: Sheet, subject: Subject, v: View,
@@ -865,8 +899,56 @@ def _dimension_end(sheet: Sheet, subject: Subject, v: View,
     f_lo, f_hi, t_lo, t_hi, cu, angle, which, size = _along(subject, "Y")
     below = _below_plane(subject)
     bottom = min([b for _, _, b in below] + [0.0])
-    dims.linear(c, v.pt(0.0, bottom), (lens_y, v.y(0.0)),
-                -(8.0 + (v.y(0.0) - v.y(bottom))), horizontal=True, value=cu)
+    _lateral(c, v, lens_y, bottom, cu, "Y")
+
+
+def _lateral(c, v: View, lens_u: float, bottom: float, cu: float,
+             axis: str) -> None:
+    """Where the lens is across an elevation, under the lowest thing drawn.
+
+    A dimension from the datum, where the datum is in the view.  Where it
+    is not -- a frame on the far side of the subject from its datum, as the
+    Acorn's LEDs are, at the far end of the Pi from it -- a dimension line
+    back to it would run out of the view and across the next one.  So the
+    lens's coordinate is given instead, ordinate fashion: the axis's own
+    extension line carried down, and the coordinate at its end.  The plan
+    shows the datum it is measured from.
+    """
+    if v.model_x0 <= 0.0 <= v.model_x1:
+        dims.linear(c, v.pt(0.0, bottom), (lens_u, v.y(0.0)),
+                    -(8.0 + (v.y(0.0) - v.y(bottom))), horizontal=True,
+                    value=cu)
+        return
+    top = v.y(bottom) - style.EXT_GAP
+    end = v.y(bottom) - 8.0 - style.EXT_OVER
+    c.line(lens_u, top, lens_u, end, w=style.W_THIN, colour=style.C_DIM)
+    c.text(lens_u, end - 1.0 - style.T_DIM, f"{axis} {cu:.2f}",
+           size=style.T_DIM, colour=style.C_DIM, anchor="middle")
+
+
+def _arc_clear_of_cameras(subject: Subject, v: View, cu: float, z: float,
+                          apex, r: float) -> float:
+    """The stock lens's arc radius, shrunk to clear a lower camera's body.
+
+    Its value is written at the arc's left end, and on a sheet where the
+    wide lens's camera stands close under the stock lens's, as it does on
+    the Acorn's, the wide lens's camera, drawn after it and filled white,
+    would cover both.  So the arc comes up into the gap between that
+    camera's top and this lens, a millimetre clear of the top, if the gap
+    is room enough for it; otherwise it is left as it was.
+    """
+    from raspberry_pi_camera import v1
+    height = (v1.LENS_TOP_Z + v1.BOARD_THICKNESS
+              + max(0.0, -v1.FFC_BOTTOM_Z - v1.BOARD_THICKNESS))
+    fr = subject.frames()[0]
+    tops = [v.y(place(fr, ln).z + height) for ln in LENSES.values()
+            if place(fr, ln).z < z]
+    if not tops:
+        return r
+    room = apex[1] - max(tops) - 1.0
+    if room >= r or room < ARC_R_MIN:
+        return r
+    return room
 
 
 # ---------------------------------------------------------------------------
