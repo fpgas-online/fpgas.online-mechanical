@@ -7,6 +7,12 @@ boards that are not Raspberry Pis but take their HATs. Each of `RPI-3B`,
 host positions can be read off directly; `RPI-ALL` draws the three
 Raspberry Pi models on the one 85 x 56 outline they share.
 
+The Pi 5 is drawn a second time, with a different part on it, on
+[`ACC-HAT-M2POE`](../accessories/README.md): an Acorn CLE-215+ in a Waveshare
+PoE M.2 HAT+ (B). That sheet is filed with the accessories because what is new
+on it is the accessory, and because the data behind it is hand-curated where
+everything in this directory is generated.
+
 | | |
 |---|---|
 | `boards.py` | **Generated.** Every Raspberry Pi drawn here |
