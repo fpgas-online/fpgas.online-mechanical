@@ -195,6 +195,14 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <b>RPICAM-OVER-ARTY</b> Camera over the Arty A7<br>Camera Module OV5647, 65 and 120 degree lenses
 </td>
 </tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="raspberry_pi_camera/output/over-acorn-cle-215-plus.pdf"><img src="raspberry_pi_camera/output/previews/over-acorn-cle-215-plus.png" width="270" alt="RPICAM-OVER-ACORN Camera over the Acorn CLE-215+"></a><br>
+<b>RPICAM-OVER-ACORN</b> Camera over the Acorn CLE-215+<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
+</tr>
 </table>
 
 ### FPGA development boards
