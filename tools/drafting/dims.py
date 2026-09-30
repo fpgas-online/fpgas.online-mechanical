@@ -380,6 +380,74 @@ def _outside_own(pos: float, from_pos: float, out: int, horizontal: bool,
     return edge + out * style.EXT_GAP
 
 
+def _lane_plan(values, base: float, *, size: float, text_gap: float,
+               stagger: float | None, zero_label: str,
+               zero_pos: float | None, zero_from: float | None):
+    """Which lane each ordinate label goes in, and how far a lane steps.
+
+    Split out of :func:`ordinate_plan`, which places the labels for
+    :func:`ordinate_chain`, so that a sheet can ask how far the chain will
+    reach before it decides how much room to leave for it -- before there is
+    a view to plan the chain in -- and get the answer from the code that will
+    place the labels rather than from a second guess at the same arithmetic.
+
+    Two labels closer along the chain than a label is tall would overprint, so
+    the second goes to the next lane out.  A lane is a label's WIDTH further
+    out on either kind of chain: on a horizontal chain the labels are turned
+    on their side and run outward by their width; on a vertical chain they
+    read normally and again run outward by their width.  The horizontal case
+    used the height, which put ButterStick's 18.09 and 18.50 on top of each
+    other.
+    """
+    labels = [v[1] for v in values] + [zero_label]
+    widest = max((style.text_width(t, size) for t in labels), default=0.0)
+    tall = style.text_height(size) + style.descender(size)
+    if stagger is None:
+        stagger = widest + text_gap + 1.6
+    need = tall + 1.6
+
+    # The zero ordinate marks the datum on the chain's own axis.  Using the
+    # chain's *base*, which is the perpendicular coordinate, drops it somewhere
+    # arbitrary along the chain.
+    entries = list(values)
+    if zero_pos is not None:
+        entries = [(zero_pos, zero_label,
+                    base if zero_from is None else zero_from)] + entries
+
+    lanes: list[float] = []
+    placed = []
+    for pos, label, from_pos in sorted(entries, key=lambda e: e[0]):
+        lane = 0
+        while lane < len(lanes) and pos - lanes[lane] < need:
+            lane += 1
+        if lane == len(lanes):
+            lanes.append(pos)
+        else:
+            lanes[lane] = pos
+        placed.append((pos, label, from_pos, lane))
+    return stagger, placed
+
+
+def ordinate_reach(values, base: float = 0.0, *, size: float = style.T_DIM,
+                   text_gap: float = 2.0, stagger: float | None = None,
+                   zero_label: str = "0", zero_pos: float | None = None,
+                   zero_from: float | None = None) -> float:
+    """How far outward :func:`ordinate_chain` reaches from its own line.
+
+    The chain's line sits a fixed distance from the view; what varies is how
+    many lanes its labels need and how long the outermost one is, and that is
+    what decides how much paper the view has to leave beyond it.  Nothing is
+    drawn: the lane assignment is the one the chain will use, so a sheet
+    planned against this figure and the chain drawn on it cannot disagree
+    about where the last label ends.
+    """
+    stagger, placed = _lane_plan(values, base, size=size, text_gap=text_gap,
+                                 stagger=stagger, zero_label=zero_label,
+                                 zero_pos=zero_pos, zero_from=zero_from)
+    return max((lane * stagger + text_gap + style.text_width(label, size)
+                for _, label, _, lane in placed), default=0.0)
+
+
 def ordinate_chain(c: Canvas, values, base: float, line_pos: float, *,
                    horizontal: bool, colour: str = style.C_DIM,
                    size: float = style.T_DIM, text_gap: float = 2.0,
@@ -442,40 +510,10 @@ def ordinate_plan(values, base: float, line_pos: float, *, horizontal: bool,
     the same sums: see "Reserve, then draw" in the README.
     """
     out = 1 if line_pos > base else -1
-
-    # Two labels closer along the chain than a label is tall would overprint,
-    # so the second goes to the next lane out.  A lane is a label's WIDTH
-    # further out on either kind of chain: on a horizontal chain the labels
-    # are turned on their side and run outward by their width; on a vertical
-    # chain they read normally and again run outward by their width.  The
-    # horizontal case used the height, which put ButterStick's 18.09 and
-    # 18.50 on top of each other.
-    labels = [v[1] for v in values] + [zero_label]
-    widest = max((style.text_width(t, size) for t in labels), default=0.0)
+    stagger, placed = _lane_plan(values, base, size=size, text_gap=text_gap,
+                                 stagger=stagger, zero_label=zero_label,
+                                 zero_pos=zero_pos, zero_from=zero_from)
     tall = style.text_height(size) + style.descender(size)
-    if stagger is None:
-        stagger = widest + text_gap + 1.6
-    need = tall + 1.6
-
-    # The zero ordinate marks the datum on the chain's own axis.  Using the
-    # chain's *base*, which is the perpendicular coordinate, drops it somewhere
-    # arbitrary along the chain.
-    entries = list(values)
-    if zero_pos is not None:
-        entries = [(zero_pos, zero_label,
-                    base if zero_from is None else zero_from)] + entries
-
-    lanes: list[float] = []
-    placed = []
-    for pos, label, from_pos in sorted(entries, key=lambda e: e[0]):
-        lane = 0
-        while lane < len(lanes) and pos - lanes[lane] < need:
-            lane += 1
-        if lane == len(lanes):
-            lanes.append(pos)
-        else:
-            lanes[lane] = pos
-        placed.append((pos, label, from_pos, lane))
 
     # Two passes: every label's box is known before any witness line is
     # drawn, so a line to an outer lane can break where it passes a label in

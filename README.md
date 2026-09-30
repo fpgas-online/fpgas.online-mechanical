@@ -232,7 +232,10 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="fpga/output/ultra96-v2.pdf"><img src="fpga/output/previews/ultra96-v2.png" width="270" alt="FPGA-ULTRA96-V2 Avnet Ultra96-V2"></a><br>
 <b>FPGA-ULTRA96-V2</b> Avnet Ultra96-V2<br>96Boards CE, 85 x 54 mm
 </td>
-<td width="33%"></td>
+<td width="33%" valign="top" align="center">
+<a href="fpga/output/zybo-z7.pdf"><img src="fpga/output/previews/zybo-z7.png" width="270" alt="FPGA-ZYBO-Z7 Digilent Zybo Z7"></a><br>
+<b>FPGA-ZYBO-Z7</b> Digilent Zybo Z7<br>Z7-10 and Z7-20
+</td>
 <td width="33%"></td>
 </tr>
 </table>
