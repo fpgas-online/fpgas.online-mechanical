@@ -193,20 +193,21 @@ The card's LEDs are in `parts.py` too, as `ACORN_LEDS`, for the camera sheet
 that frames them, `RPICAM-OVER-ACORN`. There are five, at the far end on the
 component side: four silkscreened A1 to A4 in a column on the +Y side of the
 retention screw's half-moon, and PWR on the other side of it. Nobody publishes
-where, and there is no board file, so `measure_acorn_leds.py` measures them off
-SQRL's own product photograph, which the Internet Archive kept: a CLE-215 and a
-CLE-215+ lying side by side, square on, cut out of their background. Each
-card's outline is fitted to 80 x 23 with a homography and the LEDs read off a
-1 mm grid, relative to the half-moon's centre, which is where the retention
-screw puts the card across the HAT. The checks the fit did not use are the
-finger pitch, 1.2 and 2.7 % under the specification's 0.50 mm, the half-moon's
-cutout, 5.2 and 7.3 % under its 3.50 -- painted in by SQRL's retoucher, so its
-edge is the plating's -- the two cards against each other, 0.22 mm at worst,
-and the readings by eye against an automatic one, 0.15. The worst scale check
-at the LED furthest from the half-moon, plus the worse of the other two, is
-the +/-1.0 mm the figures carry. The two cards are one shoot, not two
-independent measurements, which is why their disagreement is a check and not
-the error bar.
+where, and there is no board file, so `measure_acorn_leds.py` measures them
+off SQRL's own product photograph, which the Internet Archive kept: a CLE-215
+and a CLE-215+ lying side by side, cut out of their background, photographed
+at a lean of 11 and 15 degrees that the fit takes out. Each card's outline is
+fitted to 80 x 23 with a homography and the LEDs read off a 1 mm grid,
+relative to the half-moon's centre, which is where the retention screw puts
+the card across the HAT. The checks the fit did not use are the finger pitch,
+1.2 and 2.7 % under the specification's 0.50 mm, the half-moon's cutout, 5.2
+and 7.3 % under its 3.50 -- painted in by SQRL's retoucher, so its edge is the
+plating's -- the two cards against each other, 0.22 mm at worst, and the
+readings by eye against an automatic one, 0.15. The worst scale check at the
+LED furthest from the half-moon, plus the worse of the other two, is the
++/-1.0 mm the figures carry. The two cards are one shoot, not two independent
+measurements, which is why their disagreement is one term of the error bar and
+not the whole of it.
 
 Enjoy-Digital's photographs of shipping CLE-215+ cards show the same five LEDs
 at the same end, beside the blower on the heatsink, and lit green. RHS
