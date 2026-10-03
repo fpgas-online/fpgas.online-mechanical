@@ -559,6 +559,13 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
     # Acorn's LEDs are the one: a column the plan draws a millimetre wide,
     # lying over the Pi's own Ethernet and USB bodies.
     if subject.plan_callout:
+        # Both leaders would share one elbow in the one band
+        # _plan_bottom reserves.  No subject has both, so refuse rather
+        # than overlap.
+        if any(coincident_edges(frames)):
+            raise ValueError(
+                f"{subject.key}: a plan callout and coincident frame "
+                "edges would put two leaders on one elbow")
         t = frames[0].target
         tip = view.pt((t.x0 + t.x1) / 2, t.y0)
         text = subject.plan_callout
