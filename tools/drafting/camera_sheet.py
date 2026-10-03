@@ -230,7 +230,7 @@ def _fmt_near(near: float | None) -> str:
     return f"{near / 1000:g} m" if near >= 1000 else f"{near:g} mm"
 
 
-#: How a close limit's basis is printed in the IN FOCUS table.
+#: How a close limit's basis is printed in the Z IN FOCUS table.
 BASIS = {"DECLARED": "DECL", "REPORTED": "forum user"}
 
 
@@ -250,7 +250,7 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     """
     from raspberry_pi_camera import v1
     frames = subject.frames()
-    stock, wide, af = (optics.LENS_65, optics.LENS_120, optics.AUTOFOCUS)
+    stock, wide = optics.LENS_65, optics.LENS_120
     a = place(frames[0], stock)
     w = place(frames[0], wide)
     notes = [
@@ -304,28 +304,17 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     # before building anything.
     s_sensor, s_subject = stock.blur(a.z)
     w_sensor, w_subject = wide.blur(w.z)
-    variants = {v.key: v for v in optics.FOCUS_VARIANTS}
-    unscrewed, manual, b0176 = (variants["v13-unscrewed"], variants["manual"],
-                                variants["b0176"])
     notes.append(
         f'FOCUS. Both fixed lenses as sold are declared "{stock.near_quote}" '
         f'(Raspberry Pi) and "{wide.near_quote}" (Arducam), and every Z here '
-        "is nearer: as sold, on either the subject is OUT OF FOCUS. At frame "
+        "is nearer: as sold, the subject is OUT OF FOCUS. At frame "
         f"{FRAME_LETTERS[0]}'s Z a point spreads to "
-        f"{s_sensor / optics.PIXEL_PITCH:.0f} px, {s_subject:.1f} mm on the "
-        f"board, at {stock.short}, and {w_sensor / optics.PIXEL_PITCH:.0f} px,"
-        f" {w_subject:.1f} mm, at {wide.short} (DERIVED, thin lens ASSUMED set"
-        f" at {stock.focus_at / 1000:g} m). Focusing closer is the module's: "
-        f"the v1.3's glued lens unscrewed by hand reaches "
-        f"{unscrewed.near / 10:g} cm, a forum user's measurement (Raspberry "
-        f"Pi publish none); a lens focused by hand, {manual.module}, "
-        f'"{manual.quote}", so {manual.near:g} mm at most. The autofocus '
-        f"module used here, {af.product.split(',')[0]} from AliExpress, "
-        "publishes NO close limit, so no height is given at which it is in "
-        f"focus; {b0176.module}, a different motorised module, is declared "
-        f'"{b0176.quote}". IN FOCUS gives each: the higher of its close '
-        "limit and Z + f, since a lens focused at Z frames what a pinhole at "
-        "Z - f does (DERIVED, thin lens).")
+        f"{s_sensor / optics.PIXEL_PITCH:.0f} px, {s_subject:.1f} mm, at "
+        f"{stock.short} and {w_sensor / optics.PIXEL_PITCH:.0f} px, "
+        f"{w_subject:.1f} mm, at {wide.short} (DERIVED, thin lens ASSUMED "
+        f"set at {stock.focus_at / 1000:g} m). Focused closer, Z is the "
+        "higher of the close limit and Z + f (DERIVED, thin lens); the "
+        "autofocus module used here publishes NO close limit.")
     # The wide lens: where its figures come from and what they are good to.
     alts = []
     for alt in wide.alternatives:
@@ -588,40 +577,39 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
 
 
 def _tables(sheet: Sheet, subject: Subject) -> None:
-    """Four tables: the frames, the heights, focus, and the lenses.
+    """Three tables: the frames, the heights in focus, and the lenses.
 
-    The frames and where their axes are; then one row per frame giving the
-    height for each drawn lens and whether the lens as sold is in focus
-    there; then one row per variant of the camera, its close limit and the
-    lowest height at which it both frames and focuses each frame; then the
-    lenses themselves, declared figures against the ones used, each value's
-    basis flagged.
+    The frames, where their axes are and the height each drawn lens frames
+    them from; then a row for each module that focuses closer, its close
+    limit and the lowest height at which it both frames and focuses each
+    frame; then the lenses themselves, declared figures against the ones
+    used, each value's basis flagged.
     """
     frames = subject.frames()
     stock, wide, af = (optics.LENS_65, optics.LENS_120, optics.AUTOFOCUS)
 
     rows = [[FRAME_LETTERS[i], fr.target.label,
              f"{fr.width:.2f} x {fr.height:.2f}", fr.long_axis,
-             f"{fr.cx:.2f}", f"{fr.cy:.2f}"] for i, fr in enumerate(frames)]
-    title = "FRAMES, mm"
+             f"{fr.cx:.2f}", f"{fr.cy:.2f}",
+             f"{place(fr, stock).z:.1f}", f"{place(fr, wide).z:.1f}"]
+            for i, fr in enumerate(frames)]
+    title = "FRAMES, AND Z TO FRAME THEM, mm"
     block = sheet.column_block(sheet.table_height(title, len(rows)))
     sheet.table(block, title,
-                ["", "FRAME", "RECTANGLE", "LONG", "AXIS X", "AXIS Y"], rows,
-                ["middle", "start", "end", "middle", "end", "end"])
+                ["", "FRAME", "RECTANGLE", "LONG", "AXIS X", "AXIS Y",
+                 f"Z {stock.short}", f"Z {wide.short}"], rows,
+                ["middle", "start", "end", "middle", "end", "end", "end",
+                 "end"])
 
-    rows = []
-    for i, fr in enumerate(frames):
-        a, w = place(fr, stock), place(fr, wide)
-        rows.append([FRAME_LETTERS[i], f"{a.z:.1f}", _in_focus(a),
-                     f"{w.z:.1f}", _in_focus(w)])
-    title = "Z ABOVE THE FRAME PLANE, mm, AND IN FOCUS AS SOLD?"
-    block = sheet.column_block(sheet.table_height(title, len(rows)))
-    sheet.table(block, title,
-                ["", f"Z {stock.short}", "FIXED", f"Z {wide.short}", "FIXED"],
-                rows, ["middle", "end", "middle", "end", "middle"])
-
+    # Each module that focuses closer, at the lowest height that both
+    # frames and focuses.  The fixed lenses as sold focus at none of the
+    # heights above, and the focus note says so.
     rows = []
     for v in optics.FOCUS_VARIANTS:
+        if v.lens.focus_at is not None and v.near == v.lens.near:
+            continue    # as sold: out of focus at every height here
+        if not v.used:
+            continue    # a comparison only, on RPICAM-LENS
         zs = [optics.in_focus_z(fr, v) for fr in frames]
         rows.append([v.variant, v.module.replace(
                          "Raspberry Pi Camera Module", "RPi Camera").replace(
@@ -629,10 +617,10 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
                      "not published" if v.near is None
                      else f"{_fmt_near(v.near)}, {BASIS[v.basis]}"]
                     + ["--" if z is None else f"{z:.1f}" for z in zs])
-    title = "IN FOCUS: LOWEST Z THAT FRAMES AND FOCUSES, mm"
+    title = "Z IN FOCUS, mm: THE LOWEST THAT FRAMES AND FOCUSES"
     block = sheet.column_block(sheet.table_height(title, len(rows)))
     sheet.table(block, title,
-                ["VARIANT", "MODULE", "CLOSE LIMIT"]
+                ["", "MODULE", "CLOSE LIMIT"]
                 + [f"Z {FRAME_LETTERS[i]}" for i in range(len(frames))],
                 rows, ["start", "start", "start"] + ["end"] * len(frames))
 
