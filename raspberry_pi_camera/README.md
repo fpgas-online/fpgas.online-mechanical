@@ -6,18 +6,19 @@ outline, the four mounting holes, the lens and sensor module with its optical
 axis, and the camera FFC connector on the underside.
 
 The `RPICAM-OVER-*` sheets answer the other half of the same question. Once
-the mount exists, how far above the board does it go, and over what point?
-One sheet per subject, and each sheet's name says which after `RPICAM-OVER-`:
-the Tiny Tapeout mounting plate and the Digilent Arty A7. Each leads with
-two elevations, one for each axis of the picture, drawing the subject edge
-on and, over it, a Camera Module v1.3 with each lens -- the stock 65 degree
-one and a 120 degree fisheye -- at the height where its field of view takes
-in the rectangle the picture has to cover, dimensioning how high each goes
-and where; a smaller plan shows the rectangles over the subject, and the
-tables give every height, for the autofocus version too, and whether it is
-in focus. `RPICAM-LENS` is the lenses themselves: every field of view
-figure anyone gives, declared and derived, the focus of each, and what a
-fisheye's picture looks like on a board.
+the mount exists, how far above the board does it go, and over what point? One
+sheet per subject, and each sheet's name says which after `RPICAM-OVER-`: the
+Tiny Tapeout mounting plate, the Digilent Arty A7 and an Acorn CLE-215+. Each
+leads with two elevations, one for each axis of the picture, drawing the
+subject edge on and, over it, a Camera Module v1.3 with each lens -- the stock
+65 degree one and a 120 degree fisheye -- at the height where its field of
+view takes in the rectangle the picture has to cover, dimensioning how high
+each goes and where; a smaller plan shows the rectangles over the subject, and
+the tables give every height, whether the lens as sold is in focus there,
+and per variant of the camera the lowest height that both frames and focuses.
+`RPICAM-LENS` is the lenses themselves: every field of view figure
+anyone gives, declared and derived, the focus of each, and what a fisheye's
+picture looks like on a board.
 [`TT-MP-CAM65` and `TT-MP-CAM120`](../tinytapeout/camera_holder/README.md)
 are holders built to the first of the position sheets, one per lens.
 
@@ -74,6 +75,14 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <a href="output/over-arty-a7.pdf"><img src="output/previews/over-arty-a7.png" width="270" alt="RPICAM-OVER-ARTY Camera over the Arty A7"></a><br>
 <b>RPICAM-OVER-ARTY</b> Camera over the Arty A7<br>Camera Module OV5647, 65 and 120 degree lenses
 </td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<a href="output/over-acorn-cle-215-plus.pdf"><img src="output/previews/over-acorn-cle-215-plus.png" width="270" alt="RPICAM-OVER-ACORN Camera over the Acorn CLE-215+"></a><br>
+<b>RPICAM-OVER-ACORN</b> Camera over the Acorn CLE-215+<br>Camera Module OV5647, 65 and 120 degree lenses
+</td>
+<td width="33%"></td>
+<td width="33%"></td>
 </tr>
 </table>
 
@@ -341,29 +350,45 @@ neither and says so.
 |---|---|---|---|---|
 | `3.60 mm +/- 0.01` | `F2.9` | `Fixed` | `Approx 1 m to ∞` | 1.60 m, 0.80 m; 3.20 m, 1.60 m at 1 px |
 
-**The autofocus version:** Arducam's B0176, an OV5647 with a voice-coil lens
--- "Generally, you can understand it the same as autofocus" -- in the same
-24 x 25 mm board size as the stock module, with a taller lens; Arducam's
-catalogue also lists wide and pan-tilt-zoom motorised OV5647s, with other
-lenses
-([UCTRONICS, Arducam's own store](https://web.archive.org/web/20251209063424/https://www.uctronics.com/arducam-auto-focus-camera-module-5mp-for-raspberry-pi.html);
-its predecessor, the [B0121](https://web.archive.org/web/20241103134041/https://www.arducam.com/product/5mp-ov5647-motorized-focus-camera-sensor-raspberry-pi/)).
+**The autofocus module used here:** the "AF-65 Degrees" variant of
+[an AliExpress listing](https://www.aliexpress.com/item/1005007810082171.html),
+`Camera Module OV5647 for Raspberry Pi 3 Model B+ 3B 4B HD 5MP 1080P AF 65
+120 Degrees Auto Focus Webcam Video`, read on 3 October 2026. It is the one
+on the Acorn's host. A clone of the v1.3's board, silkscreened "Raspberry pi
+Camera Rev 1.3" with the same four holes, carrying an OV5647 in a square
+voice-coil can whose flex is marked P5V04A2; no Arducam marking. The listing
+publishes no focus distance, focal length, F number or driver chip. Its one
+optical figure is the 65 in the variant's name, which is what the stock lens
+is sold under: the stock lens's diagonal.
 
 | | H | V | D | From |
 |---|--:|--:|--:|---|
-| DECLARED, B0176 | 54 | 44 | -- | `Field of View(FOV) 54°(H), 44°(V)` |
-| DECLARED, B0121 | 54 | 41 | -- | `Angle of View: 54 x 41 degrees` |
-| DERIVED, 3.67 mm from the 35 mm equivalent, rectilinear | 52.62 | 40.70 | 63.44 | |
-| **Used** | **54** | **41** | | |
+| DECLARED, the listing | -- | -- | 65 | `AF-65 Degrees`, the axis not given |
+| ASSUMED, the stock lens's pair | 53.50 | 41.41 | 64.42 | |
+| **Used** | **53.50** | **41.41** | 64.42 | |
 
 | Focal length | F number | Focus | Range | Hyperfocal, near limit (DERIVED, 2 px) |
 |---|---|---|---|---|
-| 3.67 mm, DERIVED from `Full-frame SLR lens equivalent 35mm` over the 43.27 mm full-frame diagonal | not published; F2.9, the stock lens's, ASSUMED | `Motorized Focus` | `80mm to infinity`; the B0121 `4 cm to infinity` | 1.66 m, 0.83 m |
+| not published; 3.60 mm, the stock lens's, ASSUMED | not published; F2.9 ASSUMED | motorised | **not published** | 1.60 m, 0.80 m |
 
-54 across a 4:3 rectilinear picture gives 41.83 down, so neither declared
-vertical is exact; the heights take the lower, 41, so that the picture is no
-smaller than assumed on either axis. The B0121's "2.0 x 1.33 m at 2 m" is
-3:2, which this sensor cannot give, and is not used.
+The rpi-hwid audit (rpi-hwid/data/cameras/2026-10-02-i2c-audit,
+2026-10-03-focus, 2026-10-03-otp) found its lens driver at I2C address 0x0c
+beside the OV5647 at 0x36, not positively identified, and a focus sweep in
+which the voice coil does move focus nearer; no object distances were
+recorded, so it gives no close limit in millimetres either.
+
+Raspberry Pi ship no `rpi.af` tuning block for the OV5647, so libcamera
+autofocuses this module only with a tuning file that borrows one, as it does
+the Arducam motorised OV5647 on the rpi5-netv2 host, a different module
+with an ad5398 driver at 10-000c.
+
+Arducam's B0176, a different motorised OV5647, is declared `80mm to
+infinity`
+([UCTRONICS](https://web.archive.org/web/20251209063424/https://www.uctronics.com/arducam-auto-focus-camera-module-5mp-for-raspberry-pi.html)),
+and its predecessor the
+[B0121](https://web.archive.org/web/20241103134041/https://www.arducam.com/product/5mp-ov5647-motorized-focus-camera-sensor-raspberry-pi/)
+`4 cm to infinity`. They are not the module used here, and the sheets list
+the B0176's figure only as a comparison, marked so.
 
 **The wide lens, 120 degrees:** Arducam's B006604
 ([product page](https://web.archive.org/web/20250530094438/https://www.arducam.com/b006604-arducam-for-raspberry-pi-zero-camera-module-wide-angle-120-1-4-inch-5mp-ov5647-spy-camera-with-flex-cable-for-pi-zero-and-pi-compute-module.html)),
@@ -456,7 +481,7 @@ Commonlands' lens scaled to 120, 94.43 x 70.82, and YXF's 92.4 x 73.9 -- at
 every height on every sheet, and it does, with at least 2.9 mm of it left
 for the stand. That is the same margin that takes the stand's own error, not
 a second one. The same is checked of the stock lens against Arducam's 54 x
-41 and of the autofocus lens against its derived 52.62 x 40.70.
+41, and so of the autofocus module, whose angles are taken as its.
 
 ### The model is checked, not assumed
 
@@ -508,13 +533,30 @@ How far, and what a lens that focuses would do, is DERIVED:
   pixels, 0.8 mm; set at infinity instead the stock figure is 1.2 mm, so the
   answer does not hang on the assumption. Every demo board LED footprint is
   1.46 x 2.96 mm.
-- **The autofocus lens** focuses down to `80mm to infinity`, the B0176's
-  figure; the B0121 said `4 cm`, and the sheets hold to the 80. Focused at
-  the plate's 140.7 mm it is sharp from 129.9 to 153.4 (F2.9 ASSUMED), which
-  a board with parts on it fits in.
-- **Arducam's catalogue lists no motorised 120 degree OV5647.** Its wide
-  autofocus OV5647, the B0370, is `155°(H) x 116°(V)`, a different lens. Waveshare's
-  RPi Camera (G) focuses by hand to about 10 cm.
+- **How close each variant focuses is its own module's**, from the page
+  that publishes it:
+  - the v1.3 as sold, `Approx 1 m to ∞`, Raspberry Pi;
+  - the v1.3 with its glued lens unscrewed by hand: Raspberry Pi publish no
+    distance. Two forum users measured it in 2013, neither Raspberry Pi
+    staff: jbeale, `170 degrees: focus at 7 cm`
+    ([setting lens focus](https://web.archive.org/web/20241118184419/https://www.raspberrypi.org/forums/viewtopic.php?t=46637))
+    and `About the closest you can get this way is about 6 cm.`
+    ([Camera with Macro focus](https://web.archive.org/web/20230427204222/https://forums.raspberrypi.com/viewtopic.php?t=60828));
+    towolf, `make that 3cm`, where the lens starts to fall out of its
+    thread. The sheets use the 6 cm;
+  - a lens focused by hand: Arducam's B0031, an OV5647 on an M12 lens,
+    `From less than an inch to infinity`
+    ([Arducam](https://www.arducam.com/blog/?p=4561)), so 25.4 mm at most;
+    its angles are taken as the stock lens's, ASSUMED. Waveshare's RPi
+    Camera (G) focuses by hand to about 10 cm;
+  - the motorised module used here: **not published**, so no height in focus
+    is given for it. The B0176, a different module, `80mm to infinity`.
+- **A lens focused at Z frames what a pinhole at Z - f does**, since it then
+  stands f Z / (Z - f) from the sensor, further than f. So the lowest height
+  that both frames and focuses is the higher of the close limit and the
+  field-of-view height plus f (DERIVED, thin lens). If the autofocus module
+  focuses at the plate's 142.8 mm it is sharp from 131.3 to 156.4 (F2.9
+  ASSUMED), which a board with parts on it fits in.
 
 ### The result
 
@@ -530,23 +572,41 @@ always the subject's own top face; the column below says which. A stand set
 h mm below the right plane covers only (Z - h) / Z of the rectangle at it, so
 the error always loses the edges.
 
-| Sheet | Frame | Rectangle, mm | Z from | 65 | 65 AF | 120 |
-|---|---|---|---|--:|--:|--:|
-| `RPICAM-OVER-PLATE` | Every board, any revision | 140.27 x 105.20 | the demo board's top face | 139.2 | 140.7 | 72.4 |
-| `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 101.2 | 52.1 |
-| `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 129.7 | 66.8 |
-| `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 32.8 | 16.9 |
+| Sheet | Frame | Rectangle, mm | Z from | 65 | 120 |
+|---|---|---|---|--:|--:|
+| `RPICAM-OVER-PLATE` | Every board, any revision | 140.27 x 105.20 | the demo board's top face | 139.2 | 72.4 |
+| `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 52.1 |
+| `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 66.8 |
+| `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 16.9 |
+| `RPICAM-OVER-ACORN` | The Acorn's LEDs, A1-A4 and PWR | 18.35 x 24.47 | the Acorn card's top face | 24.3 | 12.6 |
 
-**In focus there?** On either fixed lens, at no height here: all of them are
-inside "1 m". On the autofocus lens, at every height of 80 mm or more -- both
-plate frames and the whole Arty -- and not at the Arty's LED row, 32.8,
-which is nearer than even the B0121's 4 cm. Each sheet's table says which,
-frame by frame, and `verify_optics.py` checks every verdict against the
-arithmetic.
+**In focus there?** On either fixed lens as sold, at no height here: all of
+them are inside "1 m". Focused closer, the lowest height that both frames
+and focuses, per variant -- the higher of its close limit and the 65's
+height plus 3.60 mm:
 
-So a rig built to these sheets frames the board with either lens and focuses
-on it with neither fixed one: a sharp picture needs the motorised module at
-the 65 degree heights, or a lens refocused by hand.
+| Frame | v1.3, lens unscrewed, 60 | focused by hand, B0031, <= 25.4 | motorised, used here | B0176, not used, 80 |
+|---|--:|--:|--:|--:|
+| Plate, every board | 142.8 | 142.8 | not published | 142.8 |
+| Plate, every LED | 103.7 | 103.7 | not published | 103.7 |
+| The whole Arty | 131.9 | 131.9 | not published | 131.9 |
+| Arty LD0-LD7 | 60.0 | 36.0 | not published | 80.0 |
+| **The Acorn's LEDs** | **60.0** | **27.9** | **not published** | **80.0** |
+
+Each sheet's tables say the same frame by frame, and `verify_optics.py`
+reads every close limit back out of its quote and works every height again
+by the thin lens.
+
+On the Acorn's LEDs, then: a v1.3 with its lens unscrewed to its closest is
+in focus at 60 mm, where its picture is 42.6 x 56.9 mm; a lens focused by
+hand at 27.9; and the autofocus module on the Acorn's host at whatever its
+close limit is, which nobody publishes -- above 27.9 if it is nearer than
+that. Set at 80 mm, the B0176's limit, the picture is 57.8 x 77.0 mm and
+still puts the 14.47 mm LED column across 487 of the sensor's 2592 columns.
+
+So a rig built to these sheets frames the board with either lens and, as
+sold, focuses on it with neither fixed one: a sharp picture needs a lens
+focused closer, by hand or by motor, at the heights in focus above.
 
 The wide lens takes the same frame in from about half the height, and sees
 the rig: on the plate its picture is 20.5 mm wider than frame A, and
@@ -567,9 +627,9 @@ wide lens's long-dashed, and the legend keys them. On the axis that set the
 height they reach frame A's edge; on the other the wide lens's picture runs
 past it, and is drawn running past it. Both heights are dimensioned on the
 front elevation, lower first, and X and Y of the lens under each. The
-autofocus version is not drawn: its angles are the stock lens's to within a
-degree, and its cone would lie on top of the stock one; its height is in the
-table.
+autofocus module is not drawn: its angles are taken as the stock lens's,
+and its cone would lie on the stock one; its height in focus is in the
+table, or says its close limit is not published.
 
 "65 degrees" is the diagonal, and using it as the angle across the picture
 is the mistake the name invites. Across the plate's frame A it gives Z
@@ -594,7 +654,11 @@ less.
 The plan is at the next standard scale down, under the end elevation. It is
 the one view that shows which way the picture lies over the subject and
 where frame B is; frame A's position is dimensioned on the elevations, and
-the plan dimensions nothing.
+the plan dimensions nothing. Where frame A is far across the subject from
+its datum, as the Acorn's LEDs are, a dimension back to the datum would run
+out of the elevation and across the next one, so the elevations give the
+axis's coordinate at the end of its own extension line instead, and the plan
+names the LEDs with a leader, since at its scale they are a millimetre wide.
 
 ### What the sheets assume
 
@@ -611,6 +675,28 @@ the plan dimensions nothing.
   Nothing on a board has a published height, so the sheet prints how high
   anything standing on one may rise before it leaves frame A's picture:
   13.2 mm at 65 deg, 6.9 mm at 120 deg.
+- **The Pi-to-card stack on `RPICAM-OVER-ACORN` is
+  unpublished.** Waveshare dimension no height on their drawing and
+  `accessories/parts.py` carries none either, so the frame is set from the
+  card's own top face, which the LEDs are on. Measure the stack. A stand set
+  from the Pi's face instead sits too low and loses the ends of the column.
+- **The Acorn's LEDs are measured, not published.** SQRL issued no drawing
+  and no board file, and their site is gone, so `accessories/parts.py` takes
+  the five LEDs -- A1 to A4 in a column on the +Y side of the retention
+  screw, PWR on the -Y side -- off SQRL's own product photograph, to
+  +/-1.0 mm; [`accessories/README.md`](../accessories/README.md) says how.
+  The frame's 5.00 mm margin holds that, and the LEDs are the only part of
+  the Acorn the frame is for: framing the card or the whole assembly put
+  the camera 3.7 and 4.0 times as high, and the LEDs that much smaller in
+  the picture.
+- **Nothing publishes the height of the Acorn's heatsink and blower**, and
+  the blower stands just short of the LEDs on the connector side. The camera
+  is over the LEDs rather than the card, which keeps every ray to an LED off
+  the blower, but its board overhangs the blower in plan: its underside is at
+  Z + 5.20, 29.5 mm above the card at 65 deg and 17.8 at 120. If the blower
+  stands higher, raise the camera; the picture only grows. The HAT's
+  retention screw stands between A4 and PWR, and its head is not published
+  either.
 
 ### Where each subject's geometry comes from
 
@@ -620,6 +706,18 @@ Nothing is restated that some family already extracted:
 |---|---|
 | TT mounting plate | [`tinytapeout/mounting_plate/plate.py`](../tinytapeout/mounting_plate/README.md) for the outline and the standoff, [`tinytapeout/boards.py`](../tinytapeout/README.md) for every revision's envelope, LEDs, 7-segment displays and thickness, moved into plate coordinates by the placement offsets |
 | Arty A7 | [`fpga/boards.py`](../fpga/README.md), which is Digilent's own DXF and PDF plot |
+| Acorn assembly | [`raspberry_pi/boards.py`](../raspberry_pi/README.md) for the Pi 5, and [`accessories/parts.py`](../accessories/README.md) for the card, where it sits, its LEDs and the HAT it sits in |
+
+The Acorn is no exception either. Its card is the PCI Express M.2
+specification's Type 2280 outline, 22 x 80 mm, widened by the one millimetre
+SQRL's own product page claims ("it is one millimeter wider than the official
+specifications", [Internet Archive, 2020](https://web.archive.org/web/2020/http://www.squirrelsresearch.com/acorn-cle-215-plus/));
+that rectangle, where it is seated, the HAT's own width and how far its 2280
+standoff reaches past the board edge are all `accessories/parts.py`'s, which
+`ACC-HAT-M2POE` is drawn from as well, so the card on that sheet and the card
+on this one cannot drift apart. The LEDs are there too, put on the HAT by the
+same connector datum and M.2 axis: along the card from its mating edge, and
+across it from the retention screw.
 
 ## What is not here, and why
 

@@ -224,18 +224,28 @@ def _rows_focus() -> list[list[str]]:
             lens.short,
             f"{lens.focal_length:.2f} {KINDS[lens.focal_basis]}",
             f"F{lens.f_number:g} {KINDS[lens.f_basis]}", lens.focus,
-            f"{lens.near:.0f} to inf",
+            "not published" if lens.near is None
+            else f"{lens.near:.0f} to inf",
             f"{h2 / 1000:.2f} / {h1 / 1000:.2f}",
             f"{h2 / 2000:.2f} / {h1 / 2000:.2f}"])
     rows.append(["WS G", "3.15 DECL", "F2.35 DECL", "Adjustable",
                  "100 to inf", "--", "--"])
+    # The close limits of the other variants, each its own module's.
+    short = {"v13-unscrewed": "v1.3 unscr.", "manual": "B0031",
+             "b0176": "B0176"}
+    for v in optics.FOCUS_VARIANTS:
+        if v.key in short:
+            rows.append([short[v.key], "--", "--",
+                         "Motorized" if v.key == "b0176" else "By hand",
+                         f"{v.near:g} to inf {KINDS.get(v.basis, 'forum')}",
+                         "--", "--"])
     return rows
 
 
 def _rows_af() -> list[list[str]]:
     af = optics.AUTOFOCUS
     rows = []
-    for z in (af.near, 100.0, 150.0):
+    for z in (30.0, 80.0, 150.0):
         near, far = optics.dof(z, af.focal_length, af.f_number)
         rows.append([f"{z:.0f}", f"{near:.1f}", f"{far:.1f}",
                      f"{far - near:.1f}"])
@@ -256,10 +266,9 @@ def _text() -> tuple[list[str], list[str]]:
         "2.7216 mm active array to 0.01 deg. The 65 it is sold as is the "
         f"diagonal, {optics.DIAGONAL_FROM_ARRAY:.2f} on the array and "
         f"{optics.DIAGONAL_FROM_DATASHEET:.2f} on OmniVision's image area.",
-        f"AF: 54 across implies "
-        f"{optics.implied_v(54.0, 'rectilinear'):.2f} down, so neither "
-        f"declared V is exact; the lower, {_deg(af.fov_v)}, is used. f from "
-        "the 35 mm equivalent over the 43.27 mm full-frame diagonal.",
+        "AF: the AliExpress \"AF-65 Degrees\" module used here, a v1.3 "
+        "clone board, not an Arducam. Its one figure is the 65, the stock "
+        "lens's diagonal; its angles, f and F are the stock lens's, ASSUMED.",
         f"120: the page's {wide.fov_d:.0f} is the DIAGONAL, so the "
         "catalogue's 120 x 90 is REJECTED: no lens sees as far across as to "
         "the corner. Its 96 x 72, for the camera without IR filter, is the "
@@ -290,8 +299,11 @@ def _text() -> tuple[list[str], list[str]]:
         f"{w_sensor / optics.PIXEL_PITCH:.0f} px ({w_subject:.1f} mm) at "
         f"{wide.short}: out of focus, and within two pixels the same set at "
         "infinity.",
-        "AF: \"80mm to infinity\", the B0121 \"4 cm\"; the 80 is used. "
-        "Arducam's catalogue lists no 120 deg motorised OV5647.",
+        "AF: no close limit is published. The others, each its own "
+        "module's: the v1.3's lens unscrewed by hand \"about 6 cm\", 3 cm "
+        "as it falls out, by forum users, Raspberry Pi publish none; the "
+        "B0031 \"less than an inch\"; the B0176, a different motorised "
+        "module, \"80mm to infinity\".",
         "WS G, Waveshare's RPi Camera (G): 160 deg diagonal on Waveshare's "
         f"page, 120 across on The Pi Hut's; its 3.15 mm gives {ws.d:.1f} "
         "diagonal equidistantly, so it does not hold together and is not "
@@ -307,7 +319,8 @@ def _text() -> tuple[list[str], list[str]]:
         optics.RPI_DOC, optics.OV5647_DATASHEET, optics.ARDUCAM_DOC,
         optics.ARDUCAM_B006604, optics.ARDUCAM_B0121, optics.UCTRONICS_B0176,
         optics.ARDUCAM_AF, optics.COMMONLANDS, optics.YXF_M6,
-        optics.WAVESHARE_G)]
+        optics.WAVESHARE_G, optics.ALIEXPRESS_AF65, optics.RPI_FORUM_FOCUS,
+        optics.RPI_FORUM_MACRO, optics.ARDUCAM_B0031)]
     src = [
         "; ".join(pages) + ". Addresses, pinned Internet Archive captures "
         "where one exists, in raspberry_pi_camera/optics.py; every quote "
@@ -332,7 +345,7 @@ def _tables(sheet: Sheet) -> None:
                  "NEAR m"], rows,
                 ["start", "end", "start", "start", "end", "end", "end"])
     rows = _rows_af()
-    title = f"{optics.AUTOFOCUS.short}, FOCUSED AT Z: SHARP FROM, TO, mm"
+    title = f"{optics.AUTOFOCUS.short}, IF FOCUSED AT Z: SHARP FROM, TO, mm"
     block = sheet.column_block(sheet.table_height(title, len(rows)))
     sheet.table(block, title, ["Z", "NEAR", "FAR", "DEPTH"], rows,
                 ["end", "end", "end", "end"])

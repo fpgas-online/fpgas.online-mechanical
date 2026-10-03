@@ -547,6 +547,73 @@ ACORN_CARD = Feature(
     tol=POE_M2_HAT_TOL,
 )
 
+# --- The Acorn's LEDs -------------------------------------------------------
+#
+# Five, at the card's far end, on its component side: four silkscreened A1
+# to A4 in a column on the +Y side of the retention screw's half-moon, and
+# one silkscreened PWR on the -Y side.  The designators beside A1 to A4 read
+# D8 to D5 in the photograph, D7 most legibly, and D5 to D8 are the four user
+# LEDs on RHS Research's NiteFury schematic too, the open card the Acorn is
+# pin-compatible with.
+# They are green: Enjoy-Digital's photograph of a CLE-215+ running shows
+# them lit, beside the blower at that end of the heatsink.
+#
+# Nobody publishes where they are.  accessories/measure_acorn_leds.py
+# measures them off SQRL's own product photograph of a CLE-215 and a
+# CLE-215+, which carry the same layout, with each card's outline fitted to
+# ACORN_LENGTH x ACORN_WIDTH.  The figures below are its output, transcribed:
+# X along the card from the mating edge, which is the connector datum, and
+# Y across it from the half-moon's centre, which is where the retention
+# screw and so the HAT's M.2 axis is -- not from the card's own centreline,
+# which the photographs put 0.31 and 0.49 mm to -Y of the half-moon, inside
+# their error bar but not to be relied on.
+#
+# The error bar is that script's: the worst of its scale checks, the
+# half-moon's cutout at 7.3 % under the specification's 3.50 mm, applied at
+# the LED furthest from the half-moon, plus the larger of the two cards'
+# disagreement and the readings' against an automatic one.  1.0 mm.  The
+# LEDs' light bodies are measured, not their packages, which nothing in
+# either photograph shows the edge of.
+
+ACORN_LED_TOL = 1.0
+
+#: (x0, x1, y0, y1) of each LED's light body: X from the mating edge, Y from
+#: the half-moon's centre, millimetres, from measure_acorn_leds.py.
+ACORN_LED_READINGS = {
+    "A1": (77.39, 79.65, 9.98, 10.62),
+    "A2": (77.39, 79.63, 7.61, 8.34),
+    "A3": (77.39, 79.63, 5.33, 6.02),
+    "A4": (77.39, 79.63, 2.97, 3.68),
+    "PWR": (77.42, 79.64, -3.85, -3.18),
+}
+
+#: The designators the photographs show beside each; PWR's is not legible.
+_ACORN_LED_DESIGNATORS = {"A1": "D8", "A2": "D7", "A3": "D6", "A4": "D5"}
+
+ACORN_LEDS_SOURCE = Source(
+    label="SQRL Acorn CLE-215 and CLE-215+ photograph",
+    ref="https://web.archive.org/web/20190928032642id_/"
+        "http://squirrelsresearch.com/images/acornBanner@2x.png",
+    note="SQRL's own product photograph, off the Acorn page, captured 2019; "
+         "the LEDs measured off it by accessories/measure_acorn_leds.py to "
+         f"+/-{ACORN_LED_TOL:.1f} mm.",
+)
+
+ACORN_LEDS = tuple(
+    Feature(
+        key=f"acorn-led-{name.lower()}",
+        label=(f"Acorn LED {name}, {_ACORN_LED_DESIGNATORS[name]}"
+               if name in _ACORN_LED_DESIGNATORS else f"Acorn LED {name}"),
+        designator=name,
+        kind="led",
+        x0=POE_M2_DATUM_X + x0, y0=POE_M2_AXIS_Y + y0,
+        x1=POE_M2_DATUM_X + x1, y1=POE_M2_AXIS_Y + y1,
+        note="Green; the light body, measured off SQRL's photograph.",
+        tol=ACORN_LED_TOL,
+    )
+    for name, (x0, x1, y0, y1) in ACORN_LED_READINGS.items()
+)
+
 #: The overlay the assembly sheet draws: the HAT with a card in it.  One
 #: phantom part rather than two, because the card's position is the HAT's
 #: geometry -- the socket and the standoff put it where it is -- and a nested

@@ -297,14 +297,15 @@ checker that measures the finished PDFs rather than trusting them.
       and 41.41 come back out of the declared 3.60 mm and 2592 x 1944 to four
       thousandths of a degree, and only against the active pixel array
 - [x] A sheet per subject, each named for what it is over:
-      `RPICAM-OVER-PLATE` and `RPICAM-OVER-ARTY`
-- [x] Two frames per subject, whole subject and indicators, each the smallest
-      4:3 rectangle holding its target plus 5.00 mm all round, with the camera
-      height for both lenses and the focus verdict against the published near
-      limit
+      `RPICAM-OVER-PLATE`, `RPICAM-OVER-ARTY`, and `RPICAM-OVER-ACORN` for
+      an Acorn CLE-215+ in a Waveshare PoE M.2 HAT+ (B) on a Pi 5
+- [x] Two frames per subject, whole subject and indicators, and one on the
+      Acorn's, its LEDs: each the smallest 4:3 rectangle holding its target
+      plus 5.00 mm all round, with the camera height for both lenses and the
+      focus verdict against the published near limit
 - [x] Z measured from the plane the frame's target lies in, not the subject's
       own top face: the demo boards' indicators are on a board standing on
-      standoffs above the plate
+      standoffs above the plate, and the Acorn is a card seated above a Pi
 - [x] `raspberry_pi_camera/verify_optics.py`: the quotes, the model, and
       every frame against its target and its height
 - [x] The 120 degree lens's field of view: the B006604's own page gives the
@@ -312,9 +313,14 @@ checker that measures the finished PDFs rather than trusting them.
       catalogue's 96 x 72 for the same camera without its IR filter -- the
       diagonal split equidistantly, which Commonlands reproduce from a real
       fisheye -- is used
-- [x] A focus range for the autofocus version: the B0176 is "80mm to
-      infinity" on UCTRONICS, its predecessor the B0121 "4 cm"; the sheets
-      hold to the 80, and give its height and whether each height is in range
+- [x] The autofocus module used here is its own lens record: the "AF-65
+      Degrees" variant of an AliExpress listing, a v1.3 clone board, not the
+      Arducam B0176 the sheets used to take it for. The B0176's "80mm to
+      infinity" stays only as a comparison, marked as a different module
+- [x] Focus per variant: the v1.3 as sold, unscrewed by hand (6 cm, a forum
+      user's measurement), focused by hand (Arducam's B0031, "less than an
+      inch") and motorised, each with the lowest height that both frames and
+      focuses, the higher of its close limit and Z + f
 - [x] Lens distortion, bounded rather than guessed: coverage of a plane is
       2 Z tan(A/2) whatever the projection, the frame's corners are inside a
       barrel-distorted picture, and the margin is checked to absorb the
@@ -326,8 +332,12 @@ checker that measures the finished PDFs rather than trusting them.
       length, F number or distortion; 2.17 mm is derived from its diagonal
       and F2.4 is YXF's for a lens of the same angle. A photograph of a
       ruler at a known height would settle H and V to a tenth of a degree
-- [ ] The autofocus lens's F number, which the depth of field figures
-      ASSUME is the stock lens's F2.9
+- [ ] The autofocus module's close limit. Its listing publishes none, and
+      the rpi-hwid focus sweep recorded no object distances: a ruler or a
+      target at measured heights under it, swept through its focus codes,
+      would give one, and with it the module's height in focus
+- [ ] The autofocus module's focal length and F number, which the sheets
+      ASSUME are the stock lens's 3.60 mm and F2.9
 - [x] A standoff height for the Tiny Tapeout plate: 8 mm, in
       `tinytapeout/mounting_plate/plate.py`, no shorter than Tiny Tapeout's
       own printed base stands the board, and `RPICAM-OVER-PLATE` adds it
@@ -346,11 +356,28 @@ checker that measures the finished PDFs rather than trusting them.
       of this one. Its note cites the light pipe that brings those LEDs up
       from `fpga/light_pipe/adapter.py`, so it waits for the light pipe
       branch (issue #8, PR #29) to be on its base, then re-renders
-- [ ] `RPICAM-OVER-ACORN`, an Acorn CLE-215+ in a PoE M.2 HAT+ on a Pi 5, is
-      parked on the branch `issue-7-camera-over-acorn`, one source commit on
-      top of this one. It takes the card and where it sits from
-      `accessories/parts.py`, so it waits for the M.2 HAT branch (issue #6,
-      PR #25) to be on its base, then re-renders
+- [x] The Acorn taken from `accessories/parts.py` rather than restated: the
+      card feature, its seated position and its LEDs are that module's, which
+      `ACC-HAT-M2POE` is drawn from too, so the card is one rectangle in one
+      place
+- [x] `RPICAM-OVER-ACORN` frames the Acorn's LEDs alone, A1 to A4 and PWR
+      at the card's far end, with the camera over them: measured off SQRL's
+      own product photograph by `accessories/measure_acorn_leds.py`, to
+      +/-1.0 mm
+- [ ] A Pi-to-card stack height for the Acorn. Waveshare dimension no height
+      on their drawing, so `RPICAM-OVER-ACORN` can only say to measure the
+      stack and which way the error goes
+- [ ] The Acorn's heatsink and blower height. The blower stands just short
+      of the LEDs and the camera board overhangs it in plan, so the sheet
+      can only give where the board's underside is and say to raise the
+      camera if the blower is taller
+- [ ] The Acorn's LEDs measured on a card in hand, which would take the
+      +/-1.0 mm off them: the photograph's own scale checks come out up to
+      7 % short of the specification
+- [ ] The Acorn's LEDs in focus: 60.0 mm on a v1.3 with its lens unscrewed,
+      27.9 on a lens focused by hand to "less than an inch", and on the
+      autofocus module used here, unknown until its close limit is measured.
+      At 80 mm, the B0176's limit, the LED column is still 487 pixels long
 
 ## A camera holder on the TT plate  -- DONE, unprinted
 - [x] `tinytapeout/camera_holder/holder.py`: a portal of two window-shaped
