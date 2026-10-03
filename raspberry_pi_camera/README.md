@@ -377,6 +377,11 @@ beside the OV5647 at 0x36, not positively identified, and a focus sweep in
 which the voice coil does move focus nearer; no object distances were
 recorded, so it gives no close limit in millimetres either.
 
+Raspberry Pi ship no `rpi.af` tuning block for the OV5647, so libcamera
+autofocuses this module only with a tuning file that borrows one, as it does
+the Arducam motorised OV5647 on the rpi5-netv2 host, a different module
+with an ad5398 driver at 10-000c.
+
 Arducam's B0176, a different motorised OV5647, is declared `80mm to
 infinity`
 ([UCTRONICS](https://web.archive.org/web/20251209063424/https://www.uctronics.com/arducam-auto-focus-camera-module-5mp-for-raspberry-pi.html)),
