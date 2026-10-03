@@ -266,12 +266,9 @@ def _text() -> tuple[list[str], list[str]]:
         "2.7216 mm active array to 0.01 deg. The 65 it is sold as is the "
         f"diagonal, {optics.DIAGONAL_FROM_ARRAY:.2f} on the array and "
         f"{optics.DIAGONAL_FROM_DATASHEET:.2f} on OmniVision's image area.",
-        f"AF: the autofocus module used here, the \"AF-65 Degrees\" "
-        "variant of an AliExpress listing: a v1.3 clone board with an "
-        "OV5647 in a voice-coil can, not an Arducam. Its only published "
-        "figure is the 65, the stock lens's diagonal; the stock lens's "
-        f"{_deg(af.fov_h)} x {_deg(af.fov_v)}, {af.focal_length:.2f} mm and "
-        f"F{af.f_number:g} are ASSUMED.",
+        "AF: the AliExpress \"AF-65 Degrees\" module used here, a v1.3 "
+        "clone board, not an Arducam. Its one figure is the 65, the stock "
+        "lens's diagonal; its angles, f and F are the stock lens's, ASSUMED.",
         f"120: the page's {wide.fov_d:.0f} is the DIAGONAL, so the "
         "catalogue's 120 x 90 is REJECTED: no lens sees as far across as to "
         "the corner. Its 96 x 72, for the camera without IR filter, is the "
@@ -302,13 +299,11 @@ def _text() -> tuple[list[str], list[str]]:
         f"{w_sensor / optics.PIXEL_PITCH:.0f} px ({w_subject:.1f} mm) at "
         f"{wide.short}: out of focus, and within two pixels the same set at "
         "infinity.",
-        "AF: no close limit is published for it, so its depth of field is "
-        "given only IF it focuses at Z. The other modules' close limits: the "
-        "v1.3's lens unscrewed by hand, \"about 6 cm\" and 3 cm where it "
-        "starts to fall out, two forum users' measurements, Raspberry Pi "
-        "publish none; Arducam's B0031, focused by hand, \"less than an "
-        "inch\"; Arducam's B0176, a different motorised module, \"80mm to "
-        "infinity\", its predecessor the B0121 \"4 cm\".",
+        "AF: no close limit is published. The others, each its own "
+        "module's: the v1.3's lens unscrewed by hand \"about 6 cm\", 3 cm "
+        "as it falls out, by forum users, Raspberry Pi publish none; the "
+        "B0031 \"less than an inch\"; the B0176, a different motorised "
+        "module, \"80mm to infinity\".",
         "WS G, Waveshare's RPi Camera (G): 160 deg diagonal on Waveshare's "
         f"page, 120 across on The Pi Hut's; its 3.15 mm gives {ws.d:.1f} "
         "diagonal equidistantly, so it does not hold together and is not "
