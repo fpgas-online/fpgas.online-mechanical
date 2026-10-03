@@ -28,10 +28,11 @@ and dimensions the height and the lateral position of the lens.
 Both lenses are drawn on both elevations, each with its own camera at its
 own height and its own rays, told apart by line type -- solid for the stock
 65 degree lens, long dashes for the 120 -- and keyed in the legend.  The
-autofocus version of the stock camera is not drawn: its angles are the stock
-lens's to within a degree and its cone would lie on top of the stock one.
-Its height is in the table beside theirs, with whether each height is in
-focus.
+autofocus module used here is not drawn: its angles are taken as the stock
+lens's, and its cone would lie on the stock one.  A table gives, per variant
+of the camera -- the v1.3 as sold and with its lens unscrewed, one focused
+by hand, the motorised one -- the lowest height that both frames and focuses,
+or says the module's close limit is not published.
 
 One sheet per SUBJECT, both lenses on it, rather than one per lens: the
 person reading it has one board in front of them, and wants to see the two
@@ -223,9 +224,14 @@ def _deg(a: float) -> str:
     return f"{a:.0f}" if abs(a - round(a)) < 1e-9 else f"{a:.2f}"
 
 
-def _fmt_near(lens) -> str:
-    return f"{lens.near / 1000:g} m" if lens.near >= 1000 \
-        else f"{lens.near:.0f} mm"
+def _fmt_near(near: float | None) -> str:
+    if near is None:
+        return "not publ."
+    return f"{near / 1000:g} m" if near >= 1000 else f"{near:g} mm"
+
+
+#: How a close limit's basis is printed in the IN FOCUS table.
+BASIS = {"DECLARED": "DECL", "REPORTED": "forum user"}
 
 
 def _in_focus(p) -> str:
@@ -298,27 +304,28 @@ def _text(subject: Subject) -> tuple[list[str], list[str]]:
     # before building anything.
     s_sensor, s_subject = stock.blur(a.z)
     w_sensor, w_subject = wide.blur(w.z)
-    af_z = place(frames[0], af)
-    near, far = optics.dof(af_z.z, af.focal_length, af.f_number)
-    if af_z.too_close:
-        af_there = (f"frame {FRAME_LETTERS[0]}'s {af_z.z:.1f} is nearer, and "
-                    "it cannot focus there")
-    else:
-        af_there = (f"at frame {FRAME_LETTERS[0]}'s its depth of field is "
-                    f"{near:.1f} to {far:.1f} (DERIVED, F{af.f_number:g} "
-                    "ASSUMED)")
+    variants = {v.key: v for v in optics.FOCUS_VARIANTS}
+    unscrewed, manual, b0176 = (variants["v13-unscrewed"], variants["manual"],
+                                variants["b0176"])
     notes.append(
-        f'FOCUS. Both fixed lenses are declared "{stock.near_quote}" (Raspberry'
-        f' Pi) and "{wide.near_quote}" (Arducam), and every Z here is nearer:'
-        " on either the board is OUT OF FOCUS. At frame "
+        f'FOCUS. Both fixed lenses as sold are declared "{stock.near_quote}" '
+        f'(Raspberry Pi) and "{wide.near_quote}" (Arducam), and every Z here '
+        "is nearer: as sold, on either the subject is OUT OF FOCUS. At frame "
         f"{FRAME_LETTERS[0]}'s Z a point spreads to "
         f"{s_sensor / optics.PIXEL_PITCH:.0f} px, {s_subject:.1f} mm on the "
         f"board, at {stock.short}, and {w_sensor / optics.PIXEL_PITCH:.0f} px,"
         f" {w_subject:.1f} mm, at {wide.short} (DERIVED, thin lens ASSUMED set"
-        f" at {stock.focus_at / 1000:g} m). The autofocus {af.short}, "
-        f'Arducam\'s B0176, is declared "{af.near_quote}": every Z of '
-        f"{af.near:.0f} or more is in focus once it has focused; {af_there}. "
-        "Arducam's catalogue lists no 120 deg OV5647 with a motorised lens.")
+        f" at {stock.focus_at / 1000:g} m). Focusing closer is the module's: "
+        f"the v1.3's glued lens unscrewed by hand reaches "
+        f"{unscrewed.near / 10:g} cm, a forum user's measurement (Raspberry "
+        f"Pi publish none); a lens focused by hand, {manual.module}, "
+        f'"{manual.quote}", so {manual.near:g} mm at most. The autofocus '
+        f"module used here, {af.product.split(',')[0]} from AliExpress, "
+        "publishes NO close limit, so no height is given at which it is in "
+        f"focus; {b0176.module}, a different motorised module, is declared "
+        f'"{b0176.quote}". IN FOCUS gives each: the higher of its close '
+        "limit and Z + f, since a lens focused at Z frames what a pinhole at "
+        "Z - f does (DERIVED, thin lens).")
     # The wide lens: where its figures come from and what they are good to.
     alts = []
     for alt in wide.alternatives:
@@ -581,14 +588,14 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
 
 
 def _tables(sheet: Sheet, subject: Subject) -> None:
-    """Three tables: the frames, the heights and focus, and the lenses.
+    """Four tables: the frames, the heights, focus, and the lenses.
 
     The frames and where their axes are; then one row per frame giving the
-    height for each lens and whether that height is inside the lens's
-    declared focus range -- the stock lens fixed and motorised, and the
-    wide one, for which nobody sells a motorised version; then the lenses
-    themselves, declared figures against the ones used, each value's basis
-    flagged.
+    height for each drawn lens and whether the lens as sold is in focus
+    there; then one row per variant of the camera, its close limit and the
+    lowest height at which it both frames and focuses each frame; then the
+    lenses themselves, declared figures against the ones used, each value's
+    basis flagged.
     """
     frames = subject.frames()
     stock, wide, af = (optics.LENS_65, optics.LENS_120, optics.AUTOFOCUS)
@@ -604,17 +611,30 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
 
     rows = []
     for i, fr in enumerate(frames):
-        a, m, w = place(fr, stock), place(fr, af), place(fr, wide)
+        a, w = place(fr, stock), place(fr, wide)
         rows.append([FRAME_LETTERS[i], f"{a.z:.1f}", _in_focus(a),
-                     f"{m.z:.1f}", _in_focus(m), f"{w.z:.1f}", _in_focus(w),
-                     "none listed"])
-    title = "Z ABOVE THE FRAME PLANE, mm, AND IN FOCUS THERE?"
+                     f"{w.z:.1f}", _in_focus(w)])
+    title = "Z ABOVE THE FRAME PLANE, mm, AND IN FOCUS AS SOLD?"
     block = sheet.column_block(sheet.table_height(title, len(rows)))
     sheet.table(block, title,
-                ["", f"Z {stock.short}", "FIXED", f"Z {af.short}", "MOTOR",
-                 f"Z {wide.short}", "FIXED", "MOTOR"], rows,
-                ["middle", "end", "middle", "end", "middle", "end", "middle",
-                 "middle"])
+                ["", f"Z {stock.short}", "FIXED", f"Z {wide.short}", "FIXED"],
+                rows, ["middle", "end", "middle", "end", "middle"])
+
+    rows = []
+    for v in optics.FOCUS_VARIANTS:
+        zs = [optics.in_focus_z(fr, v) for fr in frames]
+        rows.append([v.variant, v.module.replace(
+                         "Raspberry Pi Camera Module", "RPi Camera").replace(
+                         ", AliExpress, motorised", ""),
+                     "not published" if v.near is None
+                     else f"{_fmt_near(v.near)}, {BASIS[v.basis]}"]
+                    + ["--" if z is None else f"{z:.1f}" for z in zs])
+    title = "IN FOCUS: LOWEST Z THAT FRAMES AND FOCUSES, mm"
+    block = sheet.column_block(sheet.table_height(title, len(rows)))
+    sheet.table(block, title,
+                ["VARIANT", "MODULE", "CLOSE LIMIT"]
+                + [f"Z {FRAME_LETTERS[i]}" for i in range(len(frames))],
+                rows, ["start", "start", "start"] + ["end"] * len(frames))
 
     def flag(basis: str) -> str:
         return basis[:4]
@@ -629,7 +649,7 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
             f"{lens.fov_d:.1f} {flag(lens.fov_d_basis)}",
             f"{lens.focal_length:.2f} {flag(lens.focal_basis)}",
             f"F{lens.f_number:g} {flag(lens.f_basis)}",
-            f"{lens.focus[:5]}, {_fmt_near(lens)}"])
+            f"{lens.focus[:5]}, {_fmt_near(lens.near)}"])
     title = f"LENSES, deg, AS USED: SEE {LENS_SHEET}"
     block = sheet.column_block(sheet.table_height(title, len(rows)))
     sheet.table(block, title,

@@ -28,9 +28,15 @@ the equidistant projection instead, with the rectilinear and equisolid
 splits either side of it as the bound; see "Projection" below.
 
 Focus is the other half.  Every lens carries the near end of its declared
-focus range, and the depth of field figures are DERIVED from its focal
-length and F number at a circle of confusion of two pixels, with every
-figure that is not published marked as derived or assumed where it is set.
+focus range, or None where nobody publishes one, and the depth of field
+figures are DERIVED from its focal length and F number at a circle of
+confusion of two pixels, with every figure that is not published marked as
+derived or assumed where it is set.
+
+How close a camera focuses is the module's, not the lens's: the v1.3 as
+sold and with its lens unscrewed by hand, an adjustable-lens module and a
+motorised one each have their own close limit, each from the page that
+publishes it, or marked unpublished; see :data:`FOCUS_VARIANTS`.
 
 Coordinates
 -----------
@@ -347,6 +353,38 @@ ARDUCAM_AF = Source(
     note='Quoted: "you can understand it the same as autofocus".',
 )
 
+ALIEXPRESS_AF65 = Source(
+    label="AliExpress listing of the autofocus module used here",
+    ref="https://www.aliexpress.com/item/1005007810082171.html",
+    note='"Camera Module OV5647 for Raspberry Pi 3 Model B+ 3B 4B HD 5MP '
+         '1080P AF 65 120 Degrees Auto Focus Webcam Video", variant "AF-65 '
+         'Degrees", read 3 October 2026.  No focus distance, focal length, '
+         'F number or driver chip; the 65 is the only optical figure.',
+)
+
+RPI_FORUM_FOCUS = Source(
+    label='Raspberry Pi forums, "setting lens focus", June 2013',
+    ref="https://web.archive.org/web/20241118184419/https://www."
+        "raspberrypi.org/forums/viewtopic.php?t=46637",
+    note='jbeale, a forum user, the v1.3 lens unscrewed by hand: "170 '
+         'degrees: focus at 7 cm"; towolf: "closer than about 4cm. EDIT: '
+         'actually, make that 3cm", where the lens starts to fall out.',
+)
+
+RPI_FORUM_MACRO = Source(
+    label='Raspberry Pi forums, "Camera with Macro focus", November 2013',
+    ref="https://web.archive.org/web/20230427204222/https://forums."
+        "raspberrypi.com/viewtopic.php?t=60828",
+    note='jbeale, unscrewing the v1.3 lens: "About the closest you can get '
+         'this way is about 6 cm."',
+)
+
+ARDUCAM_B0031 = Source(
+    label="Arducam B0031, OV5647 with an M12 lens focused by hand",
+    ref="https://www.arducam.com/blog/?p=4561",
+    note='"From less than an inch to infinity".',
+)
+
 COMMONLANDS = Source(
     label="Commonlands, OV5647 lens table",
     ref="https://web.archive.org/web/20260817210431/https://commonlands.com/"
@@ -418,7 +456,8 @@ class Lens:
 
     ``focal_length`` and ``f_number`` carry their own basis, DECLARED,
     DERIVED or ASSUMED; ``near`` is the near end of the focus range the
-    vendor declares, in millimetres, and ``near_quote`` the words.
+    vendor declares, in millimetres, or None where none is published,
+    and ``near_quote`` the words.
     ``focus_at`` is where a fixed lens is focused, which nobody publishes,
     and is ASSUMED at twice the declared near limit, as a lens focused at
     its hyperfocal distance would be; None for a lens that focuses itself.
@@ -439,7 +478,7 @@ class Lens:
     f_number: float
     f_basis: str
     focus: str
-    near: float
+    near: float | None
     near_quote: str
     focus_at: float | None
     sources: tuple[Source, ...]
@@ -481,8 +520,9 @@ class Lens:
         return hyperfocal(self.focal_length, self.f_number)
 
     @property
-    def min_object_distance(self) -> float:
-        """The declared near end of the focus range, in millimetres."""
+    def min_object_distance(self) -> float | None:
+        """The declared near end of the focus range, in millimetres, or
+        None where nobody publishes one."""
         return self.near
 
     def blur(self, z: float) -> tuple[float, float]:
@@ -522,50 +562,42 @@ LENS_65 = Lens(
     sources=(RPI_DOC, OV5647_DATASHEET, ARDUCAM_DOC),
 )
 
-#: Arducam's motorised-focus OV5647, the B0176, which is the autofocus
-#: version of the stock camera: the same sensor and much the same angle, on a
-#: voice-coil lens.  Its declared pair is not self-consistent -- 54 across a
-#: 4:3 rectilinear picture implies 41.80 down, not 44 -- and its
-#: predecessor's page says 41, so the sheets take the lower: the picture is
-#: then no smaller than the height assumes on either axis.  Its focal length
-#: is not published; Arducam's "35 mm" full-frame equivalent gives 3.67 mm,
-#: DERIVED over the 43.27 mm full-frame diagonal, which is 52.6 x 40.7 under
-#: tan() -- an alternative the margin is checked to absorb.  No F number is
-#: published; the stock lens's F2.9 is ASSUMED, and it is used only for the
-#: depth of field once the lens has focused.
-FULL_FRAME_DIAGONAL = math.hypot(36.0, 24.0)
-AF_FOCAL = 35.0 * ARRAY_DIAGONAL / FULL_FRAME_DIAGONAL
-
+#: The autofocus module used here: the one on the Acorn's host and the one
+#: its twin is to get, bought as the "AF-65 Degrees" variant of an AliExpress
+#: listing.  A clone of the Camera Module v1.3's board -- silkscreened
+#: "Raspberry pi Camera Rev 1.3", the same four holes -- carrying an OV5647
+#: in a square voice-coil can, its flex marked P5V04A2.  Not an Arducam
+#: module.  The listing gives no focus distance, focal length, F number or
+#: driver chip; the only optical figure is the 65 in the variant's name,
+#: which is what the stock lens is sold under, its diagonal.  So its angles
+#: are the stock lens's, ASSUMED, and so are its 3.60 mm and F2.9, used only
+#: for the depth of field once it has focused.  Its close limit is None:
+#: nothing published, and nothing is worked from a guess.
 AUTOFOCUS = Lens(
     key="af",
     name="65 deg, autofocus",
     short="AF",
-    product="Arducam B0176, OV5647 with a motorised lens",
-    fov_h=54.0,
-    fov_v=41.0,
+    product="OV5647 AF-65, AliExpress, motorised",
+    fov_h=LENS_65.fov_h,
+    fov_v=LENS_65.fov_v,
     projection="rectilinear",
-    basis="54 is on every Arducam page; of the two verticals they print, "
-          "44 on the B0176's and 41 on its predecessor's, the lower.",
+    basis="The listing's only figure is its 65, the stock lens's diagonal; "
+          "the stock lens's pair is ASSUMED.",
     figures=(
-        Figure("Arducam B0176", "DECLARED", 54.0, 44.0),
-        Figure("Arducam B0121", "DECLARED", 54.0, 41.0),
-        Figure("3.67 mm, from the 35 mm equivalent", "DERIVED",
-               *angles_from_focal(AF_FOCAL, "rectilinear")),
+        Figure("AliExpress, AF-65", "DECLARED", None, None, 65.0),
+        Figure("the stock lens's pair", "ASSUMED", LENS_65.fov_h,
+               LENS_65.fov_v),
     ),
-    alternatives=(
-        Figure("3.67 mm, from the 35 mm equivalent", "DERIVED",
-               *angles_from_focal(AF_FOCAL, "rectilinear")[:2]),
-        Figure("Arducam B0176", "DECLARED", 54.0, 44.0),
-    ),
-    focal_length=AF_FOCAL,
-    focal_basis="DERIVED",
-    f_number=2.9,
+    alternatives=LENS_65.alternatives,
+    focal_length=LENS_65.focal_length,
+    focal_basis="ASSUMED",
+    f_number=LENS_65.f_number,
     f_basis="ASSUMED",
     focus="Motorized",
-    near=80.0,
-    near_quote="80mm to infinity",
+    near=None,
+    near_quote="not published",
     focus_at=None,
-    sources=(UCTRONICS_B0176, ARDUCAM_B0121, ARDUCAM_DOC, ARDUCAM_AF),
+    sources=(ALIEXPRESS_AF65,),
 )
 
 #: The wide lens: Arducam's B006604, the OV5647 sold as 120 degrees, a spy
@@ -662,14 +694,10 @@ LENS_120 = Lens(
 LENSES = {LENS_65.key: LENS_65, LENS_120.key: LENS_120}
 
 #: Every lens a height is worked out for: the two drawn, and the autofocus
-#: version of the stock one, whose height is in the tables.
+#: module used here, whose angles are taken as the stock lens's.
 ALL_LENSES = {LENS_65.key: LENS_65, AUTOFOCUS.key: AUTOFOCUS,
               LENS_120.key: LENS_120}
 
-#: The autofocus version of each drawn lens, where one is sold.  Nobody
-#: publishes a motorised OV5647 of about 120 degrees: Arducam's wide
-#: autofocus OV5647, the B0370, is "155(H) x 116(V)", a different lens.
-AUTOFOCUS_OF = {LENS_65.key: AUTOFOCUS, LENS_120.key: None}
 
 #: Waveshare's RPi Camera (G): the Camera Module v1 sized OV5647 with a
 #: fisheye, and the other thing sold as "120 degrees" -- horizontally, on The
@@ -723,6 +751,118 @@ def near_limits() -> list[tuple[str, float]]:
             raise SystemExit(f"cannot read a near limit out of {quote!r}")
         out.append((quote, float(cm.group(1)) * 10))
     return out
+
+
+# ---------------------------------------------------------------------------
+# Focus, per variant of the camera
+# ---------------------------------------------------------------------------
+#
+# A Lens above is a field of view.  How close a camera focuses is the
+# module's, and the OV5647 is sold three ways that matter here: the Camera
+# Module v1.3, fixed and set far, whose glued lens can be broken free and
+# unscrewed by hand; modules with a lens focused by hand by design; and
+# modules with a motorised lens, a voice coil and its driver on the I2C bus,
+# focused by software.  Each figure below belongs to the module named beside
+# it, not to its class, and where nobody publishes one it says so.
+
+
+@dataclass(frozen=True)
+class FocusVariant:
+    """One way an OV5647 module is sold, and how close it can focus.
+
+    ``module`` is the product the figure belongs to, ``near`` its close
+    limit in millimetres, or None where none is published, and ``quote`` the
+    words it is read from.  ``basis`` is DECLARED for a vendor's figure,
+    REPORTED for a forum user's measurement, and NONE where nothing is
+    published.  ``lens`` is whose field of view frames the subject, and
+    ``lens_basis`` says whether that is the module's own or ASSUMED.
+    ``used`` is True for the modules on the rig, False for one listed only
+    for comparison.
+    """
+
+    key: str
+    variant: str
+    module: str
+    near: float | None
+    quote: str
+    basis: str
+    lens: Lens
+    lens_basis: str
+    source: Source
+    used: bool = True
+
+
+#: Every variant an in-focus height is given for, in the order the sheets
+#: list them.
+#:
+#: The v1.3 unscrewed: no figure from Raspberry Pi, whose own post on doing
+#: it gives no distance.  Two forum users measured it in 2013, neither
+#: Raspberry Pi staff: jbeale, "about 6 cm" as the closest, after "170
+#: degrees: focus at 7 cm"; towolf, 3 cm, at the point the lens starts to
+#: fall out of its thread.  The 6 cm is used, the closest anyone reports
+#: with the lens still held.
+#:
+#: Focused by hand: Arducam's B0031, an OV5647 on an M12 lens, "From less
+#: than an inch to infinity" -- so 25.4 mm is an upper bound on its close
+#: limit, and the height worked from it is no lower than it needs.  Its
+#: angles are taken as the stock lens's, ASSUMED: where the field of view
+#: sets the height the lens is a 3.6 mm one like the stock lens, and where
+#: the close limit sets it the angle does not enter.
+#:
+#: Motorised: the module used here publishes no close limit, so no height
+#: in focus is given for it.  Arducam's B0176, a different module, publishes
+#: "80mm to infinity", and is listed for comparison, marked as not the one
+#: used.
+FOCUS_VARIANTS = (
+    FocusVariant("v13", "v1.3 as sold", "Raspberry Pi Camera Module v1.3",
+                 LENS_65.near, LENS_65.near_quote, "DECLARED", LENS_65,
+                 "own", RPI_DOC),
+    FocusVariant("v13-unscrewed", "v1.3, lens unscrewed by hand",
+                 "Raspberry Pi Camera Module v1.3", 60.0,
+                 "About the closest you can get this way is about 6 cm.",
+                 "REPORTED", LENS_65, "own", RPI_FORUM_MACRO),
+    FocusVariant("manual", "lens focused by hand", "Arducam B0031", 25.4,
+                 "From less than an inch to infinity", "DECLARED", LENS_65,
+                 "ASSUMED", ARDUCAM_B0031),
+    FocusVariant("af", "motorised, the one used here", AUTOFOCUS.product,
+                 None, AUTOFOCUS.near_quote, "NONE", AUTOFOCUS, "ASSUMED",
+                 ALIEXPRESS_AF65),
+    FocusVariant("b0176", "motorised, NOT the one used here",
+                 "Arducam B0176", 80.0, "80mm to infinity", "DECLARED",
+                 LENS_65, "ASSUMED", UCTRONICS_B0176, used=False),
+    FocusVariant("wide", "120 deg as sold", "Arducam B006604", LENS_120.near,
+                 LENS_120.near_quote, "DECLARED", LENS_120, "own",
+                 ARDUCAM_B006604),
+)
+
+
+def framed_in_focus(frame: Frame, lens: Lens) -> float:
+    """The lowest Z that frames *frame* with *lens* focused at that Z.
+
+    A lens focused at a distance s stands v = f s / (s - f) from the sensor,
+    further than f, so it covers less than the pinhole at f says:
+    s (sensor / v) = (s - f) (sensor / f), the pinhole's cover at s - f.  The
+    height that frames the subject in focus is therefore the field-of-view
+    height plus f.  DERIVED, thin lens, the declared angles taken to be the
+    lens's focused at infinity.
+    """
+    return place(frame, lens).z + lens.focal_length
+
+
+def in_focus_z(frame: Frame, v: FocusVariant) -> float | None:
+    """The lowest Z at which variant *v* both frames *frame* and is in focus.
+
+    The higher of the field-of-view height, focused there, and the module's
+    close limit: raising the camera only grows the picture, so above the
+    framing height the close limit is all that can push it up.  None where
+    the module's close limit is not published.  Z is to the entrance pupil
+    as on every position sheet; no vendor or forum post says whether its
+    close limit is from the lens face, the pupil or the sensor, which are
+    within a few millimetres of each other on these modules.
+    """
+    if v.near is None:
+        return None
+    return max(framed_in_focus(frame, v.lens), v.near)
 
 # ---------------------------------------------------------------------------
 # Framing

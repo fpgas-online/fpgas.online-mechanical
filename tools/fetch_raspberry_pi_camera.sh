@@ -159,3 +159,20 @@ fetch_optics \
 fetch_optics \
   'https://web.archive.org/web/20250810012231/https://thepihut.com/products/raspberry-pi-camera-board-fisheye-160-lens-5mp' \
   pihut-fisheye-160.html
+# The autofocus module used here, as listed on AliExpress: only its title
+# is served to a script, and it is all that is checked.
+fetch_optics \
+  'https://www.aliexpress.com/item/1005007810082171.html' \
+  aliexpress-ov5647-af-65-120.html
+# How close the Camera Module v1.3 focuses with its lens unscrewed: two
+# Raspberry Pi forum threads, by forum users, not Raspberry Pi.
+fetch_optics \
+  'https://web.archive.org/web/20241118184419/https://www.raspberrypi.org/forums/viewtopic.php?t=46637' \
+  rpi-forum-setting-lens-focus.html
+fetch_optics \
+  'https://web.archive.org/web/20230427204222/https://forums.raspberrypi.com/viewtopic.php?t=60828' \
+  rpi-forum-macro-focus.html
+# An OV5647 on an M12 lens focused by hand, Arducam's B0031.
+fetch_optics \
+  'https://www.arducam.com/blog/?p=4561' \
+  arducam-b0031.html
