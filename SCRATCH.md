@@ -3811,7 +3811,7 @@ edge is the plating's, and it is the worse of the two. The two cards agree
 to 0.22 mm, the readings by eye against an automatic reading to 0.15. The
 worst scale error, 7.3 %, at A1's far edge 10.62 mm from the half-moon, is
 0.78 mm; with the 0.22 that is +/-1.0 mm. The two cards are one shoot, so
-their agreement is a check, not an error bar.
+their agreement is one term of the error bar, not the whole of it.
 
 The photographs also put the half-moon 0.31 and 0.49 mm to +Y of the card's
 own centreline. That is inside the scale error across 11.5 mm, and the card

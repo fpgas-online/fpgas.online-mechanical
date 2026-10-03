@@ -16,8 +16,8 @@ layout and the same silkscreen at the far end, which is the end a camera
 over the card has to see: four LEDs silkscreened A1 to A4 in a column on one
 side of the retention screw's half-moon, and a fifth, silkscreened PWR, on
 the other.  The two cards are two photographs from one shoot, not two
-independent measurements of the card, and the spread between them is
-printed as one of the checks, not as the error bar.
+independent measurements of the card, so the spread between them is
+one term of the error bar, not the whole of it.
 
 The fit, per card:
 
