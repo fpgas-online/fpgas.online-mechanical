@@ -356,9 +356,8 @@ checker that measures the finished PDFs rather than trusting them.
       own product photograph by `accessories/measure_acorn_leds.py`, to
       +/-1.0 mm
 - [ ] A Pi-to-card stack height for the Acorn. Waveshare dimension no height
-      and the CLE-215+'s heatsink is unpublished, so
-      `RPICAM-OVER-ACORN` can only say to measure the stack and
-      which way the error goes.
+      on their drawing, so `RPICAM-OVER-ACORN` can only say to measure the
+      stack and which way the error goes
 - [ ] The Acorn's heatsink and blower height. The blower stands just short
       of the LEDs and the camera board overhangs it in plan, so the sheet
       can only give where the board's underside is and say to raise the
