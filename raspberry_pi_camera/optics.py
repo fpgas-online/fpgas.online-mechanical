@@ -744,7 +744,7 @@ class Target:
     """A rectangle on the subject that has to end up inside the picture.
 
     The rectangle is in the subject's own plan frame, but it need not lie in
-    the subject's own top face, and on two of these sheets it does not: the
+    the subject's own top face, and on some of these sheets it does not: the
     demo boards' indicators are on a board standing on standoffs above the
     mounting plate, and the Acorn is a card seated in a HAT above a Pi.  A
     camera height measured to the wrong plane covers less at the right one --
