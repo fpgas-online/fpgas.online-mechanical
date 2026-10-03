@@ -124,8 +124,8 @@ LEDS = {"A1": (78.5, 22.2), "A2": (78.5, 19.9), "A3": (78.5, 17.6),
         "A4": (78.5, 15.2), "PWR": (78.5, 8.3)}
 
 #: The same five, read by eye off the gridded views at 120 pixels to the
-#: millimetre: x0, y0, x1, y1 in the card frame.  A cross-check on the
-#: profile readings, which are the ones adopted.
+#: millimetre: x0, y0, x1, y1 in the card frame.  The readings adopted;
+#: the profile readings in `led_extent` are the check on them.
 READ_BY_EYE = {
     "CLE-215": {"A1": (77.38, 21.88, 79.67, 22.54),
                 "A2": (77.38, 19.46, 79.63, 20.25),
