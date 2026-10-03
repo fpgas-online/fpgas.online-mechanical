@@ -3857,3 +3857,42 @@ reaches over the Arty's LED rows, and is unfilled now too.
 `ACC-HAT-M2POE` does not draw the LEDs. It is the plan envelope of the
 assembly, for an enclosure; an indicator inside the card changes nothing
 about that.
+
+### The autofocus module is not the B0176, 3 October 2026
+
+The sheets took "the autofocus camera" to be Arducam's B0176 and so said
+nothing focuses on the Acorn's LEDs below its 80 mm. The module on the
+Acorn's host is not a B0176: it is the "AF-65 Degrees" variant of an
+AliExpress listing, a clone of the v1.3's board -- "Raspberry pi Camera Rev
+1.3" on the silkscreen, the same four holes -- with an OV5647 in a square
+voice-coil can, its flex marked P5V04A2, and no Arducam marking. The listing
+publishes no focus distance, focal length, F number or driver chip; the 65
+in the variant's name is the only optical figure. Similar listings say the
+same or less: one by another seller gives "Diagonal angle: 65 degree", which
+is the stock lens's diagonal. So the module is its own lens record, with the
+stock lens's angles, focal length and F number ASSUMED, and its close limit
+None: the sheets say it is not published rather than borrow the B0176's.
+
+The rpi-hwid audit confirms it is motorised -- a lens driver at 0x0c beside
+the OV5647 at 0x36, behaving like a DW9714 but not identified -- and its
+focus sweep shows the coil moving focus nearer, but no object distances were
+recorded, so it gives no close limit either.
+
+What focuses closer is the module's, so the sheets now give each variant:
+
+- the v1.3 as sold, Raspberry Pi's "Approx 1 m";
+- the v1.3 with its lens unscrewed. Raspberry Pi's own post on it gives no
+  distance. Two forum users measured it in 2013: jbeale "about 6 cm" as the
+  closest, after "170 degrees: focus at 7 cm", and towolf 3 cm where the
+  lens starts to fall out. The 6 cm is used, and called a forum user's;
+- a lens focused by hand: Arducam's B0031, "From less than an inch to
+  infinity", so 25.4 mm at most;
+- the motorised module used here: not published;
+- the B0176, "80mm to infinity", kept as a comparison and marked as not the
+  module used.
+
+The height in focus is the higher of the close limit and the field-of-view
+height plus f: a lens focused at Z stands f Z / (Z - f) from the sensor and
+covers what a pinhole at Z - f does. On the Acorn's LEDs that is 60.0 mm for
+the v1.3 unscrewed and 27.9 for the B0031; for the module used, it waits on
+a measured close limit.

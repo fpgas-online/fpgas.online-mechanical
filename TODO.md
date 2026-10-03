@@ -313,9 +313,14 @@ checker that measures the finished PDFs rather than trusting them.
       catalogue's 96 x 72 for the same camera without its IR filter -- the
       diagonal split equidistantly, which Commonlands reproduce from a real
       fisheye -- is used
-- [x] A focus range for the autofocus version: the B0176 is "80mm to
-      infinity" on UCTRONICS, its predecessor the B0121 "4 cm"; the sheets
-      hold to the 80, and give its height and whether each height is in range
+- [x] The autofocus module used here is its own lens record: the "AF-65
+      Degrees" variant of an AliExpress listing, a v1.3 clone board, not the
+      Arducam B0176 the sheets used to take it for. The B0176's "80mm to
+      infinity" stays only as a comparison, marked as a different module
+- [x] Focus per variant: the v1.3 as sold, unscrewed by hand (6 cm, a forum
+      user's measurement), focused by hand (Arducam's B0031, "less than an
+      inch") and motorised, each with the lowest height that both frames and
+      focuses, the higher of its close limit and Z + f
 - [x] Lens distortion, bounded rather than guessed: coverage of a plane is
       2 Z tan(A/2) whatever the projection, the frame's corners are inside a
       barrel-distorted picture, and the margin is checked to absorb the
@@ -327,8 +332,12 @@ checker that measures the finished PDFs rather than trusting them.
       length, F number or distortion; 2.17 mm is derived from its diagonal
       and F2.4 is YXF's for a lens of the same angle. A photograph of a
       ruler at a known height would settle H and V to a tenth of a degree
-- [ ] The autofocus lens's F number, which the depth of field figures
-      ASSUME is the stock lens's F2.9
+- [ ] The autofocus module's close limit. Its listing publishes none, and
+      the rpi-hwid focus sweep recorded no object distances: a ruler or a
+      target at measured heights under it, swept through its focus codes,
+      would give one, and with it the module's height in focus
+- [ ] The autofocus module's focal length and F number, which the sheets
+      ASSUME are the stock lens's 3.60 mm and F2.9
 - [x] A standoff height for the Tiny Tapeout plate: 8 mm, in
       `tinytapeout/mounting_plate/plate.py`, no shorter than Tiny Tapeout's
       own printed base stands the board, and `RPICAM-OVER-PLATE` adds it
@@ -365,10 +374,10 @@ checker that measures the finished PDFs rather than trusting them.
 - [ ] The Acorn's LEDs measured on a card in hand, which would take the
       +/-1.0 mm off them: the photograph's own scale checks come out up to
       7 % short of the specification
-- [ ] Nothing focuses on the Acorn's LEDs at the height that frames them,
-      24.5 mm for the autofocus module against its 80 mm. At 80 mm it is
-      sharp and the LED column is still 460 pixels long, so a sheet for that
-      height, or a lens that focuses at 25 mm, is what a sharp picture needs
+- [ ] The Acorn's LEDs in focus: 60.0 mm on a v1.3 with its lens unscrewed,
+      27.9 on a lens focused by hand to "less than an inch", and on the
+      autofocus module used here, unknown until its close limit is measured.
+      At 80 mm, the B0176's limit, the LED column is still 487 pixels long
 
 ## A camera holder on the TT plate  -- DONE, unprinted
 - [x] `tinytapeout/camera_holder/holder.py`: a portal of two window-shaped
