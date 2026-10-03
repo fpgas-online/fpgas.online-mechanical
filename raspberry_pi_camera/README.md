@@ -6,19 +6,18 @@ outline, the four mounting holes, the lens and sensor module with its optical
 axis, and the camera FFC connector on the underside.
 
 The `RPICAM-OVER-*` sheets answer the other half of the same question. Once
-the mount exists, how far above the board does it go, and over what point?
-One sheet per subject, and each sheet's name says which after `RPICAM-OVER-`:
-the Tiny Tapeout mounting plate, the Digilent Arty A7 and an Acorn CLE-215+.
-Each leads with
-two elevations, one for each axis of the picture, drawing the subject edge
-on and, over it, a Camera Module v1.3 with each lens -- the stock 65 degree
-one and a 120 degree fisheye -- at the height where its field of view takes
-in the rectangle the picture has to cover, dimensioning how high each goes
-and where; a smaller plan shows the rectangles over the subject, and the
-tables give every height, for the autofocus version too, and whether it is
-in focus. `RPICAM-LENS` is the lenses themselves: every field of view
-figure anyone gives, declared and derived, the focus of each, and what a
-fisheye's picture looks like on a board.
+the mount exists, how far above the board does it go, and over what point? One
+sheet per subject, and each sheet's name says which after `RPICAM-OVER-`: the
+Tiny Tapeout mounting plate, the Digilent Arty A7 and an Acorn CLE-215+. Each
+leads with two elevations, one for each axis of the picture, drawing the
+subject edge on and, over it, a Camera Module v1.3 with each lens -- the stock
+65 degree one and a 120 degree fisheye -- at the height where its field of
+view takes in the rectangle the picture has to cover, dimensioning how high
+each goes and where; a smaller plan shows the rectangles over the subject, and
+the tables give every height, for the autofocus version too, and whether it is
+in focus. `RPICAM-LENS` is the lenses themselves: every field of view figure
+anyone gives, declared and derived, the focus of each, and what a fisheye's
+picture looks like on a board.
 [`TT-MP-CAM65` and `TT-MP-CAM120`](../tinytapeout/camera_holder/README.md)
 are holders built to the first of the position sheets, one per lens.
 
