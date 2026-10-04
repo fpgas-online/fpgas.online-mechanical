@@ -402,17 +402,6 @@ RASPI_TV = Source(
          'done." No closest distance for that.',
 )
 
-GEERLING_V2 = Source(
-    label='Jeff Geerling, "Fixing the blurry focus on some Raspberry Pi '
-          'Camera v2 models", 17 June 2017',
-    ref="https://web.archive.org/web/20250108194415/https://www."
-        "jeffgeerling.com/blog/2017/fixing-blurry-focus-on-some-raspberry-pi-"
-        "camera-v2-models",
-    note="About the Camera Module v2, whose lens it turns with pliers; of the "
-         'v1.3 it says one thing: "The original Raspberry Pi Camera model '
-         'v1.3 came from the factory set to ∞ (infinity) focus".',
-)
-
 COMMONLANDS = Source(
     label="Commonlands, OV5647 lens table",
     ref="https://web.archive.org/web/20260817210431/https://commonlands.com/"
