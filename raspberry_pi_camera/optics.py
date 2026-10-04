@@ -1526,9 +1526,10 @@ def _arty_subject() -> Subject:
 # card and not the whole assembly, which this sheet framed first and which put
 # the camera nearly four times as high, the LEDs that much smaller in the
 # picture.  The camera's axis is over the LEDs, as it is over any frame's
-# target, and here that matters: the heatsink's blower stands just short of
-# them on the connector side, and from over the LEDs no ray to one of them
-# passes over it, where from over the card's middle every ray would.
+# target, and here that matters: the heatsink's blower stands beside them,
+# as Enjoy-Digital's photographs show and nobody dimensions: its height is
+# part of T, unmeasured.  The camera is put over the LEDs so that rays to
+# them rise clear of it, ASSUMED, to be confirmed when T is measured.
 #
 # One module: the Raspberry Pi Camera Module v1.3 with its stock lens, and
 # heights to its lens FACE, see FaceHeights.  The other sheets draw two
@@ -1637,10 +1638,13 @@ def _acorn_subject() -> Subject:
             "specification); the HAT+ specification only recommends "
             f'"{HAT_PLUS_SPACER_QUOTE}". Measure {ACORN_STACK_S.symbol} as '
             "one figure.",
-            "The camera is over the LEDs, not the card: the heatsink's "
-            "blower stands just short of them, and from here no ray to an "
-            "LED passes over it; the camera board overhangs it, its "
-            f"underside {v1.LENS_TOP_Z:.2f} above the lens face.",
+            "The camera is over the LEDs, not the card, so that rays to "
+            "them rise clear of the heatsink's blower beside them: ASSUMED "
+            "from Enjoy-Digital's photographs, which show the blower there "
+            f"and no height for it ({ACORN_STACK_T.symbol} includes it, "
+            "unmeasured); confirm when it is measured. The camera board "
+            f"overhangs it, its underside {v1.LENS_TOP_Z:.2f} above the "
+            "lens face.",
         ),
     )
 
