@@ -228,7 +228,17 @@ uv run --no-project --with numpy --with opencv-python-headless python \
 ```
 
 The sheet is plan only and gives no height for anything: Waveshare publish no
-stack-up for the HAT or its standoffs, and SQRL none for the card. What the
+stack-up for the HAT or its standoffs, and SQRL none for the card. `parts.py`
+names the two heights a camera stand over the assembly needs all the same, as
+`ACORN_STACK_S` and `ACORN_STACK_T`: the mounting plate's face to the card's
+top face, and the card's top face to the assembly's highest point. Both are
+empty, nobody having published or measured either, and `RPICAM-OVER-ACORN`
+prints MEASURE for each; a measured figure goes in the `StackHeight`, which
+refuses one without a tolerance and a source. Of the six heights that make up
+S only the card's is published, the M.2 specification's 0.80 +/-0.08; the
+HAT+ specification's "provide at least 15mm board-to-board spacers; 16mm
+spacers are ideal" is a recommendation to a HAT's designer and not Waveshare's
+figure, so it is quoted and nothing is computed from it. What the
 sheet's `DIA` column gives for a standoff is the M2 x 0.4 tapped thread the
 retention screw goes into, not a clearance hole; `BOSS` is what the standoff
 actually occupies, and it is the boss, not the screw, that decides how far

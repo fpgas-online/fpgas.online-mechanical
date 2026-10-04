@@ -8,7 +8,7 @@ than published, an explicit uncertainty.
 
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import dataclass, replace
 
 from tools.schema import BoardSpec, Feature, Hole, Outline, PmodHeader, Source
 
@@ -612,6 +612,85 @@ ACORN_LEDS = tuple(
         tol=ACORN_LED_TOL,
     )
     for name, (x0, x1, y0, y1) in ACORN_LED_READINGS.items()
+)
+
+# --- The Acorn's stack: how high the card and the tallest part stand --------
+#
+# Two heights a camera stand over the assembly is set from, and neither is
+# published by anyone, nor yet measured on the rig: the session that owns the
+# hardware said so on 4 October 2026.  So both are None, which every sheet
+# prints as MEASURE, with the formula the height follows from; a measured
+# figure goes in ``value`` below, with its tolerance and who measured it, and
+# nowhere else.
+#
+# S, the mounting plate's face -- the bottom of the standoffs the Pi 5 sits
+# on -- to the card's top face, where the LEDs are.  It is six terms:
+#
+#     the standoffs under the Pi      the rig's own; not recorded anywhere
+#     the Pi 5's board                not on Raspberry Pi's drawing, whose side
+#                                     view dimensions no thickness
+#     the Pi-to-HAT spacers           Waveshare state none; the HAT+
+#                                     specification only recommends, below
+#     the HAT's board                 Waveshare dimension no height at all
+#     the M.2 socket's seat           the M.2 specification defines several
+#                                     connector heights, and Waveshare do
+#                                     not say which this socket is
+#     the card                        0.80 +/-0.08, the M.2 specification's
+#
+# One term of six published is not a sum, so S is measured as one figure.
+#
+# T, the card's top face to the highest point of the assembly, whichever part
+# that is: the blower on the Acorn's heatsink, which Enjoy-Digital's
+# photographs show and nobody dimensions, or a part of the HAT.
+
+
+@dataclass(frozen=True)
+class StackHeight:
+    """One height in an assembly's stack: published, measured, or neither.
+
+    ``value`` is None until somebody measures it, and a sheet then prints
+    MEASURE and the formula instead of a figure.  ``tol`` and ``source`` say
+    how good a figure is and whose it is, as for every other number here.
+    """
+
+    symbol: str
+    what: str
+    value: float | None = None
+    tol: float | None = None
+    source: str = "not published, and not yet measured"
+
+    def __post_init__(self) -> None:
+        if self.value is not None and (self.tol is None
+                                       or "not yet measured" in self.source):
+            raise ValueError(f"{self.symbol}: a figure needs its tolerance "
+                             "and its source")
+
+
+ACORN_STACK_S = StackHeight(
+    "S", "the mounting plate's face, the base of the standoffs under the "
+         "Pi 5, to the card's top face")
+ACORN_STACK_T = StackHeight(
+    "T", "the card's top face to the assembly's highest point, the "
+         "heatsink's blower or a part of the HAT")
+
+#: The one term of S that is published: section 2.3, "Card thickness is
+#: fixed at 0.8 mm ±10%".
+M2_CARD_THICKNESS = 0.80
+M2_CARD_THICKNESS_TOL = 0.08
+
+#: What the HAT+ specification says of the spacers between a Pi and a HAT+,
+#: chapter 7.  A recommendation to whoever designs a HAT+, not a figure for
+#: this one: Waveshare's wiki and drawing give no spacer length, so it is
+#: quoted and nothing is computed from it.
+HAT_PLUS_SPACER_QUOTE = ("provide at least 15mm board-to-board spacers; "
+                         "16mm spacers are ideal")
+
+HAT_PLUS_SPEC_SOURCE = Source(
+    label="Raspberry Pi HAT+ specification",
+    ref="https://web.archive.org/web/20260115212335/"
+        "https://datasheets.raspberrypi.com/hat/hat-plus-specification.pdf",
+    note=f'Chapter 7, a design recommendation: "{HAT_PLUS_SPACER_QUOTE}". '
+         "Not Waveshare's figure for this HAT, who publish none.",
 )
 
 #: The overlay the assembly sheet draws: the HAT with a card in it.  One
