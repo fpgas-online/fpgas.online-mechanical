@@ -452,16 +452,20 @@ def _text_face(subject: Subject) -> tuple[list[str], list[str]]:
         f"{v1.LENS_TOP_Z:.2f} mm, so the picture is up to "
         f"{100 * v1.LENS_TOP_Z / (f - lens.focal_length):.1f}% larger, never "
         "smaller, and the LEDs no nearer than the close limit.",
-        f"{words['F']} is the higher of what frames frame "
-        f"{FRAME_LETTERS[0]} focused there, {place(fr, lens).z:.1f} + f "
-        f"{lens.focal_length:.2f} = {framing:.1f} (DERIVED, thin lens), and "
-        f"the lens's close limit unscrewed, {face.variant.near:g} mm: "
+        f"{words['F']} is the higher of two heights: the one that just "
+        f"frames frame {FRAME_LETTERS[0]} with the lens focused there, "
+        f"{place(fr, lens).z:.1f} + f {lens.focal_length:.2f} = "
+        f"{framing:.1f} (DERIVED, thin lens), and the lens's close limit "
+        f"unscrewed, {face.variant.near:g} mm: "
         f'"{face.variant.quote}" (a Raspberry Pi forum user, 2013; '
-        f"{face.variant.basis}).",
+        f"{face.variant.basis}). The forum does not say whether its \"about "
+        "6 cm\" is from the lens face; it is taken as from the face, note 2's "
+        "convention.",
         f"{words['H1']}, where {s.symbol} is {s.what}: {term['S']}.",
         f"{words['H2']}, the clearance, where {t.symbol} is {t.what}: "
         f"{term['T']}.",
-        "REFOCUS THE LENS TO F. As sold it is set far -- "
+        f"REFOCUS THE LENS TO F, {f:.1f} mm from the lens face to the "
+        "LEDs. As sold it is set far -- "
         f'"{lens.near_quote}" (Raspberry Pi; infinity is their sign), '
         '"from about 0.5m to infinity" (raspi.tv) -- and at F a point '
         "spreads to "
@@ -539,7 +543,7 @@ def _tables_face(sheet: Sheet, subject: Subject) -> None:
             [f"F {f:.1f}", "the v1.3's picture, refocused"] + view(f, lens)]
     for ob in subject.observations:
         rows.append([f"about {ob.distance:.0f}",
-                     f"the {ob.lens.short}-65's picture, as deployed"]
+                     f"the {ob.lens.short}-65, as reported; angles ASSUMED"]
                     + view(ob.distance, ob.lens))
     title = f"FRAME {letter} AND THE PICTURE AT THE CARD, mm, DERIVED"
     block = sheet.column_block(sheet.table_height(title, len(rows)))
