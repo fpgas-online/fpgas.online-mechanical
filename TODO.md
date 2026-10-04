@@ -303,6 +303,15 @@ checker that measures the finished PDFs rather than trusting them.
       Acorn's, its LEDs: each the smallest 4:3 rectangle holding its target
       plus 5.00 mm all round, with the camera height for both lenses and the
       focus verdict against the published near limit
+- [x] `RPICAM-OVER-ACORN` reworked for one module, the v1.3 with its stock
+      lens, and lens-face heights: F 60.0 above the card, H1 = S + 60.0
+      above the mounting plate, H2 = 60.0 - T clear of the highest point;
+      the 120 degree lens and the other modules are off that sheet
+- [x] Tim Ansell's report of 3 October 2026 recorded on the sheet and in the
+      README: the autofocus camera about 10 cm above the Acorn's LEDs, in
+      focus, wanting a crop -- of 3.97, DERIVED, the LED column 386 pixels
+- [ ] The same rework for `RPICAM-OVER-ARTY`, `RPICAM-OVER-PLATE` and
+      `RPICAM-LENS`, in a pull request of their own
 - [x] Z measured from the plane the frame's target lies in, not the subject's
       own top face: the demo boards' indicators are on a board standing on
       standoffs above the plate, and the Acorn is a card seated above a Pi
@@ -325,7 +334,7 @@ checker that measures the finished PDFs rather than trusting them.
       2 Z tan(A/2) whatever the projection, the frame's corners are inside a
       barrel-distorted picture, and the margin is checked to absorb the
       equisolid split and YXF's lens at every height
-- [x] Both lenses drawn on every position sheet, each with its camera at its
+- [x] Both lenses drawn on the plate's and the Arty's position sheet, each with its camera at its
       own height, and `RPICAM-LENS` for every lens figure, declared and
       derived, and the depth of field
 - [ ] The B006604's real projection. Nobody publishes its lens's focal
@@ -364,20 +373,22 @@ checker that measures the finished PDFs rather than trusting them.
       at the card's far end, with the camera over them: measured off SQRL's
       own product photograph by `accessories/measure_acorn_leds.py`, to
       +/-1.0 mm
-- [ ] A Pi-to-card stack height for the Acorn. Waveshare dimension no height
-      on their drawing, so `RPICAM-OVER-ACORN` can only say to measure the
-      stack and which way the error goes
-- [ ] The Acorn's heatsink and blower height. The blower stands just short
-      of the LEDs and the camera board overhangs it in plan, so the sheet
-      can only give where the board's underside is and say to raise the
-      camera if the blower is taller
+- [ ] MEASURE S on the rig: the mounting plate's face, the base of the
+      standoffs under the Pi 5, to the Acorn card's top face. Not published
+      and, the hardware's owners say, not measured. Put it in
+      `ACORN_STACK_S` in `accessories/parts.py` with its tolerance and
+      source, and `RPICAM-OVER-ACORN` prints H1 as a figure
+- [ ] MEASURE T on the rig: the card's top face to the highest point of the
+      assembly, and note which part that is, the heatsink's blower or a part
+      of the HAT. Into `ACORN_STACK_T`, and the sheet prints the clearance H2
+- [ ] Measure the lens-to-LED distance on the reference Acorn, which is
+      "about 10 cm" by eye, and how the camera is held
 - [ ] The Acorn's LEDs measured on a card in hand, which would take the
       +/-1.0 mm off them: the photograph's own scale checks come out up to
       7 % short of the specification
-- [ ] The Acorn's LEDs in focus: 60.0 mm on a v1.3 with its lens unscrewed,
-      27.9 on a lens focused by hand to "less than an inch", and on the
-      autofocus module used here, unknown until its close limit is measured.
-      At 80 mm, the B0176's limit, the LED column is still 487 pixels long
+- [ ] The v1.3's close limit with its lens unscrewed is one forum user's
+      "about 6 cm"; raspi.tv's page gives none. Unscrew one over a ruler and
+      measure it: F on `RPICAM-OVER-ACORN` is that figure
 
 ## A camera holder on the TT plate  -- DONE, unprinted
 - [x] `tinytapeout/camera_holder/holder.py`: a portal of two window-shaped
@@ -427,6 +438,7 @@ checker that measures the finished PDFs rather than trusting them.
       the card phantom
 - [ ] Heights. Nothing published gives the HAT's stack-up or the CLE-215+'s
       heatsink, so the sheet is plan only and claims no Z at all. A measured
-      part would settle both
+      part would settle both; `ACORN_STACK_S` and `ACORN_STACK_T` in
+      `parts.py` are where the two a camera needs go
 - [ ] Check the derived socket footprint against a real board: it is the one
       figure here quoted at +/-1 mm rather than +/-0.2
