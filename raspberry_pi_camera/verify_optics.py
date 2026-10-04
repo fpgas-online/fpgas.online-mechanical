@@ -21,6 +21,13 @@ From the data modules rather than from the drawings:
   height where both angles reach it, for every lens;
 * every target whose plane is not the subject's own top face says so, because
   a height set at the wrong plane covers less at the right one;
+* each variant's close limit read out of its own words, and the lowest
+  height at which it both frames and focuses each frame, by the thin lens;
+* on the sheet that gives lens-face heights for one module, the Acorn's:
+  the face's height above the card worked again, the two heights that
+  need a measured term printed as formulae and never as figures while the
+  term is unmeasured, and the picture, the crop and the pixels across the
+  LED column at that height and at the height reported on the rig;
 * the hyperfocal distance and depth of field of every lens, and every
   height against every lens's declared focus range, with how soft a fixed
   lens is there and how deep the field is once a motorised one has focused;
@@ -164,11 +171,57 @@ QUOTES = {
     # config.txt that does nothing -- but this family's README says that
     # guide adds a voice-coil device tree line and a close focus range, and
     # this is the page that has to go on saying it.
+    # The autofocus module used here, as listed: its title, which is the
+    # only part of the page served without a browser.  Its variant, "AF-65
+    # Degrees", and the absence of any focus figure were read in a browser.
+    "aliexpress-ov5647-af-65-120.html": [
+        "OV5647 for Raspberry Pi 3 Model B+ 3B 4B HD 5MP 1080P AF 65 120 "
+        "Degrees Auto Focus Webcam Video",
+    ],
+    # How close the v1.3 focuses with its lens unscrewed: two forum users'
+    # measurements, the only figures found; Raspberry Pi publish none.
+    "rpi-forum-setting-lens-focus.html": [
+        "170 degrees: focus at 7 cm",
+        "make that 3cm",
+    ],
+    "rpi-forum-macro-focus.html": [
+        "About the closest you can get this way is about 6 cm.",
+    ],
+    # An OV5647 on a lens focused by hand, with its close limit published.
+    "arducam-b0031.html": [
+        "From less than an inch to infinity",
+    ],
     "arducam-ov5647-motorized-focus-camera.html": [
         "dtoverlay = ov5647 , vcm",
         "autofocus - range macro",
     ],
+    # raspi.tv on the v1.3 close up: where it is focused as sold, the lens
+    # the article adds in front, and the reader's comment under it, which
+    # is the page's only word on refocusing the stock lens.  It gives no
+    # closest distance for that.
+    "raspi-tv-close-up.html": [
+        "anything from about 0.5m to infinity is acceptably sharp",
+        "Adding a +2D lens allows you to focus at about 25cm",
+        "You CAN change the focus of the stock lens on the pi camera. It is "
+        "tricky but can be done.",
+    ],
+    # Jeff Geerling's page is about the Camera Module v2; this is the one
+    # sentence in it about the v1.3, and the only one cited.
+    "geerling-camera-v2-focus.html": [
+        "The original Raspberry Pi Camera model v1.3 came from the factory "
+        "set to ∞ (infinity) focus",
+    ],
+    # The HAT+ specification's spacer recommendation, which the Acorn's
+    # sheet quotes as a recommendation and computes nothing from.
+    "hat-plus-specification.pdf": [
+        "provide at least 15mm board-to-board spacers; 16mm spacers are "
+        "ideal",
+    ],
 }
+
+#: How many pages of a cached PDF are read for its quotes: the first few,
+#: where a datasheet's key specifications are, unless it is named here.
+PDF_PAGES = {"hat-plus-specification.pdf": None}
 
 #: How far a frame edge may sit inside where the margin puts it.  Floating
 #: point only: the frame is built from the target by addition.
@@ -180,19 +233,38 @@ def _plain(path: Path) -> str:
 
     The quotes in the optics module are sentences and table rows, and in the
     HTML the words of a table row are separated by markup rather than by
-    spaces.  Tags out, entities resolved, whitespace collapsed.  A PDF --
+    spaces.  Tags out, entities resolved, whitespace collapsed, and the Open
+    Graph title kept.  A PDF --
     only OmniVision's datasheet -- is read by its text layer, the first
     pages, which is where its key specifications are.
     """
     if path.suffix == ".pdf":
         from pypdf import PdfReader
-        pages = PdfReader(path).pages[:8]
+        pages = PdfReader(path).pages[:PDF_PAGES.get(path.name, 8)]
         return re.sub(r"\s+", " ", " ".join(p.extract_text() or ""
                                             for p in pages))
     text = path.read_text(encoding="utf-8", errors="replace")
+    # A page's own title, where a script-built page puts it only in its
+    # Open Graph tag: AliExpress's listing.
+    title = re.findall(r'<meta property="og:title" content="([^"]*)"', text)
+    text = " ".join(title) + " " + text
     text = re.sub(r"(?is)<(script|style)\b.*?</\1>", " ", text)
     text = re.sub(r"<[^>]+>", " ", text)
     return re.sub(r"\s+", " ", html.unescape(text))
+
+
+def lenses_of(subject) -> list:
+    """The lenses a subject's heights are worked for.
+
+    Every lens, on a sheet that draws both; on a sheet for one module, that
+    module's lens and the lens of anything observed on the rig, and no
+    other: a height nobody prints is not a height to check.
+    """
+    if subject.lens_keys is None:
+        return list(optics.ALL_LENSES.values())
+    keys = set(subject.lens_keys) | {ob.lens.key
+                                     for ob in subject.observations}
+    return [ln for ln in optics.ALL_LENSES.values() if ln.key in keys]
 
 
 def check_quotes() -> tuple[int, int]:
@@ -297,13 +369,6 @@ def check_lenses() -> int:
           f"{optics.ARRAY_DIAGONAL / 2:.3f} / {math.radians(page.d / 2):.4f}"
           f" rad = {f:.3f} mm (rectilinear would be "
           f"{optics.focal_from_diagonal(page.d, 'rectilinear'):.3f})")
-    # The autofocus lens's, from its 35 mm equivalent.
-    af = optics.AUTOFOCUS
-    f = 35.0 * optics.ARRAY_DIAGONAL / math.hypot(36.0, 24.0)
-    ok = abs(f - af.focal_length) < 1e-9
-    bad += not ok
-    print(f"   {'ok  ' if ok else 'FAIL'} {af.name}'s focal length, DERIVED:"
-          f" 35 x {optics.ARRAY_DIAGONAL:.3f} / 43.27 = {f:.3f} mm")
     # The datasheet's image area, whose diagonal is the 65.
     d = optics.full_angle(math.hypot(*optics.DATASHEET_IMAGE_AREA))
     ok = abs(d - optics.DIAGONAL_FROM_DATASHEET) < 1e-9 and round(d) == 65
@@ -330,7 +395,7 @@ def check_bounds() -> int:
     for subject in subjects().values():
         for letter, frame in zip("AB", subject.frames()):
             t = frame.target
-            for lens in optics.ALL_LENSES.values():
+            for lens in lenses_of(subject):
                 p = place(frame, lens)
                 for alt in lens.alternatives:
                     ax = alt.h if frame.long_axis == "X" else alt.v
@@ -453,9 +518,9 @@ def check_focus() -> int:
     af = optics.AUTOFOCUS
     for subject in subjects().values():
         for letter, frame in zip("AB", subject.frames()):
-            for lens in optics.ALL_LENSES.values():
+            for lens in lenses_of(subject):
                 p = place(frame, lens)
-                truth = p.z < lens.near
+                truth = None if lens.near is None else p.z < lens.near
                 ok = p.too_close is truth
                 bad += not ok
                 extra = ""
@@ -469,10 +534,64 @@ def check_focus() -> int:
                     extra = (f"; a point spreads {on_sensor * 1000:.1f} um,"
                              f" {on_sensor / optics.PIXEL_PITCH:.0f} px, "
                              f"{on_subject:.2f} mm on the board")
+                verdict = ("no close limit published" if truth is None
+                           else "OUT OF RANGE" if truth else "in range")
+                near = "--" if lens.near is None else f"{lens.near:.0f}"
                 print(f"   {'ok  ' if ok else 'FAIL'} {subject.key:<20} "
                       f"{letter} {lens.short:>3} Z {p.z:6.1f} against "
-                      f"{lens.near:5.0f}: "
-                      f"{'OUT OF RANGE' if truth else 'in range'}{extra}")
+                      f"{near:>5}: {verdict}{extra}")
+    print()
+    return bad
+
+
+def check_variants() -> int:
+    """Each variant's close limit, and the lowest height in focus.
+
+    The close limit is read back out of its own quote, so the figure a
+    height is set from is the one the words give, and the height is worked
+    by the thin lens directly: the sensor's cover at object distance s is
+    s x size / v with v = f s / (s - f), and the height is the smallest s at
+    or above the close limit where that covers the frame on both axes.
+    """
+    bad = 0
+    print("Focus, per variant of the camera")
+    words = {"6 cm": 60.0, "less than an inch": 25.4, "80mm": 80.0,
+             "1 m": 1000.0}
+    for v in optics.FOCUS_VARIANTS:
+        if v.near is None:
+            ok = v.basis == "NONE" and v.quote == "not published"
+            bad += not ok
+            print(f"   {'ok  ' if ok else 'FAIL'} {v.module:<36} close limit"
+                  " not published, and no height is given")
+            continue
+        read = [mm for w, mm in words.items() if w in v.quote]
+        ok = read == [v.near]
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {v.module:<36} "
+              f"{v.quote!r} -> {v.near:g} mm ({v.basis})")
+    for subject in subjects().values():
+        for letter, frame in zip("AB", subject.frames()):
+            for v in optics.FOCUS_VARIANTS:
+                z = optics.in_focus_z(frame, v)
+                if z is None or v.lens not in lenses_of(subject):
+                    continue
+                f = v.lens.focal_length
+                th = math.tan(math.radians(v.lens.fov_h / 2))
+                tv = math.tan(math.radians(v.lens.fov_v / 2))
+                wx, wy = ((th, tv) if frame.long_axis == "X" else (tv, th))
+                s_frame = max(frame.width / (2 * wx),
+                              frame.height / (2 * wy)) + f
+                want = max(s_frame, v.near)
+                v_img = f * z / (z - f)
+                cx = 2 * z * wx * f / v_img
+                cy = 2 * z * wy * f / v_img
+                ok = (abs(want - z) < 1e-9 and cx >= frame.width - 1e-6
+                      and cy >= frame.height - 1e-6)
+                bad += not ok
+                print(f"   {'ok  ' if ok else 'FAIL'} {subject.key:<20} "
+                      f"{letter} {v.key:<14} Z {z:7.1f}: covers {cx:.1f} x "
+                      f"{cy:.1f} focused there, frame {frame.width:.1f} x "
+                      f"{frame.height:.1f}")
     print()
     return bad
 
@@ -556,7 +675,7 @@ def check_frames() -> int:
                   + ("" if t.plane_above_subject == 0.0
                      else ", and says where that is"))
 
-            for lens in optics.ALL_LENSES.values():
+            for lens in lenses_of(subject):
                 p = place(frame, lens)
                 # 4. The camera is over the frame's centre.
                 centred = (abs(p.x - frame.cx) < EPS
@@ -723,6 +842,97 @@ def check_elevations() -> int:
     return bad
 
 
+def check_face() -> int:
+    """The lens-face heights, on the sheet that gives them: the Acorn's.
+
+    Worked again from the declared angles, the focal length and the close
+    limit, not through ``FaceHeights``: the face above the card, the two
+    heights that each need a term nobody has measured, and what the picture
+    is there and at the distance reported on the rig.
+    """
+    from raspberry_pi_camera import v1
+    bad = 0
+    print("Lens-face heights")
+    for subject in subjects().values():
+        face = subject.face
+        if face is None:
+            continue
+        frame = subject.frames()[0]
+        lens = face.variant.lens
+        f = lens.focal_length
+        th = math.tan(math.radians(lens.fov_h / 2))
+        tv = math.tan(math.radians(lens.fov_v / 2))
+        long_side = max(frame.width, frame.height)
+        short_side = min(frame.width, frame.height)
+        framing = max(long_side / (2 * th), short_side / (2 * tv)) + f
+        want = max(framing, face.variant.near)
+        got = face.face(frame)
+        ok = abs(want - got) < 1e-9 and face.variant.lens.key in \
+            subject.lens_keys
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {subject.key:<20} F {got:.1f}: "
+              f"the higher of framing {framing:.1f} and the close limit "
+              f"{face.variant.near:g} ({face.variant.basis}, "
+              f"{face.variant.quote!r})")
+        # The face is set where the pupil is worked to be, and the pupil is
+        # behind it by at most the lens's height: further, never nearer.
+        most = (got + v1.LENS_TOP_Z - f) / (got - f) - 1
+        print(f"   --   {'':<20} the pupil up to {v1.LENS_TOP_Z:.2f} behind "
+              f"the face: the picture up to {100 * most:.1f}% larger")
+        # The two heights with a term to measure: a formula until it is.
+        for name, term, value, sum_ in (
+                ("H1", face.base, face.above_base(frame),
+                 lambda t: t + got),
+                ("H2", face.highest, face.clearance(frame),
+                 lambda t: got - t)):
+            if term.value is None:
+                ok = value is None
+                said = f"{term.symbol} is not measured, so no figure is given"
+            else:
+                ok = (value is not None
+                      and abs(value - sum_(term.value)) < 1e-9
+                      and term.tol is not None)
+                said = (f"{term.symbol} {term.value:.1f} +/-{term.tol:g} "
+                        f"gives {value:.1f}")
+            if name == "H2" and value is not None:
+                ok = ok and value > 0
+            bad += not ok
+            print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {name}: {said}")
+        # The picture focused at a distance z, by the thin lens: the sensor
+        # stands v = f z / (z - f) behind the lens, and covers z / v of its
+        # own size.
+        column = max(frame.target.width, frame.target.height)
+        views = [("F", got, lens)] + [
+            (f"reported by {ob.by}, {ob.on}, about", ob.distance, ob.lens)
+            for ob in subject.observations]
+        for what, z, ln in views:
+            fl = ln.focal_length
+            v_img = fl * z / (z - fl)
+            cover_long = optics.ARRAY_WIDTH * z / v_img
+            cover_short = optics.ARRAY_HEIGHT * z / v_img
+            factor = cover_long / long_side
+            px = column * optics.SENSOR_COLUMNS / cover_long
+            got_long, got_short = optics.picture(ln, z)
+            got_factor, per_mm = optics.crop(frame, ln, z)
+            # The array against the declared angles: FOV_CHECK's hundredth
+            # of a degree, which is a few hundredths of a millimetre here.
+            ok = (abs(cover_long - got_long) < 0.05
+                  and abs(cover_short - got_short) < 0.05
+                  and abs(factor - got_factor) < 0.005
+                  and abs(px - column * per_mm) < 0.5
+                  and cover_long >= long_side and cover_short >= short_side)
+            bad += not ok
+            print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {what} {z:.1f}: "
+                  f"covers {got_long:.1f} x {got_short:.1f}, frame A a crop "
+                  f"of x {got_factor:.2f}, the {column:.2f} mm LED column "
+                  f"{column * per_mm:.0f} px")
+        on_sensor, _ = lens.blur(got)
+        print(f"   --   {'':<20} as sold, set at {lens.focus_at / 1000:g} m, "
+              f"a point at F spreads {on_sensor / optics.PIXEL_PITCH:.0f} px")
+    print()
+    return bad
+
+
 def main() -> None:
     problems = 0
     bad, _ = check_quotes()
@@ -733,13 +943,14 @@ def main() -> None:
     problems += check_distortion()
     problems += check_frames()
     problems += check_focus()
+    problems += check_variants()
     problems += check_elevations()
+    problems += check_face()
 
-    fixed = [ln for ln in optics.ALL_LENSES.values() if ln.focus_at]
-    close = sum(1 for s in subjects().values() for f in s.frames()
-                for ln in fixed if place(f, ln).too_close)
-    total = sum(1 for s in subjects().values() for f in s.frames()
-                for ln in fixed)
+    heights = [(f, ln) for s in subjects().values() for f in s.frames()
+               for ln in lenses_of(s) if ln.focus_at]
+    close = sum(1 for f, ln in heights if place(f, ln).too_close)
+    total = len(heights)
     print(f"{close} of {total} fixed-focus heights are nearer than the lens's "
           "declared near limit, and every sheet says so.")
     print("PASS: the frames hold their targets and the heights reach them"

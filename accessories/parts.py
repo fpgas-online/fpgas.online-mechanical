@@ -8,7 +8,7 @@ than published, an explicit uncertainty.
 
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import dataclass, replace
 
 from tools.schema import BoardSpec, Feature, Hole, Outline, PmodHeader, Source
 
@@ -545,6 +545,143 @@ ACORN_CARD = Feature(
          "SQRL's one millimetre over the specification's 22. The heatsink is "
          "not published and is not drawn.",
     tol=POE_M2_HAT_TOL,
+)
+
+# --- The Acorn's LEDs -------------------------------------------------------
+#
+# Five, at the card's far end, on its component side: four silkscreened A1
+# to A4 in a column on the +Y side of the retention screw's half-moon, and
+# one silkscreened PWR on the -Y side.  The designators beside A1 to A4 read
+# D8 to D5 in the photograph, D7 most legibly, and D5 to D8 are the four user
+# LEDs on RHS Research's NiteFury schematic too, the open card the Acorn is
+# pin-compatible with.
+# They are green: Enjoy-Digital's photograph of a CLE-215+ running shows
+# them lit, beside the blower at that end of the heatsink.
+#
+# Nobody publishes where they are.  accessories/measure_acorn_leds.py
+# measures them off SQRL's own product photograph of a CLE-215 and a
+# CLE-215+, which carry the same layout, with each card's outline fitted to
+# ACORN_LENGTH x ACORN_WIDTH.  The figures below are its output, transcribed:
+# X along the card from the mating edge, which is the connector datum, and
+# Y across it from the half-moon's centre, which is where the retention
+# screw and so the HAT's M.2 axis is -- not from the card's own centreline,
+# which the photographs put 0.31 and 0.49 mm to -Y of the half-moon, inside
+# their error bar but not to be relied on.
+#
+# The error bar is that script's: the worst of its scale checks, the
+# half-moon's cutout at 7.3 % under the specification's 3.50 mm, applied at
+# the LED furthest from the half-moon, plus the larger of the two cards'
+# disagreement and the readings' against an automatic one.  1.0 mm.  The
+# LEDs' light bodies are measured, not their packages, which nothing in
+# either photograph shows the edge of.
+
+ACORN_LED_TOL = 1.0
+
+#: (x0, x1, y0, y1) of each LED's light body: X from the mating edge, Y from
+#: the half-moon's centre, millimetres, from measure_acorn_leds.py.
+ACORN_LED_READINGS = {
+    "A1": (77.39, 79.65, 9.98, 10.62),
+    "A2": (77.39, 79.63, 7.61, 8.34),
+    "A3": (77.39, 79.63, 5.33, 6.02),
+    "A4": (77.39, 79.63, 2.97, 3.68),
+    "PWR": (77.42, 79.64, -3.85, -3.18),
+}
+
+#: The designators the photographs show beside each; PWR's is not legible.
+_ACORN_LED_DESIGNATORS = {"A1": "D8", "A2": "D7", "A3": "D6", "A4": "D5"}
+
+ACORN_LEDS = tuple(
+    Feature(
+        key=f"acorn-led-{name.lower()}",
+        label=(f"Acorn LED {name}, {_ACORN_LED_DESIGNATORS[name]}"
+               if name in _ACORN_LED_DESIGNATORS else f"Acorn LED {name}"),
+        designator=name,
+        kind="led",
+        x0=POE_M2_DATUM_X + x0, y0=POE_M2_AXIS_Y + y0,
+        x1=POE_M2_DATUM_X + x1, y1=POE_M2_AXIS_Y + y1,
+        note="Green; the light body, measured off SQRL's photograph.",
+        tol=ACORN_LED_TOL,
+    )
+    for name, (x0, x1, y0, y1) in ACORN_LED_READINGS.items()
+)
+
+# --- The Acorn's stack: how high the card and the tallest part stand --------
+#
+# Two heights a camera stand over the assembly is set from, and neither is
+# published by anyone, nor yet measured on the rig: the session that owns the
+# hardware said so on 4 October 2026.  So both are None, which every sheet
+# prints as MEASURE, with the formula the height follows from; a measured
+# figure goes in ``value`` below, with its tolerance and who measured it, and
+# nowhere else.
+#
+# S, the mounting plate's face -- the bottom of the standoffs the Pi 5 sits
+# on -- to the card's top face, where the LEDs are.  It is six terms:
+#
+#     the standoffs under the Pi      the rig's own; not recorded anywhere
+#     the Pi 5's board                not on Raspberry Pi's drawing, whose side
+#                                     view dimensions no thickness
+#     the Pi-to-HAT spacers           Waveshare state none; the HAT+
+#                                     specification only recommends, below
+#     the HAT's board                 Waveshare dimension no height at all
+#     the M.2 socket's seat           the M.2 specification defines several
+#                                     connector heights, and Waveshare do
+#                                     not say which this socket is
+#     the card                        0.80 +/-0.08, the M.2 specification's
+#
+# One term of six published is not a sum, so S is measured as one figure.
+#
+# T, the card's top face to the highest point of the assembly, whichever part
+# that is: the blower on the Acorn's heatsink, which Enjoy-Digital's
+# photographs show and nobody dimensions, or a part of the HAT.
+
+
+@dataclass(frozen=True)
+class StackHeight:
+    """One height in an assembly's stack: published, measured, or neither.
+
+    ``value`` is None until somebody measures it, and a sheet then prints
+    MEASURE and the formula instead of a figure.  ``tol`` and ``source`` say
+    how good a figure is and whose it is, as for every other number here.
+    """
+
+    symbol: str
+    what: str
+    value: float | None = None
+    tol: float | None = None
+    source: str = "not published, and not yet measured"
+
+    def __post_init__(self) -> None:
+        if self.value is not None and (self.tol is None
+                                       or "not yet measured" in self.source):
+            raise ValueError(f"{self.symbol}: a figure needs its tolerance "
+                             "and its source")
+
+
+ACORN_STACK_S = StackHeight(
+    "S", "the mounting plate's face, the base of the standoffs under the "
+         "Pi 5, to the card's top face")
+ACORN_STACK_T = StackHeight(
+    "T", "the card's top face to the assembly's highest point, the "
+         "heatsink's blower or a part of the HAT")
+
+#: The one term of S that is published: section 2.3, "Card thickness is
+#: fixed at 0.8 mm ±10%".
+M2_CARD_THICKNESS = 0.80
+M2_CARD_THICKNESS_TOL = 0.08
+
+#: What the HAT+ specification says of the spacers between a Pi and a HAT+,
+#: chapter 7.  A recommendation to whoever designs a HAT+, not a figure for
+#: this one: Waveshare's wiki and drawing give no spacer length, so it is
+#: quoted and nothing is computed from it.
+HAT_PLUS_SPACER_QUOTE = ("provide at least 15mm board-to-board spacers; "
+                         "16mm spacers are ideal")
+
+HAT_PLUS_SPEC_SOURCE = Source(
+    label="Raspberry Pi HAT+ specification",
+    ref="https://web.archive.org/web/20260115212335/"
+        "https://datasheets.raspberrypi.com/hat/hat-plus-specification.pdf",
+    note=f'Chapter 7, a design recommendation: "{HAT_PLUS_SPACER_QUOTE}". '
+         "Not Waveshare's figure for this HAT, who publish none.",
 )
 
 #: The overlay the assembly sheet draws: the HAT with a card in it.  One

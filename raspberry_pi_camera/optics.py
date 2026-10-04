@@ -28,9 +28,19 @@ the equidistant projection instead, with the rectilinear and equisolid
 splits either side of it as the bound; see "Projection" below.
 
 Focus is the other half.  Every lens carries the near end of its declared
-focus range, and the depth of field figures are DERIVED from its focal
-length and F number at a circle of confusion of two pixels, with every
-figure that is not published marked as derived or assumed where it is set.
+focus range, or None where nobody publishes one, and the depth of field
+figures are DERIVED from its focal length and F number at a circle of
+confusion of two pixels, with every figure that is not published marked as
+derived or assumed where it is set.
+
+How close a camera focuses is the module's, not the lens's: the v1.3 as
+sold and with its lens unscrewed by hand, an adjustable-lens module and a
+motorised one each have their own close limit, each from the page that
+publishes it, or marked unpublished; see :data:`FOCUS_VARIANTS`.
+
+One sheet is for one module and gives heights to its lens FACE, above the
+plane its target is in, above what the stand is built on and above the
+tallest thing under the camera; see :class:`FaceHeights`.
 
 Coordinates
 -----------
@@ -347,6 +357,51 @@ ARDUCAM_AF = Source(
     note='Quoted: "you can understand it the same as autofocus".',
 )
 
+ALIEXPRESS_AF65 = Source(
+    label="AliExpress listing of the autofocus module used here",
+    ref="https://www.aliexpress.com/item/1005007810082171.html",
+    note='"Camera Module OV5647 for Raspberry Pi 3 Model B+ 3B 4B HD 5MP '
+         '1080P AF 65 120 Degrees Auto Focus Webcam Video", variant "AF-65 '
+         'Degrees", read 3 October 2026.  No focus distance, focal length, '
+         'F number or driver chip; the 65 is the only optical figure.',
+)
+
+RPI_FORUM_FOCUS = Source(
+    label='Raspberry Pi forums, "setting lens focus", June 2013',
+    ref="https://web.archive.org/web/20241118184419/https://www."
+        "raspberrypi.org/forums/viewtopic.php?t=46637",
+    note='jbeale, a forum user, the v1.3 lens unscrewed by hand: "170 '
+         'degrees: focus at 7 cm"; towolf: "closer than about 4cm. EDIT: '
+         'actually, make that 3cm", where the lens starts to fall out.',
+)
+
+RPI_FORUM_MACRO = Source(
+    label='Raspberry Pi forums, "Camera with Macro focus", November 2013',
+    ref="https://web.archive.org/web/20230427204222/https://forums."
+        "raspberrypi.com/viewtopic.php?t=60828",
+    note='jbeale, unscrewing the v1.3 lens: "About the closest you can get '
+         'this way is about 6 cm."',
+)
+
+ARDUCAM_B0031 = Source(
+    label="Arducam B0031, OV5647 with an M12 lens focused by hand",
+    ref="https://www.arducam.com/blog/?p=4561",
+    note='"From less than an inch to infinity".',
+)
+
+RASPI_TV = Source(
+    label='RasPi.TV, "Adapt your Raspberry Pi Camera for close-up use", '
+          "25 May 2013",
+    ref="https://web.archive.org/web/20260212013652/https://raspi.tv/2013/"
+        "adapt-your-raspberry-pi-camera-for-close-up-use",
+    note='Alex Eames: "anything from about 0.5m to infinity is acceptably '
+         'sharp"; "Adding a +2D lens allows you to focus at about 25cm". The '
+         "article adds a lens in front and does not unscrew the stock one; a "
+         'reader\'s comment under it, of 23 July 2014: "You CAN change the '
+         'focus of the stock lens on the pi camera. It is tricky but can be '
+         'done." No closest distance for that.',
+)
+
 COMMONLANDS = Source(
     label="Commonlands, OV5647 lens table",
     ref="https://web.archive.org/web/20260817210431/https://commonlands.com/"
@@ -418,7 +473,8 @@ class Lens:
 
     ``focal_length`` and ``f_number`` carry their own basis, DECLARED,
     DERIVED or ASSUMED; ``near`` is the near end of the focus range the
-    vendor declares, in millimetres, and ``near_quote`` the words.
+    vendor declares, in millimetres, or None where none is published,
+    and ``near_quote`` the words.
     ``focus_at`` is where a fixed lens is focused, which nobody publishes,
     and is ASSUMED at twice the declared near limit, as a lens focused at
     its hyperfocal distance would be; None for a lens that focuses itself.
@@ -439,7 +495,7 @@ class Lens:
     f_number: float
     f_basis: str
     focus: str
-    near: float
+    near: float | None
     near_quote: str
     focus_at: float | None
     sources: tuple[Source, ...]
@@ -481,8 +537,9 @@ class Lens:
         return hyperfocal(self.focal_length, self.f_number)
 
     @property
-    def min_object_distance(self) -> float:
-        """The declared near end of the focus range, in millimetres."""
+    def min_object_distance(self) -> float | None:
+        """The declared near end of the focus range, in millimetres, or
+        None where nobody publishes one."""
         return self.near
 
     def blur(self, z: float) -> tuple[float, float]:
@@ -522,50 +579,42 @@ LENS_65 = Lens(
     sources=(RPI_DOC, OV5647_DATASHEET, ARDUCAM_DOC),
 )
 
-#: Arducam's motorised-focus OV5647, the B0176, which is the autofocus
-#: version of the stock camera: the same sensor and much the same angle, on a
-#: voice-coil lens.  Its declared pair is not self-consistent -- 54 across a
-#: 4:3 rectilinear picture implies 41.80 down, not 44 -- and its
-#: predecessor's page says 41, so the sheets take the lower: the picture is
-#: then no smaller than the height assumes on either axis.  Its focal length
-#: is not published; Arducam's "35 mm" full-frame equivalent gives 3.67 mm,
-#: DERIVED over the 43.27 mm full-frame diagonal, which is 52.6 x 40.7 under
-#: tan() -- an alternative the margin is checked to absorb.  No F number is
-#: published; the stock lens's F2.9 is ASSUMED, and it is used only for the
-#: depth of field once the lens has focused.
-FULL_FRAME_DIAGONAL = math.hypot(36.0, 24.0)
-AF_FOCAL = 35.0 * ARRAY_DIAGONAL / FULL_FRAME_DIAGONAL
-
+#: The autofocus module used here: the one on the Acorn's host and the one
+#: its twin is to get, bought as the "AF-65 Degrees" variant of an AliExpress
+#: listing.  A clone of the Camera Module v1.3's board -- silkscreened
+#: "Raspberry pi Camera Rev 1.3", the same four holes -- carrying an OV5647
+#: in a square voice-coil can, its flex marked P5V04A2.  Not an Arducam
+#: module.  The listing gives no focus distance, focal length, F number or
+#: driver chip; the only optical figure is the 65 in the variant's name,
+#: which is what the stock lens is sold under, its diagonal.  So its angles
+#: are the stock lens's, ASSUMED, and so are its 3.60 mm and F2.9, used only
+#: for the depth of field once it has focused.  Its close limit is None:
+#: nothing published, and nothing is worked from a guess.
 AUTOFOCUS = Lens(
     key="af",
     name="65 deg, autofocus",
     short="AF",
-    product="Arducam B0176, OV5647 with a motorised lens",
-    fov_h=54.0,
-    fov_v=41.0,
+    product="OV5647 AF-65, AliExpress, motorised",
+    fov_h=LENS_65.fov_h,
+    fov_v=LENS_65.fov_v,
     projection="rectilinear",
-    basis="54 is on every Arducam page; of the two verticals they print, "
-          "44 on the B0176's and 41 on its predecessor's, the lower.",
+    basis="The listing's only figure is its 65, the stock lens's diagonal; "
+          "the stock lens's pair is ASSUMED.",
     figures=(
-        Figure("Arducam B0176", "DECLARED", 54.0, 44.0),
-        Figure("Arducam B0121", "DECLARED", 54.0, 41.0),
-        Figure("3.67 mm, from the 35 mm equivalent", "DERIVED",
-               *angles_from_focal(AF_FOCAL, "rectilinear")),
+        Figure("AliExpress, AF-65", "DECLARED", None, None, 65.0),
+        Figure("the stock lens's pair", "ASSUMED", LENS_65.fov_h,
+               LENS_65.fov_v),
     ),
-    alternatives=(
-        Figure("3.67 mm, from the 35 mm equivalent", "DERIVED",
-               *angles_from_focal(AF_FOCAL, "rectilinear")[:2]),
-        Figure("Arducam B0176", "DECLARED", 54.0, 44.0),
-    ),
-    focal_length=AF_FOCAL,
-    focal_basis="DERIVED",
-    f_number=2.9,
+    alternatives=LENS_65.alternatives,
+    focal_length=LENS_65.focal_length,
+    focal_basis="ASSUMED",
+    f_number=LENS_65.f_number,
     f_basis="ASSUMED",
     focus="Motorized",
-    near=80.0,
-    near_quote="80mm to infinity",
+    near=None,
+    near_quote="not published",
     focus_at=None,
-    sources=(UCTRONICS_B0176, ARDUCAM_B0121, ARDUCAM_DOC, ARDUCAM_AF),
+    sources=(ALIEXPRESS_AF65,),
 )
 
 #: The wide lens: Arducam's B006604, the OV5647 sold as 120 degrees, a spy
@@ -662,14 +711,10 @@ LENS_120 = Lens(
 LENSES = {LENS_65.key: LENS_65, LENS_120.key: LENS_120}
 
 #: Every lens a height is worked out for: the two drawn, and the autofocus
-#: version of the stock one, whose height is in the tables.
+#: module used here, whose angles are taken as the stock lens's.
 ALL_LENSES = {LENS_65.key: LENS_65, AUTOFOCUS.key: AUTOFOCUS,
               LENS_120.key: LENS_120}
 
-#: The autofocus version of each drawn lens, where one is sold.  Nobody
-#: publishes a motorised OV5647 of about 120 degrees: Arducam's wide
-#: autofocus OV5647, the B0370, is "155(H) x 116(V)", a different lens.
-AUTOFOCUS_OF = {LENS_65.key: AUTOFOCUS, LENS_120.key: None}
 
 #: Waveshare's RPi Camera (G): the Camera Module v1 sized OV5647 with a
 #: fisheye, and the other thing sold as "120 degrees" -- horizontally, on The
@@ -724,6 +769,211 @@ def near_limits() -> list[tuple[str, float]]:
         out.append((quote, float(cm.group(1)) * 10))
     return out
 
+
+# ---------------------------------------------------------------------------
+# Focus, per variant of the camera
+# ---------------------------------------------------------------------------
+#
+# A Lens above is a field of view.  How close a camera focuses is the
+# module's, and the OV5647 is sold three ways that matter here: the Camera
+# Module v1.3, fixed and set far, whose glued lens can be broken free and
+# unscrewed by hand; modules with a lens focused by hand by design; and
+# modules with a motorised lens, a voice coil and its driver on the I2C bus,
+# focused by software.  Each figure below belongs to the module named beside
+# it, not to its class, and where nobody publishes one it says so.
+
+
+@dataclass(frozen=True)
+class FocusVariant:
+    """One way an OV5647 module is sold, and how close it can focus.
+
+    ``module`` is the product the figure belongs to, ``near`` its close
+    limit in millimetres, or None where none is published, and ``quote`` the
+    words it is read from.  ``basis`` is DECLARED for a vendor's figure,
+    REPORTED for a forum user's measurement, and NONE where nothing is
+    published.  ``lens`` is whose field of view frames the subject, and
+    ``lens_basis`` says whether that is the module's own or ASSUMED.
+    ``used`` is True for the modules on the rig, False for one listed only
+    for comparison.
+    """
+
+    key: str
+    variant: str
+    module: str
+    near: float | None
+    quote: str
+    basis: str
+    lens: Lens
+    lens_basis: str
+    source: Source
+    used: bool = True
+
+
+#: Every variant an in-focus height is given for, in the order the sheets
+#: list them.
+#:
+#: The v1.3 unscrewed: no figure from Raspberry Pi, whose own post on doing
+#: it gives no distance.  Two forum users measured it in 2013, neither
+#: Raspberry Pi staff: jbeale, "about 6 cm" as the closest, after "170
+#: degrees: focus at 7 cm"; towolf, 3 cm, at the point the lens starts to
+#: fall out of its thread.  The 6 cm is used, the closest anyone reports
+#: with the lens still held.  raspi.tv's article on the v1.3 close up gives
+#: no figure for it either: it adds a +2D lens in front, "focus at about
+#: 25cm", and only a reader's comment under it says the stock lens's focus
+#: can be changed, with no distance.  So the forum's 6 cm stands alone.
+#:
+#: Focused by hand: Arducam's B0031, an OV5647 on an M12 lens, "From less
+#: than an inch to infinity" -- so 25.4 mm is an upper bound on its close
+#: limit, and the height worked from it is no lower than it needs.  Its
+#: angles are taken as the stock lens's, ASSUMED: where the field of view
+#: sets the height the lens is a 3.6 mm one like the stock lens, and where
+#: the close limit sets it the angle does not enter.
+#:
+#: Motorised: the module used here publishes no close limit, so no height
+#: in focus is given for it.  Arducam's B0176, a different module, publishes
+#: "80mm to infinity", and is listed for comparison, marked as not the one
+#: used.
+FOCUS_VARIANTS = (
+    FocusVariant("v13", "v1.3 as sold", "Raspberry Pi Camera Module v1.3",
+                 LENS_65.near, LENS_65.near_quote, "DECLARED", LENS_65,
+                 "own", RPI_DOC),
+    FocusVariant("v13-unscrewed", "v1.3, lens unscrewed by hand",
+                 "Raspberry Pi Camera Module v1.3", 60.0,
+                 "About the closest you can get this way is about 6 cm.",
+                 "REPORTED", LENS_65, "own", RPI_FORUM_MACRO),
+    FocusVariant("manual", "lens focused by hand", "Arducam B0031", 25.4,
+                 "From less than an inch to infinity", "DECLARED", LENS_65,
+                 "ASSUMED", ARDUCAM_B0031),
+    FocusVariant("af", "motorised, the one used here", AUTOFOCUS.product,
+                 None, AUTOFOCUS.near_quote, "NONE", AUTOFOCUS, "ASSUMED",
+                 ALIEXPRESS_AF65),
+    FocusVariant("b0176", "motorised, NOT the one used here",
+                 "Arducam B0176", 80.0, "80mm to infinity", "DECLARED",
+                 LENS_65, "ASSUMED", UCTRONICS_B0176, used=False),
+    FocusVariant("wide", "120 deg as sold", "Arducam B006604", LENS_120.near,
+                 LENS_120.near_quote, "DECLARED", LENS_120, "own",
+                 ARDUCAM_B006604),
+)
+
+
+def framed_in_focus(frame: Frame, lens: Lens) -> float:
+    """The lowest Z that frames *frame* with *lens* focused at that Z.
+
+    A lens focused at a distance s stands v = f s / (s - f) from the sensor,
+    further than f, so it covers less than the pinhole at f says:
+    s (sensor / v) = (s - f) (sensor / f), the pinhole's cover at s - f.  The
+    height that frames the subject in focus is therefore the field-of-view
+    height plus f.  DERIVED, thin lens, the declared angles taken to be the
+    lens's focused at infinity.
+    """
+    return place(frame, lens).z + lens.focal_length
+
+
+def in_focus_z(frame: Frame, v: FocusVariant) -> float | None:
+    """The lowest Z at which variant *v* both frames *frame* and is in focus.
+
+    The higher of the field-of-view height, focused there, and the module's
+    close limit: raising the camera only grows the picture, so above the
+    framing height the close limit is all that can push it up.  None where
+    the module's close limit is not published.  Z is to the entrance pupil
+    as on every position sheet; no vendor or forum post says whether its
+    close limit is from the lens face, the pupil or the sensor, which are
+    within a few millimetres of each other on these modules.
+    """
+    if v.near is None:
+        return None
+    return max(framed_in_focus(frame, v.lens), v.near)
+
+
+
+def picture(lens: Lens, z: float) -> tuple[float, float]:
+    """What *lens* covers on a plane *z* away, focused there: (long, short).
+
+    DERIVED, thin lens, as :func:`framed_in_focus`: focused at z the lens
+    covers what the pinhole at f covers at z - f, so 2 (z - f) tan(A / 2)
+    along each axis of the sensor.
+    """
+    return tuple(2 * (z - lens.focal_length) * math.tan(math.radians(a / 2))
+                 for a in (lens.fov_h, lens.fov_v))
+
+
+def crop(frame: Frame, lens: Lens, z: float) -> tuple[float, float]:
+    """How much of the picture at *z* *frame* is, and the picture's scale.
+
+    Returned as (the crop factor, pixels per millimetre): the picture's long
+    side over the frame's, which is the digital zoom that fills the picture
+    with the frame, and the sensor's columns over the picture's long side.
+    The pixels are square, so a length on the subject spans the same number
+    of them whichever way the camera is turned.  DERIVED.
+    """
+    long_side, _ = picture(lens, z)
+    return (long_side / max(frame.width, frame.height),
+            SENSOR_COLUMNS / long_side)
+
+
+@dataclass(frozen=True)
+class FaceHeights:
+    """Where one module's LENS FACE goes: the headline of a one-module sheet.
+
+    A sheet that carries this gives heights to the lens face, not Z to the
+    entrance pupil, and for one module only: ``variant``, whose close limit
+    is used.  Three figures follow.
+
+    ``face`` is the lens face above the plane the frame's target lies in:
+    the higher of the height that frames it, focused there, and the
+    module's close limit, which :func:`in_focus_z` works out to the pupil.
+    The face is then SET there.  That is the conservative convention: the
+    pupil is behind the face, by at most the lens's own height, so it is
+    that much further from the subject than worked -- the picture is larger,
+    never smaller, and the subject no nearer than the close limit.
+
+    ``above_base`` adds ``base``, how far that plane stands above whatever
+    the stand is built on, and ``clearance`` takes off ``highest``, how far
+    the tallest thing under the camera stands above the plane.  Each is None
+    while its term is unmeasured, and the sheet prints the formula.
+
+    ``base`` and ``highest`` are ``accessories.parts.StackHeight``s: this
+    module restates neither.
+    """
+
+    variant: FocusVariant
+    base: object
+    highest: object
+
+    def face(self, frame: Frame) -> float:
+        z = in_focus_z(frame, self.variant)
+        if z is None:
+            raise ValueError(f"{self.variant.module} publishes no close "
+                             "limit, so no height in focus can be given")
+        return z
+
+    def above_base(self, frame: Frame) -> float | None:
+        if self.base.value is None:
+            return None
+        return self.base.value + self.face(frame)
+
+    def clearance(self, frame: Frame) -> float | None:
+        if self.highest.value is None:
+            return None
+        return self.face(frame) - self.highest.value
+
+
+@dataclass(frozen=True)
+class Observation:
+    """What somebody saw on the deployed hardware, and who and when.
+
+    Not a measurement and not a vendor's figure: ``distance`` is by eye, in
+    millimetres from the lens to the target, and ``lens`` is whose angles
+    anything DERIVED from it is worked with.
+    """
+
+    by: str
+    on: str
+    lens: Lens
+    distance: float
+    text: str
+
+
 # ---------------------------------------------------------------------------
 # Framing
 # ---------------------------------------------------------------------------
@@ -744,13 +994,13 @@ class Target:
     """A rectangle on the subject that has to end up inside the picture.
 
     The rectangle is in the subject's own plan frame, but it need not lie in
-    the subject's own top face, and on the mounting plate's sheet it does
-    not: the demo boards' indicators are on a board standing on standoffs
-    above the plate.  A camera height measured to the wrong plane covers
-    less at the right one -- the picture at ``h`` above the frame plane is
-    ``(Z - h) / Z`` of what is drawn -- so ``Z`` on these sheets is always
-    quoted above the TARGET's plane, and ``plane_name`` says which plane that
-    is.
+    the subject's own top face, and on some of these sheets it does not: the
+    demo boards' indicators are on a board standing on standoffs above the
+    mounting plate, and the Acorn is a card seated in a HAT above a Pi.  A
+    camera height measured to the wrong plane covers less at the right one --
+    the picture at ``h`` above the frame plane is ``(Z - h) / Z`` of what is
+    drawn -- so ``Z`` on these sheets is always quoted above the TARGET's
+    plane, and ``plane_name`` says which plane that is.
 
     ``plane_above_subject`` is how far that plane sits above the subject's own
     top face, where anyone publishes it, and None where nobody does.  It is
@@ -1034,6 +1284,20 @@ class Subject:
     #: The sheet turns it into a headroom note: how high it may stand before
     #: it leaves the picture.  Only the mounting plate has one.
     standing: tuple[tuple[str, tuple[float, float, float, float]], ...] = ()
+    #: What the plan names frame A's target with a leader, where the target
+    #: is too small at the plan's scale to be told from what is round it.
+    #: Only the Acorn's LEDs need one: a column 2.3 mm wide, lying in plan
+    #: over the Pi's own Ethernet and USB bodies, which are under the HAT.
+    plan_callout: str = ""
+    #: The lenses this sheet draws, by key, where it is not both of LENSES.
+    #: Only the Acorn's sets it: its sheet is for one module.
+    lens_keys: tuple[str, ...] | None = None
+    #: Where the lens FACE goes, on a sheet that gives lens-face heights for
+    #: one module instead of Z per lens.  Only the Acorn's.
+    face: FaceHeights | None = None
+    #: What has been seen on the deployed hardware, for the sheet to record
+    #: beside what it derives.
+    observations: tuple[Observation, ...] = ()
     sources: tuple[Source, ...] = ()
     notes: tuple[str, ...] = ()
     #: What the title block's SUBJECT field says.  Short: it is a title block
@@ -1050,6 +1314,12 @@ class Subject:
 
     def frames(self) -> tuple[Frame, ...]:
         return tuple(frame_for(t) for t in self.targets)
+
+    def lenses(self) -> tuple[Lens, ...]:
+        """The lenses this subject's sheet draws: both, unless it says."""
+        if self.lens_keys is None:
+            return tuple(LENSES.values())
+        return tuple(LENSES[k] for k in self.lens_keys)
 
 
 def _union(boxes) -> tuple[float, float, float, float]:
@@ -1244,7 +1514,142 @@ def _arty_subject() -> Subject:
     )
 
 
+# --- The Acorn ------------------------------------------------------------
+#
+# Nothing restated.  The card, where it is seated, where its LEDs are and the
+# two heights of its stack are accessories/parts.py's, which is what the
+# assembly sheet is drawn from too: the card on this sheet and the card on
+# that one are one rectangle in one place, so they cannot drift apart.
+#
+# The one thing framed is the LEDs, because they are the only part of the
+# Acorn anyone needs to see: A1 to A4 and PWR, at the card's far end.  Not the
+# card and not the whole assembly, which this sheet framed first and which put
+# the camera nearly four times as high, the LEDs that much smaller in the
+# picture.  The camera's axis is over the LEDs, as it is over any frame's
+# target, and here that matters: the heatsink's blower stands beside them,
+# as Enjoy-Digital's photographs show and nobody dimensions: its height is
+# part of T, unmeasured.  The camera is put over the LEDs so that rays to
+# them rise clear of it, ASSUMED, to be confirmed when T is measured.
+#
+# One module: the Raspberry Pi Camera Module v1.3 with its stock lens, and
+# heights to its lens FACE, see FaceHeights.  The other sheets draw two
+# lenses and give Z per lens; this one answers where the face of the one
+# camera goes, above what the stand is built on and above the tallest thing
+# under it.  Both of those need a height of the stack nobody has published
+# or measured, so each is a formula with one term to MEASURE.
+
+#: The plane the Acorn's frame is set from, and why it is the card's and not
+#: the Pi's: the LEDs are on the card's top face, which stands above the Pi,
+#: and a height set at the Pi's face covers less at the card's.
+CARD_PLANE = "the ACORN CARD's top face, not the Pi's"
+CARD_PLANE_NOTE = (
+    "the LEDs are on it. How far it stands above the mounting plate is S, "
+    "which nobody publishes: measure it"
+)
+
+#: The module the Acorn's sheet is for, by its key in FOCUS_VARIANTS: the
+#: v1.3 with its lens unscrewed, which is the only way it focuses this close.
+ACORN_VARIANT = "v13-unscrewed"
+
+
+def _hat_sheet() -> str:
+    """What the sheet that draws the assembly the Acorn sits in is called.
+
+    Derived from the stem accessories/ writes it to, like every other cross
+    reference here.
+
+    A function rather than a module constant, and the import inside it,
+    because every other family's data module is imported inside the subject
+    that wants it: importing this module to ask about a lens should not pull
+    in the accessories.
+    """
+    from accessories.parts import POE_M2_HAT_WITH_ACORN
+    from tools.layout import acc_stem
+    return drawing_name("accessories", acc_stem(POE_M2_HAT_WITH_ACORN.key))
+
+
+def _acorn_subject() -> Subject:
+    from accessories.parts import (ACORN_CARD, ACORN_LED_TOL, ACORN_LEDS,
+                                   ACORN_STACK_S, ACORN_STACK_T,
+                                   HAT_PLUS_SPEC_SOURCE, HAT_PLUS_SPACER_QUOTE,
+                                   M2_CARD_THICKNESS, M2_CARD_THICKNESS_TOL)
+    from raspberry_pi.boards import BOARDS as RPI
+    from raspberry_pi_camera import v1
+    hat_sheet = _hat_sheet()
+    pi = RPI["rpi5"]
+    spec = replace(pi, features=pi.features + (ACORN_CARD,) + ACORN_LEDS)
+    lx0, ly0, lx1, ly1 = _union([(f.x0, f.y0, f.x1, f.y1) for f in ACORN_LEDS])
+    names = [f.designator for f in ACORN_LEDS]
+    target = Target(
+        "leds", f"{names[0]}-{names[-2]} and {names[-1]}", lx0, ly0, lx1, ly1,
+        note=f"{names[0]} to {names[-2]} are in a column on the +Y side "
+             f"of the retention screw, {names[-1]} on the -Y side; measured "
+             f"off SQRL's own photograph to +/-{ACORN_LED_TOL:.1f} mm.",
+        plane_name=CARD_PLANE, plane_above_subject=None,
+        plane_note=CARD_PLANE_NOTE)
+    variant = next(v for v in FOCUS_VARIANTS if v.key == ACORN_VARIANT)
+    face = FaceHeights(variant, ACORN_STACK_S, ACORN_STACK_T)
+    return Subject(
+        key="acorn-cle-215-plus",
+        title="Camera over the Acorn CLE-215+",
+        subtitle="Camera Module v1.3, stock 65 degree lens: lens face "
+                 "heights",
+        spec=spec,
+        subject_field="Acorn CLE-215+, Pi 5",
+        targets=(target,),
+        plan_callout=f"LEDs {target.label}",
+        lens_keys=(LENS_65.key,),
+        face=face,
+        observations=(
+            Observation(
+                by="Tim Ansell", on="3 Oct 2026", lens=AUTOFOCUS,
+                distance=100.0,
+                text='the autofocus camera on the reference Acorn, the '
+                     '"AF-65" OV5647 module, is about 10 cm above the '
+                     "Acorn's LEDs, the picture looks in focus, and it needs "
+                     "a digital zoom or crop onto the Acorn's end"),
+        ),
+        sources=(
+            Source(label="Board geometry", ref="raspberry_pi/boards.py",
+                   note="Pi 5 outline and connectors; see "
+                        f"{drawing_name('raspberry-pi', slug(pi.key))}."),
+            # One line for the card, its LEDs and the HAT, as the Arty's
+            # sheet cites fpga/boards.py and not Digilent: the M.2
+            # specification, SQRL's page and photograph and Waveshare's
+            # drawing are the part's own sources.
+            Source(label="Card, LEDs, HAT and stack",
+                   ref="accessories/parts.py",
+                   note="The card, its seat, its LEDs, S and T; see "
+                        f"{hat_sheet}."),
+            # The quotes' own pages, without the notes the lens sheet and
+            # the data modules carry beside them: the sheet's notes quote
+            # them.  Raspberry Pi's documentation and the forum thread are
+            # on the lens sheet, which the last source here names.
+            replace(HAT_PLUS_SPEC_SOURCE, note=""),
+            replace(RASPI_TV, label="raspi.tv, 25 May 2013", note=""),
+        ),
+        tolerance=(f"Pi 5 +/-0.20, LEDs +/-{ACORN_LED_TOL:.1f}, "
+                   "heights DERIVED"),
+        notes=(
+            f"{ACORN_STACK_S.symbol} is six terms -- standoffs under the "
+            "Pi, Pi 5 board, Pi-to-HAT spacers, HAT board, M.2 socket seat, "
+            f"card -- and only the card's {M2_CARD_THICKNESS:.2f} "
+            f"+/-{M2_CARD_THICKNESS_TOL:.2f} is published (M.2 "
+            "specification); the HAT+ specification only recommends "
+            f'"{HAT_PLUS_SPACER_QUOTE}". Measure {ACORN_STACK_S.symbol} as '
+            "one figure.",
+            "The camera is over the LEDs, not the card, so that rays to "
+            "them rise clear of the heatsink's blower beside them: ASSUMED "
+            "from Enjoy-Digital's photographs, which show the blower there "
+            f"and no height for it ({ACORN_STACK_T.symbol} includes it, "
+            "unmeasured); confirm when it is measured. The camera board "
+            f"overhangs it, its underside {v1.LENS_TOP_Z:.2f} above the "
+            "lens face.",
+        ),
+    )
+
+
 def subjects() -> dict[str, Subject]:
     """Every camera position sheet's subject, in reading order."""
-    out = (_plate_subject(), _arty_subject())
+    out = (_plate_subject(), _arty_subject(), _acorn_subject())
     return {s.key: s for s in out}

@@ -3683,3 +3683,280 @@ padding -- the M.2 citation is now the two sections the drawing rests on, the
 SQRL quotation elides the sentence between the two halves that matter -- and
 the notes lost the sentence that said what the phantom schedules contain, now
 that those schedules are headed with the name of the part they belong to.
+
+## RPICAM-OVER-ACORN, back from a branch of its own
+
+Issue #7's branch was split on 25 September 2026 so that it would wait on
+the Camera Module v1.3's branch alone. This sheet came off it then, because
+the card, where it is seated and the HAT's standoff are all imported from
+`accessories/parts.py`, and those are the M.2 HAT branch's, so it was kept as
+one commit on `issue-7-camera-over-acorn` until that branch was under it. It
+comes back as it was. What was written about it at the time is below.
+
+It is also the second place Z is not measured from the subject's own face:
+the Acorn is a card seated in a HAT above the Pi, roughly 16 mm up. Set from
+the Pi, at 89.3 mm the picture at the card was 73.89 x 55.41 against a
+90 x 67.50 frame, so the 80 mm card did not fit at all. Nobody publishes the
+Pi-to-card offset -- Waveshare dimension no height on their drawing,
+`accessories/parts.py` carries none either, and the CLE-215+'s heatsink is
+unpublished -- so both Acorn frames are set from the card's own top face,
+the HIGHEST plane either target reaches, and everything below it is covered
+by more than the frame, which is the safe direction. And its two frames are
+not nested: neither contains the other.
+
+The widest drawing name in the set is now `RPICAM-OVER-ACORN`, 37.70 mm at
+the ISO 3098 floor, 0.35 mm inside the quarter-width cell the DRAWING NO no
+longer has to fit.
+
+### The Acorn, and where the card sits
+
+The card itself needs no branch: the PCI Express M.2 specification gives Type
+2280 as 22 x 80 mm, and SQRL's own archived product page adds the millimetre
+-- "it is one millimeter wider than the official specifications" -- so 23 x
+80, with both citations on the sheet.
+
+Where it *sits* is `accessories/parts.py`'s, which `ACC-HAT-M2POE` is drawn
+from: the connector datum at X 5.07, the module axis at Y 18.26, the HAT's
+own 85.00 mm width and the 3.00 mm the 2280 standoff projects past it.
+Nothing is copied -- the card feature itself is imported, so the rectangle on
+this sheet is the rectangle on that one. The assembly's 88.00 x 57.32 mm
+envelope then falls out of this repository's own Pi 5 data: the Pi's own
+assembled *envelope*, connectors included, is 87.960 x 57.320 over an
+85 x 56 board, and the standoff takes the 87.960 to 88.00.
+
+The boss itself is not drawn. When this was written, drawing it would have
+meant restating a fourth figure, its ø5.87, for a circle 2 mm outside the
+Pi's own Ethernet jack; the note carries the 88.00 instead.
+
+Its LEDs are simply not published. SQRL issued no mechanical drawing and the
+company's site is gone, so there is no indicator frame for the Acorn: frame B
+is the card. The sheet says that rather than inventing one.
+
+### Rebased onto #25, 30 September 2026
+
+`accessories/parts.py` as it merged carries more than this sheet was written
+against: the boss is `POE_M2_BOSS_DIA`, the card's size is `ACORN_WIDTH` and
+`ACORN_LENGTH`, and the M.2 specification, SQRL's page and Waveshare's
+drawing are `Source`s of the part's own, which `ACC-HAT-M2POE` prints. The
+sheet had its own shorter copies of those three. Printing the part's instead
+made the sources column long enough to push the plan from 1:2.5 to 1:5, so
+the sheet now cites the module and that sheet in one line, the way the Arty's
+cites `fpga/boards.py` and not Digilent, and "both citations on the sheet"
+above is no longer so: they are one cross reference away. The figures in its
+frame notes and tolerance are interpolated from the module rather than typed.
+With no quotation left on the sheet from a page this family does not fetch,
+`verify_optics.py` no longer lists any as cited from elsewhere.
+
+Nothing moved: the card is still 23 x 80 at X 5.07 and Y 18.26, and the far
+edge is still 88.00. That edge is the declared 85.00 + 3.00; the module's
+own geometry, the 2280 standoff at 5.07 + 80 with half its ø5.87 boss, puts
+it at 88.005, which is the same number at two decimals, and which
+`ACC-HAT-M2POE`'s note prints as 88.00. The frames and every height came out
+as the README had them.
+
+Rendered for the first time, the card's name written on it ran through frame
+B's axis mark and into the Pi's RJ45 body: at 1:2.5 the card is a 32 x 9 mm
+strip with both camera axes in its middle, and no part of it clear of them
+is as wide as "Acorn" at the ISO 3098 floor. So the legend names it -- the
+phantom line is "Adjacent part or connector body, and the Acorn CLE-215+" --
+and frame B, whose target it is, marks it on the view.
+
+### Only the LEDs, 30 September 2026
+
+Asked for on the PR: "The only part of the acorn that needs to be seen is
+the leds at the end of the acorn." So the sheet frames them alone, and the
+whole assembly and the card go, with everything above that says the LEDs are
+not published and that frame B is the card. They are not published, but
+they can be measured.
+
+**Where they are.** Five, at the card's far end on its component side, the
+heatsink side, which is up in the HAT: four silkscreened A1 to A4 in a
+column on the +Y side of the retention screw's half-moon, and one
+silkscreened PWR on the -Y side. The Internet Archive kept the banner off
+SQRL's Acorn page, `images/acornBanner@2x.png` captured 28 September 2019: a
+CLE-215 and a CLE-215+ side by side, cut out of their background at about
+15 px/mm, with the far end of each clear of the heatsink. That is what
+`accessories/measure_acorn_leds.py` measures. Its own product renders are
+no use: `acorn-final@2x.png` is an earlier layout, with a connector strip
+and two plated holes by the LEDs, and `product-diagram-215@2x.png` shows the
+underside, and the top only under its heatsink.
+
+What else was looked for, and what it gave:
+
+- RHS Research's NiteFury and LiteFury repository has a schematic PDF and a
+  bill of materials, no board file. The four user LEDs are D5 to D8 there,
+  green 0402s, with a red NOT READY and a green POWER besides; the Acorn's
+  photographs show D8 to D5 beside A1 to A4. The connector end of the
+  LiteFury and NiteFury looks the same as the Acorn's in the photographs;
+  their LED end is under their heatsink in both product photographs, so the
+  layout is not shown to be shared there, and nothing positional is taken
+  from them. Their 0402 is not the Acorn's LED either, which is visibly
+  larger.
+- Enjoy-Digital's shop photograph of the LiteX Acorn baseboard with a
+  shipping CLE-215+ in it show the same column and PWR at the same end,
+  clear of the heatsink and just past its blower; a tweet of theirs on the
+  LiteX wiki shows them lit, green.
+- A Hackaday project's photograph shows a green board with the same A1 to
+  A4 and PWR arrangement lit, but it is a different board -- wider than an
+  M.2 card, with the earlier render's connector strip -- and is not used.
+- eBay listings could not be read without a browser, and were not needed.
+
+**How well.** The two cards are fitted separately, 80 x 23, the heatsink's
+overhang, the cable loop and the narrower finger strip excluded from the
+edges; rms 0.2 to 0.3 px an edge. The photograph leans 11 and 15 degrees,
+which the homography takes out. Scale checks the fit does not use: the
+finger pitch, 0.494 and 0.4865 against 0.50, and the half-moon cutout, 3.32
+and 3.24 against 3.50 -- the retoucher painted the cutout black, so its
+edge is the plating's, and it is the worse of the two. The two cards agree
+to 0.22 mm, the readings by eye against an automatic reading to 0.15. The
+worst scale error, 7.3 %, at A1's far edge 10.62 mm from the half-moon, is
+0.78 mm; with the 0.22 that is +/-1.0 mm. The two cards are one shoot, so
+their agreement is one term of the error bar, not the whole of it.
+
+The photographs also put the half-moon 0.31 and 0.49 mm to +Y of the card's
+own centreline. That is inside the scale error across 11.5 mm, and the card
+stays drawn centred on the HAT's axis; the LEDs are located from the
+half-moon, which is where the screw is, so it does not move them.
+
+**The frame.** The LEDs' union is 2.26 x 14.47 mm, so the frame is 18.35 x
+24.47 with its long side along Y, over X 83.59, Y 21.65. The heights are
+24.3 at 65 degrees, 24.5 on the autofocus module, 12.6 at 120, all from the
+card's top face, and none in focus: the autofocus module's 80 mm is more
+than three times as far. At 80 it is sharp and the column is 460 of the
+sensor's 2592 columns long; TODO has it.
+
+**Occlusion.** The camera is over the LEDs, which is what the frame model
+does anyway, and it is the right place: the blower stands just short of the
+column on the connector side, and from above the column no ray to an LED
+passes over it. The camera board, 25 mm across, does overhang the blower in
+plan; the sheet gives the board's underside, Z + 5.20, and says to raise
+the camera if the blower is taller. Nothing is above the card in the HAT:
+the Pi's USB and Ethernet jacks are under the HAT, not over the card.
+
+**The sheet.** One frame, as `issue-7-camera-over-arty-ethernet` has for the
+Arty's Ethernet LEDs, and the first single-frame sheet to be rendered. Three
+things in `camera_sheet.py` had never met a frame this small or this far
+from the datum:
+
+- the lateral dimension ran from X0 Y0, 74 mm outside the front elevation,
+  across the end elevation. Where the datum is not in the view it is now an
+  ordinate: the axis's extension line carried down, "X 83.59" at its end;
+- the 120 lens's camera, 12 mm under the stock lens's, covered the stock
+  lens's arc and angle, so where a lower camera is in the way the arc comes
+  up into the gap above it;
+- at the plan's 1:2 the LEDs are a millimetre wide and the axis mark, filled
+  white, sat on A4. The mark is left unfilled where an indicator is under
+  it, and `Subject.plan_callout` names the target with a leader, arrowed
+  rather than dotted so as not to hide PWR.
+
+Each only acts where the datum is out of the view, a camera is in the way,
+an indicator is under the mark or a subject asks for a callout. Only the
+third reaches another sheet: frame B's axis mark on `RPICAM-OVER-ARTY`
+reaches over the Arty's LED rows, and is unfilled now too.
+
+`ACC-HAT-M2POE` does not draw the LEDs. It is the plan envelope of the
+assembly, for an enclosure; an indicator inside the card changes nothing
+about that.
+
+### The autofocus module is not the B0176, 3 October 2026
+
+The sheets took "the autofocus camera" to be Arducam's B0176 and so said
+nothing focuses on the Acorn's LEDs below its 80 mm. The module on the
+Acorn's host is not a B0176: it is the "AF-65 Degrees" variant of an
+AliExpress listing, a clone of the v1.3's board -- "Raspberry pi Camera Rev
+1.3" on the silkscreen, the same four holes -- with an OV5647 in a square
+voice-coil can, its flex marked P5V04A2, and no Arducam marking. The listing
+publishes no focus distance, focal length, F number or driver chip; the 65
+in the variant's name is the only optical figure. Similar listings say the
+same or less: one by another seller gives "Diagonal angle: 65 degree", which
+is the stock lens's diagonal. So the module is its own lens record, with the
+stock lens's angles, focal length and F number ASSUMED, and its close limit
+None: the sheets say it is not published rather than borrow the B0176's.
+
+The rpi-hwid audit confirms it is motorised -- a lens driver at 0x0c beside
+the OV5647 at 0x36, behaving like a DW9714 but not identified -- and its
+focus sweep shows the coil moving focus nearer, but no object distances were
+recorded, so it gives no close limit either.
+
+What focuses closer is the module's, so the sheets now give each variant:
+
+- the v1.3 as sold, Raspberry Pi's "Approx 1 m";
+- the v1.3 with its lens unscrewed. Raspberry Pi's own post on it gives no
+  distance. Two forum users measured it in 2013: jbeale "about 6 cm" as the
+  closest, after "170 degrees: focus at 7 cm", and towolf 3 cm where the
+  lens starts to fall out. The 6 cm is used, and called a forum user's;
+- a lens focused by hand: Arducam's B0031, "From less than an inch to
+  infinity", so 25.4 mm at most;
+- the motorised module used here: not published;
+- the B0176, "80mm to infinity", kept as a comparison and marked as not the
+  module used.
+
+The height in focus is the higher of the close limit and the field-of-view
+height plus f: a lens focused at Z stands f Z / (Z - f) from the sensor and
+covers what a pinhole at Z - f does. On the Acorn's LEDs that is 60.0 mm for
+the v1.3 unscrewed and 27.9 for the B0031; for the module used, it waits on
+a measured close limit.
+
+### One module and its lens face, 4 October 2026
+
+Tim's decision on the sheet: the Acorn's keeps only the Camera Module v1.3
+with its stock 65 degree lens, and its headline is two heights of the lens
+FACE -- above the mounting plate, and clear above the assembly's highest
+point -- where it had been Z to the entrance pupil above the card, for two
+lenses and a table of modules. The other camera sheets are to be reworked
+the same way in a pull request of their own, so everything here is behind
+two fields of `Subject`, `lens_keys` and `face`, and `RPICAM-OVER-ARTY` and
+`RPICAM-OVER-PLATE` come out of the generator byte for byte as they went in,
+the version stamp aside. `RPICAM-LENS` is not touched.
+
+The two heights need the stack, and the stack is not to be had:
+
+- Raspberry Pi's Pi 5 drawing has a side view, and it dimensions connectors,
+  not the board's thickness or anything's height above it;
+- Waveshare's drawing and wiki for the PoE M.2 HAT+ (B) give no height;
+- the HAT+ specification says "provide at least 15mm board-to-board spacers;
+  16mm spacers are ideal", to whoever designs a HAT+, which is not a figure
+  for this one;
+- the M.2 specification gives the card, "Card thickness is fixed at 0.8 mm
+  +/-10%", and several connector heights without saying which a given socket
+  is;
+- nobody dimensions the CLE-215+'s heatsink or blower;
+- and the session that owns the hardware answered on 4 October that none of
+  it is measured: not the standoffs under the Pi, not base to card, not which
+  part is tallest, not how the camera is held.
+
+One published term of six is not a sum. So S, plate face to card top, and T,
+card top to the highest point, are `StackHeight`s in `accessories/parts.py`
+with no value, the sheet prints H1 = S + 60.0 and H2 = 60.0 - T, and the
+elevations draw the plate's face and the highest point as lines NOT TO SCALE,
+keyed as such in the legend: an elevation is a scale drawing, and the
+alternative was not to show what the two heights are measured from at all. A
+`StackHeight` refuses a value without a tolerance and a source.
+
+F, the face above the card, is 60.0: the higher of 27.9, which frames the
+LEDs focused there, and the 60 mm a forum user gives as the closest the v1.3
+focuses unscrewed. The face is set where the pupil is worked to be, which
+errs towards a larger picture and a longer distance, both safe.
+
+What raspi.tv says, since the brief was to cite it for refocusing: its
+article does not unscrew the lens. It says the camera is sharp "from about
+0.5m to infinity", and adds a +2D lens in front for "about 25cm". The only
+word on the stock lens is a reader's comment of 2014, "You CAN change the
+focus of the stock lens on the pi camera. It is tricky but can be done.",
+pointing at two other pages, the first of which now answers 404. No
+distance. So the sheet's "refocus
+the lens to F" cites the article for where the lens is set as sold and the
+comment for the rest, and the close limit is still the forum's. Jeff
+Geerling's page is about the v2; its one sentence on the v1.3, that it left
+the factory at infinity, is in the README and not on the sheet.
+
+Tim's report of 3 October -- the autofocus camera about 10 cm above the
+LEDs, in focus, wanting a crop -- is on the sheet as an observation, with
+what follows from it marked DERIVED: 72.9 x 97.2 mm at 100 mm, a crop of
+3.97 to frame A, 386 pixels along the LED column. It also bears on F: a
+camera at 100 is a third further than F and its crop 3.97 against 2.32.
+
+The text was what set the scale. With the notes as first written the
+elevations fell to 1:2 and the dimension chain to a few millimetres; the
+frame table was folded into the picture's, the lens table dropped for the
+legend's line and the lens sheet, and the notes cut until 1:1 fitted.
