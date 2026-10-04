@@ -590,15 +590,6 @@ ACORN_LED_READINGS = {
 #: The designators the photographs show beside each; PWR's is not legible.
 _ACORN_LED_DESIGNATORS = {"A1": "D8", "A2": "D7", "A3": "D6", "A4": "D5"}
 
-ACORN_LEDS_SOURCE = Source(
-    label="SQRL Acorn CLE-215 and CLE-215+ photograph",
-    ref="https://web.archive.org/web/20190928032642id_/"
-        "http://squirrelsresearch.com/images/acornBanner@2x.png",
-    note="SQRL's own product photograph, off the Acorn page, captured 2019; "
-         "the LEDs measured off it by accessories/measure_acorn_leds.py to "
-         f"+/-{ACORN_LED_TOL:.1f} mm.",
-)
-
 ACORN_LEDS = tuple(
     Feature(
         key=f"acorn-led-{name.lower()}",
