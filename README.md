@@ -198,7 +198,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 <tr>
 <td width="33%" valign="top" align="center">
 <a href="raspberry_pi_camera/output/over-acorn-cle-215-plus.pdf"><img src="raspberry_pi_camera/output/previews/over-acorn-cle-215-plus.png" width="270" alt="RPICAM-OVER-ACORN Camera over the Acorn CLE-215+"></a><br>
-<b>RPICAM-OVER-ACORN</b> Camera over the Acorn CLE-215+<br>Camera Module OV5647, 65 and 120 degree lenses
+<b>RPICAM-OVER-ACORN</b> Camera over the Acorn CLE-215+<br>Camera Module v1.3, stock 65 degree lens: lens face heights
 </td>
 <td width="33%"></td>
 <td width="33%"></td>
