@@ -187,34 +187,34 @@
 <line x1="342.511" y1="22.1" x2="342.511" y2="44.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="53.8222" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">FRAME A AND THE PICTURE AT THE CARD, mm, DERIVED</text>
 <line x1="243" y1="55.2222" x2="405" y2="55.2222" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<rect x="243" y="57.4222" width="157.1718" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="61.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">LENS TO LEDs</text>
-<text x="272.6254" y="61.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">WHAT</text>
-<text x="349.7889" y="61.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">COVERS X x Y</text>
-<text x="372.1737" y="61.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">CROP TO A</text>
-<text x="398.3718" y="61.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">LED COLUMN</text>
-<rect x="243" y="62.9778" width="157.1718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">--</text>
-<text x="272.6254" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">frame A, long side along Y</text>
-<text x="349.7889" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">18.35 x 24.47</text>
-<text x="372.1737" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">x 1.00</text>
-<text x="398.3718" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">--</text>
-<rect x="243" y="68.5333" width="157.1718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">F 60.0</text>
-<text x="272.6254" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the v1.3&#x27;s picture, refocused</text>
-<text x="349.7889" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">42.6 x 56.9</text>
-<text x="372.1737" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">x 2.32</text>
-<text x="398.3718" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">660 px</text>
-<rect x="243" y="74.0889" width="157.1718" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
-<text x="244.8" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">about 100</text>
-<text x="272.6254" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the AF-65&#x27;s picture, as deployed</text>
-<text x="349.7889" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">72.9 x 97.2</text>
-<text x="372.1737" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">x 3.97</text>
-<text x="398.3718" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">386 px</text>
-<line x1="270.8254" y1="57.4222" x2="270.8254" y2="79.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="324.2778" y1="57.4222" x2="324.2778" y2="79.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="351.5889" y1="57.4222" x2="351.5889" y2="79.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
-<line x1="373.9737" y1="57.4222" x2="373.9737" y2="79.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<rect x="243" y="57.4222" width="158.4386" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="61.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">LENS TO LEDs</text>
+<text x="269.0254" y="61.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">WHAT</text>
+<text x="357.0557" y="61.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">COVERS X x Y</text>
+<text x="377.0405" y="61.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">CROP TO A</text>
+<text x="400.8386" y="61.2" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end" font-weight="bold">LED COLUMN</text>
+<rect x="243" y="62.9778" width="158.4386" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">--</text>
+<text x="269.0254" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">frame A, long side along Y</text>
+<text x="357.0557" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">18.35 x 24.47</text>
+<text x="377.0405" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">x 1.00</text>
+<text x="400.8386" y="66.7556" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">--</text>
+<rect x="243" y="68.5333" width="158.4386" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">F 60.0</text>
+<text x="269.0254" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the v1.3&#x27;s picture, refocused</text>
+<text x="357.0557" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">42.6 x 56.9</text>
+<text x="377.0405" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">x 2.32</text>
+<text x="400.8386" y="72.3111" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">660 px</text>
+<rect x="243" y="74.0889" width="158.4386" height="5.5556" fill="none" stroke="#000000" stroke-width="0.25"/>
+<text x="243.6" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">about 100</text>
+<text x="269.0254" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the AF-65, as reported; angles ASSUMED</text>
+<text x="357.0557" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">72.9 x 97.2</text>
+<text x="377.0405" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">x 3.97</text>
+<text x="400.8386" y="77.8667" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="end">386 px</text>
+<line x1="268.4254" y1="57.4222" x2="268.4254" y2="79.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="332.7446" y1="57.4222" x2="332.7446" y2="79.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="357.6557" y1="57.4222" x2="357.6557" y2="79.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="377.6405" y1="57.4222" x2="377.6405" y2="79.6444" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="243" y="89.1444" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
 <line x1="243" y1="90.5444" x2="405" y2="90.5444" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <line x1="243" y1="95.0444" x2="263" y2="95.0444" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
@@ -249,28 +249,30 @@
 <text x="24" y="169.16" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
 <line x1="24" y1="170.56" x2="125.5" y2="170.56" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="24" y="175.26" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="30.5045" y="175.26" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">F 60.0 is the higher of what frames frame A focused there,</text>
-<text x="30.5045" y="179.7867" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">24.3 + f 3.60 = 27.9 (DERIVED, thin lens), and the lens&#x27;s</text>
-<text x="30.5045" y="184.3135" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">close limit unscrewed, 60 mm: &quot;About the closest you can</text>
-<text x="30.5045" y="188.8402" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">get this way is about 6 cm.&quot; (a Raspberry Pi forum user,</text>
-<text x="30.5045" y="193.367" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2013; REPORTED).</text>
-<text x="24" y="198.8937" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="30.5045" y="198.8937" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">H1 = S + 60.0, where S is the mounting plate&#x27;s face, the</text>
-<text x="30.5045" y="203.4205" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">base of the standoffs under the Pi 5, to the card&#x27;s top face:</text>
-<text x="30.5045" y="207.9472" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">MEASURE, not published.</text>
-<text x="24" y="213.474" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
-<text x="30.5045" y="213.474" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">H2 = 60.0 - T, the clearance, where T is the card&#x27;s top face</text>
-<text x="30.5045" y="218.0007" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">to the assembly&#x27;s highest point, the heatsink&#x27;s blower or a</text>
-<text x="30.5045" y="222.5275" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">part of the HAT: MEASURE, not published.</text>
-<text x="24" y="228.0542" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
-<text x="30.5045" y="228.0542" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">REFOCUS THE LENS TO F. As sold it is set far -- &quot;Approx 1 m</text>
-<text x="30.5045" y="232.581" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">to infinity&quot; (Raspberry Pi; infinity is their sign), &quot;from about</text>
-<text x="30.5045" y="237.1077" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">0.5m to infinity&quot; (raspi.tv) -- and at F a point spreads to 52</text>
-<text x="30.5045" y="241.6345" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">px (DERIVED). raspi.tv adds a +2D lens in front, &quot;focus at</text>
-<text x="30.5045" y="246.1612" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">about 25cm&quot;, too far for F; a reader&#x27;s comment there: &quot;You</text>
-<text x="30.5045" y="250.688" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">CAN change the focus of the stock lens on the pi camera. It</text>
-<text x="30.5045" y="255.2147" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">is tricky but can be done.&quot; Unscrew it until the LEDs are</text>
-<text x="30.5045" y="259.7415" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">sharp.</text>
+<text x="30.5045" y="175.26" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">F 60.0 is the higher of two heights: the one that just frames</text>
+<text x="30.5045" y="179.7867" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">frame A with the lens focused there, 24.3 + f 3.60 = 27.9</text>
+<text x="30.5045" y="184.3135" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">(DERIVED, thin lens), and the lens&#x27;s close limit unscrewed,</text>
+<text x="30.5045" y="188.8402" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">60 mm: &quot;About the closest you can get this way is about 6</text>
+<text x="30.5045" y="193.367" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">cm.&quot; (a Raspberry Pi forum user, 2013; REPORTED). The</text>
+<text x="30.5045" y="197.8937" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">forum does not say whether its &quot;about 6 cm&quot; is from the lens</text>
+<text x="30.5045" y="202.4205" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">face; it is taken as from the face, note 2&#x27;s convention.</text>
+<text x="24" y="207.9472" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="30.5045" y="207.9472" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">H1 = S + 60.0, where S is the mounting plate&#x27;s face, the</text>
+<text x="30.5045" y="212.474" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">base of the standoffs under the Pi 5, to the card&#x27;s top face:</text>
+<text x="30.5045" y="217.0007" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">MEASURE, not published.</text>
+<text x="24" y="222.5275" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
+<text x="30.5045" y="222.5275" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">H2 = 60.0 - T, the clearance, where T is the card&#x27;s top face</text>
+<text x="30.5045" y="227.0542" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">to the assembly&#x27;s highest point, the heatsink&#x27;s blower or a</text>
+<text x="30.5045" y="231.581" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">part of the HAT: MEASURE, not published.</text>
+<text x="24" y="237.1077" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
+<text x="30.5045" y="237.1077" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">REFOCUS THE LENS TO F, 60.0 mm from the lens face to the</text>
+<text x="30.5045" y="241.6345" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">LEDs. As sold it is set far -- &quot;Approx 1 m to infinity&quot;</text>
+<text x="30.5045" y="246.1612" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">(Raspberry Pi; infinity is their sign), &quot;from about 0.5m to</text>
+<text x="30.5045" y="250.688" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">infinity&quot; (raspi.tv) -- and at F a point spreads to 52 px</text>
+<text x="30.5045" y="255.2147" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">(DERIVED). raspi.tv adds a +2D lens in front, &quot;focus at about</text>
+<text x="30.5045" y="259.7415" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">25cm&quot;, too far for F; a reader&#x27;s comment there: &quot;You CAN</text>
+<text x="30.5045" y="264.2682" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">change the focus of the stock lens on the pi camera. It is</text>
+<text x="30.5045" y="268.795" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">tricky but can be done.&quot; Unscrew it until the LEDs are sharp.</text>
 <text x="133.5" y="169.16" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
 <line x1="133.5" y1="170.56" x2="235" y2="170.56" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="133.5" y="175.26" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
@@ -295,28 +297,30 @@
 <text x="140.0045" y="249.688" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">HAT+ specification only recommends &quot;provide at least</text>
 <text x="140.0045" y="254.2147" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">15mm board-to-board spacers; 16mm spacers are ideal&quot;.</text>
 <text x="140.0045" y="258.7415" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Measure S as one figure.</text>
-<text x="133.5" y="264.2682" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">10.</text>
-<text x="140.0045" y="264.2682" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The camera is over the LEDs, not the card: the heatsink&#x27;s</text>
-<text x="140.0045" y="268.795" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">blower stands just short of them, and from here no ray to an</text>
-<text x="140.0045" y="273.3217" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">LED passes over it; the camera board overhangs it, its</text>
-<text x="140.0045" y="277.8485" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">underside 5.20 above the lens face.</text>
-<text x="243" y="178.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="243" y1="179.9" x2="405" y2="179.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="243" y="184.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="249.5045" y="184.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board geometry: raspberry_pi/boards.py - Pi 5 outline and connectors; see RPI-5.</text>
-<text x="243" y="190.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="249.5045" y="190.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Card, LEDs, HAT and stack: accessories/parts.py - The card, its seat, its LEDs, S and T; see</text>
-<text x="249.5045" y="194.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">ACC-HAT-M2POE.</text>
-<text x="243" y="200.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="249.5045" y="200.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi HAT+ specification:</text>
-<text x="249.5045" y="204.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://web.archive.org/web/20260115212335/https://datasheets.raspberrypi.com/hat/</text>
-<text x="249.5045" y="209.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">hat-plus-specification.pdf</text>
-<text x="243" y="214.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
-<text x="249.5045" y="214.7605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">raspi.tv, 25 May 2013: https://web.archive.org/web/20260212013652/https://raspi.tv/2013/</text>
-<text x="249.5045" y="219.2872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">adapt-your-raspberry-pi-camera-for-close-up-use</text>
-<text x="243" y="224.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
-<text x="249.5045" y="224.814" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Lens figures and focus: RPICAM-LENS - Every lens figure on this sheet, declared and derived, with</text>
-<text x="249.5045" y="229.3407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the vendor pages it is quoted from.</text>
+<text x="243" y="152.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<line x1="243" y1="153.9" x2="405" y2="153.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="243" y="158.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">10.</text>
+<text x="249.5045" y="158.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">The camera is over the LEDs, not the card, so that rays to them rise clear of the heatsink&#x27;s blower</text>
+<text x="249.5045" y="163.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">beside them: ASSUMED from Enjoy-Digital&#x27;s photographs, which show the blower there and no</text>
+<text x="249.5045" y="167.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">height for it (T includes it, unmeasured); confirm when it is measured. The camera board overhangs</text>
+<text x="249.5045" y="172.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">it, its underside 5.20 above the lens face.</text>
+<text x="243" y="178.707" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
+<line x1="243" y1="180.107" x2="405" y2="180.107" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="243" y="184.807" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="249.5045" y="184.807" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board geometry: raspberry_pi/boards.py - Pi 5 outline and connectors; see RPI-5.</text>
+<text x="243" y="190.3337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="249.5045" y="190.3337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Card, LEDs, HAT and stack: accessories/parts.py - The card, its seat, its LEDs, S and T; see</text>
+<text x="249.5045" y="194.8605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">ACC-HAT-M2POE.</text>
+<text x="243" y="200.3872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="249.5045" y="200.3872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Raspberry Pi HAT+ specification:</text>
+<text x="249.5045" y="204.914" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://web.archive.org/web/20260115212335/https://datasheets.raspberrypi.com/hat/</text>
+<text x="249.5045" y="209.4407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">hat-plus-specification.pdf</text>
+<text x="243" y="214.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="249.5045" y="214.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">raspi.tv, 25 May 2013: https://web.archive.org/web/20260212013652/https://raspi.tv/2013/</text>
+<text x="249.5045" y="219.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">adapt-your-raspberry-pi-camera-for-close-up-use</text>
+<text x="243" y="225.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
+<text x="249.5045" y="225.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Lens figures and focus: RPICAM-LENS - Every lens figure on this sheet, declared and derived, with</text>
+<text x="249.5045" y="229.5477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the vendor pages it is quoted from.</text>
 <rect x="243" y="237" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="243" y1="252" x2="408" y2="252" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="245.5" y="245.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">CAMERA OVER THE ACORN CLE-215+</text>
@@ -325,7 +329,7 @@
 <text x="244.6" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">generated</text>
 <line x1="284.25" y1="263" x2="284.25" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="285.85" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">VERSION</text>
-<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-476-gf39d6ab</text>
+<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-485-g9e53917</text>
 <line x1="325.5" y1="263" x2="325.5" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="327.1" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">UNITS</text>
 <text x="327.1" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">mm</text>
