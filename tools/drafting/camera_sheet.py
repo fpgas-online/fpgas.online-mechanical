@@ -285,11 +285,6 @@ def _fmt_near(near: float | None) -> str:
 BASIS = {"DECLARED": "DECL", "REPORTED": "forum user"}
 
 
-def _in_focus(p) -> str:
-    """Whether the height is inside the lens's declared focus range."""
-    return "no" if p.too_close else "yes"
-
-
 def _text(subject: Subject) -> tuple[list[str], list[str]]:
     """The notes and sources this sheet carries, built before it exists.
 
