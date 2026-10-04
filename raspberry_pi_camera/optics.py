@@ -38,6 +38,10 @@ sold and with its lens unscrewed by hand, an adjustable-lens module and a
 motorised one each have their own close limit, each from the page that
 publishes it, or marked unpublished; see :data:`FOCUS_VARIANTS`.
 
+One sheet is for one module and gives heights to its lens FACE, above the
+plane its target is in, above what the stand is built on and above the
+tallest thing under the camera; see :class:`FaceHeights`.
+
 Coordinates
 -----------
 Every subject uses its own sheet frame, per :mod:`tools.schema`: origin at
@@ -383,6 +387,30 @@ ARDUCAM_B0031 = Source(
     label="Arducam B0031, OV5647 with an M12 lens focused by hand",
     ref="https://www.arducam.com/blog/?p=4561",
     note='"From less than an inch to infinity".',
+)
+
+RASPI_TV = Source(
+    label='RasPi.TV, "Adapt your Raspberry Pi Camera for close-up use", '
+          "25 May 2013",
+    ref="https://web.archive.org/web/20260212013652/https://raspi.tv/2013/"
+        "adapt-your-raspberry-pi-camera-for-close-up-use",
+    note='Alex Eames: "anything from about 0.5m to infinity is acceptably '
+         'sharp"; "Adding a +2D lens allows you to focus at about 25cm". The '
+         "article adds a lens in front and does not unscrew the stock one; a "
+         'reader\'s comment under it, of 23 July 2014: "You CAN change the '
+         'focus of the stock lens on the pi camera. It is tricky but can be '
+         'done." No closest distance for that.',
+)
+
+GEERLING_V2 = Source(
+    label='Jeff Geerling, "Fixing the blurry focus on some Raspberry Pi '
+          'Camera v2 models", 17 June 2017',
+    ref="https://web.archive.org/web/20250108194415/https://www."
+        "jeffgeerling.com/blog/2017/fixing-blurry-focus-on-some-raspberry-pi-"
+        "camera-v2-models",
+    note="About the Camera Module v2, whose lens it turns with pliers; of the "
+         'v1.3 it says one thing: "The original Raspberry Pi Camera model '
+         'v1.3 came from the factory set to ∞ (infinity) focus".',
 )
 
 COMMONLANDS = Source(
@@ -800,7 +828,10 @@ class FocusVariant:
 #: Raspberry Pi staff: jbeale, "about 6 cm" as the closest, after "170
 #: degrees: focus at 7 cm"; towolf, 3 cm, at the point the lens starts to
 #: fall out of its thread.  The 6 cm is used, the closest anyone reports
-#: with the lens still held.
+#: with the lens still held.  raspi.tv's article on the v1.3 close up gives
+#: no figure for it either: it adds a +2D lens in front, "focus at about
+#: 25cm", and only a reader's comment under it says the stock lens's focus
+#: can be changed, with no distance.  So the forum's 6 cm stands alone.
 #:
 #: Focused by hand: Arducam's B0031, an OV5647 on an M12 lens, "From less
 #: than an inch to infinity" -- so 25.4 mm is an upper bound on its close
@@ -863,6 +894,96 @@ def in_focus_z(frame: Frame, v: FocusVariant) -> float | None:
     if v.near is None:
         return None
     return max(framed_in_focus(frame, v.lens), v.near)
+
+
+
+def picture(lens: Lens, z: float) -> tuple[float, float]:
+    """What *lens* covers on a plane *z* away, focused there: (long, short).
+
+    DERIVED, thin lens, as :func:`framed_in_focus`: focused at z the lens
+    covers what the pinhole at f covers at z - f, so 2 (z - f) tan(A / 2)
+    along each axis of the sensor.
+    """
+    return tuple(2 * (z - lens.focal_length) * math.tan(math.radians(a / 2))
+                 for a in (lens.fov_h, lens.fov_v))
+
+
+def crop(frame: Frame, lens: Lens, z: float) -> tuple[float, float]:
+    """How much of the picture at *z* *frame* is, and the picture's scale.
+
+    Returned as (the crop factor, pixels per millimetre): the picture's long
+    side over the frame's, which is the digital zoom that fills the picture
+    with the frame, and the sensor's columns over the picture's long side.
+    The pixels are square, so a length on the subject spans the same number
+    of them whichever way the camera is turned.  DERIVED.
+    """
+    long_side, _ = picture(lens, z)
+    return (long_side / max(frame.width, frame.height),
+            SENSOR_COLUMNS / long_side)
+
+
+@dataclass(frozen=True)
+class FaceHeights:
+    """Where one module's LENS FACE goes: the headline of a one-module sheet.
+
+    A sheet that carries this gives heights to the lens face, not Z to the
+    entrance pupil, and for one module only: ``variant``, whose close limit
+    is used.  Three figures follow.
+
+    ``face`` is the lens face above the plane the frame's target lies in:
+    the higher of the height that frames it, focused there, and the
+    module's close limit, which :func:`in_focus_z` works out to the pupil.
+    The face is then SET there.  That is the conservative convention: the
+    pupil is behind the face, by at most the lens's own height, so it is
+    that much further from the subject than worked -- the picture is larger,
+    never smaller, and the subject no nearer than the close limit.
+
+    ``above_base`` adds ``base``, how far that plane stands above whatever
+    the stand is built on, and ``clearance`` takes off ``highest``, how far
+    the tallest thing under the camera stands above the plane.  Each is None
+    while its term is unmeasured, and the sheet prints the formula.
+
+    ``base`` and ``highest`` are ``accessories.parts.StackHeight``s: this
+    module restates neither.
+    """
+
+    variant: FocusVariant
+    base: object
+    highest: object
+
+    def face(self, frame: Frame) -> float:
+        z = in_focus_z(frame, self.variant)
+        if z is None:
+            raise ValueError(f"{self.variant.module} publishes no close "
+                             "limit, so no height in focus can be given")
+        return z
+
+    def above_base(self, frame: Frame) -> float | None:
+        if self.base.value is None:
+            return None
+        return self.base.value + self.face(frame)
+
+    def clearance(self, frame: Frame) -> float | None:
+        if self.highest.value is None:
+            return None
+        return self.face(frame) - self.highest.value
+
+
+@dataclass(frozen=True)
+class Observation:
+    """What somebody saw on the deployed hardware, and who and when.
+
+    Not a measurement and not a vendor's figure: ``distance`` is by eye, in
+    millimetres from the lens to the target, and ``lens`` is whose angles
+    anything DERIVED from it is worked with.
+    """
+
+    by: str
+    on: str
+    lens: Lens
+    distance: float
+    text: str
+
 
 # ---------------------------------------------------------------------------
 # Framing
@@ -1179,6 +1300,15 @@ class Subject:
     #: Only the Acorn's LEDs need one: a column 2.3 mm wide, lying in plan
     #: over the Pi's own Ethernet and USB bodies, which are under the HAT.
     plan_callout: str = ""
+    #: The lenses this sheet draws, by key, where it is not both of LENSES.
+    #: Only the Acorn's sets it: its sheet is for one module.
+    lens_keys: tuple[str, ...] | None = None
+    #: Where the lens FACE goes, on a sheet that gives lens-face heights for
+    #: one module instead of Z per lens.  Only the Acorn's.
+    face: FaceHeights | None = None
+    #: What has been seen on the deployed hardware, for the sheet to record
+    #: beside what it derives.
+    observations: tuple[Observation, ...] = ()
     sources: tuple[Source, ...] = ()
     notes: tuple[str, ...] = ()
     #: What the title block's SUBJECT field says.  Short: it is a title block
@@ -1195,6 +1325,12 @@ class Subject:
 
     def frames(self) -> tuple[Frame, ...]:
         return tuple(frame_for(t) for t in self.targets)
+
+    def lenses(self) -> tuple[Lens, ...]:
+        """The lenses this subject's sheet draws: both, unless it says."""
+        if self.lens_keys is None:
+            return tuple(LENSES.values())
+        return tuple(LENSES[k] for k in self.lens_keys)
 
 
 def _union(boxes) -> tuple[float, float, float, float]:
