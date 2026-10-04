@@ -3896,3 +3896,67 @@ height plus f: a lens focused at Z stands f Z / (Z - f) from the sensor and
 covers what a pinhole at Z - f does. On the Acorn's LEDs that is 60.0 mm for
 the v1.3 unscrewed and 27.9 for the B0031; for the module used, it waits on
 a measured close limit.
+
+### One module and its lens face, 4 October 2026
+
+Tim's decision on the sheet: the Acorn's keeps only the Camera Module v1.3
+with its stock 65 degree lens, and its headline is two heights of the lens
+FACE -- above the mounting plate, and clear above the assembly's highest
+point -- where it had been Z to the entrance pupil above the card, for two
+lenses and a table of modules. The other camera sheets are to be reworked
+the same way in a pull request of their own, so everything here is behind
+two fields of `Subject`, `lens_keys` and `face`, and `RPICAM-OVER-ARTY` and
+`RPICAM-OVER-PLATE` come out of the generator byte for byte as they went in,
+the version stamp aside. `RPICAM-LENS` is not touched.
+
+The two heights need the stack, and the stack is not to be had:
+
+- Raspberry Pi's Pi 5 drawing has a side view, and it dimensions connectors,
+  not the board's thickness or anything's height above it;
+- Waveshare's drawing and wiki for the PoE M.2 HAT+ (B) give no height;
+- the HAT+ specification says "provide at least 15mm board-to-board spacers;
+  16mm spacers are ideal", to whoever designs a HAT+, which is not a figure
+  for this one;
+- the M.2 specification gives the card, "Card thickness is fixed at 0.8 mm
+  +/-10%", and several connector heights without saying which a given socket
+  is;
+- nobody dimensions the CLE-215+'s heatsink or blower;
+- and the session that owns the hardware answered on 4 October that none of
+  it is measured: not the standoffs under the Pi, not base to card, not which
+  part is tallest, not how the camera is held.
+
+One published term of six is not a sum. So S, plate face to card top, and T,
+card top to the highest point, are `StackHeight`s in `accessories/parts.py`
+with no value, the sheet prints H1 = S + 60.0 and H2 = 60.0 - T, and the
+elevations draw the plate's face and the highest point as lines NOT TO SCALE,
+keyed as such in the legend: an elevation is a scale drawing, and the
+alternative was not to show what the two heights are measured from at all. A
+`StackHeight` refuses a value without a tolerance and a source.
+
+F, the face above the card, is 60.0: the higher of 27.9, which frames the
+LEDs focused there, and the 60 mm a forum user gives as the closest the v1.3
+focuses unscrewed. The face is set where the pupil is worked to be, which
+errs towards a larger picture and a longer distance, both safe.
+
+What raspi.tv says, since the brief was to cite it for refocusing: its
+article does not unscrew the lens. It says the camera is sharp "from about
+0.5m to infinity", and adds a +2D lens in front for "about 25cm". The only
+word on the stock lens is a reader's comment of 2014, "You CAN change the
+focus of the stock lens on the pi camera. It is tricky but can be done.",
+pointing at two other pages, the first of which now answers 404. No
+distance. So the sheet's "refocus
+the lens to F" cites the article for where the lens is set as sold and the
+comment for the rest, and the close limit is still the forum's. Jeff
+Geerling's page is about the v2; its one sentence on the v1.3, that it left
+the factory at infinity, is in the README and not on the sheet.
+
+Tim's report of 3 October -- the autofocus camera about 10 cm above the
+LEDs, in focus, wanting a crop -- is on the sheet as an observation, with
+what follows from it marked DERIVED: 72.9 x 97.2 mm at 100 mm, a crop of
+3.97 to frame A, 386 pixels along the LED column. It also bears on F: a
+camera at 100 is a third further than F and its crop 3.97 against 2.32.
+
+The text was what set the scale. With the notes as first written the
+elevations fell to 1:2 and the dimension chain to a few millimetres; the
+frame table was folded into the picture's, the lens table dropped for the
+legend's line and the lens sheet, and the notes cut until 1:1 fitted.
