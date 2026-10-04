@@ -176,3 +176,21 @@ fetch_optics \
 fetch_optics \
   'https://www.arducam.com/blog/?p=4561' \
   arducam-b0031.html
+# The v1.3 close up, for the sheet that gives one module's lens-face heights,
+# RPICAM-OVER-ACORN.  raspi.tv's article of 25 May 2013 says where the v1.3 is
+# focused as sold and adds a close-up lens in front of it; refocusing the
+# stock lens is only in a reader's comment under it, with no distance.  Jeff
+# Geerling's page is about the Camera Module v2, and is cached for the one
+# sentence it has on the v1.3, that it left the factory focused at infinity.
+fetch_optics \
+  'https://web.archive.org/web/20260212013652/https://raspi.tv/2013/adapt-your-raspberry-pi-camera-for-close-up-use' \
+  raspi-tv-close-up.html
+fetch_optics \
+  'https://web.archive.org/web/20250108194415/https://www.jeffgeerling.com/blog/2017/fixing-blurry-focus-on-some-raspberry-pi-camera-v2-models' \
+  geerling-camera-v2-focus.html
+# The HAT+ specification, for its recommendation on the spacers between a Pi
+# and a HAT+: the one published word on any height in the stack under the
+# Acorn, quoted on that sheet and computed with nowhere.
+fetch_optics \
+  'https://web.archive.org/web/20260115212335/https://datasheets.raspberrypi.com/hat/hat-plus-specification.pdf' \
+  hat-plus-specification.pdf
