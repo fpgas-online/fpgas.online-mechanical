@@ -91,6 +91,12 @@ RAYS = {
 #: in the paper the views leave instead.  See ``_note_columns``.
 NO_BAND = 2.0
 
+#: How far the docs' panels of the annotation column reach past the blocks
+#: the table and the legend were given, in sheet millimetres: a block's
+#: rules are drawn on its edge, and half of each stroke lies outside it.
+#: Blocks in the column are four apart.
+DOCS_PAD = 1.0
+
 #: Room left of the end elevation and the plan: the datum labels.
 LEFT = 20.0
 #: Room under the plan, for the leader that points at two frame edges too
@@ -494,13 +500,15 @@ def _text_face(subject: Subject) -> tuple[list[str], list[str]]:
     return notes, _sources(subject)
 
 
-def _tables_face(sheet: Sheet, subject: Subject) -> None:
+def _tables_face(sheet: Sheet, subject: Subject) -> Rect:
     """The tables of a sheet that gives lens-face heights for one module.
 
     The heights first, because they are what the sheet is for; then the
     frame, with what the picture is at each height anyone has given.  No
     lens table: the one lens's angles are in the legend, and the lens sheet
     has the rest.
+
+    Returns the heights table's block.
     """
     face = subject.face
     fr = subject.frames()[0]
@@ -520,8 +528,8 @@ def _tables_face(sheet: Sheet, subject: Subject) -> None:
          "DERIVED"],
     ]
     title = "LENS FACE HEIGHTS, mm: THE LEDs IN VIEW AND IN FOCUS"
-    block = sheet.column_block(sheet.table_height(title, len(rows)))
-    sheet.table(block, title, ["", "THE LENS FACE ABOVE", "HEIGHT", "TERM"],
+    heights = sheet.column_block(sheet.table_height(title, len(rows)))
+    sheet.table(heights, title, ["", "THE LENS FACE ABOVE", "HEIGHT", "TERM"],
                 rows, ["middle", "start", "end", "start"])
 
     column = max(fr.target.width, fr.target.height)
@@ -551,6 +559,7 @@ def _tables_face(sheet: Sheet, subject: Subject) -> None:
                 ["LENS TO LEDs", "WHAT", "COVERS X x Y", f"CROP TO {letter}",
                  "LED COLUMN"], rows,
                 ["start", "start", "end", "end", "end"])
+    return heights
 
 
 def _spare(frame, lens, alt) -> float:
@@ -763,7 +772,7 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
                       label_dx=dx, label_dy=dy)
 
 
-def _tables(sheet: Sheet, subject: Subject) -> None:
+def _tables(sheet: Sheet, subject: Subject) -> Rect:
     """Three tables: the frames, the heights in focus, and the lenses.
 
     The frames, where their axes are and the height each drawn lens frames
@@ -771,10 +780,12 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
     limit and the lowest height at which it both frames and focuses each
     frame; then the lenses themselves, declared figures against the ones
     used, each value's basis flagged.
+
+    Returns the first table's block: the heights, which is what the sheet
+    is for.
     """
     if subject.face:
-        _tables_face(sheet, subject)
-        return
+        return _tables_face(sheet, subject)
     frames = subject.frames()
     stock, wide, af = (optics.LENS_65, optics.LENS_120, optics.AUTOFOCUS)
 
@@ -784,7 +795,7 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
              f"{place(fr, stock).z:.1f}", f"{place(fr, wide).z:.1f}"]
             for i, fr in enumerate(frames)]
     title = "FRAMES, AND Z TO FRAME THEM, mm"
-    block = sheet.column_block(sheet.table_height(title, len(rows)))
+    heights = block = sheet.column_block(sheet.table_height(title, len(rows)))
     sheet.table(block, title,
                 ["", "FRAME", "RECTANGLE", "LONG", "AXIS X", "AXIS Y",
                  f"Z {stock.short}", f"Z {wide.short}"], rows,
@@ -835,6 +846,7 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
                 rows,
                 ["start", "start", "end", "end", "end", "end", "end",
                  "start"])
+    return heights
 
 
 def _note_columns(sheet: Sheet, subject: Subject, end: View, front: View,
@@ -1382,9 +1394,29 @@ def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
         c.text(v.rect.cx, v.rect.y1 + 3.0, name, size=style.T_LABEL,
                anchor="middle", bold=True)
 
-    _tables(sheet, subject)
-    draw_legend(sheet, _legend(subject))
+    heights = _tables(sheet, subject)
+    legend = draw_legend(sheet, _legend(subject))
     _place_text(sheet, subject, notes, src,
                 _note_columns(sheet, subject, end, front, plan))
     sheet.draw_title_block()
+
+    # What the docs show: how the camera sits over the subject and how high,
+    # with the figures and the key that make the views readable on their
+    # own.  From the layout just drawn, so it moves when the views do; see
+    # tools/docs_images.py, which also refuses a panel edge that cuts
+    # through anything drawn.
+    # The views run from the frame down to where the notes under the plan
+    # begin, and out to the drawing area's edge, which takes in the notes
+    # beside the plan; the frame itself is furniture and left out.
+    f = sheet.frame
+    views_bottom = plan.rect.y - _plan_bottom(subject)
+    sheet.docs_panels = [
+        (Rect(f.x, views_bottom, sheet.area.x1 - f.x, f.y1 - views_bottom),
+         "the two elevations with their height and lateral dimensions, the "
+         "plan with its callout, and the notes in the paper beside the plan"),
+        (heights.inset(-DOCS_PAD),
+         "the heights table, the sheet's headline figures"),
+        (legend.inset(-DOCS_PAD),
+         "the legend, which says what each line in the views is"),
+    ]
     return sheet
