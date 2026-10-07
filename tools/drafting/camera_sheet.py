@@ -848,7 +848,9 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> float:
     reach = view.rect.x1
     # Where two frame edges are too close to draw as two lines, point at them
     # and say so.  One leader, into the clear band between the drawing and
-    # the first dimension lane.
+    # the first dimension lane, in the leaders' own colour, which the legend
+    # keys: the phantom grey it was drawn in is 4.3:1 on white, under what
+    # text needs, and the docs pictures refuse it.
     for axis, ia, ib, pos, lo, hi, gap in coincident_edges(frames):
         mid = (lo + hi) / 2
         tip = view.pt(mid, pos) if axis == "Y" else view.pt(pos, mid)
@@ -859,7 +861,7 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> float:
                                                              style.T_LABEL))
         end_x, _ = dims.leader(c, tip,
                                (max(elbow_x, tip[0] + 4.0), bottom - 6.0),
-                               text, dot=True, colour=style.C_PHANTOM)
+                               text, dot=True, colour=style.C_DIM)
         reach = max(reach, end_x + LEADER_TEXT_GAP
                     + style.text_width(text, style.T_LABEL))
 
