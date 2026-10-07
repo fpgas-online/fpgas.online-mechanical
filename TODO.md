@@ -142,8 +142,11 @@ checker that measures the finished PDFs rather than trusting them.
       the sheet has spare, instead of a flat 30 mm on the chain's edge. Only
       a sheet the centring leaves short moves: the Zybo Z7, short by 9.17 mm,
       and the Cynthion, short by 3.33; no other sheet changes
-- [ ] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
-      silkscreen; `accessories/parts.py` has it opposite the Pmod convention
+- [x] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
+      silkscreen: `accessories/parts.py` had pin 12's place. Pin 1 is the
+      square pad Digilent's photographs show, in the row further from the
+      edge and at the end away from 3V3 and GND, and an import-time check
+      holds the figures to that (issue #50)
 - [ ] Cynthion's three side buttons and its two SWD connectors are not drawn.
       The buttons reach 2.50 mm past the left and right edges and a case
       needs holes for them, which is in the notes and the envelope figure but
