@@ -27,8 +27,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tools.docs_images import (DOCS_SHEETS, outputs,  # noqa: E402
-                               panels_by_sheet, write)
+from tools.docs_images import (DOCS_SHEETS, SHEET_PNG_ONLY,  # noqa: E402
+                               kept, panels_by_sheet, write)
 from tools.layout import FAMILY_DIRS, docs_dir_for, rel  # noqa: E402
 
 WORK = ROOT / "tmp" / "check-docs-images"
@@ -63,20 +63,20 @@ def main() -> int:
             scratch.parent.mkdir(parents=True, exist_ok=True)
             scratch.write_bytes(svg_bytes)
             out_dir = WORK / "docs"
+            png_only = path in SHEET_PNG_ONLY
             write(svg_bytes.decode("utf-8"), scratch, panels, furniture,
-                  out_dir)
+                  out_dir, png_only)
             docs = docs_dir_for(ROOT / path)
-            for fresh_svg in outputs(scratch, out_dir).values():
-                for fresh in (fresh_svg, fresh_svg.with_suffix(".png")):
-                    name = rel(docs / fresh.name)
-                    expected.add(name)
-                    staged = blob(name)
-                    if staged is None:
-                        bad.append(f"{name}: not staged; run make diagrams "
-                                   "and stage it")
-                    elif staged != fresh.read_bytes():
-                        bad.append(f"{name}: not what the staged {path} "
-                                   "makes; run make diagrams and stage both")
+            for fresh in kept(scratch, out_dir, png_only):
+                name = rel(docs / fresh.name)
+                expected.add(name)
+                staged = blob(name)
+                if staged is None:
+                    bad.append(f"{name}: not staged; run make diagrams "
+                               "and stage it")
+                elif staged != fresh.read_bytes():
+                    bad.append(f"{name}: not what the staged {path} "
+                               "makes; run make diagrams and stage both")
         for name in sorted(staged_docs() - expected):
             bad.append(f"{name}: staged, and no sheet in DOCS_SHEETS makes "
                        "it")

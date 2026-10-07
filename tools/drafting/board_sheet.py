@@ -1557,8 +1557,10 @@ def notes_spill_needed(sheet: Sheet, notes: list[str], sources: list[str],
 
 def _place_notes_and_sources(sheet: Sheet, notes: list[str],
                              sources: list[str], columns: int = 2,
-                             spill: float | None = None) -> None:
+                             spill: float | None = None) -> list[Rect]:
     """Draw the notes and sources in the band across the bottom of the sheet.
+
+    Returns the columns they were flowed into, in reading order.
 
     The band comes first and is used in full.  Only when it cannot hold
     everything does the tail spill into the annotation column, and then into
@@ -1574,6 +1576,7 @@ def _place_notes_and_sources(sheet: Sheet, notes: list[str],
     if spill > 0:
         cols = cols + [sheet.column_block_bottom(spill)]
     sheet.notes_columns(cols, blocks)
+    return cols
 
 
 def draw_overlay(c: Canvas, view: View, spec: BoardSpec) -> None:
