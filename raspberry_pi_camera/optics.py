@@ -39,8 +39,8 @@ motorised one each have their own close limit, each from the page that
 publishes it, or marked unpublished; see :data:`FOCUS_VARIANTS`.
 
 Each position sheet is for one module and gives heights to its lens
-FACE, above the plane its target is in, above what the stand is built on and above the
-tallest thing under the camera; see :class:`FaceHeights`.
+FACE, above the plane its target is in, above what the stand is built on
+and above the tallest thing under the camera; see :class:`FaceHeights`.
 
 Coordinates
 -----------
@@ -1320,6 +1320,11 @@ class Subject:
     #: The sheet turns it into a headroom note: how high it may stand before
     #: it leaves the picture.  The plate's and the Arty's have one.
     standing: tuple[tuple[str, tuple[float, float, float, float]], ...] = ()
+    #: Where a known part stands inside the first of those, as (what, box):
+    #: the headroom note gives each its own figure beside the worst case, at
+    #: the envelope's corner, so that a measured T is held against the
+    #: figure for where its part stands.  Only the Arty's J9 has one.
+    standing_at: tuple[tuple[str, tuple[float, float, float, float]], ...] = ()
     #: What the plan names frame A's target with a leader, where the target
     #: is too small at the plan's scale to be told from what is round it.
     #: Only the Acorn's LEDs need one: a column 2.3 mm wide, lying in plan
@@ -1688,11 +1693,13 @@ def _arty_subject() -> Subject:
                        highest_what="the highest point on the board",
                        target="the board and its LEDs",
                        heading="BOARD IN VIEW AND IN FOCUS")
-    # Where J9 stands, which is not the envelope's edge: how tall it may
+    # Where J9 stands, which is not the envelope's corner: how tall it may
     # be and stay in frame A's picture, against the Rev C's figure.
     j9 = next(f for f in spec.features if f.designator == "J9")
-    j9_room = face.headroom(frame_for(board),
-                            (j9.x0, j9.y0, j9.x1, j9.y1))
+    j9_box = (j9.x0, j9.y0, j9.x1, j9.y1)
+    whole = (board.x0, board.y0, board.x1, board.y1)
+    worst = face.headroom(frame_for(board), whole)
+    j9_room = face.headroom(frame_for(board), j9_box)
     src = (
         Source(label="Board geometry", ref="fpga/boards.py",
                note="Outline, Pmod hosts, connectors and LED rows; see "
@@ -1714,29 +1721,30 @@ def _arty_subject() -> Subject:
         face=face,
         docs_all_notes=True,
         standing=(("A part standing on the board, anywhere in its envelope",
-                   (board.x0, board.y0, board.x1, board.y1)),),
+                   whole),),
+        standing_at=(("J9", j9_box),),
         tolerance="DXF +/-0.20, plot bodies +/-0.30, heights DERIVED",
         notes=(
             "Which LED row is which is not named by any Digilent source; "
             f"{arty_sheet} takes the row nearest the edge as the tri-colour "
             "LD0-LD3 by package size. Either way both rows are inside the "
             "frame, so the framing does not turn on it.",
-            "S: the A7 drawing draws the four rubber feet "
-            f"{ARTY_FOOT_DRAWN:.1f} mm across and gives no height, for them "
-            "or for the board. Digilent's 3D model of the Arty Rev C, not "
-            f"the A7, has a {ARTY_REVC_BOARD:.2f} board on feet "
-            f"{ARTY_REVC_FOOT:.2f} tall, "
-            f"{ARTY_REVC_BOARD + ARTY_REVC_FOOT:.2f} in all, but its feet "
-            f"are {ARTY_REVC_FOOT_ACROSS:.2f} across, not the feet drawn, "
-            "and it states no tolerance. Measure S on the A7, from what it "
-            "stands on to its top face.",
+            "S: the A7 drawing has four corner circles, "
+            f"{ARTY_FOOT_DRAWN:.1f} mm across scaled from its plot, taken "
+            "as the rubber feet, and no height for them or the board. "
+            "Digilent's 3D model of the Arty Rev C, not the A7, has a "
+            f"{ARTY_REVC_BOARD:.2f} board on feet {ARTY_REVC_FOOT:.2f} "
+            f"tall, {ARTY_REVC_BOARD + ARTY_REVC_FOOT:.2f} in all, but its "
+            f"feet are {ARTY_REVC_FOOT_ACROSS:.2f} across and it states no "
+            "tolerance. Measure S on the A7, from what it stands on to its "
+            "top face.",
             "T: the A7 drawing gives no part a height. The Rev C model's "
             "tallest part is the Ethernet jack J9's shield, "
             f"{ARTY_REVC_TALLEST:.2f} above the board's top face, and the "
-            "A7 drawing puts J9 in the same place: over the headroom "
-            "anywhere on the board, but where J9 stands a part stays in "
-            f"frame A's picture up to {j9_room:.1f} mm. Measure T on the A7, "
-            "from its top face to the top of its tallest part.",
+            f"A7 drawing puts J9 in the same place: more than the "
+            f"{worst:.1f} mm headroom at the envelope's corner, less than "
+            f"the {j9_room:.1f} where J9 stands. Measure T on the A7, from "
+            "its top face to the top of its tallest part, and which part.",
         ),
     )
 
@@ -1759,11 +1767,11 @@ def _arty_subject() -> Subject:
 # them rise clear of it, ASSUMED, to be confirmed when T is measured.
 #
 # One module: the Raspberry Pi Camera Module v1.3 with its stock lens, and
-# heights to its lens FACE, see FaceHeights.  The other sheets draw two
-# lenses and give Z per lens; this one answers where the face of the one
-# camera goes, above what the stand is built on and above the tallest thing
-# under it.  Both of those need a height of the stack nobody has published
-# or measured, so each is a formula with one term to MEASURE.
+# heights to its lens FACE, see FaceHeights, as on every position sheet:
+# where the face of the one camera goes, above what the stand is built on
+# and above the tallest thing under it.  Both of those need a height of
+# the stack nobody has published or measured, so each is a formula with one
+# term to MEASURE.
 
 #: The plane the Acorn's frame is set from, and why it is the card's and not
 #: the Pi's: the LEDs are on the card's top face, which stands above the Pi,

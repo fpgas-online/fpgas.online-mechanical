@@ -884,7 +884,7 @@ def check_face() -> int:
         # wide.  Solved by bisection rather than by the formula.
         frame = subject.frames()[0]
         got = face.face(frame)
-        for label, box in subject.standing:
+        for label, box in subject.standing + subject.standing_at:
             long_side = 2 * (got - f) * th
             short_side = 2 * (got - f) * tv
             cx_, cy_ = ((long_side, short_side) if frame.long_axis == "X"
@@ -905,6 +905,17 @@ def check_face() -> int:
             bad += not ok
             print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {label} stays in "
                   f"frame A's picture up to {lo:.2f} mm, the lens at F")
+        # A known part's own figure: inside the envelope, so never less
+        # room than the envelope's worst case.
+        for what, box in subject.standing_at:
+            outer = subject.standing[0][1]
+            ok = (outer[0] <= box[0] and outer[1] <= box[1]
+                  and box[2] <= outer[2] and box[3] <= outer[3]
+                  and face.headroom(frame, box)
+                  >= face.headroom(frame, outer))
+            bad += not ok
+            print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {what} is inside "
+                  "the envelope, with no less room than its corner")
         # raspi.tv's +2D close-up lens focuses "at about 25cm": the sheet
         # calls that too far for F, which it is only while every F is under
         # it.

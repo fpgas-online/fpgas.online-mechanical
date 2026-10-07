@@ -53,7 +53,8 @@ DRAWN_INCHES = (4.3, 3.4)
 
 def check(what: str, got: float, want: float, tol: float = CLOSE) -> int:
     ok = abs(got - want) <= tol
-    print(f"   {'ok  ' if ok else 'FAIL'} {what}: {got:.3f}, quoted {want:.2f}")
+    print(f"   {'ok  ' if ok else 'FAIL'} {what}: {got:.3f}, "
+          f"quoted {want:.2f}")
     return not ok
 
 

@@ -25,18 +25,15 @@ subject's X depends on which way the camera is turned.  Each elevation draws
 the angle that lies in its own plane, from the lens to the edges of the frame,
 and dimensions the height and the lateral position of the lens.
 
-Both lenses are drawn on both elevations, each with its own camera at its
-own height and its own rays, told apart by line type -- solid for the stock
-65 degree lens, long dashes for the 120 -- and keyed in the legend.  The
-autofocus module used here is not drawn: its angles are taken as the stock
-lens's, and its cone would lie on the stock one.  A table gives, per variant
-of the camera -- the v1.3 as sold and with its lens unscrewed, one focused
-by hand, the motorised one -- the lowest height that both frames and focuses,
-or says the module's close limit is not published.
+Every position sheet now draws one lens, the v1.3's stock one, at its lens
+face's height: see below.  The path for a subject without ``face``, which
+draws each lens -- solid for the stock 65 degree lens, long dashes for the
+120 -- with its own camera, its own height and its own rays, and a table of
+the lowest height that frames and focuses per variant of the camera, is
+still here and draws no sheet; TODO.md carries it.
 
-One sheet per SUBJECT, both lenses on it, rather than one per lens: the
-person reading it has one board in front of them, and wants to see the two
-heights against each other.  The frame footprints
+One sheet per SUBJECT: the person reading it has one board in front of
+them.  The frame footprints
 do not depend on the lens -- a frame is the sensor's own 4:3 round its target,
 which is the shape of the file that comes out -- so a subject has exactly as
 many rectangles as it has things worth framing, and the lens only decides how
@@ -166,8 +163,9 @@ class DoesNotFit(Exception):
 
 #: How far from the plane a height nobody has measured is drawn, in SHEET
 #: millimetres: what the stand is built on under it -- the mounting plate's
-#: face, or what the Arty's feet stand on -- and the highest point over it, on a sheet that gives lens-face heights.  Not to scale, and
-#: the legend says so; a measured height is drawn where it is.  Each is room
+#: face, or what the Arty's feet stand on -- and the highest point over
+#: it, on a sheet that gives lens-face heights.  Not to scale, and the
+#: legend says so; a measured height is drawn where it is.  Each is room
 #: for its one-letter dimension between its arrows.
 NTS_BASE = 11.0
 NTS_HIGHEST = 11.0
@@ -541,11 +539,23 @@ def _text_face(subject: Subject) -> tuple[list[str], list[str]]:
         f"{h2} {t.symbol} is {t.what}: {term['T']}.",
     ]
     for label, box in subject.standing:
+        head = (f"HEADROOM: {label[0].lower()}{label[1:]} stays in frame "
+                f"{FRAME_LETTERS[0]}'s picture, the lens refocused to F, up "
+                f"to {face.headroom(fr, box):.1f} mm above "
+                f"{face.plane_short}")
+        if not subject.standing_at:
+            notes.append(f"{head} (DERIVED). If {t.symbol} is more, raise "
+                         "the camera.")
+            continue
+        # The worst case is the envelope's corner; a known part elsewhere
+        # has more room, and a measured T is held against its own figure.
+        spots = "; ".join(f"where {what} stands, up to "
+                          f"{face.headroom(fr, b):.1f}"
+                          for what, b in subject.standing_at)
         notes.append(
-            f"HEADROOM: {label[0].lower()}{label[1:]} stays in frame "
-            f"{FRAME_LETTERS[0]}'s picture, the lens refocused to F, up to "
-            f"{face.headroom(fr, box):.1f} mm above {face.plane_short} "
-            f"(DERIVED). If {t.symbol} is more, raise the camera.")
+            f"{head} at the envelope's corner, the worst case; {spots} "
+            f"(DERIVED). If {t.symbol}'s part stands higher than its "
+            "figure, raise the camera.")
     notes += [
         f"REFOCUS THE LENS TO F, {f:.1f} mm from the lens face to "
         f"{face.target}"
