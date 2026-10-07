@@ -43,8 +43,10 @@ data:
 	$(UV) python tinytapeout/mounting_plate/design.py
 
 ## diagrams: render every sheet as SVG, PDF and PNG, plus the plate cut file
+## and the docs site's pictures
 diagrams:
 	$(DRAW) python tools/generate_diagrams.py
+	$(DRAW) python tools/docs_images.py
 	$(UV) --with ezdxf python tinytapeout/mounting_plate/export_dxf.py
 	$(UV) --with cadquery python tinytapeout/camera_holder/export_step.py
 	$(UV) --with ezdxf python tinytapeout/camera_holder/export_dxf.py
@@ -62,6 +64,7 @@ check: diagrams
 	$(UV) --with pillow python tools/check_leader_arrows.py
 	$(UV) --with pdfplumber --with pillow python tools/check_drill_template.py
 	$(UV) --with pypdf --with pillow python tools/check_pdfs.py
+	$(DRAW) python tools/check_docs_images.py
 
 # Every output/ directory is build product: `make clean && make diagrams`
 # restores every file in them byte for byte, since
