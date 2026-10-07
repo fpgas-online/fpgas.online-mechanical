@@ -205,7 +205,7 @@ def the_camera() -> None:
           f"{v1.LENS_TOL:.2f} v1.py gives the glued-on lens module and the "
           f"{v1.HOLE_TOL:.1f} it gives the holes it is located by")
 
-    # The sheet's HEIGHT KEPT note, where the holder is lower than the
+    # The sheet's KEPT LOW note, where the holder is lower than the
     # position sheet's H1 for the lens refocused: every figure it prints,
     # worked again here from the lens's focal length and angles, and the
     # margin it claims checked against the boards themselves.
