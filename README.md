@@ -21,7 +21,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`tinytapeout/`](tinytapeout/README.md) | `TT-DB-*` -- Tiny Tapeout demo boards, one sheet per distinct geometry |
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
 | [`tinytapeout/camera_holder/`](tinytapeout/camera_holder/README.md) | `TT-MP-CAM65`, `TT-MP-CAM120` -- A printed stand on the plate that holds a Camera Module v1.3 over whichever board is on it, one per lens, with STEP solids and a DXF |
-| [`tinytapeout/pmod_pin1/`](tinytapeout/pmod_pin1/README.md) | No sheet: two pictures for the docs site, where pin 1 is on the demo board v3.2's Pmod sockets and on the Pmod HAT Adapter's ports |
+| [`tinytapeout/pmod_pin1/`](tinytapeout/pmod_pin1/README.md) | No sheet: pictures for the docs site, where pin 1 is on the demo board v3.2's Pmod sockets and on the Pmod HAT Adapter's ports |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, and boards that take their HATs, each with a Digilent Pmod HAT Adapter overlaid, and the Raspberry Pis all on the one outline they share |
 | [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; the OV5647's stock, autofocus and 120 degree lenses, every figure declared and derived, and their focus; then where to put an OV5647 camera over a board to frame it: how high and where, in two elevations, and whether it is in focus there; over the plate and the Acorn, where the Camera Module v1.3's lens face goes with its lens refocused |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
@@ -378,7 +378,7 @@ the notes that run on and the sources, so that neither is over two and a half
 A4 pages; its whole-sheet pictures are PNG only, linking
 [the sheet's PDF](raspberry_pi_camera/output/over-tt-mounting-plate.pdf).
 
-Two pictures are of no sheet. [`tinytapeout/pmod_pin1/`](tinytapeout/pmod_pin1/README.md)
+Some pictures are of no sheet. [`tinytapeout/pmod_pin1/`](tinytapeout/pmod_pin1/README.md)
 draws where pin 1 is on
 [the demo board v3.2's Pmod sockets](tinytapeout/pmod_pin1/output/docs/tt-demoboard-v3.2-pmods-light.png),
 whose silkscreen corner mark beside pin 6 is easily taken for a pin 1 mark,
