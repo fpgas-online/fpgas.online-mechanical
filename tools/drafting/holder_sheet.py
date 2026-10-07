@@ -254,14 +254,31 @@ def _text(h: Holder):
     notes = [
         "First angle, in TT-MP-PLATE's coordinates, Z up from the plate's "
         "TOP face. The right side frame is the left one mirrored.",
-        f"FOR: the lens over {POSITION_SHEET}'s frame A, at "
-        f"({h.AXIS_X:.2f}, {h.AXIS_Y:.2f}), high enough for the "
+        f"FOR: the lens over frame A of {POSITION_SHEET}"
+        + ("" if h.DRAWN_ON_POSITION_SHEET else
+           ", which that sheet does not draw this lens over: the height is "
+           "worked here, optics.place() of frame A and this lens,")
+        + f" at ({h.AXIS_X:.2f}, {h.AXIS_Y:.2f}), high enough for the "
         f"{lens.short} deg lens, {lens.fov_h:.2f} x {lens.fov_v:.2f} deg, to "
         "take in every revision's whole board: "
         f"{h.REQUIRED.z:.2f} over the highest board face, {hi:.2f} up, so "
         f"{h.LENS_FACE_MIN:.2f}. Set at {h.LENS_FACE:.2f}, {spare:.2f} over "
         "for the print, in a mode reading the whole sensor.",
     ]
+    h1 = h.refocused_h1()
+    if h1 is not None and h.LENS_FACE < h1:
+        sx, sy = h.refocused_shortfall()
+        notes.append(
+            f"HEIGHT KEPT: the lens face is {h.LENS_FACE:.2f} over the "
+            f"plate; {POSITION_SHEET}'s H1 for the lens refocused is "
+            f"{h1:.2f}, {h1 - h.LENS_FACE:.2f} more than this holder "
+            f"gives, over its {holder.PRINT_ALLOWANCE:.2f} print allowance. "
+            f"Refocused here the picture is {sx:.2f} (X) and {sy:.2f} (Y) "
+            "short of frame A each side; the boards stay in view with "
+            f"{optics.FRAME_MARGIN - sx:.2f} (X) and "
+            f"{optics.FRAME_MARGIN - sy:.2f} (Y) of the "
+            f"{optics.FRAME_MARGIN:.2f} margin left. ACCEPTED, Tim Ansell, "
+            "7 Oct 2026, rather than raise the holder.")
     if others:
         names = ", ".join(holder_sheet_name(o) for o in others)
         notes.append(

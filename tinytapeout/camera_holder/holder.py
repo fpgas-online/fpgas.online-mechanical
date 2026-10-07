@@ -504,6 +504,31 @@ class Holder:
         except KeyError:
             raise AttributeError(name) from None
 
+    @property
+    def DRAWN_ON_POSITION_SHEET(self) -> bool:
+        """Whether RPICAM-OVER-PLATE draws this holder's lens."""
+        keys = SUBJECT.lens_keys
+        return keys is None or self.LENS.key in keys
+
+    def refocused_h1(self) -> float | None:
+        """The lens-face height RPICAM-OVER-PLATE prints as H1 for this lens
+        over frame A, refocused, above the plate: None where that sheet does
+        not draw the lens."""
+        if not self.DRAWN_ON_POSITION_SHEET:
+            return None
+        return SUBJECT.face.above_base(FRAME)
+
+    def refocused_shortfall(self) -> tuple[float, float]:
+        """What the lens, refocused at this holder's face, leaves off frame A
+        on each side along X and along Y: frame A's size less the picture's,
+        halved.  Positive where the picture falls short of the frame."""
+        long_side, short_side = optics.picture(
+            self.LENS, self.LENS_FACE - BOARD_PLANE)
+        cover_x, cover_y = ((long_side, short_side)
+                            if FRAME.long_axis == "X"
+                            else (short_side, long_side))
+        return ((FRAME.width - cover_x) / 2, (FRAME.height - cover_y) / 2)
+
     def turned_wrong(self) -> float:
         """What the picture misses off each end of frame A's long side if the
         camera is a quarter turn out: its short side lies along it instead."""
