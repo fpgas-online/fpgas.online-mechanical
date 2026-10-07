@@ -365,7 +365,9 @@ for the zoomable full drawing. On
 the guide to fitting a board, the views are two pictures, `-views-a` (each
 board revision on the plate, two to a panel, and the legend) and `-views-b`
 (the placement and USB-C tables, and the notes), because the SVG of them all
-is over the same limit; its whole-sheet pictures are PNG only, linking
+is over the same limit; a third picture, `-v3`, is the two version 3 boards
+(DB ETR v3.2 and v3.3) and the legend alone, for the step that puts one on
+the plate. Its whole-sheet pictures are PNG only, linking
 [the sheet's PDF](tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf).
 On [`RPICAM-OVER-PLATE`](raspberry_pi_camera/output/docs/over-tt-mounting-plate-views-a-light.png),
 where the camera goes over the plate and how high, `-views-a` is the

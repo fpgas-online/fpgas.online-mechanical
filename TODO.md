@@ -483,6 +483,9 @@ checker that measures the finished PDFs rather than trusting them.
       and USB-C tables and the notes as `-views-b` (`VIEW_GROUPS`, since
       one SVG of them is over the 400-line hook). Whole-sheet pictures PNG
       only
+- [x] `TT-MP-FIT` pictured a third way (7 October 2026): `-v3`, the DB ETR
+      v3.2 and v3.3 view and the legend, for the fitting step that needs
+      only the version 3 boards (`EXTRA_VIEWS`, panels chosen by label)
 - [ ] The plate's and the fitting guide's whole-sheet SVGs are over the
       commit-size hook's 400 lines: question mech-01 to Tim is open. When
       answered, drop them from `SHEET_PNG_ONLY` and commit the SVGs
