@@ -28,10 +28,13 @@ a black page and nothing else would notice.
 
 The views are not one crop.  A renderer that wants its sheet in the docs
 sets ``Sheet.docs_panels``: rectangles of its own layout, each with what it
-holds, and they are stacked top to bottom in that order.  On the camera
-position sheets that is the elevations, the plan, the notes beside the plan,
-the heights table, then the legend -- the table and the legend sit in the
-annotation column, the far side of the notes.  Each is a panel of its own so
+holds, and they are stacked top to bottom in that order.  Which panels is the
+renderer's choice, for what the page about the board is for.  On the camera
+position sheets it is the elevations, the plan, the notes beside the plan, the
+heights table, then the legend; on the Tiny Tapeout mounting plate, for a
+builder fitting a board and not whoever cuts it, the plan, the legend, the
+table of which board revisions use each hole, then the notes a column to a
+panel.  Each is a panel of its own so
 that the picture is no wider than its widest panel, which sets how large its
 text prints across a page.  An element is in a panel or out of it: one that a
 panel's edge cuts through stops the build, so a layout change that moves
@@ -45,6 +48,8 @@ has just written.  ``tools/check_docs_images.py`` holds the committed
 pictures against a fresh run over the committed SVG, the way
 ``check_pdfs.py`` holds the PDFs, so the pictures carry the VERSION stamp of
 the sheet they were made from and are committed with it.
+
+A sheet in ``SHEET_PNG_ONLY`` has its whole-sheet pictures as PNG only.
 
 To add a sheet: give its renderer ``sheet.docs_panels``, add its SVG to
 ``DOCS_SHEETS``, run `make diagrams`, look at all four PNGs on their grounds,
@@ -78,6 +83,16 @@ DOCS_SHEETS = (
     "raspberry_pi_camera/output/over-acorn-cle-215-plus.svg",
     "tinytapeout/mounting_plate/output/tt-generic-mounting-plate.svg",
 )
+
+#: Sheets whose whole-sheet pictures are written as PNG only, with no SVG.
+#: The plate's whole-sheet SVG is 489 lines, over the commit-size hook's 400
+#: added lines, and a picture that cannot be committed cannot be checked, so
+#: the docs link the sheet's own PDF for the zoomable full drawing and the
+#: PNG here is its preview.  Question mech-01 to Tim is open; when it is
+#: answered this can go.  The views are SVG and PNG as for any sheet.
+SHEET_PNG_ONLY = frozenset({
+    "tinytapeout/mounting_plate/output/tt-generic-mounting-plate.svg",
+})
 
 #: The views are stacked with this much paper between panels and round the
 #: outside, in sheet millimetres.
@@ -317,8 +332,20 @@ def outputs(svg: Path, out_dir: Path) -> dict[tuple[str, str], Path]:
             for k in KINDS for t in THEMES}
 
 
+def kept(svg: Path, out_dir: Path, png_only: bool) -> list[Path]:
+    """The files of *svg*'s pictures that are kept: every SVG and PNG, less
+    the whole-sheet SVGs when *png_only*."""
+    files = []
+    for (kind, _), path in outputs(svg, out_dir).items():
+        if not (png_only and kind == "sheet"):
+            files.append(path)
+        files.append(path.with_suffix(".png"))
+    return files
+
+
 def write(svg_text: str, svg: Path, panels: list[tuple[Rect, str]],
-          furniture: list[str], out_dir: Path) -> list[str]:
+          furniture: list[str], out_dir: Path,
+          png_only: bool = False) -> list[str]:
     """Every picture of one sheet into *out_dir*; returns what it says."""
     name = rel(svg) if svg.is_relative_to(ROOT) else str(svg)
     bad = palette_problems()
@@ -340,6 +367,8 @@ def write(svg_text: str, svg: Path, panels: list[tuple[Rect, str]],
         path.write_text(text, encoding="utf-8")
         dpi = dpi_for(w)
         to_png(path, dpi)
+        if png_only and kind == "sheet":
+            path.unlink()
         if theme == "light":
             line = (f"{kind}: {w:.1f} mm wide at {dpi} dpi, "
                     f"{round(w / 25.4 * dpi)} px")
@@ -377,7 +406,8 @@ def main() -> None:
     for path, (panels, furniture) in panels_by_sheet().items():
         svg = ROOT / path
         for line in write(svg.read_text(encoding="utf-8"), svg, panels,
-                          furniture, docs_dir_for(svg)):
+                          furniture, docs_dir_for(svg),
+                          path in SHEET_PNG_ONLY):
             print(f"  {path} {line}")
 
 
