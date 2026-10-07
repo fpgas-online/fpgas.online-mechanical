@@ -4235,3 +4235,67 @@ for pin 1. `tinytapeout/pmod_pin1/hat.py`, merged the same day with its own
 copy of the reading and a note that `parts.py` had pin 12's place, now
 imports the reading and stops if the pin 1 it draws is not `parts.py`'s;
 its pin 12 lands on the old figures to the hundredth.
+
+
+## RPICAM-OVER-ARTY to the lens face, and pictured, 7 October 2026
+
+The plate's rework of 7 October, for the Arty: the Camera Module v1.3 with
+its stock lens, unscrewed to focus, heights to its lens face, the 120 degree
+lens and the other modules' in-focus table off the sheet. Frame A is the
+whole board -- Tim, 3 October: "the whole board is in view and in focus" --
+and F is set from it; frame B, the LEDs, stays, as the plate's LEDs frame
+does.
+
+- F: frame A 131.9 (128.3 + 3.60, framing governs), frame B 60.0 (framing
+  gives 36.0; the 60 mm close limit governs, so the forum caveat about where
+  its 6 cm is from is printed, as on the Acorn's).
+- H1 = S + F above what the Arty stands on, H2 = F - T: both formulae.
+
+The Arty has no mounting holes; it stands on four rubber feet. S is that
+surface to its top face, a foot and the board; T its top face to its
+tallest part. Looked for both in Digilent's own files only:
+
+- The A7 drawing (Arty_A7_DXF.DXF, Mechanical_Arty_A7.pdf, 2 September
+  2020) is plan only. Its PDF plot draws four circles 9.99 across at the
+  corners, scaled by the plot's outline to the DXF's 109.00 x 87.00 as the
+  extractor scales it; the DXF has no circle over 4 mm. No height anywhere.
+- Digilent's 3D model is the Arty Rev C (arty_revc_cad.zip, Arty Rev C.stp,
+  zip entries dated 20 June 2016; sha256 e2c3e192..., the same as the copy
+  an earlier session had in tmp/scratch). Read with tools/step_model.py:
+  board slab 1.500 (its two largest flat faces), "Ruber_Feet" 3.703 under
+  the slab, 8.70 x 8.70 in plan, domed (no vertical cylinder), centred 5.0
+  from each corner and the lowest solids in the model; tallest solid
+  "shielding", top 16.30 over the slab's bottom, 14.80 over its top face,
+  x 0 to 25.40 and centred 43.99 up the board's end -- the A7 drawing's J9
+  centre line is 43.98. Outline 109.22 x 86.36, which is the A7 drawing's
+  own lettered 4.3 x 3.4 in; the DXF says 109.00 x 87.00.
+
+Not used for S or T: the model is not the A7, it states no tolerance (a
+StackHeight refuses a figure without one, and none can be checked here),
+and its feet are 8.70 across against the 10.0 the A7 drawing draws, so they
+are not shown to be the A7's feet. So S and T are MEASURE, as the Acorn's
+and the plate's T, and the sheet quotes the model's figures, labelled Rev C,
+in its S and T notes. raspberry_pi_camera/arty_revc.py reads every one back
+out of the files; fetch_fpga.sh now fetches the model, pinned by sha256, and
+`make data` runs the check (OpenCascade, so not `make check`). No Arty host
+was reachable; nothing here is a measurement.
+
+Headroom over the whole envelope, refocused at F: 13.6 mm. The Rev C's J9 at
+14.80 is over it, but the headroom is the envelope's worst corner; over J9's
+own box, mid-way along the board's end, it is 20.9, and the T note says so.
+
+FaceHeights gained base_what and base_short, what H1 is measured from, which
+was "the mounting plate's face" written into camera_sheet.py. Two renderer
+fixes the Arty needed, neither changing the plate's or the Acorn's sheet or
+pictures: the coincident-edge leader ("FRAMES A AND B: edges 0.43 apart")
+was phantom grey, 4.3:1 on white and refused by the docs palette as text,
+and is now the leaders' blue; and with docs_all_notes the elevations' panel
+started at the end elevation's edge, cutting "41.41 deg, V", which stands
+left of it, so _draw_elevation now returns how far left its text reaches.
+
+Pictures: -views-a 166.0 mm wide, 2405 px, panels 134, 125, 161, 164, 164
+mm; -views-b 166.0 mm, 2405 px; smallest text 2.71 mm printed 180 mm wide.
+Whole sheet 412 lines of SVG, so PNG only, as the plate's camera sheet.
+
+Every position sheet now gives lens-face heights, so camera_sheet.py's path
+for a sheet without `face` draws nothing; TODO carries it.
