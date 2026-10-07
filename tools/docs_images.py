@@ -29,12 +29,16 @@ a black page and nothing else would notice.
 The views are not one crop.  A renderer that wants its sheet in the docs
 sets ``Sheet.docs_panels``: rectangles of its own layout, each with what it
 holds, and they are stacked top to bottom in that order.  On the camera
-position sheets that is the elevations and the plan, then the heights table,
-then the legend -- the table and the legend sit in the annotation column, the
-far side of the notes, and one rectangle round all three is most of the
-sheet.  An element is in a panel or out of it: one that a panel's edge cuts
-through stops the build, so a layout change that moves something under an
-edge is caught rather than shipped half drawn.
+position sheets that is the elevations, the plan, the notes beside the plan,
+the heights table, then the legend -- the table and the legend sit in the
+annotation column, the far side of the notes.  Each is a panel of its own so
+that the picture is no wider than its widest panel, which sets how large its
+text prints across a page.  An element is in a panel or out of it: one that a
+panel's edge cuts through stops the build, so a layout change that moves
+something under an edge is caught rather than shipped half drawn.  Panels may
+overlap, as the plan's reaches out under the notes beside it to take in its
+leader's text; an element wholly in several belongs to the last of them, and
+one wholly in any panel is not cut by another.
 
 What it is written from is the sheet's SVG on disk, the one `make diagrams`
 has just written.  ``tools/check_docs_images.py`` holds the committed
@@ -251,20 +255,31 @@ def views_svg(d: Drawing, panels: list[tuple[Rect, str]],
                          "the one in this SVG, so it is not the drawing the "
                          "panels were laid out on; run make diagrams")
     body, caps, cuts = [], [], []
+    spans = [(d.height - r.y1, d.height - r.y) for r, _ in panels]
+    # Panels may overlap, as the plan's reaches under the notes beside it:
+    # an element wholly in several belongs to the last of them.
+    owner: dict[int, int] = {}
+    cutting: dict[int, str] = {}
+    for i, e in enumerate(d.elements):
+        if e.line in furniture:
+            continue
+        for j, (rect, what) in enumerate(panels):
+            got = where(e, (rect.x, spans[j][0], rect.x1, spans[j][1]))
+            if got == "in":
+                owner[i] = j
+            elif got == "cut":
+                cutting[i] = what
+    cuts = [f"{what}: {d.elements[i].line[:110]}"
+            for i, what in cutting.items() if i not in owner]
     y = MARGIN
     width = 0.0
-    for rect, what in panels:
+    for j, (rect, what) in enumerate(panels):
         # Sheet millimetres are Y up, the SVG's are Y down.
-        box = (rect.x, d.height - rect.y1, rect.x1, d.height - rect.y)
+        box = (rect.x, spans[j][0], rect.x1, spans[j][1])
         body.append(f'<g transform="translate({_fmt(MARGIN - box[0])} '
                     f'{_fmt(y - box[1])})">')
-        for e in d.elements:
-            if e.line in furniture:
-                continue
-            got = where(e, box)
-            if got == "cut":
-                cuts.append(f"{what}: {e.line[:110]}")
-            elif got == "in":
+        for i, e in enumerate(d.elements):
+            if owner.get(i) == j:
                 body.append(recolour(e.line, theme))
                 if e.tag == "text":
                     caps.extend(b[5] for b in boxes(e.line))
@@ -329,6 +344,8 @@ def write(svg_text: str, svg: Path, panels: list[tuple[Rect, str]],
                     f"{round(w / 25.4 * dpi)} px")
             if kind == "views":
                 low = min(caps)
+                line += ("; panels " + ", ".join(f"{r.w:.0f}" for r, _ in panels)
+                         + " mm wide")
                 line += (f"; smallest text {low:.2f} mm capitals, "
                          f"{low * PRINT_WIDTH_MM / w:.2f} mm printed "
                          f"{PRINT_WIDTH_MM:.0f} mm wide")
