@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="219mm" height="251.9822mm" viewBox="0 0 219 251.9822">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="166mm" height="304.6422mm" viewBox="0 0 166 304.6422">
 <g transform="translate(-19 -11)">
 <line x1="108.485" y1="91" x2="143.3393" y2="91" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="3.2,1.2,0.6,1.2"/>
 <line x1="130.0331" y1="91" x2="132.2931" y2="91" stroke="#a00000" stroke-width="0.7" stroke-linecap="round"/>
@@ -62,6 +62,10 @@
 <polygon points="48.5975,110 51.5975,110.9 51.5975,109.1" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <polygon points="70.2425,110 67.2425,109.1 67.2425,110.9" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round"/>
 <text x="59.42" y="108.2907" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">21.65</text>
+<text x="70.2425" y="16" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">END ELEVATION</text>
+<text x="131.1631" y="16" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">FRONT ELEVATION</text>
+</g>
+<g transform="translate(-19 -5)">
 <path d="M 41.5000 153.0000 L 81.0000 153.0000 A 1.5000 1.5000 0 0 0 82.5000 151.5000 L 82.5000 126.5000 A 1.5000 1.5000 0 0 0 81.0000 125.0000 L 41.5000 125.0000 A 1.5000 1.5000 0 0 0 40.0000 126.5000 L 40.0000 151.5000 A 1.5000 1.5000 0 0 0 41.5000 153.0000 L 81.0000 153.0000 Z" fill="none" stroke="#000000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="41.75" cy="151.25" r="1.45" fill="none" stroke="#7a7a7a" stroke-width="0.25" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
 <circle cx="41.75" cy="151.25" r="0.675" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
@@ -115,9 +119,9 @@
 <path d="M 40.0 153.0 L 42.0 153.0 A 2.0 2.0 0 0 1 40.0 151.0 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M 40.0 153.0 L 38.0 153.0 A 2.0 2.0 0 0 1 40.0 155.0 Z" fill="#004c99" stroke="#004c99" stroke-width="0.05" stroke-linejoin="round" stroke-linecap="round"/>
 <text x="28.0492" y="159.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#004c99" text-anchor="middle">X0 Y0</text>
-<text x="70.2425" y="16" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">END ELEVATION</text>
-<text x="131.1631" y="16" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">FRONT ELEVATION</text>
 <text x="63.1916" y="122" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="middle" font-weight="bold">PLAN, 1:2</text>
+</g>
+<g transform="translate(-94.3831 49.66)">
 <text x="96.3831" y="121.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES</text>
 <line x1="96.3831" y1="122.9" x2="235" y2="122.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="96.3831" y="127.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
@@ -129,7 +133,7 @@
 <text x="102.8876" y="146.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">ASSUMED behind it by at most the lens&#x27;s 5.20 mm, so the picture is up to 9.2%</text>
 <text x="102.8876" y="151.2337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">larger, never smaller, and the LEDs no nearer than the close limit.</text>
 </g>
-<g transform="translate(-241 146.66)">
+<g transform="translate(-241 199.32)">
 <text x="243" y="18.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LENS FACE HEIGHTS, mm: THE LEDs IN VIEW AND IN FOCUS</text>
 <line x1="243" y1="19.9" x2="405" y2="19.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <rect x="243" y="22.1" width="122.1217" height="5.5556" fill="#e6e6e6" stroke="#000000" stroke-width="0.25"/>
@@ -155,7 +159,7 @@
 <line x1="325.5403" y1="22.1" x2="325.5403" y2="44.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <line x1="342.511" y1="22.1" x2="342.511" y2="44.3222" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 </g>
-<g transform="translate(-241 115.3378)">
+<g transform="translate(-241 167.9978)">
 <text x="243" y="89.1444" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">LEGEND</text>
 <line x1="243" y1="90.5444" x2="405" y2="90.5444" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <line x1="243" y1="95.0444" x2="263" y2="95.0444" stroke="#000000" stroke-width="0.5" stroke-linecap="round"/>
