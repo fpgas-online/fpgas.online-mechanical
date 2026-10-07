@@ -934,11 +934,22 @@ class FaceHeights:
 
     ``base`` and ``highest`` are ``accessories.parts.StackHeight``s: this
     module restates neither.
+
+    The rest is what the sheet calls things, which is the subject's:
+    ``plane`` is the plane F is measured from, as the heights table names
+    it, and ``plane_short`` the same in a few words, for the legend;
+    ``highest_what`` the highest point; ``target`` what has to be sharp; and
+    ``heading`` what the heights table's title says they put in view.
     """
 
     variant: FocusVariant
     base: object
     highest: object
+    plane: str
+    plane_short: str
+    highest_what: str
+    target: str
+    heading: str
 
     def face(self, frame: Frame) -> float:
         z = in_focus_z(frame, self.variant)
@@ -956,6 +967,26 @@ class FaceHeights:
         if self.highest.value is None:
             return None
         return self.face(frame) - self.highest.value
+
+    def headroom(self, frame: Frame,
+                 box: tuple[float, float, float, float]) -> float:
+        """How far above the plane *box* may rise and stay in the picture,
+        with the lens face at :meth:`face` over *frame* and focused there.
+
+        :meth:`Placement.headroom` with the lens refocused: the picture on
+        the plane is then :func:`picture` at the face's height, and the cone
+        that carries it has its apex at the face -- the pupil is behind it,
+        which only widens the cone -- so a thing h above the plane is inside
+        it while its half-width is under (F - h) / F of the picture's.
+        """
+        f = self.face(frame)
+        long_side, short_side = picture(self.variant.lens, f)
+        cover_x, cover_y = ((long_side, short_side) if frame.long_axis == "X"
+                            else (short_side, long_side))
+        x0, y0, x1, y1 = box
+        need_x = 2 * max(abs(x0 - frame.cx), abs(x1 - frame.cx))
+        need_y = 2 * max(abs(y0 - frame.cy), abs(y1 - frame.cy))
+        return min(f * (1 - need_x / cover_x), f * (1 - need_y / cover_y))
 
 
 @dataclass(frozen=True)
@@ -1588,7 +1619,12 @@ def _acorn_subject() -> Subject:
         plane_name=CARD_PLANE, plane_above_subject=None,
         plane_note=CARD_PLANE_NOTE)
     variant = next(v for v in FOCUS_VARIANTS if v.key == ACORN_VARIANT)
-    face = FaceHeights(variant, ACORN_STACK_S, ACORN_STACK_T)
+    face = FaceHeights(variant, ACORN_STACK_S, ACORN_STACK_T,
+                       plane="the card's top face, where the LEDs are",
+                       plane_short="the card",
+                       highest_what="the assembly's highest point",
+                       target="the LEDs",
+                       heading="THE LEDs IN VIEW AND IN FOCUS")
     return Subject(
         key="acorn-cle-215-plus",
         title="Camera over the Acorn CLE-215+",
