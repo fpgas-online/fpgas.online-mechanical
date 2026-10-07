@@ -4031,8 +4031,7 @@ which recolours the Acorn's dark pictures and nothing else. The light
 drawing's one text colour under 7:1 is #666666 at 5.74:1; not changed. Text
 filled with a colour the palette does not hold to the text floor is refused.
 
-The whole-sheet SVG of the plate is 489 lines, over the commit hook's 400, and
+The whole-sheet SVG of the plate is about 490 lines, over the commit hook's 400, and
 the way round it (committing half a file first) was refused, so its
 whole-sheet pictures are PNG only and the docs link the PDF; question mech-01
 to Tim is open.
-

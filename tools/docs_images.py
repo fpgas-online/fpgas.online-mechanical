@@ -85,7 +85,7 @@ DOCS_SHEETS = (
 )
 
 #: Sheets whose whole-sheet pictures are written as PNG only, with no SVG.
-#: The plate's whole-sheet SVG is 489 lines, over the commit-size hook's 400
+#: The plate's whole-sheet SVG is about 490 lines, over the commit-size hook's 400
 #: added lines, and a picture that cannot be committed cannot be checked, so
 #: the docs link the sheet's own PDF for the zoomable full drawing and the
 #: PNG here is its preview.  Question mech-01 to Tim is open; when it is

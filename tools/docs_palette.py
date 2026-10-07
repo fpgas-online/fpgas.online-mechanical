@@ -55,8 +55,9 @@ PALETTE = {
                     "style.C_COMPONENT: 12.6:1, as it had on white"),
     "#666666": Swap("#a6a6a6", TEXT,
                     "zone and title block labels: 7.6:1, 6.1:1 on the "
-                    "darkest fill, and still two steps under the #d6d6d6 "
-                    "and #ebebeb of the drawing's own text"),
+                    "lighter dark fill (the worst case), and still two "
+                    "steps under the #d6d6d6 and #ebebeb of the "
+                    "drawing's own text"),
     "#7a7a7a": Swap("#7a7a7a", LINE,
                     "style.C_PHANTOM: unchanged, it is 4.3:1 on both"),
     "#888888": Swap("#6d6d6d", LINE,

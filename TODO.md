@@ -447,9 +447,9 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] `tools/docs_images.py`: each listed sheet's views and whole sheet,
       light and dark, transparent, SVG and PNG, under `output/docs/`
 - [x] `tools/docs_palette.py`: every colour's dark-ground value and its
-      reason, held to WCAG 7:1 for text on the dark ground (4.5:1 on its fills) and 3:1
-      for lines; an unmapped
-      colour, an opacity or an unknown attribute stops the build
+      reason, held to WCAG 7:1 for text on the dark ground (4.5:1 on its
+      fills) and 3:1 for lines; an unmapped colour, an opacity or an
+      unknown attribute stops the build
 - [x] `tools/check_docs_images.py`: the committed pictures are what the
       committed sheet makes
 - [x] `RPICAM-OVER-ACORN` pictured: its elevations and plan, heights table
