@@ -786,7 +786,10 @@ def render_fitting_guide(*, drawing_no: str, version: str,
         (placement_block.inset(-DOCS_PAD),
          "where each board sits and which holes it uses"),
         (usb_block.inset(-DOCS_PAD), "where each board's USB-C lands"),
-    ] + [(col.inset(-DOCS_PAD), "the notes") for col in note_cols]
+    ] + [(Rect(col.x, sheet.notes_floor[n], col.w,
+               col.y1 - sheet.notes_floor[n]).inset(-DOCS_PAD),
+          "the notes, as far down as their text goes")
+         for n, col in enumerate(note_cols) if n in sheet.notes_floor]
     return sheet
 
 
@@ -887,7 +890,12 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
 
     half = max(style.text_width(t, style.T_LABEL, bold=b)
                for t, _, b, _ in captions) / 2
-    left = min(view.x(0), cell.cx - half)
-    right = max(view.x(o.width), cell.cx + half)
+    # The outline's corners are arcs, which the docs' cut check bounds by
+    # their radius past their end points, so the plate's sides are that far
+    # out.
+    reach = view.d(o.corner_radius)
+    left = min(view.x(0) - reach, cell.cx - half)
+    right = max(view.x(o.width) + reach, cell.cx + half)
     bottom = view.y(0) - captions[-1][1] - style.descender(style.T_LABEL)
-    return Rect(left, bottom, right - left, view.y(o.height) - bottom)
+    return Rect(left, bottom, right - left,
+                view.y(o.height) + reach - bottom)

@@ -154,6 +154,10 @@ class Sheet:
         #: layout it has just drawn, so the picture follows the drawing when
         #: the drawing moves.  Empty on a sheet nobody has cut up for the
         #: docs, and ``docs_images.py`` refuses to picture one of those.
+        #: Where the notes last flowed into columns reached, by column
+        #: index: the lowest y of the text in each column that has any, so a
+        #: caller can take the paper the notes used and not the whole column.
+        self.notes_floor: dict[int, float] = {}
         self.docs_panels: list[tuple[Rect, str]] = []
         #: The SVG elements ``draw_frame`` wrote: the trim line, the frame,
         #: the zones and the centring marks.  The sheet's, not any view's,
@@ -570,6 +574,8 @@ class Sheet:
                                size=size, start_index=n, widest_index=widest)
             y -= h
             i += 1
+            if not dry:
+                self.notes_floor[col] = y
         return True
 
 
