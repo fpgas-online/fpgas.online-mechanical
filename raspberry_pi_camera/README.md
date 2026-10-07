@@ -579,13 +579,19 @@ always the subject's own top face; the column below says which. A stand set
 h mm below the right plane covers only (Z - h) / Z of the rectangle at it, so
 the error always loses the edges.
 
-| Sheet | Frame | Rectangle, mm | Z from | 65 | 120 |
+The Z here is `optics.place()`'s, the pinhole height that just frames each
+frame with each lens as sold, worked to the entrance pupil: what the model
+gives, not what the sheets print. No sheet prints a 120 column now, and
+every position sheet gives the v1.3's lens face, refocused, instead -- F,
+the framing height plus f or the close limit, below.
+
+| Sheet the frame is on | Frame | Rectangle, mm | Z from | Z, 65, `place()` | Z, 120, `place()` |
 |---|---|---|---|--:|--:|
 | `RPICAM-OVER-PLATE` | Every board, any revision | 140.27 x 105.20 | the demo board's top face | 139.2 | 72.4 |
 | `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 52.1 |
 | `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 66.8 |
 | `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 16.9 |
-| `RPICAM-OVER-ACORN` | The Acorn's LEDs, A1-A4 and PWR | 18.35 x 24.47 | the Acorn card's top face | 24.3 | not drawn |
+| `RPICAM-OVER-ACORN` | The Acorn's LEDs, A1-A4 and PWR | 18.35 x 24.47 | the Acorn card's top face | 24.3 | 12.6 |
 
 **In focus there?** On either fixed lens as sold, at no height here: all of
 them are inside "1 m". Focused closer, the lowest height that both frames
@@ -766,9 +772,10 @@ for A and (19.50, 6.83) for B; the elevations draw and dimension frame A's.
 **The Arty has no mounting holes.** It stands on four rubber feet, so S is
 what it stands on to its top face, a foot and the board, and H1 is above that
 surface, not above a plate. **S and T are both to measure**, and the sheet
-prints H1 and H2 as formulae. Digilent's A7 drawing is a plan: it draws the
-feet as circles 10.0 mm across, 5.0 in from each corner, and gives no height
-for them, the board or any part. Digilent's 3D model does give heights, but
+prints H1 and H2 as formulae. Digilent's A7 drawing is a plan: it draws four
+unlettered circles, 5.0 in from each corner and 10.0 mm across as scaled
+from its plot (9.99), taken as the feet, and gives no height for them, the
+board or any part. Digilent's 3D model does give heights, but
 it is of the **Arty Rev C, not the A7**: a 1.50 board on feet 3.70 tall, 5.20
 in all, and the Ethernet jack J9's shield, its tallest part, 14.80 above the
 top face. The model states no tolerance, and its feet are 8.70 across, not
@@ -782,10 +789,12 @@ of those figures back out of the two files; `optics.arty_stack_s()` and
 
 The headroom over the whole board, the lens refocused to F, is 13.6 mm: a
 part standing anywhere on it up to that height stays in frame A's picture.
-The Rev C's J9, at 14.80, is over that, but the headroom is for a part at
-the envelope's far corner; where J9 stands, mid-way along the board's end,
-the picture takes in a part up to 20.9 mm tall, and the sheet's T note says
-so. A measured T over 13.6 wants that worked again for wherever the part is.
+That is the worst case, at the envelope's corner. Where J9 stands, mid-way
+along the board's end, the picture takes in a part up to 20.9 mm tall, so
+the Rev C's J9, at 14.80, is over the one and under the other. The sheet's
+headroom note gives both, from `Subject.standing_at`, and one instruction:
+if T's part stands higher than the figure for where it stands, raise the
+camera.
 
 **Refocus the lens to F**, 131.9 mm from the board for frame A: as sold it
 is set far, and a point there spreads to 23 pixels.
