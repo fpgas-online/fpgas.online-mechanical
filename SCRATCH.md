@@ -4218,8 +4218,9 @@ ends. JA and JB: the row further from the left edge, the lower end. JC: the
 row further from the bottom edge, the end towards the barrel jack. Read back
 through `measure_pmod_hat.py`'s screw fit, with each square pad's centre
 picked by eye to a pixel (0.07 mm), the pads land at (10.29, 33.03),
-(10.29, 10.21) and (33.90, 10.08): within 0.6 mm of the new figures, inside
-the hosts' +/-0.75, and more than 12 mm from the old ones.
+(10.29, 10.21) and (33.90, 10.08): inside the hosts' +/-0.75 mm of the new
+figures (JC's Y the closest call: 0.59 here, 0.66 in the review's own
+reading), and more than 12 mm from the old ones.
 
 | Port | Was (X, Y) | Is (X, Y) |
 |------|------------|-----------|
