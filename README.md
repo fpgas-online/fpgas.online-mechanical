@@ -339,6 +339,32 @@ printed 100 mm scale bar on each axis for exactly this reason: measure them
 before drilling. See
 [the mounting plate README](tinytapeout/mounting_plate/README.md).
 
+## Pictures for the docs site
+
+Some sheets are also drawn as pictures for
+[the fpgas.online docs](https://github.com/fpgas-online/fpgas.online-docs),
+in an `output/docs/` directory beside the sheet: the views on their own,
+for the page about the board, and the whole sheet, for a "full drawing"
+link, each as SVG and PNG and each twice -- as drafted, for the light theme,
+and recoloured to read on the dark theme's ground. Both have a transparent
+ground, so neither is a white page on a dark site. The views are the
+sheet's own layout cut into panels and stacked: on
+[`RPICAM-OVER-ACORN`](raspberry_pi_camera/output/docs/over-acorn-cle-215-plus-views-light.png)
+the two elevations, the plan, the notes beside the plan, the heights table
+and the legend, each a panel of its own so that the picture is narrow enough
+to print its smallest text at 2.5 mm or more across an A4 page.
+
+The dark pictures' label masks are painted in Furo's page background,
+`#131416`, so they belong on the page background, not inside an admonition,
+a sidebar or a code block with another ground. The whole-sheet PNG is for
+linking; link the SVG for zoom.
+
+[`tools/docs_images.py`](tools/docs_images.py) writes them as part of
+`make diagrams` and says how to add a sheet;
+[`tools/docs_palette.py`](tools/docs_palette.py) is what each colour becomes
+in the dark, and why. `make check` holds the committed pictures against the
+committed sheet, byte for byte.
+
 ## Regenerating
 
 ```sh

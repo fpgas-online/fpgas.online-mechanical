@@ -1328,7 +1328,7 @@ def legend_height(rows: int) -> float:
 
 
 def draw_legend(sheet: Sheet,
-                entries: list[tuple[str | tuple, str]]) -> None:
+                entries: list[tuple[str | tuple, str]]) -> Rect | None:
     """A key to the line styles, in the annotation column.
 
     Each entry is a style and its label.  The style is the name of one of
@@ -1339,9 +1339,11 @@ def draw_legend(sheet: Sheet,
     Without one, the only thing telling a reader that a grey chain-double-dot
     rectangle is an adjacent part and a red one is a component is the colour,
     and these sheets are meant to be printed.
+
+    Returns the block the legend took, or None if there was nothing to key.
     """
     if not entries:
-        return
+        return None
     rect = sheet.column_block(legend_height(len(entries)))
     c = sheet.canvas
     y = sheet.heading(rect, "LEGEND")
@@ -1379,6 +1381,7 @@ def draw_legend(sheet: Sheet,
         c.text(rect.x + LEGEND_SWATCH + 3.0, cy - style.T_NOTE / 2, label,
                size=style.T_NOTE)
         y -= LEGEND_ROW
+    return rect
 
 
 def _legend_entries(spec: BoardSpec, overlay: BoardSpec | None

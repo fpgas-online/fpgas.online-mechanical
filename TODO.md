@@ -442,3 +442,19 @@ checker that measures the finished PDFs rather than trusting them.
       `parts.py` are where the two a camera needs go
 - [ ] Check the derived socket footprint against a real board: it is the one
       figure here quoted at +/-1 mm rather than +/-0.2
+
+## Pictures for the docs site  -- DONE for RPICAM-OVER-ACORN
+- [x] `tools/docs_images.py`: each listed sheet's views and whole sheet,
+      light and dark, transparent, SVG and PNG, under `output/docs/`
+- [x] `tools/docs_palette.py`: every colour's dark-ground value and its
+      reason, held to WCAG 4.5:1 for text and 3:1 for lines; an unmapped
+      colour, an opacity or an unknown attribute stops the build
+- [x] `tools/check_docs_images.py`: the committed pictures are what the
+      committed sheet makes
+- [x] `RPICAM-OVER-ACORN` pictured: its elevations and plan, heights table
+      and legend
+- [ ] The next sheets: give the renderer `docs_panels` and add the SVG to
+      `DOCS_SHEETS`. The TT mounting plate sheet is next
+- [x] The views print at A4 width (180 mm) with the smallest text at
+      2.71 mm: the notes beside the plan are a panel of their own, so the
+      widest panel is the 164 mm heights table and legend

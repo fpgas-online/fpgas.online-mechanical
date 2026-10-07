@@ -74,7 +74,11 @@ def tracked_sheets() -> list[str]:
     dirs = [rel(d) for d in FAMILY_DIRS.values()]
     out = subprocess.run(["git", "ls-files", *dirs], cwd=ROOT,
                          capture_output=True, text=True, check=True)
-    return sorted(p for p in out.stdout.split() if p.endswith(".svg"))
+    # Only the directory's own files: git lists the subdirectories too, and
+    # the pictures in output/docs/ are SVGs that are not sheets and have no
+    # PDF.  See tools/docs_images.py.
+    return sorted(p for p in out.stdout.split()
+                  if p.endswith(".svg") and str(Path(p).parent) in dirs)
 
 
 def blob(path: str) -> bytes | None:

@@ -91,6 +91,16 @@ RAYS = {
 #: in the paper the views leave instead.  See ``_note_columns``.
 NO_BAND = 2.0
 
+#: How far the docs' panels of the annotation column reach past the blocks
+#: the table and the legend were given, in sheet millimetres: a block's
+#: rules are drawn on its edge, and half of each stroke lies outside it.
+#: Blocks in the column are four apart.
+DOCS_PAD = 1.0
+
+#: Where a leader's text starts past its tail, in sheet millimetres: the
+#: gap ``dims.leader`` leaves.
+LEADER_TEXT_GAP = 1.2
+
 #: Room left of the end elevation and the plan: the datum labels.
 LEFT = 20.0
 #: Room under the plan, for the leader that points at two frame edges too
@@ -494,13 +504,15 @@ def _text_face(subject: Subject) -> tuple[list[str], list[str]]:
     return notes, _sources(subject)
 
 
-def _tables_face(sheet: Sheet, subject: Subject) -> None:
+def _tables_face(sheet: Sheet, subject: Subject) -> Rect:
     """The tables of a sheet that gives lens-face heights for one module.
 
     The heights first, because they are what the sheet is for; then the
     frame, with what the picture is at each height anyone has given.  No
     lens table: the one lens's angles are in the legend, and the lens sheet
     has the rest.
+
+    Returns the heights table's block.
     """
     face = subject.face
     fr = subject.frames()[0]
@@ -520,8 +532,8 @@ def _tables_face(sheet: Sheet, subject: Subject) -> None:
          "DERIVED"],
     ]
     title = "LENS FACE HEIGHTS, mm: THE LEDs IN VIEW AND IN FOCUS"
-    block = sheet.column_block(sheet.table_height(title, len(rows)))
-    sheet.table(block, title, ["", "THE LENS FACE ABOVE", "HEIGHT", "TERM"],
+    heights = sheet.column_block(sheet.table_height(title, len(rows)))
+    sheet.table(heights, title, ["", "THE LENS FACE ABOVE", "HEIGHT", "TERM"],
                 rows, ["middle", "start", "end", "start"])
 
     column = max(fr.target.width, fr.target.height)
@@ -551,6 +563,7 @@ def _tables_face(sheet: Sheet, subject: Subject) -> None:
                 ["LENS TO LEDs", "WHAT", "COVERS X x Y", f"CROP TO {letter}",
                  "LED COLUMN"], rows,
                 ["start", "start", "end", "end", "end"])
+    return heights
 
 
 def _spare(frame, lens, alt) -> float:
@@ -671,8 +684,12 @@ def _datum_label_offset(subject: Subject, view: View) -> tuple[float, float]:
     return best[1], best[2]
 
 
-def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
-    """The frame footprints, their letters and the camera axis in each."""
+def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> float:
+    """The frame footprints, their letters and the camera axis in each.
+
+    Returns how far right the plan's leader's text runs, or the plan's own
+    right edge where it has none.
+    """
     c = sheet.canvas
     frames = subject.frames()
     if len(frames) > MAX_FRAMES:
@@ -722,6 +739,7 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
         # and every frame's is in the table, and at the plan's scale a
         # second set would be a second copy of each figure, smaller.
 
+    reach = view.rect.x1
     # Where two frame edges are too close to draw as two lines, point at them
     # and say so.  One leader, into the clear band between the drawing and
     # the first dimension lane.
@@ -733,8 +751,11 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
         elbow_x = min(tip[0] + 8.0,
                       sheet.area.x1 - 6.0 - style.text_width(text,
                                                              style.T_LABEL))
-        dims.leader(c, tip, (max(elbow_x, tip[0] + 4.0), bottom - 6.0),
-                    text, dot=True, colour=style.C_PHANTOM)
+        end_x, _ = dims.leader(c, tip,
+                               (max(elbow_x, tip[0] + 4.0), bottom - 6.0),
+                               text, dot=True, colour=style.C_PHANTOM)
+        reach = max(reach, end_x + LEADER_TEXT_GAP
+                    + style.text_width(text, style.T_LABEL))
 
     # A target too small to tell from what is round it at this scale, named
     # by a leader from its lower edge into the same band, arrowed rather
@@ -755,15 +776,19 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> None:
         elbow_x = min(tip[0] + 8.0,
                       sheet.area.x1 - 6.0 - style.text_width(text,
                                                              style.T_LABEL))
-        dims.leader(c, tip, (max(elbow_x, tip[0] + 4.0), bottom - 6.0),
-                    text, colour=style.C_HIGHLIGHT)
+        end_x, _ = dims.leader(c, tip,
+                               (max(elbow_x, tip[0] + 4.0), bottom - 6.0),
+                               text, colour=style.C_HIGHLIGHT)
+        reach = max(reach, end_x + LEADER_TEXT_GAP
+                    + style.text_width(text, style.T_LABEL))
 
     dx, dy = _datum_label_offset(subject, view)
     dims.datum_marker(c, *view.pt(0.0, 0.0), label="X0 Y0",
                       label_dx=dx, label_dy=dy)
+    return reach
 
 
-def _tables(sheet: Sheet, subject: Subject) -> None:
+def _tables(sheet: Sheet, subject: Subject) -> Rect:
     """Three tables: the frames, the heights in focus, and the lenses.
 
     The frames, where their axes are and the height each drawn lens frames
@@ -771,10 +796,12 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
     limit and the lowest height at which it both frames and focuses each
     frame; then the lenses themselves, declared figures against the ones
     used, each value's basis flagged.
+
+    Returns the first table's block: the heights, which is what the sheet
+    is for.
     """
     if subject.face:
-        _tables_face(sheet, subject)
-        return
+        return _tables_face(sheet, subject)
     frames = subject.frames()
     stock, wide, af = (optics.LENS_65, optics.LENS_120, optics.AUTOFOCUS)
 
@@ -784,7 +811,7 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
              f"{place(fr, stock).z:.1f}", f"{place(fr, wide).z:.1f}"]
             for i, fr in enumerate(frames)]
     title = "FRAMES, AND Z TO FRAME THEM, mm"
-    block = sheet.column_block(sheet.table_height(title, len(rows)))
+    heights = block = sheet.column_block(sheet.table_height(title, len(rows)))
     sheet.table(block, title,
                 ["", "FRAME", "RECTANGLE", "LONG", "AXIS X", "AXIS Y",
                  f"Z {stock.short}", f"Z {wide.short}"], rows,
@@ -835,6 +862,26 @@ def _tables(sheet: Sheet, subject: Subject) -> None:
                 rows,
                 ["start", "start", "end", "end", "end", "end", "end",
                  "start"])
+    return heights
+
+
+def _beside_column(sheet: Sheet, subject: Subject, end: View, front: View,
+                   plan: View) -> Rect | None:
+    """The paper right of the plan, under the elevations, if there is room
+    for notes in it.
+
+    Where the plan carries a leader -- to two coincident frame edges, or
+    naming a small target -- its text runs out to the right under the plan,
+    into the paper beside it: the column stops above it.
+    """
+    x0 = plan.rect.x1 + 10.0
+    elev_bottom = min(end.rect.y, front.rect.y) - ELEV_UNDER
+    beside_bottom = (plan.rect.y - 3.0 if _plan_leader(subject)
+                     else plan.rect.y - _plan_bottom(subject))
+    if elev_bottom - beside_bottom >= 20.0:
+        return Rect(x0, beside_bottom, sheet.area.x1 - 2.0 - x0,
+                    elev_bottom - beside_bottom)
+    return None
 
 
 def _note_columns(sheet: Sheet, subject: Subject, end: View, front: View,
@@ -850,19 +897,9 @@ def _note_columns(sheet: Sheet, subject: Subject, end: View, front: View,
     f = sheet.frame
     base = f.y + 3.0
     x0, x1 = f.x + 4.0, sheet.area.x1 - 2.0
-    elev_bottom = min(end.rect.y, front.rect.y) - ELEV_UNDER
     plan_bottom = plan.rect.y - _plan_bottom(subject)
-    cols = []
-    beside = plan.rect.x1 + 10.0
-    # Where the plan carries a leader -- to two coincident frame edges, or
-    # naming a small target -- its text runs out to the right under the
-    # plan, into the paper beside it: the column beside the plan stops
-    # above it.
-    beside_bottom = (plan.rect.y - 3.0 if _plan_leader(subject)
-                     else plan_bottom)
-    if elev_bottom - beside_bottom >= 20.0:
-        cols.append(Rect(beside, beside_bottom, x1 - beside,
-                         elev_bottom - beside_bottom))
+    beside = _beside_column(sheet, subject, end, front, plan)
+    cols = [beside] if beside else []
     gutter = 8.0
     w = (x1 - x0 - gutter) / 2
     cols += [Rect(x0 + i * (w + gutter), base, w, plan_bottom - base)
@@ -1375,16 +1412,52 @@ def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
     _dimension_end(sheet, subject, end, lens_y)
 
     _draw_plan(sheet, subject, plan)
-    _draw_frames(sheet, subject, plan, _plan_bbox(subject))
+    plan_reach = _draw_frames(sheet, subject, plan, _plan_bbox(subject))
 
     for v, name in ((end, "END ELEVATION"), (front, "FRONT ELEVATION"),
                     (plan, f"PLAN, {plan.scale_label}")):
         c.text(v.rect.cx, v.rect.y1 + 3.0, name, size=style.T_LABEL,
                anchor="middle", bold=True)
 
-    _tables(sheet, subject)
-    draw_legend(sheet, _legend(subject))
+    heights = _tables(sheet, subject)
+    legend = draw_legend(sheet, _legend(subject))
     _place_text(sheet, subject, notes, src,
                 _note_columns(sheet, subject, end, front, plan))
     sheet.draw_title_block()
+
+    # What the docs show: how the camera sits over the subject and how high,
+    # with the figures and the key that make the views readable on their
+    # own.  From the layout just drawn, so it moves when the views do; see
+    # tools/docs_images.py, which also refuses a panel edge that cuts
+    # through anything drawn.
+    # The elevations from the frame down to where the paper beside the plan
+    # begins, the plan under them, and the notes in the paper beside the
+    # plan, each its own panel so that none is wider than it need be: the
+    # picture is as wide as its widest panel, and that sets how large its
+    # text prints.  The plan's panel reaches right under the notes, as far
+    # as its leader's text runs, and the notes' panel is listed after it, so
+    # that what lies wholly in the notes' paper is theirs.  The frame itself
+    # is furniture and left out.
+    f = sheet.frame
+    elev_bottom = min(end.rect.y, front.rect.y) - ELEV_UNDER
+    views_bottom = plan.rect.y - _plan_bottom(subject)
+    beside = _beside_column(sheet, subject, end, front, plan)
+    elev_right = front.rect.x1 + ELEV_OUTER + DOCS_PAD
+    sheet.docs_panels = [
+        (Rect(f.x, elev_bottom, elev_right - f.x, f.y1 - elev_bottom),
+         "the two elevations with their height and lateral dimensions"),
+        (Rect(f.x, views_bottom, plan_reach + DOCS_PAD - f.x,
+              elev_bottom - views_bottom),
+         "the plan with its callout"),
+    ]
+    if beside:
+        sheet.docs_panels.append(
+            (beside.inset(-DOCS_PAD), "notes 1 and 2, in the paper beside "
+             "the plan"))
+    sheet.docs_panels += [
+        (heights.inset(-DOCS_PAD),
+         "the heights table, the sheet's headline figures"),
+        (legend.inset(-DOCS_PAD),
+         "the legend, which says what each line in the views is"),
+    ]
     return sheet

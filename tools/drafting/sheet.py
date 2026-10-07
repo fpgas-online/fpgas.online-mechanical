@@ -147,17 +147,33 @@ class Sheet:
         self.area = Rect(self.frame.x, self.frame.y + band_h + 4.0,
                          self.frame.w - cw - 6.0, self.frame.h - band_h - 4.0)
         self._column_cursor = self.column.y1
+        #: What the documentation shows of this sheet, as (rectangle, what it
+        #: holds) in sheet millimetres: the views a reader of the docs wants,
+        #: and any table or legend they need beside them, stacked in this
+        #: order by ``tools/docs_images.py``.  Set by the renderer, from the
+        #: layout it has just drawn, so the picture follows the drawing when
+        #: the drawing moves.  Empty on a sheet nobody has cut up for the
+        #: docs, and ``docs_images.py`` refuses to picture one of those.
+        self.docs_panels: list[tuple[Rect, str]] = []
+        #: The SVG elements ``draw_frame`` wrote: the trim line, the frame,
+        #: the zones and the centring marks.  The sheet's, not any view's,
+        #: so the docs' picture of the views leaves them out wherever they
+        #: fall -- a centring mark runs five millimetres into the drawing
+        #: area.
+        self.furniture: list[str] = []
 
     # -- furniture ----------------------------------------------------------
 
     def draw_frame(self) -> None:
         c = self.canvas
+        start = len(c.parts)
         c.rect(self.trim.x, self.trim.y, self.trim.w, self.trim.h,
                weight=style.W_THIN, colour="#888888")
         f = self.frame
         c.rect(f.x, f.y, f.w, f.h, weight=style.W_FRAME)
         self._draw_zones()
         self._draw_centring_marks()
+        self.furniture = c.parts[start:]
 
     def _draw_centring_marks(self) -> None:
         """ISO 5457 centring marks: a short bar at the middle of each edge.

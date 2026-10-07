@@ -3960,3 +3960,55 @@ The text was what set the scale. With the notes as first written the
 elevations fell to 1:2 and the dimension chain to a few millimetres; the
 frame table was folded into the picture's, the lens table dropped for the
 legend's line and the lens sheet, and the notes cut until 1:1 fitted.
+
+## Pictures of the sheets for the docs site, 7 October 2026
+
+Tim, 7 October: "The mechanical diagrams should be included in the docs",
+and "Giant white diagrams on a dark-mode site are a defect". The docs site
+is Sphinx with Furo 2024.8.6, which shows an image classed `only-light` in
+its light theme and `only-dark` in its dark one, so each picture is written
+twice. Furo's grounds were read from the docs repository's built
+`furo.css`: `#ffffff` light, `#131416` dark.
+
+What is written, per sheet, under `output/docs/`: the views and the whole
+sheet, light and dark, SVG and PNG. No page rectangle in any of them. The
+light one is the sheet as drafted: its white masks -- under labels, inside
+balloons -- land on Furo's white and still mask. The dark one swaps every
+colour through a table, and a mask becomes the dark ground, since a
+transparent mask masks nothing.
+
+The dark greys keep the contrast against the dark ground that they had
+against white, which keeps the drafter's order of emphasis: `#666666` was
+5.7:1 on white and `#909090` is 5.7:1 on `#131416`. `#7a7a7a` comes out as
+itself, 4.3:1 on both. Black cannot have 21:1 on a ground that is not
+black, so it gets `#ebebeb`, 15.5:1. The blue, red and teal are the same
+hues lightened, 7.5, 6.9 and 9.0 to 1, the teal pushed greener so that it
+is not read as the dimension blue. The table checks its own contrast floors
+every run.
+
+The views were to be one crop, a rectangle of the sheet. On
+`RPICAM-OVER-ACORN` the heights table and the legend are in the annotation
+column on the far side of the notes, and one rectangle round all three is
+the top half of the sheet with the notes in its middle: 390 mm wide,
+printing its 2.5 mm text at 1.2 mm across an A4 page. So the views
+are panels of the sheet, each a rectangle of its own layout, stacked: the
+elevations, the plan, the two notes beside the plan, the heights table and
+the legend, five panels. First cut as one panel of elevations, plan and notes:
+219 mm wide, and the text printed at 2.05 mm. Then notes 1 and 2 became a
+panel of their own, the plan's reaching under them as far as its leader's
+text runs (panels may overlap; what is wholly in several belongs to the last):
+161, 110, 141, 164 and 164 mm wide, so the picture is 166 mm and the smallest
+text (2.50 mm capitals) prints at 2.71 mm across 180 mm, over the 2.5 mm
+asked for. The heights table and legend, the widest, needed no cropping. The
+renderer sets the panels from the rectangles it has just laid out, so they
+follow the drawing, and an element that a panel's edge cuts through stops
+the build. That caught the centring marks, which run five millimetres into
+the drawing area; the sheet now records what `draw_frame` drew, and the
+views leave it out.
+
+The pictures are made from the sheet's SVG and carry its VERSION stamp, so
+they go with the sheet: `make diagrams` writes them from the SVG on disk,
+and `check_docs_images.py` holds the committed ones against a fresh run
+over the committed SVG, as `check_pdfs.py` does the PDFs. This branch
+changed no sheet, so its pictures were made from main's SVG, not the
+restamped one a render leaves.

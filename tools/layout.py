@@ -626,6 +626,16 @@ def preview_for(svg: Path) -> Path:
     return svg.parent / "previews" / f"{svg.stem}.png"
 
 
+def docs_dir_for(svg: Path) -> Path:
+    """Where a sheet's pictures for the docs site belong: beside it too.
+
+    A directory of its own inside the output directory, so that nothing
+    that walks a family's sheets -- ``sheets()``, the PDF check -- takes a
+    picture of a sheet for a sheet.  See ``tools/docs_images.py``.
+    """
+    return svg.parent / "docs"
+
+
 def rel(path: Path | str) -> str:
     """A repository-relative path, for printing and for README references."""
     return str(Path(path).relative_to(ROOT))
