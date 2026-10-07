@@ -22,7 +22,7 @@ it, so a new board is a new directory and does not disturb the others.
 | [`tinytapeout/mounting_plate/`](tinytapeout/mounting_plate/README.md) | `TT-MP-*` -- The plate every demo board revision bolts onto, and its drill templates |
 | [`tinytapeout/camera_holder/`](tinytapeout/camera_holder/README.md) | `TT-MP-CAM65`, `TT-MP-CAM120` -- A printed stand on the plate that holds a Camera Module v1.3 over whichever board is on it, one per lens, with STEP solids and a DXF |
 | [`raspberry_pi/`](raspberry_pi/README.md) | `RPI-*` -- Raspberry Pi boards, and boards that take their HATs, each with a Digilent Pmod HAT Adapter overlaid, and the Raspberry Pis all on the one outline they share |
-| [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; the OV5647's stock, autofocus and 120 degree lenses, every figure declared and derived, and their focus; then where to put an OV5647 camera over a board to frame it: how high, in two elevations drawing both lenses' fields of view, whether it is in focus there, and where |
+| [`raspberry_pi_camera/`](raspberry_pi_camera/README.md) | `RPICAM-*` -- Raspberry Pi camera modules, with the lens module, its optical axis and the FFC connector marked; the OV5647's stock, autofocus and 120 degree lenses, every figure declared and derived, and their focus; then where to put an OV5647 camera over a board to frame it: how high and where, in two elevations, and whether it is in focus there; over the plate and the Acorn, where the Camera Module v1.3's lens face goes with its lens refocused |
 | [`fpga/`](fpga/README.md) | `FPGA-*` -- FPGA development boards, one sheet each, with Pmod, USB, Ethernet and LEDs marked |
 | [`accessories/`](accessories/README.md) | `ACC-*` -- Parts that are none of the boards above but turn up in the same assemblies, such as Pi-to-Pmod adapters and PoE splitters, with [a comparison of the two Pi-to-Pmod adapters](accessories/raspmod-vs-pmod-hat.md) |
 | [`tools/`](tools/README.md) | The [drafting library](tools/drafting/README.md), the generator and the checks |
@@ -188,7 +188,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </td>
 <td width="33%" valign="top" align="center">
 <a href="raspberry_pi_camera/output/over-tt-mounting-plate.pdf"><img src="raspberry_pi_camera/output/previews/over-tt-mounting-plate.png" width="270" alt="RPICAM-OVER-PLATE Camera over the TT Mounting Plate"></a><br>
-<b>RPICAM-OVER-PLATE</b> Camera over the TT Mounting Plate<br>Camera Module OV5647, 65 and 120 degree lenses
+<b>RPICAM-OVER-PLATE</b> Camera over the TT Mounting Plate<br>Camera Module v1.3, stock 65 degree lens: lens face heights
 </td>
 <td width="33%" valign="top" align="center">
 <a href="raspberry_pi_camera/output/over-arty-a7.pdf"><img src="raspberry_pi_camera/output/previews/over-arty-a7.png" width="270" alt="RPICAM-OVER-ARTY Camera over the Arty A7"></a><br>

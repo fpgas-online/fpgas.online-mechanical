@@ -10,21 +10,23 @@ the mount exists, how far above the board does it go, and over what point? One
 sheet per subject, and each sheet's name says which after `RPICAM-OVER-`: the
 Tiny Tapeout mounting plate, the Digilent Arty A7 and an Acorn CLE-215+. Each
 leads with two elevations, one for each axis of the picture, drawing the
-subject edge on and, over it, a Camera Module v1.3 with each lens -- the stock
-65 degree one and a 120 degree fisheye -- at the height where its field of
-view takes in the rectangle the picture has to cover, dimensioning how high
-each goes and where; a smaller plan shows the rectangles over the subject, and
-the tables give every height, whether the lens as sold is in focus there,
-and per variant of the camera the lowest height that both frames and focuses.
-`RPICAM-OVER-ACORN` is the exception: it is for one module, the Camera Module
-v1.3 with its stock lens, and gives where its lens **face** goes -- above the
-mounting plate and clear above the assembly's highest point; see
-[the Acorn](#the-acorn-one-module-and-where-its-lens-face-goes).
-`RPICAM-LENS` is the lenses themselves: every field of view figure
-anyone gives, declared and derived, the focus of each, and what a fisheye's
-picture looks like on a board.
+subject edge on and, over it, a Camera Module v1.3, and a smaller plan
+shows the rectangles the picture has to cover over the subject.
+`RPICAM-OVER-PLATE` and `RPICAM-OVER-ACORN` are for one module, the Camera
+Module v1.3 with its stock 65 degree lens, and give where its lens **face**
+goes -- above the mounting plate, clear above the highest point under the
+camera, and above the plane the picture is framed on -- with the lens
+refocused there; see [the Acorn](#the-acorn-one-module-and-where-its-lens-face-goes)
+and [the plate](#the-plate-the-same-per-frame). `RPICAM-OVER-ARTY` still
+draws each lens -- the stock 65 degree one and a 120 degree fisheye -- at the
+height where its field of view takes in the rectangle, dimensioning how high
+each goes and where, and its tables give every height, whether the lens as
+sold is in focus there, and per variant of the camera the lowest height that
+both frames and focuses. `RPICAM-LENS` is the lenses themselves: every field
+of view figure anyone gives, declared and derived, the focus of each, and
+what a fisheye's picture looks like on a board.
 [`TT-MP-CAM65` and `TT-MP-CAM120`](../tinytapeout/camera_holder/README.md)
-are holders built to the first of the position sheets, one per lens.
+are holders built over the plate's frame A, one per lens.
 
 | | |
 |---|---|
@@ -33,8 +35,8 @@ are holders built to the first of the position sheets, one per lens.
 | `v1.py` | **Hand-curated**, with per-value provenance: the Camera Module 1, the OV5647 board lettered v1.3, which Raspberry Pi never drew |
 | `measure_cm1.py` | Scales what the v1.3's hand-measured drawing draws and does not dimension, and checks the scale |
 | `verify.py` | Holds `v1.py` against its cached sources and the checks its error bars rest on |
-| `optics.py` | **Hand-written.** The OV5647's sensor; the stock, autofocus and 120 degree lenses, every figure quoted from its vendor or derived, with its focus and depth of field; the framing model; the subjects a camera is put over; and, for the one sheet that gives them, the lens-face heights and what has been observed on the rig |
-| `verify_optics.py` | Checks every quote in `optics.py` against the cached page, the model against Raspberry Pi's own figures, each lens's figures against the sensor's shape under its projection, that the margin absorbs what is not known about each lens, the wide lens's distortion, every frame against its target, its plane and its height, every height against every lens's focus range, and the Acorn sheet's lens-face heights, picture and crop worked again |
+| `optics.py` | **Hand-written.** The OV5647's sensor; the stock, autofocus and 120 degree lenses, every figure quoted from its vendor or derived, with its focus and depth of field; the framing model; the subjects a camera is put over; and, for the sheets that give them, the lens-face heights, the plate's S and T, and what has been observed on the rig |
+| `verify_optics.py` | Checks every quote in `optics.py` against the cached page, the model against Raspberry Pi's own figures, each lens's figures against the sensor's shape under its projection, that the margin absorbs what is not known about each lens, the wide lens's distortion, every frame against its target, its plane and its height, every height against every lens's focus range, and the lens-face sheets' heights, the plate's S and headroom, and the Acorn's picture and crop worked again |
 | `output/` | The `RPICAM-` sheets, as SVG and PDF, and `raspberry-pi-camera-sheets.pdf`, all of them bound into one document |
 
 ```sh
@@ -73,7 +75,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </td>
 <td width="33%" valign="top" align="center">
 <a href="output/over-tt-mounting-plate.pdf"><img src="output/previews/over-tt-mounting-plate.png" width="270" alt="RPICAM-OVER-PLATE Camera over the TT Mounting Plate"></a><br>
-<b>RPICAM-OVER-PLATE</b> Camera over the TT Mounting Plate<br>Camera Module OV5647, 65 and 120 degree lenses
+<b>RPICAM-OVER-PLATE</b> Camera over the TT Mounting Plate<br>Camera Module v1.3, stock 65 degree lens: lens face heights
 </td>
 <td width="33%" valign="top" align="center">
 <a href="output/over-arty-a7.pdf"><img src="output/previews/over-arty-a7.png" width="270" alt="RPICAM-OVER-ARTY Camera over the Arty A7"></a><br>
@@ -597,8 +599,8 @@ height plus 3.60 mm:
 | Arty LD0-LD7 | 60.0 | 36.0 | not published | 80.0 |
 | The Acorn's LEDs | 60.0 | 27.9 | not published | 80.0 |
 
-The plate's and the Arty's sheets say the same in their tables, frame by
-frame; the Acorn's carries only the first column, as its F. `verify_optics.py`
+The Arty's sheet says the same in its table, frame by frame; the Acorn's and
+the plate's carry only the first column, as their F. `verify_optics.py`
 reads every close limit back out of its quote and works every height again by
 the thin lens.
 
@@ -609,7 +611,9 @@ focused closer, by hand or by motor, at the heights in focus above.
 The wide lens takes the same frame in from about half the height, and sees
 the rig: on the plate its picture is 20.5 mm wider than frame A, and
 anything standing on a board may rise only 6.9 mm before it leaves the
-picture, against 13.2 at 65 degrees.
+picture, against 13.2 at 65 degrees. Those are the heights the two holders
+are built to, the lens as sold; `RPICAM-OVER-PLATE` no longer draws the
+wide lens, and gives 13.6 for the stock lens refocused to F.
 
 ### The Acorn: one module, and where its lens face goes
 
@@ -686,13 +690,67 @@ I2C address 0x0c, its lens was set to raw code 320 on 3 October, and no crop
 or zoom is applied in the stream yet. How the camera is held, and its height
 by anything but eye, are not recorded.
 
+### The plate: the same, per frame
+
+`RPICAM-OVER-PLATE` was reworked the same way on 7 October 2026: the Camera
+Module v1.3 with its stock lens, refocused, and heights to its lens face. The
+120 degree lens and the table of the other modules' heights in focus are off
+it. It keeps both its frames, so each height is given for each:
+
+| | The lens face above | Frame A, every board | Frame B, every LED and 7-seg | Term |
+|---|---|--:|--:|---|
+| H1 | the mounting plate's face, the standoffs' base | 152.4 | 113.3 | S 9.60 +/-0.04 |
+| H2 | the highest point on the board, as clearance | 142.8 - T | 103.7 - T | T: **MEASURE** |
+| F | the demo board's top face, any revision | 142.8 | 103.7 | DERIVED |
+
+F is, as on the Acorn, the higher of the height that frames the frame with
+the lens focused there and the v1.3's 60 mm close limit unscrewed; here the
+framing governs both, 139.2 + 3.60 and 100.1 + 3.60. The lens axis is over
+each frame's centre, (63.38, 44.82) for A and (67.13, 53.12) for B, which the
+sheet's second table gives; the elevations draw and dimension frame A's.
+
+**S is the plate's own**, not measured on a rig and not typed in: the plate's
+M3 x 8 mm standoffs, `STANDOFF_HEIGHT` in
+[`tinytapeout/mounting_plate/plate.py`](../tinytapeout/mounting_plate/README.md),
+a choice no shorter than Tiny Tapeout's own printed base, and each
+revision's board thickness from its KiCad file's stackup in
+[`tinytapeout/boards.py`](../tinytapeout/README.md), 1.56 to 1.60. That is
+9.56 to 9.60, and F is set from the higher, as the frames always were, so S
+is 9.60 +/-0.04 with the thinnest board inside the tolerance. Neither the
+standoff nor the boards state a fabrication tolerance, and the sheet says so.
+`optics.plate_stack_s()` works it from those two modules.
+
+**T is to measure.** No board file gives a part a height, and nobody
+publishes one for every revision, so the sheet prints H2 = F - T and draws
+the highest point not to scale, as on the Acorn's; `optics.plate_stack_t()`
+is where a measured figure goes. What the sheet can say is how far anything
+may stand on a board and stay in frame A's picture with the lens refocused
+to F: 13.6 mm. A T over that wants the camera higher.
+
+**Refocus the lens to F**, 142.8 mm from the board for frame A: as sold it
+is set far, and a point there spreads to 21 pixels. The sheet cites raspi.tv
+and Raspberry Pi as the Acorn's does, and the forum user's close limit.
+
+What this means for the [holders](../tinytapeout/camera_holder/README.md):
+`TT-MP-CAM65`'s lens face is 150.00 above the plate, set from the pinhole
+height for the lens as sold, 148.77; H1 for frame A, refocused, is 152.4,
+2.37 higher, which is more than the holder's 1.00 mm print allowance. At
+150.00 a lens refocused there covers 0.89 mm short of frame A on each side
+along Y and 1.18 along X, so the boards are still in the picture, with 4.11
+mm of the 5.00 margin left. The holder is unchanged here; `TODO.md` carries
+it. `TT-MP-CAM120`'s 72.40 mm over the board, which was this sheet's 120
+column, is `place()` of frame A and the 120 lens in `optics.py`: the holder
+reads it from there, prints it in its own sheet's FOR note, and
+`verify_optics.py` still checks the 120 over the plate's frame A because a
+holder is built on it.
+
 ### The elevations, and why the diagonal is not the angle
 
 The elevations are the primary views, because the question is a height.
 The front elevation looks along +Y with the subject's X across it; the end
 elevation, first angle, is seen from the right and drawn on the left, with Y
-across it. Each draws **both lenses**, each with its own camera at its own
-height, and the angle each lies in its plane from the lens face to where the
+across it. `RPICAM-OVER-ARTY`'s draw **both lenses**, each with its own
+camera at its own height, and the angle each lies in its plane from the lens face to where the
 picture's edge meets the plane: 53.50 and 96 across the sensor's long side,
 41.41 and 72 along its short side, and which is which on the subject depends
 on which way the camera is turned. The stock lens's rays are solid and the
@@ -702,10 +760,11 @@ past it, and is drawn running past it. Both heights are dimensioned on the
 front elevation, lower first, and X and Y of the lens under each. The
 autofocus module is not drawn: its angles are taken as the stock lens's,
 and its cone would lie on the stock one; its height in focus is in the
-table, or says its close limit is not published. `RPICAM-OVER-ACORN` draws
-the stock lens alone, at F, and chains its dimensions up the right of the
-front elevation: S and F nearest the view, T and H2 outside them, H1 outside
-those.
+table, or says its close limit is not published. `RPICAM-OVER-ACORN` and
+`RPICAM-OVER-PLATE` draw the stock lens alone, at frame A's F, and chain
+their dimensions up the right of the front elevation: S and F nearest the
+view, T and H2 outside them, H1 outside those. On the plate S is short
+enough at the sheet's scale that its value is written below it.
 
 "65 degrees" is the diagonal, and using it as the angle across the picture
 is the mistake the name invites. Across the plate's frame A it gives Z
@@ -742,15 +801,15 @@ names the LEDs with a leader, since at its scale they are a millimetre wide.
   sits. It is behind the lens face by at most the 5.20 mm the v1.3's lens
   stands off its board, so set the face at Z and the picture is up to that
   much larger. ASSUMED, and on every sheet.
-- **The plate-to-board offset on `RPICAM-OVER-PLATE` is now the plate's.**
+- **The plate-to-board offset on `RPICAM-OVER-PLATE` is the plate's.**
   Both frames are set from the demo board's top face, which is the plate's
   own 8 mm standoff plus the board: 9.56 to 9.60 mm above the plate face, by
-  each revision's own board thickness, and Z is set from the higher. The 8 mm
-  is a choice, not a published figure, made no shorter than the 6.4 mm Tiny
-  Tapeout's own printed base stands the board on; `TT-MP-PLATE` says so.
-  Nothing on a board has a published height, so the sheet prints how high
-  anything standing on one may rise before it leaves frame A's picture:
-  13.2 mm at 65 deg, 6.9 mm at 120 deg.
+  each revision's own board thickness, and F is set from the higher; that is
+  S. The 8 mm is a choice, not a published figure, made no shorter than the
+  6.4 mm Tiny Tapeout's own printed base stands the board on; `TT-MP-PLATE`
+  says so. Nothing on a board has a published height, so T is to measure,
+  and the sheet prints how high anything standing on one may rise before it
+  leaves frame A's picture: 13.6 mm with the lens refocused to F.
 - **The stack under the card on `RPICAM-OVER-ACORN` is unpublished and
   unmeasured.** F is set from the card's own top face, which the LEDs are on;
   the height above the mounting plate is S + F with S to measure, as
