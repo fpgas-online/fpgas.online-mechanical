@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="166mm" height="108.3093mm" viewBox="0 0 166 108.3093">
+<g transform="translate(-18.4167 -120.5)">
+<path d="M 24.4167 175.0000 L 87.9167 175.0000 A 2.0000 2.0000 0 0 0 89.9167 173.0000 L 89.9167 126.5000 A 2.0000 2.0000 0 0 0 87.9167 124.5000 L 24.4167 124.5000 A 2.0000 2.0000 0 0 0 22.4167 126.5000 L 22.4167 173.0000 A 2.0000 2.0000 0 0 0 24.4167 175.0000 L 87.9167 175.0000 Z" fill="none" stroke="#ebebeb" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="73.0167" y1="172.115" x2="33.7167" y2="172.115" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="32.1167" y1="170.515" x2="32.1167" y2="133.715" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="74.6167" y1="133.715" x2="74.6167" y2="170.515" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="33.7167" y1="132.115" x2="73.0167" y2="132.115" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<rect x="67.5617" y="131.29" width="5.32" height="4.71" fill="#3a2c14" stroke="#d9983a" stroke-width="0.35"/>
+<rect x="37.9667" y="169.215" width="7.65" height="2.57" fill="#131416" stroke="#ff8080" stroke-width="0.35"/>
+<rect x="49.3967" y="169.215" width="7.65" height="2.57" fill="#131416" stroke="#ff8080" stroke-width="0.35"/>
+<rect x="60.8267" y="169.215" width="7.65" height="2.57" fill="#131416" stroke="#ff8080" stroke-width="0.35"/>
+<path d="M 29.8857 169.8613 L 30.1657 169.9863 A 0.8500 0.8500 0 0 1 29.4727 171.5387 L 29.1927 171.4137 A 0.8500 0.8500 0 0 1 29.8857 169.8613 Z" fill="#131416" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="27.8292" y1="170.7" x2="31.5292" y2="170.7" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="29.6792" y1="172.55" x2="29.6792" y2="168.85" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<path d="M 28.7143 134.9322 L 28.9943 133.8072 A 0.8500 0.8500 0 0 1 30.6440 134.2178 L 30.3640 135.3428 A 0.8500 0.8500 0 0 1 28.7143 134.9322 Z" fill="#131416" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="27.8292" y1="134.575" x2="31.5292" y2="134.575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="29.6792" y1="136.425" x2="29.6792" y2="132.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="34.1442" cy="134.111" r="0.85" fill="#131416" stroke="#ff8080" stroke-width="0.5"/>
+<line x1="32.0942" y1="134.111" x2="36.1942" y2="134.111" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="34.1442" y1="136.161" x2="34.1442" y2="132.061" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="32.7057" y1="132.9477" x2="31.2119" y2="131.7398" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<text x="28.8268" y="131.061" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#ff8080" text-anchor="middle" font-weight="bold">A1</text>
+<circle cx="34.1717" cy="170.8575" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="32.1217" y1="170.8575" x2="36.2217" y2="170.8575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="34.1717" y1="172.9075" x2="34.1717" y2="168.8075" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="82.6717" cy="170.8575" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="80.6217" y1="170.8575" x2="84.7217" y2="170.8575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="82.6717" y1="172.9075" x2="82.6717" y2="168.8075" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="82.6717" cy="134.1075" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="80.6217" y1="134.1075" x2="84.7217" y2="134.1075" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="82.6717" y1="136.1575" x2="82.6717" y2="132.0575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="78.3192" cy="170.7625" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="76.2692" y1="170.7625" x2="80.3692" y2="170.7625" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="78.3192" y1="172.8125" x2="78.3192" y2="168.7125" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="78.3192" cy="134.0125" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="76.2692" y1="134.0125" x2="80.3692" y2="134.0125" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="78.3192" y1="136.0625" x2="78.3192" y2="131.9625" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="75.7892" cy="168.3875" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="73.7392" y1="168.3875" x2="77.8392" y2="168.3875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="75.7892" y1="170.4375" x2="75.7892" y2="166.3375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="75.7892" cy="135.1375" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="73.7392" y1="135.1375" x2="77.8392" y2="135.1375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="75.7892" y1="137.1875" x2="75.7892" y2="133.0875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="70.6167" cy="167.865" r="0.85" fill="#131416" stroke="#ff8080" stroke-width="0.5"/>
+<line x1="68.5667" y1="167.865" x2="72.6667" y2="167.865" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="70.6167" y1="169.915" x2="70.6167" y2="165.815" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="72.0156" y1="166.6544" x2="76.4358" y2="162.8292" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<text x="78.8211" y="162.015" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#ff8080" text-anchor="middle" font-weight="bold">D1</text>
+<circle cx="34.1167" cy="131.615" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="32.0667" y1="131.615" x2="36.1667" y2="131.615" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="34.1167" y1="133.665" x2="34.1167" y2="129.565" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="25.1032" cy="164" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="22.8282" y1="164" x2="27.3782" y2="164" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="25.1032" y1="166.275" x2="25.1032" y2="161.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="25.1032" cy="138" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="22.8282" y1="138" x2="27.3782" y2="138" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="25.1032" y1="140.275" x2="25.1032" y2="135.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="87.2317" cy="164" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="84.9567" y1="164" x2="89.5067" y2="164" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="87.2317" y1="166.275" x2="87.2317" y2="161.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="87.2317" cy="138" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="84.9567" y1="138" x2="89.5067" y2="138" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="87.2317" y1="140.275" x2="87.2317" y2="135.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="43.4167" cy="127.0575" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="41.1417" y1="127.0575" x2="45.6917" y2="127.0575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="43.4167" y1="129.3325" x2="43.4167" y2="124.7825" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="68.9167" cy="127.0575" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="66.6417" y1="127.0575" x2="71.1917" y2="127.0575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="68.9167" y1="129.3325" x2="68.9167" y2="124.7825" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<text x="56.1667" y="182" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#ebebeb" text-anchor="middle" font-weight="bold">DB ETR v3.2</text>
+<text x="56.1667" y="187" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#bcbcbc" text-anchor="middle">TT09, TTSKY25a, TTSKY25b, TTGF0p2</text>
+<text x="56.1667" y="192" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#bcbcbc" text-anchor="middle">board rev v3.2</text>
+<path d="M 96.7500 175.0000 L 160.2500 175.0000 A 2.0000 2.0000 0 0 0 162.2500 173.0000 L 162.2500 126.5000 A 2.0000 2.0000 0 0 0 160.2500 124.5000 L 96.7500 124.5000 A 2.0000 2.0000 0 0 0 94.7500 126.5000 L 94.7500 173.0000 A 2.0000 2.0000 0 0 0 96.7500 175.0000 L 160.2500 175.0000 Z" fill="none" stroke="#ebebeb" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="104.45" y1="170.515" x2="104.45" y2="131.215" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="106.05" y1="129.615" x2="145.35" y2="129.615" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="145.35" y1="172.115" x2="106.05" y2="172.115" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<line x1="146.95" y1="131.215" x2="146.95" y2="170.515" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<rect x="139.895" y="128.79" width="5.32" height="4.71" fill="#3a2c14" stroke="#d9983a" stroke-width="0.35"/>
+<rect x="110.3" y="169.215" width="7.65" height="2.57" fill="#131416" stroke="#ff8080" stroke-width="0.35"/>
+<rect x="121.73" y="169.215" width="7.65" height="2.57" fill="#131416" stroke="#ff8080" stroke-width="0.35"/>
+<rect x="133.16" y="169.215" width="7.65" height="2.57" fill="#131416" stroke="#ff8080" stroke-width="0.35"/>
+<path d="M 102.2190 169.8613 L 102.4990 169.9863 A 0.8500 0.8500 0 0 1 101.8060 171.5387 L 101.5260 171.4137 A 0.8500 0.8500 0 0 1 102.2190 169.8613 Z" fill="#131416" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="100.1625" y1="170.7" x2="103.8625" y2="170.7" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="102.0125" y1="172.55" x2="102.0125" y2="168.85" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<path d="M 101.0477 134.9322 L 101.3277 133.8072 A 0.8500 0.8500 0 0 1 102.9773 134.2178 L 102.6973 135.3428 A 0.8500 0.8500 0 0 1 101.0477 134.9322 Z" fill="#131416" stroke="#7a7a7a" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="100.1625" y1="134.575" x2="103.8625" y2="134.575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="102.0125" y1="136.425" x2="102.0125" y2="132.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="106.4775" cy="134.111" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="104.4275" y1="134.111" x2="108.5275" y2="134.111" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="106.4775" y1="136.161" x2="106.4775" y2="132.061" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="106.505" cy="170.8575" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="104.455" y1="170.8575" x2="108.555" y2="170.8575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="106.505" y1="172.9075" x2="106.505" y2="168.8075" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="155.005" cy="170.8575" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="152.955" y1="170.8575" x2="157.055" y2="170.8575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="155.005" y1="172.9075" x2="155.005" y2="168.8075" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="155.005" cy="134.1075" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="152.955" y1="134.1075" x2="157.055" y2="134.1075" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="155.005" y1="136.1575" x2="155.005" y2="132.0575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="150.6525" cy="170.7625" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="148.6025" y1="170.7625" x2="152.7025" y2="170.7625" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="150.6525" y1="172.8125" x2="150.6525" y2="168.7125" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="150.6525" cy="134.0125" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="148.6025" y1="134.0125" x2="152.7025" y2="134.0125" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="150.6525" y1="136.0625" x2="150.6525" y2="131.9625" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="148.1225" cy="168.3875" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="146.0725" y1="168.3875" x2="150.1725" y2="168.3875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="148.1225" y1="170.4375" x2="148.1225" y2="166.3375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="148.1225" cy="135.1375" r="0.85" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="146.0725" y1="135.1375" x2="150.1725" y2="135.1375" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="148.1225" y1="137.1875" x2="148.1225" y2="133.0875" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="142.95" cy="167.865" r="0.85" fill="#131416" stroke="#ff8080" stroke-width="0.5"/>
+<line x1="140.9" y1="167.865" x2="145" y2="167.865" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="142.95" y1="169.915" x2="142.95" y2="165.815" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="144.3489" y1="166.6544" x2="148.7692" y2="162.8292" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<text x="151.1545" y="162.015" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#ff8080" text-anchor="middle" font-weight="bold">D1</text>
+<circle cx="106.45" cy="131.615" r="0.85" fill="#131416" stroke="#ff8080" stroke-width="0.5"/>
+<line x1="104.4" y1="131.615" x2="108.5" y2="131.615" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="106.45" y1="133.665" x2="106.45" y2="129.565" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="105.0268" y1="130.433" x2="103.5246" y2="129.1854" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<text x="101.2725" y="128.565" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#ff8080" text-anchor="middle" font-weight="bold">E1</text>
+<circle cx="97.4365" cy="164" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="95.1615" y1="164" x2="99.7115" y2="164" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="97.4365" y1="166.275" x2="97.4365" y2="161.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="97.4365" cy="138" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="95.1615" y1="138" x2="99.7115" y2="138" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="97.4365" y1="140.275" x2="97.4365" y2="135.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="159.565" cy="164" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="157.29" y1="164" x2="161.84" y2="164" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="159.565" y1="166.275" x2="159.565" y2="161.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="159.565" cy="138" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="157.29" y1="138" x2="161.84" y2="138" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="159.565" y1="140.275" x2="159.565" y2="135.725" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="115.75" cy="127.0575" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="113.475" y1="127.0575" x2="118.025" y2="127.0575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="115.75" y1="129.3325" x2="115.75" y2="124.7825" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<circle cx="141.25" cy="127.0575" r="1.075" fill="#131416" stroke="#7a7a7a" stroke-width="0.25"/>
+<line x1="138.975" y1="127.0575" x2="143.525" y2="127.0575" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="141.25" y1="129.3325" x2="141.25" y2="124.7825" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round"/>
+<text x="128.5" y="182" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#ebebeb" text-anchor="middle" font-weight="bold">DB ETR v3.3</text>
+<text x="128.5" y="187" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#bcbcbc" text-anchor="middle">no shipped shuttle yet</text>
+<text x="128.5" y="192" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#bcbcbc" text-anchor="middle">board rev v3.3</text>
+</g>
+<g transform="translate(-241 -27.5573)">
+<text x="243" y="111.3667" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#ebebeb" text-anchor="start" font-weight="bold">LEGEND</text>
+<line x1="243" y1="112.7667" x2="405" y2="112.7667" stroke="#ebebeb" stroke-width="0.4" stroke-linecap="round"/>
+<line x1="243" y1="117.2667" x2="263" y2="117.2667" stroke="#ebebeb" stroke-width="0.5" stroke-linecap="round"/>
+<text x="266" y="118.5167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#ebebeb" text-anchor="start">Plate edge</text>
+<circle cx="253" cy="121.8667" r="1.7" fill="#131416" stroke="#ff8080" stroke-width="0.5"/>
+<line x1="250.1" y1="121.8667" x2="255.9" y2="121.8667" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<line x1="253" y1="124.7667" x2="253" y2="118.9667" stroke="#ff8080" stroke-width="0.25" stroke-linecap="round"/>
+<text x="266" y="123.1167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#ebebeb" text-anchor="start">Hole or slot this revision uses</text>
+<line x1="243" y1="126.4667" x2="263" y2="126.4667" stroke="#7a7a7a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="127.7167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#ebebeb" text-anchor="start">Holes it does not use, and its board outline</text>
+<line x1="243" y1="131.0667" x2="263" y2="131.0667" stroke="#d9983a" stroke-width="0.25" stroke-linecap="round" stroke-dasharray="6.0,1.4,0.7,1.4,0.7,1.4"/>
+<text x="266" y="132.3167" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#ebebeb" text-anchor="start">USB-C connector on this revision</text>
+</g>
+</svg>
