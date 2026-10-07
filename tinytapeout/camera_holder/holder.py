@@ -433,13 +433,17 @@ FASTENERS = (
 )
 
 
-def _sources(lens) -> tuple[Source, ...]:
-    """What the holder for *lens* is built from."""
+def _sources(lens, drawn: bool) -> tuple[Source, ...]:
+    """What the holder for *lens* is built from; *drawn* is whether
+    RPICAM-OVER-PLATE draws that lens."""
     return (
         Source(label="Where the camera goes",
                ref="raspberry_pi_camera/optics.py",
                note=f"The plate subject's frame A and the {lens.short} deg "
-                    "lens: RPICAM-OVER-PLATE."),
+                    "lens: "
+                    + ("RPICAM-OVER-PLATE." if drawn else
+                       "frame A is RPICAM-OVER-PLATE's, which does not draw "
+                       "this lens: the height is optics.place().")),
         Source(label="What it stands on",
                ref="tinytapeout/mounting_plate/plate.py",
                note="Outline, side fixings, standoff; TT-MP-PLATE."),
@@ -496,13 +500,58 @@ class Holder:
         self.ASSEMBLY = (self.SIDE_LEFT, self.SIDE_RIGHT, self.BEAM,
                          self.CARRIER)
         self.PARTS = (self.SIDE_LEFT, self.BEAM, self.CARRIER)
-        self.SOURCES = _sources(self.LENS)
+        self.SOURCES = _sources(self.LENS, self.DRAWN_ON_POSITION_SHEET)
 
     def __getattr__(self, name):
         try:
             return globals()[name]
         except KeyError:
             raise AttributeError(name) from None
+
+    @property
+    def DRAWN_ON_POSITION_SHEET(self) -> bool:
+        """Whether RPICAM-OVER-PLATE draws this holder's lens."""
+        keys = SUBJECT.lens_keys
+        return keys is None or self.LENS.key in keys
+
+    def refocused_h1(self) -> float | None:
+        """The lens-face height RPICAM-OVER-PLATE prints as H1 for this lens
+        over frame A, refocused, above the plate: None where that sheet does
+        not draw the lens."""
+        if not self.DRAWN_ON_POSITION_SHEET:
+            return None
+        return SUBJECT.face.above_base(FRAME)
+
+    def refocused_shortfall(self) -> tuple[float, float]:
+        """What the lens, refocused at this holder's face, leaves off frame A
+        on each side along X and along Y: frame A's size less the picture's,
+        halved.  Positive where the picture falls short of the frame."""
+        long_side, short_side = optics.picture(
+            self.LENS, self.LENS_FACE - BOARD_PLANE)
+        cover_x, cover_y = ((long_side, short_side)
+                            if FRAME.long_axis == "X"
+                            else (short_side, long_side))
+        return ((FRAME.width - cover_x) / 2, (FRAME.height - cover_y) / 2)
+
+    def boards_keep(self) -> tuple[tuple[float, float], tuple[float, float]]:
+        """What the boards keep of frame A's margin with the lens refocused
+        at this holder's face, as ((kept, frame's own margin) along X, the
+        same along Y).  The boards are frame A's target, at the highest board
+        plane; the frame's own margin is wider than ``optics.FRAME_MARGIN``
+        on the axis the 4:3 shape stretches."""
+        long_side, short_side = optics.picture(
+            self.LENS, self.LENS_FACE - BOARD_PLANE)
+        cover_x, cover_y = ((long_side, short_side)
+                            if FRAME.long_axis == "X"
+                            else (short_side, long_side))
+        t = FRAME.target
+        kept_x = min(t.x0 - (FRAME.cx - cover_x / 2),
+                     (FRAME.cx + cover_x / 2) - t.x1)
+        kept_y = min(t.y0 - (FRAME.cy - cover_y / 2),
+                     (FRAME.cy + cover_y / 2) - t.y1)
+        own_x = min(t.x0 - FRAME.x0, FRAME.x1 - t.x1)
+        own_y = min(t.y0 - FRAME.y0, FRAME.y1 - t.y1)
+        return (kept_x, own_x), (kept_y, own_y)
 
     def turned_wrong(self) -> float:
         """What the picture misses off each end of frame A's long side if the

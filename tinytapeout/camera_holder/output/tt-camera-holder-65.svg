@@ -394,7 +394,7 @@
 <text x="112.942" y="147.075" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">First angle, in TT-MP-PLATE&#x27;s coordinates, Z up from the plate&#x27;s TOP face. The</text>
 <text x="112.942" y="151.6017" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">right side frame is the left one mirrored.</text>
 <text x="108.4" y="157.1285" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="112.942" y="157.1285" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">FOR: the lens over RPICAM-OVER-PLATE&#x27;s frame A, at (63.38, 44.82), high</text>
+<text x="112.942" y="157.1285" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">FOR: the lens over frame A of RPICAM-OVER-PLATE at (63.38, 44.82), high</text>
 <text x="112.942" y="161.6552" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">enough for the 65 deg lens, 53.50 x 41.41 deg, to take in every revision&#x27;s</text>
 <text x="112.942" y="166.182" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">whole board: 139.17 over the highest board face, 9.60 up, so 148.77. Set at</text>
 <text x="112.942" y="170.7087" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">150.00, 1.23 over for the print, in a mode reading the whole sensor.</text>
@@ -433,19 +433,23 @@
 <text x="138.042" y="238.8207" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">new hole; on a chassis the M4s are 5 mm longer than the</text>
 <text x="138.042" y="243.3475" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">plate&#x27;s own. Plug the FFC in first -- its latch is out of reach</text>
 <text x="138.042" y="247.8742" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">under the carrier -- and take it up and back over the beam.</text>
-<text x="133.5" y="254.401" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
-<line x1="133.5" y1="255.801" x2="235" y2="255.801" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="133.5" y="260.501" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
-<text x="138.042" y="260.501" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Where the camera goes: raspberry_pi_camera/optics.py - The</text>
-<text x="138.042" y="265.0277" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">plate subject&#x27;s frame A and the 65 deg lens:</text>
-<text x="138.042" y="269.5545" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">RPICAM-OVER-PLATE.</text>
-<text x="243" y="212.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES (continued)</text>
-<line x1="243" y1="213.9" x2="405" y2="213.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
-<text x="243" y="218.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
-<text x="247.542" y="218.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">What it stands on: tinytapeout/mounting_plate/plate.py - Outline, side fixings, standoff; TT-MP-PLATE.</text>
-<text x="243" y="224.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
-<text x="247.542" y="224.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">What it carries: raspberry_pi_camera/v1.py - The Camera Module v1.3: Gert van Loo&#x27;s</text>
-<text x="247.542" y="228.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">hand-measured sheet of 21 May 2013, checked against Raspberry Pi Spy&#x27;s calipers.</text>
+<text x="133.5" y="253.401" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">9.</text>
+<text x="138.042" y="253.401" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">KEPT LOW: face 150.00, 2.37 under RPICAM-OVER-PLATE&#x27;s H1</text>
+<text x="138.042" y="257.9277" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">of 152.37 for the lens refocused. Refocused here the picture is</text>
+<text x="138.042" y="262.4545" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.18 (X) and 0.89 (Y) short of frame A each side: the boards</text>
+<text x="138.042" y="266.9812" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">keep 8.08 of the frame&#x27;s 9.26 margin (X) and 4.11 of 5.00 (Y).</text>
+<text x="138.042" y="271.508" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">ACCEPTED, Tim Ansell, 7 Oct 2026, rather than raise the</text>
+<text x="138.042" y="276.0347" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">holder.</text>
+<text x="243" y="202.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
+<line x1="243" y1="203.9" x2="405" y2="203.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="243" y="208.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="247.542" y="208.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Where the camera goes: raspberry_pi_camera/optics.py - The plate subject&#x27;s frame A and the 65 deg</text>
+<text x="247.542" y="213.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">lens: RPICAM-OVER-PLATE.</text>
+<text x="243" y="218.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="247.542" y="218.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">What it stands on: tinytapeout/mounting_plate/plate.py - Outline, side fixings, standoff; TT-MP-PLATE.</text>
+<text x="243" y="224.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="247.542" y="224.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">What it carries: raspberry_pi_camera/v1.py - The Camera Module v1.3: Gert van Loo&#x27;s</text>
+<text x="247.542" y="228.707" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">hand-measured sheet of 21 May 2013, checked against Raspberry Pi Spy&#x27;s calipers.</text>
 <rect x="243" y="237" width="165" height="48" fill="none" stroke="#000000" stroke-width="0.7"/>
 <line x1="243" y1="252" x2="408" y2="252" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="245.5" y="245.8" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6.8587" fill="#000000" text-anchor="start" font-weight="bold">CAMERA HOLDER, 65 DEG LENS</text>
@@ -454,7 +458,7 @@
 <text x="244.6" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">generated</text>
 <line x1="284.25" y1="263" x2="284.25" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="285.85" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">VERSION</text>
-<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-352-g967eb38</text>
+<text x="285.85" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">v0.0-597-ge29bafe</text>
 <line x1="325.5" y1="263" x2="325.5" y2="252" stroke="#000000" stroke-width="0.25" stroke-linecap="round"/>
 <text x="327.1" y="255.5" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#666666" text-anchor="start">UNITS</text>
 <text x="327.1" y="261.4" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start" font-weight="bold">mm</text>
