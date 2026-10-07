@@ -602,7 +602,9 @@ def _tables_face(sheet: Sheet, subject: Subject) -> Rect:
     elevations dimension frame A's alone.  No lens table: the one lens's
     angles are in the legend, and the lens sheet has the rest.
 
-    Returns the heights table's block.
+    Returns the heights table's block, and with more than one frame the
+    block that takes in the frames table under it as well: both are what the
+    sheet is for.
     """
     face = subject.face
     frames = subject.frames()
@@ -638,7 +640,7 @@ def _tables_face(sheet: Sheet, subject: Subject) -> Rect:
         sheet.table(block, title,
                     ["", "FRAME", "RECTANGLE", "LONG", "AXIS X", "AXIS Y"],
                     rows, ["middle", "start", "end", "middle", "end", "end"])
-        return heights
+        return Rect(heights.x, block.y, heights.w, heights.y1 - block.y)
 
     column = max(fr.target.width, fr.target.height)
 
@@ -886,6 +888,11 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> float:
         reach = max(reach, end_x + LEADER_TEXT_GAP
                     + style.text_width(text, style.T_LABEL))
 
+    # The frames' letters ring a corner of the frame, which can be past the
+    # plan's own edge.
+    for fr in frames:
+        reach = max(reach, view.pt(fr.x1, fr.y1)[0] + MARKER_R)
+
     dx, dy = _datum_label_offset(subject, view)
     dims.datum_marker(c, *view.pt(0.0, 0.0), label="X0 Y0",
                       label_dx=dx, label_dy=dy)
@@ -1012,8 +1019,11 @@ def _note_columns(sheet: Sheet, subject: Subject, end: View, front: View,
 
 
 def _place_text(sheet: Sheet, subject: Subject, notes: list[str],
-                src: list[str], cols: list[Rect]) -> None:
+                src: list[str], cols: list[Rect]) -> list[Rect]:
     """Notes and sources in what the views leave, then the column's foot.
+
+    Returns the columns the text went in, the first of them the paper beside
+    the plan where there is room for it.
 
     A sheet whose text will not go anywhere at this scale says so by raising
     :class:`DoesNotFit`, and the caller tries the next scale down.
@@ -1037,6 +1047,7 @@ def _place_text(sheet: Sheet, subject: Subject, notes: list[str],
             h += 2.0
         cols = cols + [sheet.column_block_bottom(h)]
     sheet.notes_columns(cols, blocks)
+    return cols
 
 
 # ---------------------------------------------------------------------------
@@ -1524,8 +1535,8 @@ def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
 
     heights = _tables(sheet, subject)
     legend = draw_legend(sheet, _legend(subject))
-    _place_text(sheet, subject, notes, src,
-                _note_columns(sheet, subject, end, front, plan))
+    note_cols = _place_text(sheet, subject, notes, src,
+                            _note_columns(sheet, subject, end, front, plan))
     sheet.draw_title_block()
 
     # What the docs show: how the camera sits over the subject and how high,
@@ -1546,21 +1557,41 @@ def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
     views_bottom = plan.rect.y - _plan_bottom(subject)
     beside = _beside_column(sheet, subject, end, front, plan)
     elev_right = front.rect.x1 + ELEV_OUTER + DOCS_PAD
+    elev_left = (end.rect.x - DOCS_PAD if subject.docs_all_notes else f.x)
     sheet.docs_panels = [
-        (Rect(f.x, elev_bottom, elev_right - f.x, f.y1 - elev_bottom),
+        (Rect(elev_left, elev_bottom, elev_right - elev_left,
+              f.y1 - elev_bottom),
          "the two elevations with their height and lateral dimensions"),
         (Rect(f.x, views_bottom, plan_reach + DOCS_PAD - f.x,
               elev_bottom - views_bottom),
          "the plan with its callout"),
     ]
     if beside:
+        # As far down as the text goes, where the picture takes every note:
+        # two short notes in a column that is the height of the plan's
+        # paper are mostly blank.
+        if subject.docs_all_notes and 0 in sheet.notes_floor:
+            beside = Rect(beside.x, sheet.notes_floor[0], beside.w,
+                          beside.y1 - sheet.notes_floor[0])
         sheet.docs_panels.append(
             (beside.inset(-DOCS_PAD), "notes 1 and 2, in the paper beside "
              "the plan"))
     sheet.docs_panels += [
         (heights.inset(-DOCS_PAD),
-         "the heights table, the sheet's headline figures"),
+         "the heights table, the sheet's headline figures, "
+         "and the frames table under it where there is one"),
         (legend.inset(-DOCS_PAD),
          "the legend, which says what each line in the views is"),
     ]
+    if subject.docs_all_notes:
+        # The rest of the notes and the sources: the columns under the plan
+        # and the foot of the annotation column, each as far down as its
+        # text goes.
+        first = 1 if beside else 0
+        sheet.docs_panels += [
+            (Rect(col.x, sheet.notes_floor[n], col.w,
+                  col.y1 - sheet.notes_floor[n]).inset(-DOCS_PAD),
+             "the notes the text runs on into, as far down as it goes")
+            for n, col in enumerate(note_cols) if n >= first
+            and n in sheet.notes_floor]
     return sheet
