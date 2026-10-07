@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="166mm" height="354.1119mm" viewBox="0 0 166 354.1119">
+<g transform="translate(-22 -139.4526)">
+<text x="24" y="144.9526" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<line x1="24" y1="146.3526" x2="125.5" y2="146.3526" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="24" y="151.0526" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="30.5045" y="151.0526" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Heights are to the lens FACE. The entrance pupil the optics</text>
+<text x="30.5045" y="155.5793" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">are worked to is ASSUMED behind it by at most the lens&#x27;s</text>
+<text x="30.5045" y="160.1061" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.20 mm, so the picture is up to 9.2% larger, never smaller,</text>
+<text x="30.5045" y="164.6328" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">and the board and its LEDs no nearer than the close limit.</text>
+<text x="24" y="170.1596" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="30.5045" y="170.1596" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">F is, per frame, the higher of two heights: the one that just</text>
+<text x="30.5045" y="174.6863" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">frames it with the lens focused there, frame A 128.3 + f 3.60</text>
+<text x="30.5045" y="179.2131" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">= 131.9, frame B 32.4 + f 3.60 = 36.0 (DERIVED, thin lens),</text>
+<text x="30.5045" y="183.7398" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">and the lens&#x27;s close limit unscrewed, 60 mm: &quot;About the</text>
+<text x="30.5045" y="188.2666" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">closest you can get this way is about 6 cm.&quot; (a Raspberry Pi</text>
+<text x="30.5045" y="192.7933" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">forum user, 2013; REPORTED). The forum does not say</text>
+<text x="30.5045" y="197.3201" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">whether its &quot;about 6 cm&quot; is from the lens face; it is taken as</text>
+<text x="30.5045" y="201.8468" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">from the face, note 2&#x27;s convention.</text>
+<text x="24" y="207.3736" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="30.5045" y="207.3736" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">H1 = S + F, frame A S + 131.9, frame B S + 60.0, where S is</text>
+<text x="30.5045" y="211.9003" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">what the Arty stands on, under its rubber feet, to its top</text>
+<text x="30.5045" y="216.427" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">face: a foot and the board: MEASURE, not published.</text>
+<text x="24" y="221.9538" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
+<text x="30.5045" y="221.9538" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">H2 = F - T, the clearance, frame A 131.9 - T, frame B 60.0 -</text>
+<text x="30.5045" y="226.4805" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">T, where T is the Arty&#x27;s top face to the top of its tallest part:</text>
+<text x="30.5045" y="231.0073" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">MEASURE, not published.</text>
+<text x="24" y="236.534" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
+<text x="30.5045" y="236.534" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">HEADROOM: a part standing on the board, anywhere in its</text>
+<text x="30.5045" y="241.0608" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">envelope stays in frame A&#x27;s picture, the lens refocused to F,</text>
+<text x="30.5045" y="245.5875" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">up to 13.6 mm above the board&#x27;s top face (DERIVED). If T is</text>
+<text x="30.5045" y="250.1143" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">more, raise the camera.</text>
+</g>
+<g transform="translate(-131.5 -19.7641)">
+<text x="133.5" y="144.9526" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<line x1="133.5" y1="146.3526" x2="235" y2="146.3526" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="133.5" y="151.0526" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
+<text x="140.0045" y="151.0526" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">REFOCUS THE LENS TO F, 131.9 mm from the lens face to</text>
+<text x="140.0045" y="155.5793" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the board and its LEDs for frame A, 60.0 for frame B. As sold</text>
+<text x="140.0045" y="160.1061" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">it is set far -- &quot;Approx 1 m to infinity&quot; (Raspberry Pi; infinity is</text>
+<text x="140.0045" y="164.6328" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">their sign), &quot;from about 0.5m to infinity&quot; (raspi.tv) -- and at</text>
+<text x="140.0045" y="169.1596" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">frame A&#x27;s F a point spreads to 23 px (DERIVED). raspi.tv</text>
+<text x="140.0045" y="173.6863" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">adds a +2D lens in front, &quot;focus at about 25cm&quot;, too far for</text>
+<text x="140.0045" y="178.2131" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">F; a reader&#x27;s comment there: &quot;You CAN change the focus of</text>
+<text x="140.0045" y="182.7398" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the stock lens on the pi camera. It is tricky but can be done.&quot;</text>
+<text x="140.0045" y="187.2666" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Unscrew it until the board and its LEDs are sharp.</text>
+<text x="133.5" y="192.7933" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">8.</text>
+<text x="140.0045" y="192.7933" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A frame is the sensor&#x27;s own 4:3 round its target plus 5.00</text>
+<text x="140.0045" y="197.3201" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm all round, turned whichever way needs the lower</text>
+<text x="140.0045" y="201.8468" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">camera; the table gives which, and where the lens axis goes</text>
+<text x="140.0045" y="206.3736" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">over each.</text>
+<text x="133.5" y="211.9003" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">9.</text>
+<text x="140.0045" y="211.9003" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Frame A, Whole board: The assembled envelope: the outline</text>
+<text x="140.0045" y="216.427" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">together with the connectors and Pmod bodies that</text>
+<text x="140.0045" y="220.9538" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">overhang it.</text>
+<text x="133.5" y="226.4805" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">10.</text>
+<text x="140.0045" y="226.4805" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Frame B, LD0-LD7: The four tri-colour LEDs LD0-LD3 and the</text>
+<text x="140.0045" y="231.0073" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">four single LD4-LD7, in two rows on a 7.00 mm pitch.</text>
+<text x="133.5" y="236.534" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">11.</text>
+<text x="140.0045" y="236.534" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Which LED row is which is not named by any Digilent source;</text>
+<text x="140.0045" y="241.0608" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">FPGA-ARTY-A7 takes the row nearest the edge as the</text>
+<text x="140.0045" y="245.5875" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">tri-colour LD0-LD3 by package size. Either way both rows are</text>
+<text x="140.0045" y="250.1143" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">inside the frame, so the framing does not turn on it.</text>
+<text x="133.5" y="255.641" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">12.</text>
+<text x="140.0045" y="255.641" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S: the A7 drawing draws the four rubber feet 10.0 mm across</text>
+<text x="140.0045" y="260.1678" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">and gives no height, for them or for the board. Digilent&#x27;s 3D</text>
+<text x="140.0045" y="264.6945" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">model of the Arty Rev C, not the A7, has a 1.50 board on feet</text>
+<text x="140.0045" y="269.2213" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.70 tall, 5.20 in all, but its feet are 8.70 across, not the feet</text>
+<text x="140.0045" y="273.748" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">drawn, and it states no tolerance. Measure S on the A7, from</text>
+<text x="140.0045" y="278.2748" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">what it stands on to its top face.</text>
+</g>
+<g transform="translate(-241 120.5374)">
+<text x="243" y="152.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<line x1="243" y1="153.9" x2="405" y2="153.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="243" y="158.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">13.</text>
+<text x="249.5045" y="158.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">T: the A7 drawing gives no part a height. The Rev C model&#x27;s tallest part is the Ethernet jack J9&#x27;s</text>
+<text x="249.5045" y="163.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">shield, 14.80 above the board&#x27;s top face, and the A7 drawing puts J9 in the same place: over the</text>
+<text x="249.5045" y="167.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">headroom anywhere on the board, but where J9 stands a part stays in frame A&#x27;s picture up to 20.9</text>
+<text x="249.5045" y="172.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm. Measure T on the A7, from its top face to the top of its tallest part.</text>
+<text x="243" y="178.707" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
+<line x1="243" y1="180.107" x2="405" y2="180.107" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="243" y="184.807" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="249.5045" y="184.807" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board geometry: fpga/boards.py - Outline, Pmod hosts, connectors and LED rows; see</text>
+<text x="249.5045" y="189.3337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">FPGA-ARTY-A7.</text>
+<text x="243" y="194.8605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="249.5045" y="194.8605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3D model, Arty Rev C:</text>
+<text x="249.5045" y="199.3872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">https://digilent.com/reference/_media/reference/programmable-logic/arty/arty_revc_cad.zip -</text>
+<text x="249.5045" y="203.914" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Digilent, Arty Rev C.stp, 20 June 2016: not the A7. Its heights are quoted in the notes; no height on</text>
+<text x="249.5045" y="208.4407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">this sheet is set from it.</text>
+<text x="243" y="213.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="249.5045" y="213.9675" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">raspi.tv, 25 May 2013: https://web.archive.org/web/20260212013652/https://raspi.tv/2013/</text>
+<text x="249.5045" y="218.4942" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">adapt-your-raspberry-pi-camera-for-close-up-use</text>
+<text x="243" y="224.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="249.5045" y="224.021" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Lens figures and focus: RPICAM-LENS - Every lens figure on this sheet, declared and derived, with</text>
+<text x="249.5045" y="228.5477" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the vendor pages it is quoted from.</text>
+</g>
+</svg>
