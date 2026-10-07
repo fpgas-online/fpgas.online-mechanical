@@ -517,3 +517,5 @@ checker that measures the finished PDFs rather than trusting them.
       barrel jack end of JC, and `parts.py` puts it where pin 12 is.
       `ACC-HAT-PMOD`'s and the Raspberry Pi sheets' Pmod tables print those
       figures. Fixing it changes those sheets, so it is its own pull request
+      (fpgas.online-mechanical issue #50,
+      https://github.com/fpgas-online/fpgas.online-mechanical/issues/50).
