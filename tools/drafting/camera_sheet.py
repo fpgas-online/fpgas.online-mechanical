@@ -1078,12 +1078,15 @@ def _along(subject: Subject, axis: str, lens=None):
 
 
 def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
-                    axis: str) -> dict[str, float]:
+                    axis: str) -> tuple[dict[str, float], float]:
     """One elevation: the subject edge on, and each lens and its rays.
 
-    Returns the sheet position of each lens's apex by lens key; the lens
+    Returns the sheet position of each lens's apex by lens key -- the lens
     axis is the same for both, over frame A's centre, and the caller
-    dimensions it from the datum.
+    dimensions it from the datum -- and how far left the view's own text
+    reaches: the stock lens's angle, outside its cone on the left, can stand
+    past the view's left edge, and a docs panel cut at that edge would cut
+    it.
     """
     c = sheet.canvas
     f_lo, f_hi, t_lo, t_hi, cu, angle, which, size = _along(subject, axis)
@@ -1132,6 +1135,7 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
                    colour=colour, dash=dash)
 
     apexes = {}
+    text_left = v.rect.x
     wide_label = None
     for lens in subject.lenses():
         *_, angle, which, _ = _along(subject, axis, lens)
@@ -1158,9 +1162,11 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
         right = (apex[0] + r * math.sin(half), apex[1] - r * math.cos(half))
         c.arc(*left, *right, r, sweep=1, w=style.W_THIN, colour=style.C_DIM)
         if lens.key == DRAWN:
-            c.text(left[0] - 1.5, left[1] + 1.0,
-                   f"{angle:.2f} deg, {which}", size=style.T_DIM,
+            label = f"{angle:.2f} deg, {which}"
+            c.text(left[0] - 1.5, left[1] + 1.0, label, size=style.T_DIM,
                    colour=style.C_DIM, anchor="end")
+            text_left = min(text_left, left[0] - 1.5
+                            - style.text_width(label, style.T_DIM))
         else:
             wide_label = (apex[0], apex[1] - r - 1.5 - style.T_DIM,
                           f"{angle:.0f} deg, {which}")
@@ -1181,7 +1187,7 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
     else:
         c.line(*bottom, *top, w=style.W_CENTRE, colour=style.C_LINE,
                dash=style.D_CENTRE)
-    return apexes
+    return apexes, text_left
 
 
 def _draw_camera(c, v: View, cu: float, z: float, along: str,
@@ -1522,8 +1528,9 @@ def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
     sheet.draw_frame()
     c = sheet.canvas
 
-    lens_x = _draw_elevation(sheet, subject, front, "X")[DRAWN]
-    lens_y = _draw_elevation(sheet, subject, end, "Y")[DRAWN]
+    lens_x = _draw_elevation(sheet, subject, front, "X")[0][DRAWN]
+    end_apexes, end_text_left = _draw_elevation(sheet, subject, end, "Y")
+    lens_y = end_apexes[DRAWN]
     _dimension_front(sheet, subject, front, lens_x)
     _dimension_end(sheet, subject, end, lens_y)
 
@@ -1559,7 +1566,8 @@ def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
     views_bottom = plan.rect.y - _plan_bottom(subject)
     beside = _beside_column(sheet, subject, end, front, plan)
     elev_right = front.rect.x1 + ELEV_OUTER + DOCS_PAD
-    elev_left = (end.rect.x - DOCS_PAD if subject.docs_all_notes else f.x)
+    elev_left = (end_text_left - DOCS_PAD if subject.docs_all_notes
+                 else f.x)
     sheet.docs_panels = [
         (Rect(elev_left, elev_bottom, elev_right - elev_left,
               f.y1 - elev_bottom),
