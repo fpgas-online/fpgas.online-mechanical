@@ -4230,4 +4230,7 @@ the hosts' +/-0.75, and more than 12 mm from the old ones.
 `_check_hat_pin1` in `parts.py` holds each port's figures to the row and end
 read off the photographs, at import, so the old corner cannot come back
 without the reading changing too. The sheets cite the manual as the source
-for pin 1.
+for pin 1. `tinytapeout/pmod_pin1/hat.py`, merged the same day with its own
+copy of the reading and a note that `parts.py` had pin 12's place, now
+imports the reading and stops if the pin 1 it draws is not `parts.py`'s;
+its pin 12 lands on the old figures to the hundredth.
