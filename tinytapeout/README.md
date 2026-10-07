@@ -10,6 +10,7 @@ accepts any revision.
 | `extract.py` | Reads the upstream KiCad board files and writes `boards.py` |
 | `output/` | One `TT-DB-…` sheet per geometry, as SVG and PDF, and `tinytapeout-sheets.pdf`, the plate sheets and demo boards bound into one document |
 | `mounting_plate/` | The plate every revision bolts onto, and its drill templates |
+| [`pmod_pin1/`](pmod_pin1/README.md) | Pictures for the docs site of where pin 1 is on the v3.2 board's Pmod sockets, and on the Pmod HAT Adapter's |
 
 ```sh
 uv run --no-project python tinytapeout/extract.py     # needs tmp/src, see make fetch
