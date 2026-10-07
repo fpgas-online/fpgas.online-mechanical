@@ -96,6 +96,7 @@ from tools.layout import docs_dir_for, rel  # noqa: E402
 #: set ``docs_panels``.
 DOCS_SHEETS = (
     "raspberry_pi_camera/output/over-acorn-cle-215-plus.svg",
+    "raspberry_pi_camera/output/over-arty-a7.svg",
     "raspberry_pi_camera/output/over-tt-mounting-plate.svg",
     "tinytapeout/mounting_plate/output/tt-generic-mounting-plate.svg",
     "tinytapeout/mounting_plate/output/"
@@ -104,13 +105,15 @@ DOCS_SHEETS = (
 
 #: Sheets whose whole-sheet pictures are written as PNG only, with no SVG.
 #: The plate's whole-sheet SVG is about 490 lines, the fitting guide's
-#: about 550 and the camera over the plate's about 420, each over the
+#: about 550, the camera over the plate's about 420 and the camera over
+#: the Arty's about 410, each over the
 #: commit-size hook's 400 added lines, and a picture that cannot be
 #: committed cannot be checked, so the docs link the sheet's own PDF for the
 #: zoomable full drawing and the PNG here is its preview.  Question mech-01
 #: to Tim is open; when it is answered this can go.  The views are SVG and
 #: PNG as for any sheet.
 SHEET_PNG_ONLY = frozenset({
+    "raspberry_pi_camera/output/over-arty-a7.svg",
     "raspberry_pi_camera/output/over-tt-mounting-plate.svg",
     "tinytapeout/mounting_plate/output/tt-generic-mounting-plate.svg",
     "tinytapeout/mounting_plate/output/"
@@ -140,8 +143,9 @@ PRINT_WIDTH_MM = 180.0
 #: the tables and the notes.  The camera over the plate's: the elevations, the
 #: plan, the first notes, the tables and the legend, then the notes that run
 #: on and the sources; one picture of them is over two and a half A4 pages
-#: printed across 180 mm.
+#: printed across 180 mm.  The camera over the Arty's the same way.
 VIEW_GROUPS = {
+    "over-arty-a7": (("a", 5), ("b", None)),
     "over-tt-mounting-plate": (("a", 5), ("b", None)),
     "tt-generic-mounting-plate-fitting-guide": (("a", 4), ("b", None)),
 }
