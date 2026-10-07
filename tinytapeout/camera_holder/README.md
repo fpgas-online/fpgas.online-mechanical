@@ -123,12 +123,14 @@ The holders were built before that, and their heights are not changed with it:
   at 142.77 over the board: H1 152.37 over the plate, 2.37 above where the
   holder puts it, which is more than its 1.00 mm allowance. Refocused at
   150.00, the picture falls 0.89 mm short of frame A on each side along Y
-  and 1.18 along X; the boards are still in it, with 3.82 mm (X) and 4.11 mm
-  (Y) of the 5.00 mm margin left for the stand. Tim Ansell decided on
+  and 1.18 along X; the boards are still in it, keeping 8.08 mm of the
+  frame's own 9.26 mm margin along X (frame A is made 4:3, so it is wider
+  than the boards plus 5.00) and 4.11 mm of 5.00 along Y. Tim was shown
+  3.82 and 4.11, 5.00 less the shortfall, which is a lower bound. Tim Ansell decided on
   7 October 2026 (question mech-1, "Accept the smaller margin") that the
   holder stays at 150.00 and is not raised the 2.37; the sheet's KEPT LOW
-  note says so, its figures come from `Holder.refocused_shortfall()`,
-  and `verify.py` works them again.
+  note says so, its figures come from `Holder.refocused_shortfall()`
+  and `Holder.boards_keep()`, and `verify.py` works them again.
 - **`TT-MP-CAM120`'s height came from the sheet's 120 column**, which is
   gone: the sheet no longer draws the 120 degree lens. The figure has not
   moved. It is `optics.place()` of the plate's frame A and `LENS_120` in

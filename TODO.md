@@ -433,10 +433,13 @@ checker that measures the finished PDFs rather than trusting them.
       Decided, Tim Ansell, 7 October 2026 (question mech-1, "Accept the
       smaller margin"): the holder stays at 150.00. Refocused there the
       picture is 0.89 mm short of frame A each side along Y and 1.18 along
-      X, the boards still in it with 3.82 mm (X) and 4.11 mm (Y) of the
-      5.00 mm margin. The sheet's KEPT LOW note says so, from
-      `Holder.refocused_shortfall()`, and `verify.py` works the figures
-      again and checks the boards are that far inside the picture
+      X. Tim was shown 3.82 mm (X) and 4.11 mm (Y) of the 5.00 mm margin,
+      which is 5.00 less the shortfall, a lower bound. The boards in fact
+      keep 8.08 mm of the frame's own 9.26 mm margin along X (frame A is
+      made 4:3, so it is wider than the boards plus 5.00) and 4.11 of 5.00
+      along Y. The sheet's KEPT LOW note prints those, from
+      `Holder.boards_keep()`, and `verify.py` works them again from the
+      boards' envelopes and fails if they drift
 - [x] `TT-MP-CAM120`'s FOR note named `RPICAM-OVER-PLATE` for its height,
       which that sheet no longer draws: it now says the height is worked on
       the sheet, `optics.place()` of frame A and the 120 lens
