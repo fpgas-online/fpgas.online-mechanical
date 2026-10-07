@@ -18,10 +18,10 @@ beside it.
   the end of JC nearer the barrel jack; pin 6, beside which Digilent print
   3V3, and pin 5, beside which they print GND, are at the other end.
 
-``accessories/parts.py`` gives each port a ``pin1_x`` and ``pin1_y`` at the
-row nearer the edge and the opposite end of the port, which is pin 12's
-place by the above, not pin 1's.  That is recorded in TODO.md; this module
-does not use those two figures.
+The reading itself is ``parts.PMOD_HAT_PIN1_END``, which this module
+imports rather than restates, and every port's pin 1 here has to land on
+the ``pin1_x``, ``pin1_y`` that ``accessories/parts.py`` gives it, which the
+sheets print.
 
 Coordinates as in ``tools.schema``: origin at the board's lower-left
 corner, X right, Y up, top view, millimetres.
@@ -47,7 +47,7 @@ BARREL = _features["barrel"]
 
 #: Each port: the edge it faces, and the end of its length pin 1 is at,
 #: as -1 for the lower X or Y and +1 for the higher.
-_PORTS = {"JA": ("left", -1), "JB": ("left", -1), "JC": ("bottom", +1)}
+_PORTS = parts.PMOD_HAT_PIN1_END
 
 
 def pins(name: str) -> dict[int, tuple[float, float]]:
@@ -65,6 +65,10 @@ def pins(name: str) -> dict[int, tuple[float, float]]:
         a = along + end * (parts.PMOD_PIN_SPAN / 2 - i * PITCH)
         for n, depth in ((i + 1, inner), (i + 7, outer)):
             out[n] = (depth, a) if edge == "left" else (a, depth)
+    if any(abs(u - v) > 1e-9 for u, v in zip(out[1], (host.pin1_x,
+                                                      host.pin1_y))):
+        raise SystemExit(f"{name} pin 1 is at {out[1]} here but at "
+                         f"({host.pin1_x}, {host.pin1_y}) in parts.py")
     return out
 
 
