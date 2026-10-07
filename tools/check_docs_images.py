@@ -14,6 +14,10 @@ Writing them again also runs every rule ``docs_images.py`` keeps: the palette
 against its own contrast floors, every colour on the sheet in the palette,
 and no panel edge through anything drawn.
 
+A picture of no sheet is held the same way, against what its module draws
+now: there is no staged SVG to make it from, and the module and the data it
+draws from are what is staged.
+
 Run: uv run --no-project --with pillow --with pypdf python tools/check_docs_images.py
 """
 
@@ -28,7 +32,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from tools.docs_images import (DOCS_SHEETS, SHEET_PNG_ONLY,  # noqa: E402
-                               kept, panels_by_sheet, write)
+                               kept, panels_by_sheet, picture_files,
+                               pictures, write, write_picture)
 from tools.layout import FAMILY_DIRS, docs_dir_for, rel  # noqa: E402
 
 WORK = ROOT / "tmp" / "check-docs-images"
@@ -42,8 +47,10 @@ def blob(path: str) -> bytes | None:
 
 
 def staged_docs() -> set[str]:
-    """Every file staged under any family's ``output/docs/``."""
+    """Every file staged under any family's ``output/docs/``, or where a
+    picture of no sheet is written."""
     dirs = [rel(docs_dir_for(d / "x.svg")) for d in FAMILY_DIRS.values()]
+    dirs += sorted({str(Path(stem).parent) for stem in pictures()})
     out = subprocess.run(["git", "ls-files", "--", *dirs], cwd=ROOT,
                          capture_output=True, text=True, check=True)
     return set(out.stdout.split())
@@ -77,15 +84,29 @@ def main() -> int:
                 elif staged != fresh.read_bytes():
                     bad.append(f"{name}: not what the staged {path} "
                                "makes; run make diagrams and stage both")
+        for stem, draw in pictures().items():
+            out_dir = WORK / "pictures" / stem
+            write_picture(draw().to_svg(), stem, out_dir)
+            for fresh in picture_files(stem, out_dir):
+                name = str(Path(stem).parent / fresh.name)
+                expected.add(name)
+                staged = blob(name)
+                if staged is None:
+                    bad.append(f"{name}: not staged; run make diagrams "
+                               "and stage it")
+                elif staged != fresh.read_bytes():
+                    bad.append(f"{name}: not what {stem}'s module draws; "
+                               "run make diagrams and stage it")
         for name in sorted(staged_docs() - expected):
-            bad.append(f"{name}: staged, and no sheet in DOCS_SHEETS makes "
-                       "it")
+            bad.append(f"{name}: staged, and no sheet in DOCS_SHEETS nor "
+                       "any picture module makes it")
     finally:
         shutil.rmtree(WORK, ignore_errors=True)
 
     for line in bad:
         print(f"  {line}")
     print(f"docs pictures: {len(DOCS_SHEETS)} sheets, "
+          f"{len(pictures())} pictures of no sheet, "
           f"{len(expected)} files, {len(bad)} problems")
     return 1 if bad else 0
 

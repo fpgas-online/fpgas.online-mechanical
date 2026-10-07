@@ -53,6 +53,17 @@ A sheet in ``SHEET_PNG_ONLY`` has its whole-sheet pictures as PNG only, one
 in ``VIEW_GROUPS`` has its views as more than one picture, and one in
 ``EXTRA_VIEWS`` has further pictures of some of its panels, chosen by label.
 
+Some pictures are of no sheet: a drawing made for the docs alone, such as
+where pin 1 is on a Pmod socket, which no A3 sheet has a view of.  A module
+in ``PICTURE_MODULES`` draws them, each on a ``Canvas`` of its own size, and
+they are written here as ``<stem>-light`` and ``<stem>-dark``, SVG and PNG,
+through the same reader and palette as a whole sheet, with nothing cut out
+of them.  Having no panels to take their measure from, they are held to two
+rules a sheet's pictures get from ``check_sheets.py`` instead: no text under
+2.5 mm when the picture is printed ``PRINT_WIDTH_MM`` wide, and no two
+pieces of text overprinting.  ``tools/check_docs_images.py`` holds them to
+what their module draws, byte for byte, as it does a sheet's.
+
 To add a sheet: give its renderer ``sheet.docs_panels``, add its SVG to
 ``DOCS_SHEETS``, run `make diagrams`, look at all four PNGs on their grounds,
 and if it uses a colour ``PALETTE`` has not met, add the colour with its
@@ -63,6 +74,7 @@ Run: uv run --no-project --with pillow --with pypdf python tools/docs_images.py
 
 from __future__ import annotations
 
+import importlib
 import math
 import re
 import subprocess
@@ -73,9 +85,10 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.check_sheets import boxes  # noqa: E402
+from tools.check_sheets import OVERLAP_TOL, boxes, overlap  # noqa: E402
 from tools.docs_palette import (SVG_OPEN, Drawing, Element,  # noqa: E402
                                 palette_problems, read, recolour)
+from tools.drafting import style  # noqa: E402
 from tools.drafting.sheet import Rect  # noqa: E402
 from tools.layout import docs_dir_for, rel  # noqa: E402
 
@@ -187,6 +200,11 @@ def extra_panels(stem: str, name: str,
 
 
 THEMES = ("light", "dark")
+
+#: The modules that draw pictures of no sheet.  Each has ``PICTURES``: where
+#: each picture is written, repository-relative and less its ``-light`` or
+#: ``-dark``, and the function that draws it, returning a ``Canvas``.
+PICTURE_MODULES = ("tinytapeout.pmod_pin1.draw",)
 
 
 # ---------------------------------------------------------------------------
@@ -468,6 +486,61 @@ def write(svg_text: str, svg: Path, panels: list[tuple[Rect, str]],
     return said
 
 
+def pictures() -> dict[str, object]:
+    """Every picture of no sheet: its stem, and what draws it."""
+    out: dict[str, object] = {}
+    for module in PICTURE_MODULES:
+        for stem, draw in importlib.import_module(module).PICTURES.items():
+            if stem in out:
+                raise SystemExit(f"{stem}: drawn by two modules")
+            out[stem] = draw
+    return out
+
+
+def picture_files(stem: str, out_dir: Path) -> list[Path]:
+    """The files the picture *stem* is written as, in *out_dir*."""
+    name = Path(stem).name
+    return [out_dir / f"{name}-{theme}.{kind}"
+            for theme in THEMES for kind in ("svg", "png")]
+
+
+def write_picture(svg_text: str, stem: str, out_dir: Path) -> str:
+    """One picture of no sheet, both themes, into *out_dir*; returns what
+    it says."""
+    bad = palette_problems()
+    if bad:
+        raise SystemExit("PALETTE breaks its own rules:\n  "
+                         + "\n  ".join(bad))
+    d = read(svg_text, stem)
+    text = boxes(svg_text)
+    if not text:
+        raise SystemExit(f"{stem}: the picture has no text; a picture of no "
+                         "sheet without a label is a mistake")
+    low = min(b[5] for b in text)
+    printed = low * PRINT_WIDTH_MM / d.width
+    problems = []
+    if printed < style.T_MIN - 0.005:
+        problems.append(f"its smallest text, {low:.2f} mm capitals, prints "
+                        f"{printed:.2f} mm at {PRINT_WIDTH_MM:.0f} mm wide, "
+                        f"under {style.T_MIN}")
+    for i, a in enumerate(text):
+        for b in text[i + 1:]:
+            if overlap(a, b) > OVERLAP_TOL:
+                problems.append(f"{a[4]!r} and {b[4]!r} overprint")
+    if problems:
+        raise SystemExit(f"{stem}: " + "; ".join(problems))
+    out_dir.mkdir(parents=True, exist_ok=True)
+    dpi = dpi_for(d.width)
+    for theme in THEMES:
+        path = out_dir / f"{Path(stem).name}-{theme}.svg"
+        path.write_text(sheet_svg(d, theme), encoding="utf-8")
+        to_png(path, dpi)
+    return (f"{d.width:.1f} mm wide at {dpi} dpi, "
+            f"{round(d.width / 25.4 * dpi)} px; smallest text {low:.2f} mm "
+            f"capitals, {printed:.2f} mm printed {PRINT_WIDTH_MM:.0f} mm "
+            "wide")
+
+
 def panels_by_sheet() -> dict[str, tuple[list[tuple[Rect, str]],
                                          list[str]]]:
     """``docs_panels`` and ``furniture`` of each sheet in ``DOCS_SHEETS``,
@@ -494,6 +567,10 @@ def main() -> None:
                           furniture, docs_dir_for(svg),
                           path in SHEET_PNG_ONLY):
             print(f"  {path} {line}")
+    for stem, draw in pictures().items():
+        line = write_picture(draw().to_svg(), stem,
+                             (ROOT / stem).parent)
+        print(f"  {stem} {line}")
 
 
 if __name__ == "__main__":

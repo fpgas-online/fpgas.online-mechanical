@@ -17,7 +17,7 @@ Imported, not run.
 | [`drafting/`](drafting/README.md) | The 2D drawing library: turns a `BoardSpec` into an ISO-style sheet |
 | `schema.py` | `BoardSpec`, `Outline`, `Hole`, `Slot`, `Pmod`, `Feature`, `Source` |
 | `layout.py` | Where the sheets and the bound copies are, what file each sheet is written to and what each is called: one answer, so nothing can disagree about the set, a file stem or a drawing name. A name is the stem in capitals behind the family prefix, unless the family has a rule in `FAMILY_NAME_RULES` that cuts it shorter. Not what goes *into* a bound copy: that page list is `generate_diagrams.bundles()`, one answer for the same reason |
-| `kicad_pcb.py` | Minimal reader for KiCad `.kicad_pcb` s-expression files |
+| `kicad_pcb.py` | Minimal reader for KiCad `.kicad_pcb` s-expression files: footprints with their pads and nets, courtyard, fabrication and front silkscreen lines, and the board's own lines, arcs, rectangles and text on a layer |
 | `kicad_extract.py` | What every KiCad-sourced extractor does the same way: outline resolution and its checks, holes, Pmod hosts, bodies |
 | `step_model.py` | Minimal STEP assembly reader on OpenCascade: the board slab, its through-holes, and each named part's placed box |
 | `photo_frame.py` | Measuring a board off a square-on photograph: its edges, a homography onto its known size, and circles, blobs and ruled grids in that frame |
@@ -33,9 +33,10 @@ Imported, not run.
 | `fetch_fpga.sh` | Clones the repositories and downloads the drawings and models the FPGA boards are read from into `tmp/`; [`fpga/README.md`](../fpga/README.md) says which board is read from what |
 | `fetch_orangepi_pc.sh` | Downloads the photographs the Orange Pi PC is measured from, and the models it is checked against, into `tmp/` |
 | `fetch_acorn.sh` | Downloads the photograph the Acorn CLE-215+'s LEDs are measured from, and the photographs and schematic that corroborate it, into `tmp/` |
+| `fetch_pmod_pin1.sh` | Checks the Tiny Tapeout clone holds the commit the pin 1 pictures read, and downloads Digilent's Pmod HAT Adapter reference manual, its page and its top view of the board into `tmp/`, from pinned Internet Archive captures |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
-| `docs_images.py` | Draws the sheets in its `DOCS_SHEETS` as pictures for the docs site, into `output/docs/` beside each: the views, stacked from the panels the sheet's renderer sets in `Sheet.docs_panels`, and the whole sheet, each light and dark on a transparent ground. Refuses a panel edge that cuts through anything drawn. A sheet in `SHEET_PNG_ONLY` has its whole-sheet pictures as PNG only (the plate's, the fitting guide's and the camera over the plate's SVGs are over the commit-size hook's limit); a sheet in `VIEW_GROUPS` has its views as more than one picture, `-views-a` and `-views-b`, for the same limit; a sheet in `EXTRA_VIEWS` has further pictures of panels chosen by their labels (the fitting guide's `-v3`). Its docstring says how to add a sheet |
+| `docs_images.py` | Draws the sheets in its `DOCS_SHEETS` as pictures for the docs site, into `output/docs/` beside each: the views, stacked from the panels the sheet's renderer sets in `Sheet.docs_panels`, and the whole sheet, each light and dark on a transparent ground. Refuses a panel edge that cuts through anything drawn. A sheet in `SHEET_PNG_ONLY` has its whole-sheet pictures as PNG only (the plate's, the fitting guide's and the camera over the plate's SVGs are over the commit-size hook's limit); a sheet in `VIEW_GROUPS` has its views as more than one picture, `-views-a` and `-views-b`, for the same limit; a sheet in `EXTRA_VIEWS` has further pictures of panels chosen by their labels (the fitting guide's `-v3`). Also the pictures of no sheet, drawn by a module in `PICTURE_MODULES` and written the same way, light and dark, refused if their smallest text prints under 2.5 mm at 180 mm wide or two pieces of text overprint. Its docstring says how to add a sheet |
 | `docs_palette.py` | What each colour on a sheet becomes on the docs site's dark ground, with why, held to WCAG contrast floors; and the reader of a sheet's SVG that refuses any colour, opacity, element or attribute it cannot account for, rather than pass it through unswapped |
 
 The extractors are not here. Each lives with its subject:
@@ -46,6 +47,7 @@ The extractors are not here. Each lives with its subject:
 - [`raspberry_pi_camera/extract.py`](../raspberry_pi_camera/README.md)
 - [`tinytapeout/extract.py`](../tinytapeout/README.md)
 - [`tinytapeout/mounting_plate/design.py`](../tinytapeout/mounting_plate/README.md)
+- [`tinytapeout/pmod_pin1/extract.py`](../tinytapeout/pmod_pin1/README.md)
 
 The camera holder has no extractor:
 [`tinytapeout/camera_holder/holder.py`](../tinytapeout/camera_holder/README.md)
@@ -98,6 +100,7 @@ with its family, and not every one of those has caught something yet.
   in the index against what `docs_images.py` writes from the SVG in the
   index, byte for byte, as `check_pdfs.py` does the PDFs, and reports a
   picture missing, stale, or left behind by a sheet no longer pictured.
+  A picture of no sheet is held against what its module draws now.
   Writing them again runs the palette and panel rules as well. Newer than
   anything it could have caught. When a sheet's output is restamped or
   re-rendered in a later output commit, its docs pictures must be

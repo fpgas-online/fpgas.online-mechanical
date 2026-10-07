@@ -498,3 +498,24 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] The views print at A4 width (180 mm) with the smallest text at
       2.71 mm: the notes beside the plan are a panel of their own, so the
       widest panel is the 164 mm heights table and legend
+
+## Where pin 1 is, for the docs site  -- DONE, 7 October 2026
+- [x] `tinytapeout/pmod_pin1/`: the demo board v3.2's Pmod sockets from
+      above, pin 1 and the corner mark beside pin 6 marked, read out of the
+      rev 3.2 board file at `tt-demo-pcb` 0277545 by its own extractor,
+      which checks every claim the picture makes
+- [x] The Pmod HAT Adapter's ports, HAT's own way up, pin 1 and the
+      3V3/GND end as Digilent's photographs show them
+- [x] `tools/docs_images.py` writes pictures of no sheet, `PICTURE_MODULES`,
+      held to the 2.5 mm floor at 180 mm wide and to no text overprinting;
+      `check_docs_images.py` holds the committed files to what their module
+      draws
+- [ ] `accessories/parts.py` gives the Pmod HAT's ports `pin1_x`, `pin1_y`
+      at the wrong end and in the wrong row: by Digilent's top view and the
+      Rev. B manual's photograph, pin 1 (the square pad, printed 1) is in
+      the row further from the edge, at the bottom end of JA and JB and the
+      barrel jack end of JC, and `parts.py` puts it where pin 12 is.
+      `ACC-HAT-PMOD`'s and the Raspberry Pi sheets' Pmod tables print those
+      figures. Fixing it changes those sheets, so it is its own pull request
+      (fpgas.online-mechanical issue #50,
+      https://github.com/fpgas-online/fpgas.online-mechanical/issues/50).

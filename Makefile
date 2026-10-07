@@ -28,6 +28,7 @@ fetch:
 	tools/fetch_fpga.sh
 	tools/fetch_orangepi_pc.sh
 	tools/fetch_acorn.sh
+	tools/fetch_pmod_pin1.sh
 	@test -d tmp/src/tinytapeout-demoboard-to-raspi || git clone --quiet \
 		https://github.com/psychogenic/tinytapeout-demoboard-to-raspi \
 		tmp/src/tinytapeout-demoboard-to-raspi
@@ -41,9 +42,10 @@ data:
 	$(EXTRACT) --with cadquery python fpga/extract.py
 	$(UV) python accessories/extract.py
 	$(UV) python tinytapeout/mounting_plate/design.py
+	$(UV) python tinytapeout/pmod_pin1/extract.py
 
 ## diagrams: render every sheet as SVG, PDF and PNG, plus the plate cut file
-## and the docs site's pictures
+## and the docs site's pictures, of the sheets and of no sheet
 diagrams:
 	$(DRAW) python tools/generate_diagrams.py
 	$(DRAW) python tools/docs_images.py
@@ -75,4 +77,5 @@ clean:
 	rm -rf accessories/output raspberry_pi/output fpga/output \
 	       raspberry_pi_camera/output \
 	       tinytapeout/output tinytapeout/mounting_plate/output \
-	       tinytapeout/camera_holder/output
+	       tinytapeout/camera_holder/output \
+	       tinytapeout/pmod_pin1/output
