@@ -23,13 +23,13 @@ From the data modules rather than from the drawings:
   a height set at the wrong plane covers less at the right one;
 * each variant's close limit read out of its own words, and the lowest
   height at which it both frames and focuses each frame, by the thin lens;
-* on the sheets that give lens-face heights for one module, the Acorn's
-  and the plate's: the face's height above the target's plane worked
+* on the sheets that give lens-face heights for one module, every
+  position sheet's: the face's height above the target's plane worked
   again for every frame, the two heights that need a measured term printed
   as formulae and never as figures while the term is unmeasured, and as
   the sum when it is measured, how far a part may stand on the plate's
-  boards, and the picture, the crop and the pixels across the target at
-  that height and at the height reported on the rig;
+  boards or the Arty, and the picture, the crop and the pixels across
+  the target at that height and at the height reported on the rig;
 * the hyperfocal distance and depth of field of every lens, and every
   height against every lens's declared focus range, with how soft a fixed
   lens is there and how deep the field is once a motorised one has focused;
@@ -884,7 +884,7 @@ def check_face() -> int:
         # wide.  Solved by bisection rather than by the formula.
         frame = subject.frames()[0]
         got = face.face(frame)
-        for label, box in subject.standing:
+        for label, box in subject.standing + subject.standing_at:
             long_side = 2 * (got - f) * th
             short_side = 2 * (got - f) * tv
             cx_, cy_ = ((long_side, short_side) if frame.long_axis == "X"
@@ -905,6 +905,17 @@ def check_face() -> int:
             bad += not ok
             print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {label} stays in "
                   f"frame A's picture up to {lo:.2f} mm, the lens at F")
+        # A known part's own figure: inside the envelope, so never less
+        # room than the envelope's worst case.
+        for what, box in subject.standing_at:
+            outer = subject.standing[0][1]
+            ok = (outer[0] <= box[0] and outer[1] <= box[1]
+                  and box[2] <= outer[2] and box[3] <= outer[3]
+                  and face.headroom(frame, box)
+                  >= face.headroom(frame, outer))
+            bad += not ok
+            print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {what} is inside "
+                  "the envelope, with no less room than its corner")
         # raspi.tv's +2D close-up lens focuses "at about 25cm": the sheet
         # calls that too far for F, which it is only while every F is under
         # it.

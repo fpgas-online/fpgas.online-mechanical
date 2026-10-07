@@ -25,25 +25,22 @@ subject's X depends on which way the camera is turned.  Each elevation draws
 the angle that lies in its own plane, from the lens to the edges of the frame,
 and dimensions the height and the lateral position of the lens.
 
-Both lenses are drawn on both elevations, each with its own camera at its
-own height and its own rays, told apart by line type -- solid for the stock
-65 degree lens, long dashes for the 120 -- and keyed in the legend.  The
-autofocus module used here is not drawn: its angles are taken as the stock
-lens's, and its cone would lie on the stock one.  A table gives, per variant
-of the camera -- the v1.3 as sold and with its lens unscrewed, one focused
-by hand, the motorised one -- the lowest height that both frames and focuses,
-or says the module's close limit is not published.
+Every position sheet now draws one lens, the v1.3's stock one, at its lens
+face's height: see below.  The path for a subject without ``face``, which
+draws each lens -- solid for the stock 65 degree lens, long dashes for the
+120 -- with its own camera, its own height and its own rays, and a table of
+the lowest height that frames and focuses per variant of the camera, is
+still here and draws no sheet; TODO.md carries it.
 
-One sheet per SUBJECT, both lenses on it, rather than one per lens: the
-person reading it has one board in front of them, and wants to see the two
-heights against each other.  The frame footprints
+One sheet per SUBJECT: the person reading it has one board in front of
+them.  The frame footprints
 do not depend on the lens -- a frame is the sensor's own 4:3 round its target,
 which is the shape of the file that comes out -- so a subject has exactly as
 many rectangles as it has things worth framing, and the lens only decides how
 high above them the camera goes.  See :mod:`raspberry_pi_camera.optics`.
 
 A subject's sheet may be for ONE module, and give heights to its lens face
-instead: a subject that carries ``face`` -- the Acorn's and the plate's --
+instead: a subject that carries ``face`` -- every position sheet's now --
 draws the one lens at the height that both frames and focuses frame A,
 dimensions that height above the plane, above what the stand is built on
 and above the tallest thing under the camera, gives the same per frame in
@@ -165,14 +162,15 @@ class DoesNotFit(Exception):
 
 
 #: How far from the plane a height nobody has measured is drawn, in SHEET
-#: millimetres: the mounting plate's face under it and the assembly's highest
-#: point over it, on a sheet that gives lens-face heights.  Not to scale, and
-#: the legend says so; a measured height is drawn where it is.  Each is room
+#: millimetres: what the stand is built on under it -- the mounting plate's
+#: face, or what the Arty's feet stand on -- and the highest point over
+#: it, on a sheet that gives lens-face heights.  Not to scale, and the
+#: legend says so; a measured height is drawn where it is.  Each is room
 #: for its one-letter dimension between its arrows.
 NTS_BASE = 11.0
 NTS_HIGHEST = 11.0
 
-#: The lines those two heights are drawn as: the plate's face as an outline,
+#: The lines those two heights are drawn as: the base as an outline,
 #: the highest point thin and dashed, as hidden detail.
 STACK_LINES = {
     "base": ("line", style.W_OUTLINE, style.C_LINE, None),
@@ -541,11 +539,23 @@ def _text_face(subject: Subject) -> tuple[list[str], list[str]]:
         f"{h2} {t.symbol} is {t.what}: {term['T']}.",
     ]
     for label, box in subject.standing:
+        head = (f"HEADROOM: {label[0].lower()}{label[1:]} stays in frame "
+                f"{FRAME_LETTERS[0]}'s picture, the lens refocused to F, up "
+                f"to {face.headroom(fr, box):.1f} mm above "
+                f"{face.plane_short}")
+        if not subject.standing_at:
+            notes.append(f"{head} (DERIVED). If {t.symbol} is more, raise "
+                         "the camera.")
+            continue
+        # The worst case is the envelope's corner; a known part elsewhere
+        # has more room, and a measured T is held against its own figure.
+        spots = "; ".join(f"where {what} stands, up to "
+                          f"{face.headroom(fr, b):.1f}"
+                          for what, b in subject.standing_at)
         notes.append(
-            f"HEADROOM: {label[0].lower()}{label[1:]} stays in frame "
-            f"{FRAME_LETTERS[0]}'s picture, the lens refocused to F, up to "
-            f"{face.headroom(fr, box):.1f} mm above {face.plane_short} "
-            f"(DERIVED). If {t.symbol} is more, raise the camera.")
+            f"{head} at the envelope's corner, the worst case; {spots} "
+            f"(DERIVED). If {t.symbol}'s part stands higher than its "
+            "figure, raise the camera.")
     notes += [
         f"REFOCUS THE LENS TO F, {f:.1f} mm from the lens face to "
         f"{face.target}"
@@ -617,7 +627,7 @@ def _tables_face(sheet: Sheet, subject: Subject) -> Rect:
         return [w[key].split(" ", 1)[1].removeprefix("= ") for w in per]
 
     rows = [
-        ["H1", "the mounting plate's face, the standoffs' base"]
+        ["H1", face.base_what]
         + rhs("H1") + [_term(face.base)],
         ["H2", f"{face.highest_what}, as clearance"] + rhs("H2")
         + [_term(face.highest)],
@@ -848,7 +858,9 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> float:
     reach = view.rect.x1
     # Where two frame edges are too close to draw as two lines, point at them
     # and say so.  One leader, into the clear band between the drawing and
-    # the first dimension lane.
+    # the first dimension lane, in the leaders' own colour, which the legend
+    # keys: the phantom grey it was drawn in is 4.3:1 on white, under what
+    # text needs, and the docs pictures refuse it.
     for axis, ia, ib, pos, lo, hi, gap in coincident_edges(frames):
         mid = (lo + hi) / 2
         tip = view.pt(mid, pos) if axis == "Y" else view.pt(pos, mid)
@@ -859,7 +871,7 @@ def _draw_frames(sheet: Sheet, subject: Subject, view: View, bbox) -> float:
                                                              style.T_LABEL))
         end_x, _ = dims.leader(c, tip,
                                (max(elbow_x, tip[0] + 4.0), bottom - 6.0),
-                               text, dot=True, colour=style.C_PHANTOM)
+                               text, dot=True, colour=style.C_DIM)
         reach = max(reach, end_x + LEADER_TEXT_GAP
                     + style.text_width(text, style.T_LABEL))
 
@@ -1076,12 +1088,15 @@ def _along(subject: Subject, axis: str, lens=None):
 
 
 def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
-                    axis: str) -> dict[str, float]:
+                    axis: str) -> tuple[dict[str, float], float]:
     """One elevation: the subject edge on, and each lens and its rays.
 
-    Returns the sheet position of each lens's apex by lens key; the lens
+    Returns the sheet position of each lens's apex by lens key -- the lens
     axis is the same for both, over frame A's centre, and the caller
-    dimensions it from the datum.
+    dimensions it from the datum -- and how far left the view's own text
+    reaches: the stock lens's angle, outside its cone on the left, can stand
+    past the view's left edge, and a docs panel cut at that edge would cut
+    it.
     """
     c = sheet.canvas
     f_lo, f_hi, t_lo, t_hi, cu, angle, which, size = _along(subject, axis)
@@ -1118,9 +1133,9 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
     else:
         along, sign = ("v", -1) if axis == "X" else ("u", -1)
 
-    # The stack's two heights, on a sheet that gives lens-face heights: the
-    # mounting plate's face under the plane and the assembly's highest point
-    # over it, each a line across the view.
+    # The stack's two heights, on a sheet that gives lens-face heights: what
+    # the stand is built on under the plane and the highest point over it,
+    # each a line across the view.
     if subject.face:
         for key, h in _stack(subject, v.scale).items():
             if key == "base" and _base_drawn(subject):
@@ -1130,6 +1145,7 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
                    colour=colour, dash=dash)
 
     apexes = {}
+    text_left = v.rect.x
     wide_label = None
     for lens in subject.lenses():
         *_, angle, which, _ = _along(subject, axis, lens)
@@ -1156,9 +1172,11 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
         right = (apex[0] + r * math.sin(half), apex[1] - r * math.cos(half))
         c.arc(*left, *right, r, sweep=1, w=style.W_THIN, colour=style.C_DIM)
         if lens.key == DRAWN:
-            c.text(left[0] - 1.5, left[1] + 1.0,
-                   f"{angle:.2f} deg, {which}", size=style.T_DIM,
+            label = f"{angle:.2f} deg, {which}"
+            c.text(left[0] - 1.5, left[1] + 1.0, label, size=style.T_DIM,
                    colour=style.C_DIM, anchor="end")
+            text_left = min(text_left, left[0] - 1.5
+                            - style.text_width(label, style.T_DIM))
         else:
             wide_label = (apex[0], apex[1] - r - 1.5 - style.T_DIM,
                           f"{angle:.0f} deg, {which}")
@@ -1179,7 +1197,7 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
     else:
         c.line(*bottom, *top, w=style.W_CENTRE, colour=style.C_LINE,
                dash=style.D_CENTRE)
-    return apexes
+    return apexes, text_left
 
 
 def _draw_camera(c, v: View, cu: float, z: float, along: str,
@@ -1281,10 +1299,10 @@ def _dimension_face(c, subject: Subject, v: View, lens_x: float,
                     cu: float) -> None:
     """The lens face's three heights, chained up the right-hand side.
 
-    Nearest the view, S and then F: the plate's face to the card, the card
-    to the lens face.  Outside them T and then H2: the card to the highest
-    point, the highest point to the lens face.  Outside those H1, the plate's
-    face to the lens face, which is the first two added.  X of the lens
+    Nearest the view, S and then F: the base to the plane, the plane to
+    the lens face.  Outside them T and then H2: the plane to the highest
+    point, the highest point to the lens face.  Outside those H1, the base
+    to the lens face, which is the first two added.  X of the lens
     under the view, as on every position sheet.
     """
     stack = _stack(subject, v.scale)
@@ -1468,7 +1486,7 @@ def _legend(subject: Subject) -> list:
         face = subject.face
         for key, term, what in (
                 ("base", face.base,
-                 "The mounting plate's face, {} below " + face.plane_short),
+                 face.base_short + ", {} below " + face.plane_short),
                 ("highest", face.highest,
                  face.highest_what[0].upper() + face.highest_what[1:]
                  + ", {} above " + face.plane_short)):
@@ -1520,8 +1538,9 @@ def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
     sheet.draw_frame()
     c = sheet.canvas
 
-    lens_x = _draw_elevation(sheet, subject, front, "X")[DRAWN]
-    lens_y = _draw_elevation(sheet, subject, end, "Y")[DRAWN]
+    lens_x = _draw_elevation(sheet, subject, front, "X")[0][DRAWN]
+    end_apexes, end_text_left = _draw_elevation(sheet, subject, end, "Y")
+    lens_y = end_apexes[DRAWN]
     _dimension_front(sheet, subject, front, lens_x)
     _dimension_end(sheet, subject, end, lens_y)
 
@@ -1557,7 +1576,8 @@ def _render(subject: Subject, scale: float, sp: float, *, drawing_no: str,
     views_bottom = plan.rect.y - _plan_bottom(subject)
     beside = _beside_column(sheet, subject, end, front, plan)
     elev_right = front.rect.x1 + ELEV_OUTER + DOCS_PAD
-    elev_left = (end.rect.x - DOCS_PAD if subject.docs_all_notes else f.x)
+    elev_left = (end_text_left - DOCS_PAD if subject.docs_all_notes
+                 else f.x)
     sheet.docs_panels = [
         (Rect(elev_left, elev_bottom, elev_right - elev_left,
               f.y1 - elev_bottom),

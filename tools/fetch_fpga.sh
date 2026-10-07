@@ -40,6 +40,19 @@ test -d "tmp/src/arty_a7/mechanical_drawing/Arty A7" || \
     unzip -q -o "$f" -d tmp/src/arty_a7/mechanical_drawing
 printf '%-40s %9s bytes\n' "$(basename "$f")" "$(wc -c < "$f")"
 
+# Digilent's 3D model of the Arty Rev C, not the A7: the heights
+# RPICAM-OVER-ARTY quotes, which raspberry_pi_camera/arty_revc.py reads
+# back.  Pinned, because a figure quoted from it has to stay the file's.
+f=tmp/src/arty_a7/arty_revc_cad.zip
+test -s "$f" || curl -sSfL -A "$UA" -o "$f" \
+    https://digilent.com/reference/_media/reference/programmable-logic/arty/arty_revc_cad.zip
+printf '%s  %s\n' e2c3e19245847c721d8dd90fda89a5bc7da9a37dbc36ec5a085157461e18f6ac "$f" \
+    | sha256sum -c --quiet - \
+    || { echo "$f is not the file the sheet quotes: sha256 differs" >&2; exit 1; }
+test -s "tmp/src/arty_a7/revc_cad/ARTY For Web/Arty Rev C.stp" || \
+    unzip -q -o "$f" -d tmp/src/arty_a7/revc_cad
+printf '%-40s %9s bytes\n' "$(basename "$f")" "$(wc -c < "$f")"
+
 f=tmp/src/zybo_z7/zybo_z7_dimensions.zip
 test -s "$f" || curl -sSL -A "$UA" -o "$f" \
     https://digilent.com/reference/_media/reference/programmable-logic/zybo-z7/zybo_z7_dimensions.zip

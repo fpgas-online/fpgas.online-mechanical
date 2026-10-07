@@ -318,8 +318,26 @@ checker that measures the finished PDFs rather than trusting them.
       152.4, 142.8 - T and 142.8, frame B 113.3, 103.7 - T and 103.7 --
       with S the plate's own 9.60 +/-0.04; the 120 degree lens and the
       other modules' in-focus table are off the sheet
-- [ ] The same rework for `RPICAM-OVER-ARTY` and `RPICAM-LENS`, when the
-      Arty's turn comes
+- [x] The same rework for `RPICAM-OVER-ARTY` (7 October 2026): the v1.3
+      alone, refocused, frame A the whole board -- F 131.9, H1 S + 131.9,
+      H2 131.9 - T -- and frame B the LEDs, F 60.0 from the close limit;
+      S, what the Arty stands on to its top face, and T both MEASURE, the
+      A7 drawing giving no height. Digilent's Arty Rev C 3D model's figures
+      are quoted beside them, read back by `arty_revc.py`, and nothing set
+      from them
+- [ ] The same rework for `RPICAM-LENS`
+- [ ] MEASURE S and T on an Arty A7: S from what it stands on, under its
+      rubber feet, to its top face; T from its top face to the top of its
+      tallest part, and which part. Into `arty_stack_s()` and
+      `arty_stack_t()` in `raspberry_pi_camera/optics.py`, with tolerance
+      and source, and `RPICAM-OVER-ARTY` prints H1 and H2. The Rev C model
+      gives 5.20 and 14.80 (J9's shield), not the A7's: a check, not a figure.
+      A T over 13.6 mm anywhere but where J9 stands (20.9) wants the camera
+      higher
+- [ ] `camera_sheet.py`'s path for a sheet without `face`, drawing both
+      lenses and the in-focus table, now draws no sheet: every position
+      sheet gives lens-face heights. Remove it, or keep it for a sheet that
+      wants it
 - [ ] MEASURE T on the plate: a demo board's top face to the top of its
       tallest part, on each revision in use, and which part that is. Into
       `plate_stack_t()` in `raspberry_pi_camera/optics.py`, with its
@@ -472,7 +490,7 @@ checker that measures the finished PDFs rather than trusting them.
 - [ ] Check the derived socket footprint against a real board: it is the one
       figure here quoted at +/-1 mm rather than +/-0.2
 
-## Pictures for the docs site  -- DONE for RPICAM-OVER-ACORN, RPICAM-OVER-PLATE, TT-MP-PLATE and TT-MP-FIT
+## Pictures for the docs site  -- DONE for RPICAM-OVER-ACORN, RPICAM-OVER-PLATE, RPICAM-OVER-ARTY, TT-MP-PLATE and TT-MP-FIT
 - [x] `tools/docs_images.py`: each listed sheet's views and whole sheet,
       light and dark, transparent, SVG and PNG, under `output/docs/`
 - [x] `tools/docs_palette.py`: every colour's dark-ground value and its
@@ -503,6 +521,10 @@ checker that measures the finished PDFs rather than trusting them.
       first notes, heights and frames tables and legend as `-views-a`; the
       notes that run on and the sources as `-views-b`. Whole-sheet pictures
       PNG only
+- [x] `RPICAM-OVER-ARTY` pictured (7 October 2026), as the plate's camera
+      sheet: `-views-a` and `-views-b`, whole-sheet pictures PNG only. Its
+      frames' coincident-edge leader was phantom grey, under text contrast
+      on white too; it is now the leaders' blue
 - [x] The views print at A4 width (180 mm) with the smallest text at
       2.71 mm: the notes beside the plan are a panel of their own, so the
       widest panel is the 164 mm heights table and legend

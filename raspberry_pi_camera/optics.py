@@ -38,9 +38,9 @@ sold and with its lens unscrewed by hand, an adjustable-lens module and a
 motorised one each have their own close limit, each from the page that
 publishes it, or marked unpublished; see :data:`FOCUS_VARIANTS`.
 
-One sheet is for one module and gives heights to its lens FACE, above the
-plane its target is in, above what the stand is built on and above the
-tallest thing under the camera; see :class:`FaceHeights`.
+Each position sheet is for one module and gives heights to its lens
+FACE, above the plane its target is in, above what the stand is built on
+and above the tallest thing under the camera; see :class:`FaceHeights`.
 
 Coordinates
 -----------
@@ -938,6 +938,9 @@ class FaceHeights:
     The rest is what the sheet calls things, which is the subject's:
     ``plane`` is the plane F is measured from, as the heights table names
     it, and ``plane_short`` the same in a few words, for the legend;
+    ``base_what`` what H1 is measured from, as the heights table names it,
+    and ``base_short`` the same for the legend: the mounting plate's face,
+    or, under a board with no mounting holes, what its feet stand on;
     ``highest_what`` the highest point; ``target`` what has to be sharp; and
     ``heading`` what the heights table's title says they put in view.
     """
@@ -947,6 +950,8 @@ class FaceHeights:
     highest: object
     plane: str
     plane_short: str
+    base_what: str
+    base_short: str
     highest_what: str
     target: str
     heading: str
@@ -1313,18 +1318,23 @@ class Subject:
     #: A thing that lies inside the first frame in plan but stands above the
     #: plane that frame's height is set from, as (label, box).
     #: The sheet turns it into a headroom note: how high it may stand before
-    #: it leaves the picture.  Only the mounting plate has one.
+    #: it leaves the picture.  The plate's and the Arty's have one.
     standing: tuple[tuple[str, tuple[float, float, float, float]], ...] = ()
+    #: Where a known part stands inside the first of those, as (what, box):
+    #: the headroom note gives each its own figure beside the worst case, at
+    #: the envelope's corner, so that a measured T is held against the
+    #: figure for where its part stands.  Only the Arty's J9 has one.
+    standing_at: tuple[tuple[str, tuple[float, float, float, float]], ...] = ()
     #: What the plan names frame A's target with a leader, where the target
     #: is too small at the plan's scale to be told from what is round it.
     #: Only the Acorn's LEDs need one: a column 2.3 mm wide, lying in plan
     #: over the Pi's own Ethernet and USB bodies, which are under the HAT.
     plan_callout: str = ""
     #: The lenses this sheet draws, by key, where it is not both of LENSES.
-    #: The Acorn's and the plate's set it: each sheet is for one module.
+    #: Every position sheet sets it: each is for one module.
     lens_keys: tuple[str, ...] | None = None
     #: Where the lens FACE goes, on a sheet that gives lens-face heights for
-    #: one module instead of Z per lens: the Acorn's and the plate's.
+    #: one module instead of Z per lens: every position sheet's.
     face: FaceHeights | None = None
     #: What has been seen on the deployed hardware, for the sheet to record
     #: beside what it derives.
@@ -1346,8 +1356,9 @@ class Subject:
     #: runs on into under the plan and in the annotation column, and not just
     #: the first two beside the plan, and leave out the empty paper left of
     #: the elevations.  The Acorn's are the two notes and the whole width; the
-    #: plate's lens-face notes are further on, and with its dimension chain
-    #: the elevations are wider than the tables without the trim.
+    #: plate's and the Arty's lens-face notes are further on, and with the
+    #: dimension chain the elevations are wider than the tables without the
+    #: trim.
     docs_all_notes: bool = False
 
     def frames(self) -> tuple[Frame, ...]:
@@ -1522,6 +1533,9 @@ def _plate_subject() -> Subject:
     face = FaceHeights(variant, plate_stack_s(), plate_stack_t(),
                        plane="the demo board's top face, any revision",
                        plane_short="the board's top face",
+                       base_what="the mounting plate's face, the "
+                                 "standoffs' base",
+                       base_short="The mounting plate's face",
                        highest_what="the highest point on the board",
                        target="the boards",
                        heading="BOARDS IN VIEW AND IN FOCUS")
@@ -1577,6 +1591,67 @@ def _plate_subject() -> Subject:
     )
 
 
+# --- The Arty's stack --------------------------------------------------------
+#
+# The two heights the Arty's lens face is given from, as the plate's and the
+# Acorn's are.  The Arty has no mounting holes and stands on four rubber feet,
+# so S is from what it stands on, under the feet, to its top face -- a foot
+# and the board -- and T from its top face to the top of its tallest part.
+#
+# Neither is a figure.  Digilent's A7 drawing is a plan and nothing else: it
+# draws the feet, as circles 10.0 mm across centred 5.0 from each corner, and
+# gives no height, for them, the board or any part.  Digilent's 3D model does
+# give heights, but it is of the Arty Rev C, not the A7, and states no
+# tolerance; and its feet are not the ones the A7 drawing draws.  So its
+# figures are quoted on the sheet, as the Rev C's, and both terms are to
+# MEASURE on an A7.
+
+#: What Digilent's 3D model of the Arty Rev C, ``Arty Rev C.stp`` in
+#: ``arty_revc_cad.zip``, gives, in millimetres: the REV C's, not the A7's.
+#: ``raspberry_pi_camera/arty_revc.py`` reads each back out of the model, and
+#: the foot the A7 drawing draws out of its plot, and fails if one has moved.
+#: The model's outline is 109.22 x 86.36, the A7 drawing's 4.3 x 3.4 in;
+#: the drawing's DXF, which ``fpga/boards.py`` is drawn from, is 109.00 x
+#: 87.00.
+ARTY_REVC_BOARD = 1.50          # the board slab: its two largest faces apart
+ARTY_REVC_FOOT = 3.70           # "Ruber_Feet", under the slab, domed
+ARTY_REVC_FOOT_ACROSS = 8.70    # the same feet in plan
+ARTY_REVC_TALLEST = 14.80       # J9's "shielding", over the slab's top face
+ARTY_FOOT_DRAWN = 10.0          # the A7 drawing's foot circles, across
+
+ARTY_REVC_SOURCE = Source(
+    label="3D model, Arty Rev C",
+    ref="https://digilent.com/reference/_media/reference/programmable-logic/"
+        "arty/arty_revc_cad.zip",
+    note="Digilent, Arty Rev C.stp, 20 June 2016: not the A7. Its heights "
+         "are quoted in the notes; no height on this sheet is set from it.")
+
+
+def arty_stack_s():
+    """S on the Arty: what it stands on, under its feet, to its top face.
+
+    MEASURE.  A function, as ``plate_stack_s`` is, so that asking this
+    module about a lens does not import the accessories.  A measured figure
+    goes in here, with its tolerance and who measured it, and the sheet then
+    prints H1.
+    """
+    from accessories.parts import StackHeight
+    return StackHeight(
+        "S", "what the Arty stands on, under its rubber feet, to its top "
+             "face: a foot and the board")
+
+
+def arty_stack_t():
+    """T on the Arty: its top face to the top of its tallest part.  MEASURE.
+
+    A measured figure goes in here, as in ``arty_stack_s``, and the sheet
+    then prints H2.
+    """
+    from accessories.parts import StackHeight
+    return StackHeight(
+        "T", "the Arty's top face to the top of its tallest part")
+
+
 def _arty_targets(spec: BoardSpec) -> dict[str, Target]:
     leds = [f for f in spec.features if f.kind == "led"]
     wx0, wy0, wx1, wy1 = _envelope(spec)
@@ -1594,6 +1669,13 @@ def _arty_targets(spec: BoardSpec) -> dict[str, Target]:
 
 
 def _arty_subject() -> Subject:
+    """The Digilent Arty A7, standing on its rubber feet.
+
+    One module, as on the plate's and the Acorn's sheets: the v1.3 with its
+    stock lens, unscrewed to focus, and the heights of its lens face.  Frame
+    A is the whole board, which F is set from -- the whole board in view and
+    in focus -- and frame B its LEDs, as the plate keeps its LEDs.
+    """
     from fpga.boards import BOARDS as FPGA
     spec = FPGA["arty-a7"]
     # The Arty's own sheet, derived from the stem fpga/ writes it to rather
@@ -1601,21 +1683,68 @@ def _arty_subject() -> Subject:
     # goes stale the day the other family renames its file.
     arty_sheet = drawing_name("fpga", slug(spec.key))
     t = _arty_targets(spec)
-    src = (Source(label="Board geometry", ref="fpga/boards.py",
-                  note="Outline, Pmod hosts, connectors and LED rows; see "
-                       f"{arty_sheet}."),)
+    board = t["board"]
+    variant = next(v for v in FOCUS_VARIANTS if v.key == ACORN_VARIANT)
+    face = FaceHeights(variant, arty_stack_s(), arty_stack_t(),
+                       plane="the Arty's top face",
+                       plane_short="the board's top face",
+                       base_what="what the Arty stands on, under its feet",
+                       base_short="What the Arty stands on",
+                       highest_what="the highest point on the board",
+                       target="the board and its LEDs",
+                       heading="BOARD IN VIEW AND IN FOCUS")
+    # Where J9 stands, which is not the envelope's corner: how tall it may
+    # be and stay in frame A's picture, against the Rev C's figure.
+    j9 = next(f for f in spec.features if f.designator == "J9")
+    j9_box = (j9.x0, j9.y0, j9.x1, j9.y1)
+    whole = (board.x0, board.y0, board.x1, board.y1)
+    worst = face.headroom(frame_for(board), whole)
+    j9_room = face.headroom(frame_for(board), j9_box)
+    src = (
+        Source(label="Board geometry", ref="fpga/boards.py",
+               note="Outline, Pmod hosts, connectors and LED rows; see "
+                    f"{arty_sheet}."),
+        ARTY_REVC_SOURCE,
+        # Cited for where the lens is focused as sold, as on the Acorn's
+        # and the plate's sheets; the forum's close limit is on the lens
+        # sheet.
+        replace(RASPI_TV, label="raspi.tv, 25 May 2013", note=""),
+    )
     return Subject(
         key="arty-a7",
         title="Camera over the Arty A7",
-        subtitle="Camera Module OV5647, 65 and 120 degree lenses",
-        spec=spec, targets=(t["board"], t["leds"]), sources=src,
+        subtitle="Camera Module v1.3, stock 65 degree lens: lens face "
+                 "heights",
+        spec=spec, targets=(board, t["leds"]), sources=src,
         subject_field="Digilent Arty A7",
-        tolerance="DXF +/-0.20, plot bodies +/-0.30, Z DERIVED",
+        lens_keys=(LENS_65.key,),
+        face=face,
+        docs_all_notes=True,
+        standing=(("A part standing on the board, anywhere in its envelope",
+                   whole),),
+        standing_at=(("J9", j9_box),),
+        tolerance="DXF +/-0.20, plot bodies +/-0.30, heights DERIVED",
         notes=(
             "Which LED row is which is not named by any Digilent source; "
             f"{arty_sheet} takes the row nearest the edge as the tri-colour "
             "LD0-LD3 by package size. Either way both rows are inside the "
             "frame, so the framing does not turn on it.",
+            "S: the A7 drawing has four corner circles, "
+            f"{ARTY_FOOT_DRAWN:.1f} mm across scaled from its plot, taken "
+            "as the rubber feet, and no height for them or the board. "
+            "Digilent's 3D model of the Arty Rev C, not the A7, has a "
+            f"{ARTY_REVC_BOARD:.2f} board on feet {ARTY_REVC_FOOT:.2f} "
+            f"tall, {ARTY_REVC_BOARD + ARTY_REVC_FOOT:.2f} in all, but its "
+            f"feet are {ARTY_REVC_FOOT_ACROSS:.2f} across and it states no "
+            "tolerance. Measure S on the A7, from what it stands on to its "
+            "top face.",
+            "T: the A7 drawing gives no part a height. The Rev C model's "
+            "tallest part is the Ethernet jack J9's shield, "
+            f"{ARTY_REVC_TALLEST:.2f} above the board's top face, and the "
+            f"A7 drawing puts J9 in the same place: more than the "
+            f"{worst:.1f} mm headroom at the envelope's corner, less than "
+            f"the {j9_room:.1f} where J9 stands. Measure T on the A7, from "
+            "its top face to the top of its tallest part, and which part.",
         ),
     )
 
@@ -1638,11 +1767,11 @@ def _arty_subject() -> Subject:
 # them rise clear of it, ASSUMED, to be confirmed when T is measured.
 #
 # One module: the Raspberry Pi Camera Module v1.3 with its stock lens, and
-# heights to its lens FACE, see FaceHeights.  The other sheets draw two
-# lenses and give Z per lens; this one answers where the face of the one
-# camera goes, above what the stand is built on and above the tallest thing
-# under it.  Both of those need a height of the stack nobody has published
-# or measured, so each is a formula with one term to MEASURE.
+# heights to its lens FACE, see FaceHeights, as on every position sheet:
+# where the face of the one camera goes, above what the stand is built on
+# and above the tallest thing under it.  Both of those need a height of
+# the stack nobody has published or measured, so each is a formula with one
+# term to MEASURE.
 
 #: The plane the Acorn's frame is set from, and why it is the card's and not
 #: the Pi's: the LEDs are on the card's top face, which stands above the Pi,
@@ -1697,6 +1826,9 @@ def _acorn_subject() -> Subject:
     face = FaceHeights(variant, ACORN_STACK_S, ACORN_STACK_T,
                        plane="the card's top face, where the LEDs are",
                        plane_short="the card",
+                       base_what="the mounting plate's face, the "
+                                 "standoffs' base",
+                       base_short="The mounting plate's face",
                        highest_what="the assembly's highest point",
                        target="the LEDs",
                        heading="THE LEDs IN VIEW AND IN FOCUS")

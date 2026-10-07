@@ -40,6 +40,7 @@ data:
 	$(UV) --with pdfplumber python raspberry_pi_camera/extract.py
 	$(UV) --with pdfplumber --with pillow --with numpy python raspberry_pi_camera/verify.py
 	$(EXTRACT) --with cadquery python fpga/extract.py
+	$(UV) --with cadquery --with pdfplumber python raspberry_pi_camera/arty_revc.py
 	$(UV) python accessories/extract.py
 	$(UV) python tinytapeout/mounting_plate/design.py
 	$(UV) python tinytapeout/pmod_pin1/extract.py

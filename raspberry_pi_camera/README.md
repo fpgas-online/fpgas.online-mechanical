@@ -12,17 +12,14 @@ Tiny Tapeout mounting plate, the Digilent Arty A7 and an Acorn CLE-215+. Each
 leads with two elevations, one for each axis of the picture, drawing the
 subject edge on and, over it, a Camera Module v1.3, and a smaller plan
 shows the rectangles the picture has to cover over the subject.
-`RPICAM-OVER-PLATE` and `RPICAM-OVER-ACORN` are for one module, the Camera
-Module v1.3 with its stock 65 degree lens, and give where its lens **face**
-goes -- above the mounting plate, clear above the highest point under the
-camera, and above the plane the picture is framed on -- with the lens
-refocused there; see [the Acorn](#the-acorn-one-module-and-where-its-lens-face-goes)
-and [the plate](#the-plate-the-same-per-frame). `RPICAM-OVER-ARTY` still
-draws each lens -- the stock 65 degree one and a 120 degree fisheye -- at the
-height where its field of view takes in the rectangle, dimensioning how high
-each goes and where, and its tables give every height, whether the lens as
-sold is in focus there, and per variant of the camera the lowest height that
-both frames and focuses. `RPICAM-LENS` is the lenses themselves: every field
+Each is for one module, the Camera Module v1.3 with its stock 65 degree
+lens, and gives where its lens **face** goes -- above what the stand is built
+on, clear above the highest point under the camera, and above the plane the
+picture is framed on -- with the lens refocused there; see
+[the Acorn](#the-acorn-one-module-and-where-its-lens-face-goes),
+[the plate](#the-plate-the-same-per-frame) and
+[the Arty](#the-arty-the-same-on-its-feet). `RPICAM-LENS` is the lenses
+themselves: every field
 of view figure anyone gives, declared and derived, the focus of each, and
 what a fisheye's picture looks like on a board.
 [`TT-MP-CAM65` and `TT-MP-CAM120`](../tinytapeout/camera_holder/README.md)
@@ -35,8 +32,9 @@ are holders built over the plate's frame A, one per lens.
 | `v1.py` | **Hand-curated**, with per-value provenance: the Camera Module 1, the OV5647 board lettered v1.3, which Raspberry Pi never drew |
 | `measure_cm1.py` | Scales what the v1.3's hand-measured drawing draws and does not dimension, and checks the scale |
 | `verify.py` | Holds `v1.py` against its cached sources and the checks its error bars rest on |
-| `optics.py` | **Hand-written.** The OV5647's sensor; the stock, autofocus and 120 degree lenses, every figure quoted from its vendor or derived, with its focus and depth of field; the framing model; the subjects a camera is put over; and, for the sheets that give them, the lens-face heights, the plate's S and T, and what has been observed on the rig |
-| `verify_optics.py` | Checks every quote in `optics.py` against the cached page, the model against Raspberry Pi's own figures, each lens's figures against the sensor's shape under its projection, that the margin absorbs what is not known about each lens, the wide lens's distortion, every frame against its target, its plane and its height, every height against every lens's focus range, and the lens-face sheets' heights, the plate's S and headroom, and the Acorn's picture and crop worked again |
+| `optics.py` | **Hand-written.** The OV5647's sensor; the stock, autofocus and 120 degree lenses, every figure quoted from its vendor or derived, with its focus and depth of field; the framing model; the subjects a camera is put over; and, for the sheets that give them, the lens-face heights, the plate's and the Arty's S and T, the figures quoted from the Arty Rev C's 3D model, and what has been observed on the rig |
+| `verify_optics.py` | Checks every quote in `optics.py` against the cached page, the model against Raspberry Pi's own figures, each lens's figures against the sensor's shape under its projection, that the margin absorbs what is not known about each lens, the wide lens's distortion, every frame against its target, its plane and its height, every height against every lens's focus range, and the lens-face sheets' heights, the plate's S, the plate's and the Arty's headroom, and the Acorn's picture and crop worked again |
+| `arty_revc.py` | Reads every Arty figure `optics.py` quotes back out of Digilent's files -- the Rev C 3D model's board, feet and tallest part, the A7 drawing's foot circles -- and fails if one has moved. Needs OpenCascade, so `make data` runs it, not `make check` |
 | `output/` | The `RPICAM-` sheets, as SVG and PDF, and `raspberry-pi-camera-sheets.pdf`, all of them bound into one document |
 
 ```sh
@@ -45,6 +43,9 @@ uv run --no-project --with pdfplumber python raspberry_pi_camera/extract.py
 uv run --no-project --with pdfplumber --with pillow --with numpy \
     python raspberry_pi_camera/verify.py
 uv run --no-project --with pypdf python raspberry_pi_camera/verify_optics.py
+tools/fetch_fpga.sh                                   # once, for the Arty
+uv run --no-project --with cadquery --with pdfplumber \
+    python raspberry_pi_camera/arty_revc.py
 ```
 
 ## The sheets
@@ -79,7 +80,7 @@ Each thumbnail links to the PDF. The same sheet is also there as SVG.
 </td>
 <td width="33%" valign="top" align="center">
 <a href="output/over-arty-a7.pdf"><img src="output/previews/over-arty-a7.png" width="270" alt="RPICAM-OVER-ARTY Camera over the Arty A7"></a><br>
-<b>RPICAM-OVER-ARTY</b> Camera over the Arty A7<br>Camera Module OV5647, 65 and 120 degree lenses
+<b>RPICAM-OVER-ARTY</b> Camera over the Arty A7<br>Camera Module v1.3, stock 65 degree lens: lens face heights
 </td>
 </tr>
 <tr>
@@ -578,13 +579,19 @@ always the subject's own top face; the column below says which. A stand set
 h mm below the right plane covers only (Z - h) / Z of the rectangle at it, so
 the error always loses the edges.
 
-| Sheet | Frame | Rectangle, mm | Z from | 65 | 120 |
+The Z here is `optics.place()`'s, the pinhole height that just frames each
+frame with each lens as sold, worked to the entrance pupil: what the model
+gives, not what the sheets print. No sheet prints a 120 column now, and
+every position sheet gives the v1.3's lens face, refocused, instead -- F,
+the framing height plus f or the close limit, below.
+
+| Sheet the frame is on | Frame | Rectangle, mm | Z from | Z, 65, `place()` | Z, 120, `place()` |
 |---|---|---|---|--:|--:|
 | `RPICAM-OVER-PLATE` | Every board, any revision | 140.27 x 105.20 | the demo board's top face | 139.2 | 72.4 |
 | `RPICAM-OVER-PLATE` | Every LED and 7-seg | 100.91 x 75.69 | the demo board's top face | 100.1 | 52.1 |
 | `RPICAM-OVER-ARTY` | The whole Arty | 129.33 x 97.00 | the board face | 128.3 | 66.8 |
 | `RPICAM-OVER-ARTY` | LD0-LD7 | 32.68 x 24.51 | the board face | 32.4 | 16.9 |
-| `RPICAM-OVER-ACORN` | The Acorn's LEDs, A1-A4 and PWR | 18.35 x 24.47 | the Acorn card's top face | 24.3 | not drawn |
+| `RPICAM-OVER-ACORN` | The Acorn's LEDs, A1-A4 and PWR | 18.35 x 24.47 | the Acorn card's top face | 24.3 | 12.6 |
 
 **In focus there?** On either fixed lens as sold, at no height here: all of
 them are inside "1 m". Focused closer, the lowest height that both frames
@@ -599,8 +606,8 @@ height plus 3.60 mm:
 | Arty LD0-LD7 | 60.0 | 36.0 | not published | 80.0 |
 | The Acorn's LEDs | 60.0 | 27.9 | not published | 80.0 |
 
-The Arty's sheet says the same in its table, frame by frame; the Acorn's and
-the plate's carry only the first column, as their F. `verify_optics.py`
+No sheet carries this table now: each carries only the first column, as
+its F. `verify_optics.py`
 reads every close limit back out of its quote and works every height again by
 the thin lens.
 
@@ -746,27 +753,68 @@ reads it from there, prints it in its own sheet's FOR note, and
 `verify_optics.py` still checks the 120 over the plate's frame A because a
 holder is built on it.
 
+### The Arty: the same, on its feet
+
+`RPICAM-OVER-ARTY` was reworked the same way on 7 October 2026: the Camera
+Module v1.3 with its stock lens, refocused, heights to its lens face, and
+both frames kept, the whole board, which F is set from, and the LEDs:
+
+| | The lens face above | Frame A, whole board | Frame B, LD0-LD7 | Term |
+|---|---|--:|--:|---|
+| H1 | what the Arty stands on, under its feet | S + 131.9 | S + 60.0 | S: **MEASURE** |
+| H2 | the highest point on the board, as clearance | 131.9 - T | 60.0 - T | T: **MEASURE** |
+| F | the Arty's top face | 131.9 | 60.0 | DERIVED |
+
+F for frame A is the framing height plus f, 128.3 + 3.60; for frame B the
+framing gives only 32.4 + 3.60 = 36.0, and the v1.3's 60 mm close limit
+unscrewed sets it, so the sheet adds the forum's caveat about where that 6 cm
+is measured from, as the Acorn's does. The lens axis is over (54.17, 43.50)
+for A and (19.50, 6.83) for B; the elevations draw and dimension frame A's.
+
+**The Arty has no mounting holes.** It stands on four rubber feet, so S is
+what it stands on to its top face, a foot and the board, and H1 is above that
+surface, not above a plate. **S and T are both to measure**, and the sheet
+prints H1 and H2 as formulae. Digilent's A7 drawing is a plan: it draws four
+unlettered circles, 5.0 in from each corner and 10.0 mm across as scaled
+from its plot (9.99), taken as the feet, and gives no height for them, the
+board or any part. Digilent's 3D model does give heights, but
+it is of the **Arty Rev C, not the A7**: a 1.50 board on feet 3.70 tall, 5.20
+in all, and the Ethernet jack J9's shield, its tallest part, 14.80 above the
+top face. The model states no tolerance, and its feet are 8.70 across, not
+the 10.0 the A7 drawing draws, so nothing is set from it; the sheet quotes
+its figures, as the Rev C's, beside the MEASURE. The model does agree with
+the A7 where the two can be compared: its outline is the A7 drawing's own
+4.3 x 3.4 in, 109.22 x 86.36, against the DXF's 109.00 x 87.00, and its J9 is
+on the A7 drawing's J9 centre line to 0.01 mm. `arty_revc.py` reads every one
+of those figures back out of the two files; `optics.arty_stack_s()` and
+`arty_stack_t()` are where measured figures go.
+
+The headroom over the whole board, the lens refocused to F, is 13.6 mm: a
+part standing anywhere on it up to that height stays in frame A's picture.
+That is the worst case, at the envelope's corner. Where J9 stands, mid-way
+along the board's end, the picture takes in a part up to 20.9 mm tall, so
+the Rev C's J9, at 14.80, is over the one and under the other. The sheet's
+headroom note gives both, from `Subject.standing_at`, and one instruction:
+if T's part stands higher than the figure for where it stands, raise the
+camera.
+
+**Refocus the lens to F**, 131.9 mm from the board for frame A: as sold it
+is set far, and a point there spreads to 23 pixels.
+
 ### The elevations, and why the diagonal is not the angle
 
 The elevations are the primary views, because the question is a height.
 The front elevation looks along +Y with the subject's X across it; the end
 elevation, first angle, is seen from the right and drawn on the left, with Y
-across it. `RPICAM-OVER-ARTY`'s draw **both lenses**, each with its own
-camera at its own height, and the angle each lies in its plane from the lens face to where the
-picture's edge meets the plane: 53.50 and 96 across the sensor's long side,
-41.41 and 72 along its short side, and which is which on the subject depends
-on which way the camera is turned. The stock lens's rays are solid and the
-wide lens's long-dashed, and the legend keys them. On the axis that set the
-height they reach frame A's edge; on the other the wide lens's picture runs
-past it, and is drawn running past it. Both heights are dimensioned on the
-front elevation, lower first, and X and Y of the lens under each. The
-autofocus module is not drawn: its angles are taken as the stock lens's,
-and its cone would lie on the stock one; its height in focus is in the
-table, or says its close limit is not published. `RPICAM-OVER-ACORN` and
-`RPICAM-OVER-PLATE` draw the stock lens alone, at frame A's F, and chain
-their dimensions up the right of the front elevation: S and F nearest the
-view, T and H2 outside them, H1 outside those. On the plate S is short
-enough at the sheet's scale that its value is written below it.
+across it. Each sheet draws the stock lens alone, at frame A's F, and the
+angle it lies in its plane from the lens face to where the picture's edge
+meets the plane: 53.50 across the sensor's long side, 41.41 along its short
+side, and which is which on the subject depends on which way the camera is
+turned. The dimensions chain up the right of the front elevation: S and F
+nearest the view, T and H2 outside them, H1 outside those, and X and Y of
+the lens under each elevation. On the plate S is short enough at the
+sheet's scale that its value is written below it; on the Acorn and the Arty
+S and T are unmeasured, and drawn not to scale.
 
 "65 degrees" is the diagonal, and using it as the angle across the picture
 is the mistake the name invites. Across the plate's frame A it gives Z
@@ -812,6 +860,11 @@ names the LEDs with a leader, since at its scale they are a millimetre wide.
   says so. Nothing on a board has a published height, so T is to measure,
   and the sheet prints how high anything standing on one may rise before it
   leaves frame A's picture: 13.6 mm with the lens refocused to F.
+- **What the Arty stands on, on `RPICAM-OVER-ARTY`, is a surface, not a
+  plate**: its rubber feet stand on it, and S, that surface to the board's
+  top face, and T, the top face to the tallest part, are to measure. The
+  figures quoted beside them are the Arty Rev C 3D model's, not the A7's;
+  [above](#the-arty-the-same-on-its-feet).
 - **The stack under the card on `RPICAM-OVER-ACORN` is unpublished and
   unmeasured.** F is set from the card's own top face, which the LEDs are on;
   the height above the mounting plate is S + F with S to measure, as
@@ -840,7 +893,7 @@ Nothing is restated that some family already extracted:
 | Subject | From |
 |---|---|
 | TT mounting plate | [`tinytapeout/mounting_plate/plate.py`](../tinytapeout/mounting_plate/README.md) for the outline and the standoff, [`tinytapeout/boards.py`](../tinytapeout/README.md) for every revision's envelope, LEDs, 7-segment displays and thickness, moved into plate coordinates by the placement offsets |
-| Arty A7 | [`fpga/boards.py`](../fpga/README.md), which is Digilent's own DXF and PDF plot |
+| Arty A7 | [`fpga/boards.py`](../fpga/README.md), which is Digilent's own DXF and PDF plot; the heights quoted, from Digilent's 3D model of the Arty Rev C, in `optics.py`, read back by `arty_revc.py` |
 | Acorn assembly | [`raspberry_pi/boards.py`](../raspberry_pi/README.md) for the Pi 5, and [`accessories/parts.py`](../accessories/README.md) for the card, where it sits, its LEDs and the HAT it sits in |
 
 The Acorn is no exception either. Its card is the PCI Express M.2
