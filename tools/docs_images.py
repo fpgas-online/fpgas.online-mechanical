@@ -82,16 +82,21 @@ from tools.layout import docs_dir_for, rel  # noqa: E402
 DOCS_SHEETS = (
     "raspberry_pi_camera/output/over-acorn-cle-215-plus.svg",
     "tinytapeout/mounting_plate/output/tt-generic-mounting-plate.svg",
+    "tinytapeout/mounting_plate/output/"
+    "tt-generic-mounting-plate-fitting-guide.svg",
 )
 
 #: Sheets whose whole-sheet pictures are written as PNG only, with no SVG.
-#: The plate's whole-sheet SVG is about 490 lines, over the commit-size hook's 400
+#: The plate's whole-sheet SVG is about 490 lines and the fitting guide's
+#: about 550, each over the commit-size hook's 400
 #: added lines, and a picture that cannot be committed cannot be checked, so
 #: the docs link the sheet's own PDF for the zoomable full drawing and the
 #: PNG here is its preview.  Question mech-01 to Tim is open; when it is
 #: answered this can go.  The views are SVG and PNG as for any sheet.
 SHEET_PNG_ONLY = frozenset({
     "tinytapeout/mounting_plate/output/tt-generic-mounting-plate.svg",
+    "tinytapeout/mounting_plate/output/"
+    "tt-generic-mounting-plate-fitting-guide.svg",
 })
 
 #: The views are stacked with this much paper between panels and round the
