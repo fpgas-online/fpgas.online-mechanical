@@ -49,7 +49,8 @@ pictures against a fresh run over the committed SVG, the way
 ``check_pdfs.py`` holds the PDFs, so the pictures carry the VERSION stamp of
 the sheet they were made from and are committed with it.
 
-A sheet in ``SHEET_PNG_ONLY`` has its whole-sheet pictures as PNG only.
+A sheet in ``SHEET_PNG_ONLY`` has its whole-sheet pictures as PNG only, and
+one in ``VIEW_GROUPS`` has its views as more than one picture.
 
 To add a sheet: give its renderer ``sheet.docs_panels``, add its SVG to
 ``DOCS_SHEETS``, run `make diagrams`, look at all four PNGs on their grounds,
@@ -82,16 +83,21 @@ from tools.layout import docs_dir_for, rel  # noqa: E402
 DOCS_SHEETS = (
     "raspberry_pi_camera/output/over-acorn-cle-215-plus.svg",
     "tinytapeout/mounting_plate/output/tt-generic-mounting-plate.svg",
+    "tinytapeout/mounting_plate/output/"
+    "tt-generic-mounting-plate-fitting-guide.svg",
 )
 
 #: Sheets whose whole-sheet pictures are written as PNG only, with no SVG.
-#: The plate's whole-sheet SVG is about 490 lines, over the commit-size hook's 400
+#: The plate's whole-sheet SVG is about 490 lines and the fitting guide's
+#: about 550, each over the commit-size hook's 400
 #: added lines, and a picture that cannot be committed cannot be checked, so
 #: the docs link the sheet's own PDF for the zoomable full drawing and the
 #: PNG here is its preview.  Question mech-01 to Tim is open; when it is
 #: answered this can go.  The views are SVG and PNG as for any sheet.
 SHEET_PNG_ONLY = frozenset({
     "tinytapeout/mounting_plate/output/tt-generic-mounting-plate.svg",
+    "tinytapeout/mounting_plate/output/"
+    "tt-generic-mounting-plate-fitting-guide.svg",
 })
 
 #: The views are stacked with this much paper between panels and round the
@@ -107,7 +113,33 @@ MARGIN = 1.0
 MIN_PX = 2400
 PRINT_WIDTH_MM = 180.0
 
-KINDS = ("views", "sheet")
+#: Sheets whose views are more than one picture, by SVG stem: each group's
+#: name and how many of the sheet's ``docs_panels`` it takes, in order, None
+#: for all the rest.  A picture is committed as one file, and the commit-size
+#: hook allows 400 added lines to a commit, so views that make an SVG of more
+#: lines than that are two pictures, ``<stem>-views-a`` and ``-views-b``,
+#: each its own run of panels, and the page shows them one after the other.
+#: The fitting guide's: the board revisions on the plate and the legend, then
+#: the tables and the notes.
+VIEW_GROUPS = {
+    "tt-generic-mounting-plate-fitting-guide": (("a", 4), ("b", None)),
+}
+
+
+def view_groups(stem: str) -> list[tuple[str, slice]]:
+    """The views pictures of the sheet with SVG stem *stem*, each
+    with the slice of its ``docs_panels`` it is made from."""
+    groups = VIEW_GROUPS.get(stem)
+    if groups is None:
+        return [("views", slice(None))]
+    out, start = [], 0
+    for name, count in groups:
+        end = None if count is None else start + count
+        out.append((f"views-{name}", slice(start, end)))
+        start = end
+    return out
+
+
 THEMES = ("light", "dark")
 
 
@@ -328,8 +360,9 @@ def to_png(svg: Path, dpi: int) -> Path:
 
 def outputs(svg: Path, out_dir: Path) -> dict[tuple[str, str], Path]:
     """Where each picture of *svg* goes: by (kind, theme), the SVG's path."""
+    kinds = [k for k, _ in view_groups(svg.stem)] + ["sheet"]
     return {(k, t): out_dir / f"{svg.stem}-{k}-{t}.svg"
-            for k in KINDS for t in THEMES}
+            for k in kinds for t in THEMES}
 
 
 def kept(svg: Path, out_dir: Path, png_only: bool) -> list[Path]:
@@ -362,7 +395,9 @@ def write(svg_text: str, svg: Path, panels: list[tuple[Rect, str]],
         if kind == "sheet":
             text, w = sheet_svg(d, theme), d.width
         else:
-            text, caps = views_svg(d, panels, furniture, theme, name)
+            these = dict(view_groups(svg.stem))[kind]
+            panels_here = panels[these]
+            text, caps = views_svg(d, panels_here, furniture, theme, name)
             w = float(SVG_OPEN.search(text).group(1))
         path.write_text(text, encoding="utf-8")
         dpi = dpi_for(w)
@@ -372,9 +407,10 @@ def write(svg_text: str, svg: Path, panels: list[tuple[Rect, str]],
         if theme == "light":
             line = (f"{kind}: {w:.1f} mm wide at {dpi} dpi, "
                     f"{round(w / 25.4 * dpi)} px")
-            if kind == "views":
+            if kind.startswith("views"):
                 low = min(caps)
-                line += ("; panels " + ", ".join(f"{r.w:.0f}" for r, _ in panels)
+                line += ("; panels " + ", ".join(f"{r.w:.0f}"
+                                                 for r, _ in panels_here)
                          + " mm wide")
                 line += (f"; smallest text {low:.2f} mm capitals, "
                          f"{low * PRINT_WIDTH_MM / w:.2f} mm printed "

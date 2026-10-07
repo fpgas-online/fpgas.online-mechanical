@@ -360,7 +360,13 @@ the notes (the standoffs and fasteners, and the sources), a column to a
 panel. Its whole-sheet pictures are PNG only: the whole-sheet SVG is over the
 commit-size hook's 400-line limit, so the docs link
 [the sheet's own PDF](tinytapeout/mounting_plate/output/tt-generic-mounting-plate.pdf)
-for the zoomable full drawing.
+for the zoomable full drawing. On
+[`TT-MP-FIT`](tinytapeout/mounting_plate/output/docs/tt-generic-mounting-plate-fitting-guide-views-a-light.png),
+the guide to fitting a board, the views are two pictures, `-views-a` (each
+board revision on the plate, two to a panel, and the legend) and `-views-b`
+(the placement and USB-C tables, and the notes), because the SVG of them all
+is over the same limit; its whole-sheet pictures are PNG only, linking
+[the sheet's PDF](tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf).
 
 The dark pictures' label masks are painted in Furo's page background,
 `#131416`, so they belong on the page background, not inside an admonition,

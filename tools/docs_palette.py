@@ -53,6 +53,11 @@ PALETTE = {
                     "outlines, notes, tables: the drawing itself. 15.5:1"),
     "#333333": Swap("#d6d6d6", TEXT,
                     "style.C_COMPONENT: 12.6:1, as it had on white"),
+    "#444444": Swap("#bcbcbc", TEXT,
+                    "the fitting guide's captions under each view, which are "
+                    "set a step quieter than the board's name and the "
+                    "tables: 9.7:1 on the dark ground, between the #d6d6d6 "
+                    "of the components and the #a6a6a6 of the labels"),
     "#666666": Swap("#a6a6a6", TEXT,
                     "zone and title block labels: 7.6:1, 6.1:1 on the "
                     "lighter dark fill (the worst case), and still two "
@@ -84,6 +89,11 @@ PALETTE = {
     "#e6e6e6": Swap("#282828", FILL,
                     "style.C_FILL_TABLE_HEAD: a tint 1.25:1 off the ground, "
                     "as on white"),
+    "#f2e6d0": Swap("#3a2c14", FILL,
+                    "the mounting plate fitting guide's USB-C connector, "
+                    "under its #7a4a00 outline: a tint of that amber, 1.4:1 "
+                    "off the ground, as it is 1.2:1 off white; no text sits "
+                    "on it, and its outline stays 3:1 or better against it"),
     "#f0f0f0": Swap("#212121", FILL,
                     "style.C_FILL_LIGHT: a tint 1.14:1 off the ground, as on "
                     "white"),

@@ -693,11 +693,12 @@ def render_fitting_guide(*, drawing_no: str, version: str,
     cell_w = area.w / cols
     cell_h = area.h / rows
 
+    extents: list[Rect] = []
     for n, (name, pl) in enumerate(PLACEMENTS.items()):
         col, row = n % cols, n // cols
         cell = Rect(area.x + col * cell_w, area.y1 - (row + 1) * cell_h,
                     cell_w, cell_h)
-        _guide_view(c, cell, scale, name, pl)
+        extents.append(_guide_view(c, cell, scale, name, pl))
 
     by_version = dict(holes_by_version(spec))
     rows_t = []
@@ -714,15 +715,15 @@ def render_fitting_guide(*, drawing_no: str, version: str,
                        ", ".join(by_version[name])])
     # In the annotation column, not in a half-width cell: at a true 2.5 mm cap
     # height this table does not fit in half the drawing area.
-    block = sheet.column_block(sheet.table_height("BOARD PLACEMENT ON THE PLATE",
-                                                  len(rows_t)))
+    placement_block = sheet.column_block(
+        sheet.table_height("BOARD PLACEMENT ON THE PLATE", len(rows_t)))
     # Six columns, not seven.  The board revisions each group covers are on
     # that group's own view a few centimetres away; carrying them here as well
     # cost 36 mm of a 162 mm column, and the table then overflowed and drew its
     # own headings through each other.  Headings are abbreviated for the same
     # reason: "PLATE PMODS" and "dX mm" were each wider than anything beneath
     # them, so the heading, not the data, was setting the column width.
-    sheet.table(block, "BOARD PLACEMENT ON THE PLATE",
+    sheet.table(placement_block, "BOARD PLACEMENT ON THE PLATE",
                 ["BOARD", "SHUTTLES", "dX", "dY", "PMODS", "HOLES USED"],
                 rows_t,
                 ["start", "start", "end", "end", "middle", "start"])
@@ -730,9 +731,9 @@ def render_fitting_guide(*, drawing_no: str, version: str,
     rows_u = [[name, f"{USB_C[name][0]:.2f} to {USB_C[name][2]:.2f}",
                f"{USB_C[name][1]:.2f} to {USB_C[name][3]:.2f}"]
               for name in PLACEMENTS]
-    block = sheet.column_block(
+    usb_block = sheet.column_block(
         sheet.table_height("USB-C CONNECTOR POSITION ON THE PLATE", len(rows_u)))
-    sheet.table(block, "USB-C CONNECTOR POSITION ON THE PLATE",
+    sheet.table(usb_block, "USB-C CONNECTOR POSITION ON THE PLATE",
                 ["BOARD", "X EXTENT mm", "Y EXTENT mm"], rows_u,
                 ["start", "end", "end"])
 
@@ -750,14 +751,52 @@ def render_fitting_guide(*, drawing_no: str, version: str,
         "own frame to get a plate coordinate.",
     ]
     spill = notes_spill_needed(sheet, notes, [])
-    draw_legend(sheet, GUIDE_LEGEND)
-    _place_notes_and_sources(sheet, notes, [], spill=spill)
+    legend = draw_legend(sheet, GUIDE_LEGEND)
+    note_cols = _place_notes_and_sources(sheet, notes, [], spill=spill)
     sheet.draw_title_block()
+
+    # What the docs show of this sheet, for a builder fitting a demo board:
+    # which way up it sits on the plate and which holes it takes.  The views
+    # come first because "where does my board go" is the builder's question;
+    # the guide's own order is kept for the rest.  Three views across is 212
+    # mm of drawing, and a picture that wide prints its 2.5 mm capitals at
+    # 2.1 mm on a 180 mm page, so the views go two to a panel, in the sheet's
+    # own rows: DB mpw with DB 4+, DB 06+ alone, and DB ETR v3.2 with v3.3.
+    # Then the legend, since the red holes, grey holes and the USB-C fill are
+    # what read one board from the next; the placement table (dX, dY, which
+    # Pmod positions, which holes); the USB-C extents; and the notes.  Left
+    # out is the sheet's frame, which is furniture.  Each view's panel is its
+    # own extent as _guide_view drew it, the plate and its captions, from the
+    # layout just drawn, and tools/docs_images.py refuses a panel edge that
+    # cuts through anything drawn.
+    def together(*rects: Rect) -> Rect:
+        x0 = min(r.x for r in rects)
+        y0 = min(r.y for r in rects)
+        x1 = max(r.x1 for r in rects)
+        y1 = max(r.y1 for r in rects)
+        return Rect(x0, y0, x1 - x0, y1 - y0)
+
+    sheet.docs_panels = [
+        (together(extents[0], extents[1]).inset(-DOCS_PAD),
+         "DB mpw and DB 4+ on the plate: holes used, board outline, USB-C"),
+        (extents[2].inset(-DOCS_PAD), "DB 06+ on the plate"),
+        (together(extents[3], extents[4]).inset(-DOCS_PAD),
+         "DB ETR v3.2 and v3.3 on the plate"),
+        (legend.inset(-DOCS_PAD), "the legend"),
+        (placement_block.inset(-DOCS_PAD),
+         "where each board sits and which holes it uses"),
+        (usb_block.inset(-DOCS_PAD), "where each board's USB-C lands"),
+    ] + [(Rect(col.x, sheet.notes_floor[n], col.w,
+               col.y1 - sheet.notes_floor[n]).inset(-DOCS_PAD),
+          "the notes, as far down as their text goes")
+         for n, col in enumerate(note_cols) if n in sheet.notes_floor]
     return sheet
 
 
 def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
-                pl: dict) -> None:
+                pl: dict) -> Rect:
+    """Draw one board revision on the plate; returns the paper it took: the
+    plate and the widest of its three captions, down to the last."""
     spec = PLATE
     o = spec.outline
     view = View(cell, 0, 0, o.width, o.height, scale, "1:2",
@@ -848,3 +887,15 @@ def _guide_view(c: Canvas, cell: Rect, scale: float, name: str,
         c.text(cell.cx, view.y(0) - drop, text, size=style.T_LABEL,
                anchor="middle", bold=bold, colour=colour,
                face="sans" if bold else "condensed")
+
+    half = max(style.text_width(t, style.T_LABEL, bold=b)
+               for t, _, b, _ in captions) / 2
+    # The outline's corners are arcs, which the docs' cut check bounds by
+    # their radius past their end points, so the plate's sides are that far
+    # out.
+    reach = view.d(o.corner_radius)
+    left = min(view.x(0) - reach, cell.cx - half)
+    right = max(view.x(o.width) + reach, cell.cx + half)
+    bottom = view.y(0) - captions[-1][1] - style.descender(style.T_LABEL)
+    return Rect(left, bottom, right - left,
+                view.y(o.height) + reach - bottom)
