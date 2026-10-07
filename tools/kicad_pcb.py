@@ -125,6 +125,8 @@ class Pad:
     drill: float | None
     drill_size: tuple[float, float] | None
     layers: list[str]
+    #: The net the pad is on, by name: ``(net 33 "uio0")`` in KiCad 6 to 9.
+    net: str = ""
 
 
 @dataclass
@@ -140,6 +142,8 @@ class Footprint:
     pads: list[Pad] = field(default_factory=list)
     courtyard: list[Segment] = field(default_factory=list)
     fab: list[Segment] = field(default_factory=list)
+    #: Front silkscreen lines carried by the footprint.
+    silk: list[Segment] = field(default_factory=list)
     #: Edge.Cuts geometry carried by the footprint itself.  Connector
     #: footprints often bring their own board cutout or edge recess, so this
     #: has to be merged with the board-level edge cuts to get the true outline.
@@ -165,6 +169,41 @@ class Footprint:
         xs = [c for p in self.pads for c in (p.x - p.size[0] / 2, p.x + p.size[0] / 2)]
         ys = [c for p in self.pads for c in (p.y - p.size[1] / 2, p.y + p.size[1] / 2)]
         return min(xs), min(ys), max(xs), max(ys)
+
+
+@dataclass
+class Rect:
+    """A board-level rectangle, in KiCad coordinates."""
+
+    x1: float
+    y1: float
+    x2: float
+    y2: float
+    filled: bool
+
+
+@dataclass
+class Text:
+    """A board-level text: where KiCad anchors it, and how."""
+
+    text: str
+    x: float
+    y: float
+    rot: float
+    height: float       # the font size KiCad gives, its glyph height
+    justify: tuple[str, ...]
+    bold: bool
+    knockout: bool
+
+
+@dataclass
+class Graphics:
+    """What is drawn on one layer of the board, outside any footprint."""
+
+    segments: list[Segment] = field(default_factory=list)
+    arcs: list[Arc] = field(default_factory=list)
+    rects: list[Rect] = field(default_factory=list)
+    texts: list[Text] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -266,6 +305,46 @@ class Board:
             ys += [c.cy - c.r, c.cy + c.r]
         return min(xs), min(ys), max(xs), max(ys)
 
+    # -- board-level graphics -----------------------------------------------
+
+    def graphics(self, layer: str) -> "Graphics":
+        """The board's own lines, arcs, rectangles and text on *layer*:
+        what is drawn on the board rather than carried by a footprint."""
+        out = Graphics()
+        for node in children(self.tree, "gr_line"):
+            if value(node, "layer") == layer:
+                a, b = child(node, "start"), child(node, "end")
+                out.segments.append(Segment(float(a[1]), float(a[2]),
+                                            float(b[1]), float(b[2])))
+        for node in children(self.tree, "gr_arc"):
+            if value(node, "layer") == layer:
+                a, m, b = (child(node, k) for k in ("start", "mid", "end"))
+                out.arcs.append(Arc(float(a[1]), float(a[2]), float(m[1]),
+                                    float(m[2]), float(b[1]), float(b[2])))
+        for node in children(self.tree, "gr_rect"):
+            if value(node, "layer") == layer:
+                a, b = child(node, "start"), child(node, "end")
+                out.rects.append(Rect(float(a[1]), float(a[2]), float(b[1]),
+                                      float(b[2]),
+                                      value(node, "fill") in ("yes", "solid")))
+        for node in children(self.tree, "gr_text"):
+            if value(node, "layer") != layer:
+                continue
+            at = child(node, "at")
+            effects = child(node, "effects") or ["effects"]
+            font = child(effects, "font") or ["font"]
+            size = child(font, "size")
+            justify = child(effects, "justify")
+            out.texts.append(Text(
+                text=node[1], x=float(at[1]), y=float(at[2]),
+                rot=float(at[3]) if len(at) > 3 else 0.0,
+                height=float(size[2]) if size else 0.0,
+                justify=tuple(j for j in (justify[1:] if justify else ())
+                              if isinstance(j, str)),
+                bold=value(font, "bold") == "yes",
+                knockout="knockout" in (child(node, "layer") or [])))
+        return out
+
     # -- footprints ---------------------------------------------------------
 
     def _footprint(self, node: list) -> Footprint:
@@ -318,18 +397,21 @@ class Board:
                 elif nums:
                     drill_d = float(nums[0])
             layers = child(pad, "layers")
+            net = child(pad, "net")
             fp.pads.append(Pad(
                 number=str(pad[1]), type=str(pad[2]), shape=str(pad[3]),
                 x=fx + dx, y=fy + dy, rot=frot + prot,
                 size=(float(size[1]), float(size[2])) if size else (0.0, 0.0),
                 drill=drill_d, drill_size=drill_size,
                 layers=[l for l in (layers[1:] if layers else []) if isinstance(l, str)],
+                net=str(net[-1]) if net else "",
             ))
 
         for kind in ("fp_line", "fp_rect"):
             for gnode in children(node, kind):
                 layer = value(gnode, "layer")
-                if layer not in ("F.CrtYd", "B.CrtYd", "F.Fab", "B.Fab", "Edge.Cuts"):
+                if layer not in ("F.CrtYd", "B.CrtYd", "F.Fab", "B.Fab",
+                                 "F.SilkS", "Edge.Cuts"):
                     continue
                 start, end = child(gnode, "start"), child(gnode, "end")
                 if not (start and end):
@@ -348,6 +430,8 @@ class Board:
                         fp.edge_segments.append(seg)
                     elif "CrtYd" in layer:
                         fp.courtyard.append(seg)
+                    elif layer == "F.SilkS":
+                        fp.silk.append(seg)
                     else:
                         fp.fab.append(seg)
 
