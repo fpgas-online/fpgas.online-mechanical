@@ -205,6 +205,56 @@ def the_camera() -> None:
           f"{v1.LENS_TOL:.2f} v1.py gives the glued-on lens module and the "
           f"{v1.HOLE_TOL:.1f} it gives the holes it is located by")
 
+    # The sheet's KEPT LOW note, where the holder is lower than the
+    # position sheet's H1 for the lens refocused: every figure it prints,
+    # worked again here from the lens's focal length and angles, and the
+    # margin it claims checked against the boards themselves.
+    h1 = H.refocused_h1()
+    if h1 is None or H.LENS_FACE >= h1:
+        check(True, "the height needs no note against the position sheet",
+              f"face {H.LENS_FACE:.2f}, the position sheet's H1 "
+              + ("is not drawn for this lens" if h1 is None
+                 else f"is {h1:.2f}"), report=True)
+    else:
+        f = lens.focal_length
+        z = face - plane_hi
+        pic_x = 2 * (z - f) * math.tan(math.radians(along_x / 2))
+        pic_y = 2 * (z - f) * math.tan(math.radians(along_y / 2))
+        short_x, short_y = (frame.width - pic_x) / 2, (frame.height - pic_y) / 2
+        # H1 again: the height the lens refocused needs, plus f, over the
+        # plane the position sheet sets it from.
+        h1_here = plane_hi + z_need + f
+        check(abs(h1 - h1_here) < 0.005,
+              "the H1 the sheet's note prints is the position sheet's",
+              f"{h1:.2f} printed, {h1_here:.2f} worked here (the plane "
+              f"{plane_hi:.2f} up, {z_need:.2f} over it, and f {f:.2f})")
+        sx, sy = H.refocused_shortfall()
+        check(abs(sx - short_x) < EPS and abs(sy - short_y) < EPS,
+              "the shortfall the sheet's note prints is the picture's",
+              f"{sx:.2f} (X) and {sy:.2f} (Y) printed, {short_x:.2f} and "
+              f"{short_y:.2f} worked here")
+        # What the boards keep of the frame's own margin, worked from every
+        # revision's envelope at the highest board plane, and the margin
+        # the frame has round their union; the note prints exactly these,
+        # to the hundredth.
+        envs = [optics._envelope(TT[rev], pl["dx"], pl["dy"])
+                for pl in PLACEMENTS.values() for rev in pl["revisions"]]
+        ux0, uy0 = min(e[0] for e in envs), min(e[1] for e in envs)
+        ux1, uy1 = max(e[2] for e in envs), max(e[3] for e in envs)
+        here = ((min(ux0 - (ax - pic_x / 2), (ax + pic_x / 2) - ux1),
+                 min(ux0 - frame.x0, frame.x1 - ux1)),
+                (min(uy0 - (ay - pic_y / 2), (ay + pic_y / 2) - uy1),
+                 min(uy0 - frame.y0, frame.y1 - uy1)))
+        (kx, mx), (ky, my) = H.boards_keep()
+        printed = [f"{v:.2f}" for v in (kx, mx, ky, my)]
+        worked = [f"{v:.2f}" for v in (here[0][0], here[0][1],
+                                       here[1][0], here[1][1])]
+        check(printed == worked and kx > 0 and ky > 0,
+              "the boards are in view, with what the note says they keep",
+              f"printed {kx:.2f} of {mx:.2f} (X) and {ky:.2f} of {my:.2f} "
+              f"(Y); worked here {worked[0]} of {worked[1]} (X) and "
+              f"{worked[2]} of {worked[3]} (Y), at the highest board plane")
+
     # Nothing of the holder between the lens and any board.  The picture of
     # a revision's envelope is a pyramid from the lens; its section shrinks
     # towards the lens, so a box misses it if it misses the section at the

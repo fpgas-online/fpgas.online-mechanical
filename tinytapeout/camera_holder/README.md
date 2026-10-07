@@ -113,9 +113,9 @@ B006604 itself, or bosses cut to a measured lens, is in `TODO.md`.
 `RPICAM-OVER-PLATE` now draws one module, the Camera Module v1.3 with its
 stock lens refocused, and gives heights to its lens face; see
 [the camera README](../../raspberry_pi_camera/README.md#the-plate-the-same-per-frame).
-The holders were built before that, and are not changed with it:
+The holders were built before that, and their heights are not changed with it:
 
-- **`TT-MP-CAM65` is lower than the sheet's H1.** The holder sets its lens
+- **`TT-MP-CAM65` is lower than the sheet's H1, and stays so.** The holder sets its lens
   face from the height that frames the boards with the lens as sold,
   focused far: 139.17 over the board, so 148.77 over the plate, and 150.00
   with the print allowance. With the lens refocused to F, as the sheet now
@@ -123,18 +123,22 @@ The holders were built before that, and are not changed with it:
   at 142.77 over the board: H1 152.37 over the plate, 2.37 above where the
   holder puts it, which is more than its 1.00 mm allowance. Refocused at
   150.00, the picture falls 0.89 mm short of frame A on each side along Y
-  and 1.18 along X; the boards are still in it, with 3.82 mm (X) and 4.11 mm
-  (Y) of the 5.00 mm margin left for the stand. Re-deriving the holder from the sheet's H1 is
-  in `TODO.md`.
+  and 1.18 along X; the boards are still in it, keeping 8.08 mm of the
+  frame's own 9.26 mm margin along X (frame A is made 4:3, so it is wider
+  than the boards plus 5.00) and 4.11 mm of 5.00 along Y. Tim was shown
+  3.82 and 4.11, 5.00 less the shortfall, which is a lower bound. Tim Ansell decided on
+  7 October 2026 (question mech-1, "Accept the smaller margin") that the
+  holder stays at 150.00 and is not raised the 2.37; the sheet's KEPT LOW
+  note says so, its figures come from `Holder.refocused_shortfall()`
+  and `Holder.boards_keep()`, and `verify.py` works them again.
 - **`TT-MP-CAM120`'s height came from the sheet's 120 column**, which is
   gone: the sheet no longer draws the 120 degree lens. The figure has not
   moved. It is `optics.place()` of the plate's frame A and `LENS_120` in
   [`raspberry_pi_camera/optics.py`](../../raspberry_pi_camera/README.md),
   72.40 over the board, which `holder.py` reads at import as it always did,
   `TT-MP-CAM120`'s own FOR note prints, and `verify_optics.py` still checks
-  over frame A because this holder is built on it. Its note still names
-  `RPICAM-OVER-PLATE` as where the height is drawn; that wants changing when
-  the holder is next re-rendered, and is in `TODO.md`.
+  over frame A because this holder is built on it. Its FOR note says the
+  height is worked on that sheet, not drawn on `RPICAM-OVER-PLATE`.
 
 ## Why it is shaped like this
 

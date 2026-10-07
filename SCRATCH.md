@@ -4235,3 +4235,31 @@ for pin 1. `tinytapeout/pmod_pin1/hat.py`, merged the same day with its own
 copy of the reading and a note that `parts.py` had pin 12's place, now
 imports the reading and stops if the pin 1 it draws is not `parts.py`'s;
 its pin 12 lands on the old figures to the hundredth.
+
+## TT-MP-CAM65 kept at 150.00, 7 October 2026
+
+Tim's answer to question mech-1, "Accept the smaller margin": the printed
+holder stays as it is. `RPICAM-OVER-PLATE`'s H1 for the refocused lens is
+152.37 over the plate; `TT-MP-CAM65`'s lens face is 150.00, 2.37 low and
+past its 1.00 mm print allowance. Refocused at 150.00 the picture falls
+0.89 mm (Y) and 1.18 mm (X) short of frame A on each side, so, as Tim
+was shown it, the boards keep at least 3.82 mm (X) and 4.11 mm (Y) of the
+5.00 mm margin (5.00 less the shortfall). The raising of the holder by
+2.4 mm was the option declined.
+
+The figures are worked in `Holder.refocused_h1()`,
+`Holder.refocused_shortfall()` and `Holder.boards_keep()` in `holder.py`,
+which the sheet's new KEPT LOW note prints, and
+`tinytapeout/camera_holder/verify.py` works them again from the lens's focal
+length and angles and every revision's envelope, and fails if they drift.
+What the boards really keep is not 5.00 less the shortfall (3.82 along X):
+the boards' union is 121.76 x 95.20 and frame A is 140.27 x 105.20, so the
+frame's own margin is 9.26 along X, because it is made 4:3, and 5.00 along
+Y. At 150.00 the boards keep 8.08 of 9.26 (X) and 4.11 of 5.00 (Y), which
+is what the sheet prints; Tim's decision stands as he answered it, on the
+3.82 and 4.11 he was shown, and 3.82 is the lower bound.
+
+`TT-MP-CAM120`'s FOR note, which named `RPICAM-OVER-PLATE` as where its
+height is drawn, now says the sheet does not draw that lens and the height
+is `optics.place()` of frame A and the lens; so do its FOCUS note and its
+first source line.
