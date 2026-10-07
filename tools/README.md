@@ -35,6 +35,8 @@ Imported, not run.
 | `fetch_acorn.sh` | Downloads the photograph the Acorn CLE-215+'s LEDs are measured from, and the photographs and schematic that corroborate it, into `tmp/` |
 | `generate_diagrams.py` | Renders every sheet as SVG, then PDF and a preview PNG, and binds the A3 sets into their bound copies -- the plate's two A3 sheets go into the Tiny Tapeout one, and the accessories and the A4 drill templates are bound into nothing. Also the data: `tt_sheets()`, the per-family sheet lists and `bundles()` say what the set is, and `update_readme.py` and `check_pdfs.py` import them rather than restating them |
 | `update_readme.py` | Rewrites the preview grid in the front-page README |
+| `docs_images.py` | Draws the sheets in its `DOCS_SHEETS` as pictures for the docs site, into `output/docs/` beside each: the views, stacked from the panels the sheet's renderer sets in `Sheet.docs_panels`, and the whole sheet, each light and dark on a transparent ground. Refuses a panel edge that cuts through anything drawn. Its docstring says how to add a sheet |
+| `docs_palette.py` | What each colour on a sheet becomes on the docs site's dark ground, with why, held to WCAG contrast floors; and the reader of a sheet's SVG that refuses any colour, opacity, element or attribute it cannot account for, rather than pass it through unswapped |
 
 The extractors are not here. Each lives with its subject:
 
@@ -91,6 +93,13 @@ with its family, and not every one of those has caught something yet.
   is right -- the angle each labels lies along its axis, the camera is turned
   the way that needs it lower, and the figures the notes derive come out the
   same by another route.
+
+- [`check_docs_images.py`](check_docs_images.py) holds the docs pictures
+  in the index against what `docs_images.py` writes from the SVG in the
+  index, byte for byte, as `check_pdfs.py` does the PDFs, and reports a
+  picture missing, stale, or left behind by a sheet no longer pictured.
+  Writing them again runs the palette and panel rules as well. Newer than
+  anything it could have caught.
 
 GitHub Actions runs `make check` on every push to `main` and on every pull
 request: [`.github/workflows/check.yml`](../.github/workflows/check.yml). The
