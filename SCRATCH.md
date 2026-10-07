@@ -4201,3 +4201,37 @@ pictures have from `check_sheets.py` instead: text printed at 180 mm wide
 no smaller than 2.5 mm, and no overprinting. Both pictures print their
 smallest text at about 2.6 mm; checked by eye on #ffffff and #131416
 against the board render, the photograph, and Digilent's photographs.
+
+## The Pmod HAT Adapter's pin 1, 7 October 2026
+
+`accessories/parts.py` put each port's pin 1 in the row nearer the edge the
+port faces and at the end Digilent print 3V3 beside, which is where pin 12
+is. The review of fpgas.online-mechanical PR #49 found it, and issue #50
+records it. ACC-HAT-PMOD's host table and the PMOD HAT ADAPTER HOSTS table on
+the Raspberry Pi sheets printed those figures; nothing draws a mark from them.
+
+Pin 1 is read off two of Digilent's photographs: the straight-on top view
+the hosts were measured from, where each port has one square pad with a 1
+printed beside it, and the smaller, oblique one on the first page of the
+reference manual for Rev. B, which shows the same 1, 3V3 and GND at the same
+ends. JA and JB: the row further from the left edge, the lower end. JC: the
+row further from the bottom edge, the end towards the barrel jack. Read back
+through `measure_pmod_hat.py`'s screw fit, with each square pad's centre
+picked by eye to a pixel (0.07 mm), the pads land at (10.29, 33.03),
+(10.29, 10.21) and (33.90, 10.08): inside the hosts' +/-0.75 mm of the new
+figures (JC's Y the closest call: 0.59 here, 0.66 in the review's own
+reading), and more than 12 mm from the old ones.
+
+| Port | Was (X, Y) | Is (X, Y) |
+|------|------------|-----------|
+| JA | 8.13, 45.64 | 10.67, 32.94 |
+| JB | 8.13, 22.78 | 10.67, 10.08 |
+| JC | 21.25, 8.13 | 33.95, 10.67 |
+
+`_check_hat_pin1` in `parts.py` holds each port's figures to the row and end
+read off the photographs, at import, so the old corner cannot come back
+without the reading changing too. The sheets cite the manual as the source
+for pin 1. `tinytapeout/pmod_pin1/hat.py`, merged the same day with its own
+copy of the reading and a note that `parts.py` had pin 12's place, now
+imports the reading and stops if the pin 1 it draws is not `parts.py`'s;
+its pin 12 lands on the old figures to the hundredth.

@@ -72,9 +72,10 @@ where the lettering is, is read off the same top view, on the
 and off the photograph in the reference manual for Rev. B; the pads are not
 drawn to size, since nobody publishes it.
 
-`parts.py` puts each port's `pin1_x`, `pin1_y` at the other end of the port
-and in the row nearer the edge, which is pin 12's place by these
-photographs. `hat.py` does not use those two figures; TODO.md has it.
+The reading is `PMOD_HAT_PIN1_END` in `parts.py`, which holds each port's
+`pin1_x`, `pin1_y` to it; `hat.py` uses the same reading and stops if its
+pin 1 is not where `parts.py` puts it, so the picture and the sheets'
+tables cannot disagree.
 
 ## Checks
 

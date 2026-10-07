@@ -142,8 +142,11 @@ checker that measures the finished PDFs rather than trusting them.
       the sheet has spare, instead of a flat 30 mm on the chain's edge. Only
       a sheet the centring leaves short moves: the Zybo Z7, short by 9.17 mm,
       and the Cynthion, short by 3.33; no other sheet changes
-- [ ] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
-      silkscreen; `accessories/parts.py` has it opposite the Pmod convention
+- [x] Check the Pmod HAT Adapter's pin 1 corner against the adapter's
+      silkscreen: `accessories/parts.py` had pin 12's place. Pin 1 is the
+      square pad Digilent's photographs show, in the row further from the
+      edge and at the end away from 3V3 and GND, and an import-time check
+      holds the figures to that (issue #50)
 - [ ] Cynthion's three side buttons and its two SWD connectors are not drawn.
       The buttons reach 2.50 mm past the left and right edges and a case
       needs holes for them, which is in the notes and the envelope figure but
@@ -510,7 +513,7 @@ checker that measures the finished PDFs rather than trusting them.
       held to the 2.5 mm floor at 180 mm wide and to no text overprinting;
       `check_docs_images.py` holds the committed files to what their module
       draws
-- [ ] `accessories/parts.py` gives the Pmod HAT's ports `pin1_x`, `pin1_y`
+- [x] `accessories/parts.py` gives the Pmod HAT's ports `pin1_x`, `pin1_y`
       at the wrong end and in the wrong row: by Digilent's top view and the
       Rev. B manual's photograph, pin 1 (the square pad, printed 1) is in
       the row further from the edge, at the bottom end of JA and JB and the
@@ -519,3 +522,5 @@ checker that measures the finished PDFs rather than trusting them.
       figures. Fixing it changes those sheets, so it is its own pull request
       (fpgas.online-mechanical issue #50,
       https://github.com/fpgas-online/fpgas.online-mechanical/issues/50).
+      Fixed: the figures are the square pad's, and `hat.py` stops if its
+      pin 1 is not where `parts.py` puts it
