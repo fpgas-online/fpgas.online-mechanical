@@ -43,7 +43,7 @@ many rectangles as it has things worth framing, and the lens only decides how
 high above them the camera goes.  See :mod:`raspberry_pi_camera.optics`.
 
 A subject's sheet may be for ONE module, and give heights to its lens face
-instead: a subject that carries ``face`` -- the Acorn's and the plate's --
+instead: a subject that carries ``face`` -- every position sheet's now --
 draws the one lens at the height that both frames and focuses frame A,
 dimensions that height above the plane, above what the stand is built on
 and above the tallest thing under the camera, gives the same per frame in
@@ -165,14 +165,14 @@ class DoesNotFit(Exception):
 
 
 #: How far from the plane a height nobody has measured is drawn, in SHEET
-#: millimetres: the mounting plate's face under it and the assembly's highest
-#: point over it, on a sheet that gives lens-face heights.  Not to scale, and
+#: millimetres: what the stand is built on under it -- the mounting plate's
+#: face, or what the Arty's feet stand on -- and the highest point over it, on a sheet that gives lens-face heights.  Not to scale, and
 #: the legend says so; a measured height is drawn where it is.  Each is room
 #: for its one-letter dimension between its arrows.
 NTS_BASE = 11.0
 NTS_HIGHEST = 11.0
 
-#: The lines those two heights are drawn as: the plate's face as an outline,
+#: The lines those two heights are drawn as: the base as an outline,
 #: the highest point thin and dashed, as hidden detail.
 STACK_LINES = {
     "base": ("line", style.W_OUTLINE, style.C_LINE, None),
@@ -617,7 +617,7 @@ def _tables_face(sheet: Sheet, subject: Subject) -> Rect:
         return [w[key].split(" ", 1)[1].removeprefix("= ") for w in per]
 
     rows = [
-        ["H1", "the mounting plate's face, the standoffs' base"]
+        ["H1", face.base_what]
         + rhs("H1") + [_term(face.base)],
         ["H2", f"{face.highest_what}, as clearance"] + rhs("H2")
         + [_term(face.highest)],
@@ -1118,9 +1118,9 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
     else:
         along, sign = ("v", -1) if axis == "X" else ("u", -1)
 
-    # The stack's two heights, on a sheet that gives lens-face heights: the
-    # mounting plate's face under the plane and the assembly's highest point
-    # over it, each a line across the view.
+    # The stack's two heights, on a sheet that gives lens-face heights: what
+    # the stand is built on under the plane and the highest point over it,
+    # each a line across the view.
     if subject.face:
         for key, h in _stack(subject, v.scale).items():
             if key == "base" and _base_drawn(subject):
@@ -1281,10 +1281,10 @@ def _dimension_face(c, subject: Subject, v: View, lens_x: float,
                     cu: float) -> None:
     """The lens face's three heights, chained up the right-hand side.
 
-    Nearest the view, S and then F: the plate's face to the card, the card
-    to the lens face.  Outside them T and then H2: the card to the highest
-    point, the highest point to the lens face.  Outside those H1, the plate's
-    face to the lens face, which is the first two added.  X of the lens
+    Nearest the view, S and then F: the base to the plane, the plane to
+    the lens face.  Outside them T and then H2: the plane to the highest
+    point, the highest point to the lens face.  Outside those H1, the base
+    to the lens face, which is the first two added.  X of the lens
     under the view, as on every position sheet.
     """
     stack = _stack(subject, v.scale)
@@ -1468,7 +1468,7 @@ def _legend(subject: Subject) -> list:
         face = subject.face
         for key, term, what in (
                 ("base", face.base,
-                 "The mounting plate's face, {} below " + face.plane_short),
+                 face.base_short + ", {} below " + face.plane_short),
                 ("highest", face.highest,
                  face.highest_what[0].upper() + face.highest_what[1:]
                  + ", {} above " + face.plane_short)):

@@ -23,13 +23,13 @@ From the data modules rather than from the drawings:
   a height set at the wrong plane covers less at the right one;
 * each variant's close limit read out of its own words, and the lowest
   height at which it both frames and focuses each frame, by the thin lens;
-* on the sheets that give lens-face heights for one module, the Acorn's
-  and the plate's: the face's height above the target's plane worked
+* on the sheets that give lens-face heights for one module, every
+  position sheet's: the face's height above the target's plane worked
   again for every frame, the two heights that need a measured term printed
   as formulae and never as figures while the term is unmeasured, and as
   the sum when it is measured, how far a part may stand on the plate's
-  boards, and the picture, the crop and the pixels across the target at
-  that height and at the height reported on the rig;
+  boards or the Arty, and the picture, the crop and the pixels across
+  the target at that height and at the height reported on the rig;
 * the hyperfocal distance and depth of field of every lens, and every
   height against every lens's declared focus range, with how soft a fixed
   lens is there and how deep the field is once a motorised one has focused;
