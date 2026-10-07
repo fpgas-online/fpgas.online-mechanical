@@ -4035,3 +4035,26 @@ The whole-sheet SVG of the plate is about 490 lines, over the commit hook's 400,
 the way round it (committing half a file first) was refused, so its
 whole-sheet pictures are PNG only and the docs link the PDF; question mech-01
 to Tim is open.
+
+## Pictures for the docs: TT-MP-FIT, 7 October 2026
+
+Panels, for a builder asking how a board sits on the plate: the five board
+revisions drawn on the plate, two to a panel in the sheet's own rows (DB mpw
+with DB 4+, DB 06+ alone, DB ETR v3.2 with v3.3), since three across is 212
+mm of drawing and prints the text at 2.1 mm; the legend; the placement
+table (dX, dY, Pmod positions, holes used); the USB-C table; the notes. Each
+view's panel is its own extent as `_guide_view` returns it: the plate, its
+corner arcs, and its widest caption. The notes' panel stops where their text
+does (`Sheet.notes_floor`), since their column is the whole band.
+
+The views are 166 mm wide (panels 146, 74, 146, 164, 164, 164, 104), 2405 px,
+smallest text 2.71 mm printed across 180 mm, 1.67 A4 pages of 267 mm in all.
+One SVG of them was 483 lines, so `VIEW_GROUPS` makes two pictures: `-views-a`
+(views and legend, 388 lines, 1.08 pages) and `-views-b` (tables and notes,
+98 lines, 0.60 pages). Whole-sheet pictures PNG only, as the plate's, with
+question mech-01 still open.
+
+New colours: the captions' #444444 (dark #bcbcbc, 9.6:1) and the USB-C fill
+#f2e6d0 (dark #3a2c14, a tint). The Acorn's and the plate's pictures are
+byte for byte as they were.
+
