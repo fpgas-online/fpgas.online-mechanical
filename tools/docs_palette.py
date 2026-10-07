@@ -56,7 +56,7 @@ PALETTE = {
     "#444444": Swap("#bcbcbc", TEXT,
                     "the fitting guide's captions under each view, which are "
                     "set a step quieter than the board's name and the "
-                    "tables: 9.6:1 on the dark ground, between the #d6d6d6 "
+                    "tables: 9.7:1 on the dark ground, between the #d6d6d6 "
                     "of the components and the #a6a6a6 of the labels"),
     "#666666": Swap("#a6a6a6", TEXT,
                     "zone and title block labels: 7.6:1, 6.1:1 on the "

@@ -140,7 +140,6 @@ def view_groups(stem: str) -> list[tuple[str, slice]]:
     return out
 
 
-THEMES_AND_SHEET = None
 THEMES = ("light", "dark")
 
 

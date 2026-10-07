@@ -4054,7 +4054,7 @@ One SVG of them was 483 lines, so `VIEW_GROUPS` makes two pictures: `-views-a`
 98 lines, 0.60 pages). Whole-sheet pictures PNG only, as the plate's, with
 question mech-01 still open.
 
-New colours: the captions' #444444 (dark #bcbcbc, 9.6:1) and the USB-C fill
+New colours: the captions' #444444 (dark #bcbcbc, 9.7:1) and the USB-C fill
 #f2e6d0 (dark #3a2c14, a tint). The Acorn's and the plate's pictures are
 byte for byte as they were.
 
