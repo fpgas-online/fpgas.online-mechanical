@@ -455,6 +455,6 @@ checker that measures the finished PDFs rather than trusting them.
       and legend
 - [ ] The next sheets: give the renderer `docs_panels` and add the SVG to
       `DOCS_SHEETS`. The TT mounting plate sheet is next
-- [ ] The views print at A4 width with 2.5 mm text at about 2 mm. Larger
-      would need a narrower picture, which means fewer panels or a sheet
-      laid out for it
+- [x] The views print at A4 width (180 mm) with the smallest text at
+      2.71 mm: the notes beside the plan are a panel of their own, so the
+      widest panel is the 164 mm heights table and legend

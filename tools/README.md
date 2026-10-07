@@ -99,7 +99,10 @@ with its family, and not every one of those has caught something yet.
   index, byte for byte, as `check_pdfs.py` does the PDFs, and reports a
   picture missing, stale, or left behind by a sheet no longer pictured.
   Writing them again runs the palette and panel rules as well. Newer than
-  anything it could have caught.
+  anything it could have caught. When a sheet's output is restamped or
+  re-rendered in a later output commit, its docs pictures must be
+  regenerated and committed in that same output commit: the whole-sheet
+  pictures carry the sheet's VERSION text.
 
 GitHub Actions runs `make check` on every push to `main` and on every pull
 request: [`.github/workflows/check.yml`](../.github/workflows/check.yml). The

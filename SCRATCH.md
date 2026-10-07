@@ -3992,8 +3992,14 @@ column on the far side of the notes, and one rectangle round all three is
 the top half of the sheet with the notes in its middle: 390 mm wide,
 printing its 2.5 mm text at 1.2 mm across an A4 page. So the views
 are panels of the sheet, each a rectangle of its own layout, stacked: the
-elevations and plan with the two notes beside the plan, then the heights
-table, then the legend. 219 mm wide, and the text prints at 2.05 mm. The
+elevations, the plan, the two notes beside the plan, the heights table and
+the legend, five panels. First cut as one panel of elevations, plan and notes:
+219 mm wide, and the text printed at 2.05 mm. Then notes 1 and 2 became a
+panel of their own, the plan's reaching under them as far as its leader's
+text runs (panels may overlap; what is wholly in several belongs to the last):
+161, 110, 141, 164 and 164 mm wide, so the picture is 166 mm and the smallest
+text (2.50 mm capitals) prints at 2.71 mm across 180 mm, over the 2.5 mm
+asked for. The heights table and legend, the widest, needed no cropping. The
 renderer sets the panels from the rectangles it has just laid out, so they
 follow the drawing, and an element that a panel's edge cuts through stops
 the build. That caught the centring marks, which run five millimetres into
