@@ -89,6 +89,33 @@ PMOD_HAT_JC_X = 27.6
 PMOD_HAT_FIELD_DEPTH = 9.4
 PMOD_HAT_TOL = 0.75
 
+# Which pad of each port is pin 1 is read off two of Digilent's photographs:
+# the top view above, and the one on the first page of the Pmod HAT Adapter
+# Reference Manual, which says it applies to Rev. B,
+#     https://digilent.com/reference/_media/reference/add-ons/pmod-hat/
+#     171205ag_dual_brand_pmod-hat-adapter_rm.pdf
+# (the Wayback Machine's capture of 5 July 2024 is the copy read).  On every
+# port one pad is square and Digilent print a 1 beside it; 3V3 and GND are
+# printed at the other end, beside pins 6 and 5.  In this file's frame, top
+# view, X right, Y up, with the 40-pin header at the top as Digilent
+# photograph it:
+#     JA, JB  the square pad is in the row further from the left edge, at the
+#             lower end of the port; 3V3 and GND are at the upper end
+#     JC      the square pad is in the row further from the bottom edge, at
+#             the right-hand end, towards the barrel jack; 3V3 and GND are at
+#             the left-hand end
+# The top view is sharp enough to see the square pad on each port; the manual's
+# photograph is oblique and smaller, and shows the same 1, 3V3 and GND printed
+# at the same ends.  Pins 1 to 6 are the row with the square pad and 7 to 12
+# the row nearer the edge, 7 beside 1, as the Pmod specification numbers a 2x6.
+# The figures are the pin field's own pitch from its measured centre, so they
+# carry the hosts' +/-0.75 mm and nothing more.
+#: Per port: the edge it faces, and which end of the port pin 1 is at, -1
+#: for the lower X or Y and +1 for the higher.  _check_hat_pin1 holds the
+#: PmodHeader figures below to it.
+PMOD_HAT_PIN1_END = {"JA": ("left", -1), "JB": ("left", -1),
+                     "JC": ("bottom", +1)}
+
 PMOD_HAT = BoardSpec(
     key="pmod-hat-adapter",
     title="Digilent Pmod HAT Adapter",
@@ -102,20 +129,22 @@ PMOD_HAT = BoardSpec(
         for i, (x, y) in enumerate(sorted(HAT_HOLES, key=lambda p: (p[1], p[0])))
     ),
     pmods=(
+        # Pin 1 is the square pad: the row further from the edge, at the end
+        # away from the 3V3 and GND printing; see PMOD_HAT_PIN1_END.
         PmodHeader(key="ja", label="JA", designator="JA", edge="left",
                    cx=PMOD_HAT_FIELD_DEPTH, cy=PMOD_HAT_JA_Y,
-                   pin1_x=PMOD_HAT_FIELD_DEPTH - PMOD_ROW_SPACING / 2,
-                   pin1_y=PMOD_HAT_JA_Y + PMOD_PIN_SPAN / 2,
+                   pin1_x=PMOD_HAT_FIELD_DEPTH + PMOD_ROW_SPACING / 2,
+                   pin1_y=PMOD_HAT_JA_Y - PMOD_PIN_SPAN / 2,
                    columns=PMOD_COLUMNS, rows=PMOD_ROWS),
         PmodHeader(key="jb", label="JB", designator="JB", edge="left",
                    cx=PMOD_HAT_FIELD_DEPTH, cy=PMOD_HAT_JB_Y,
-                   pin1_x=PMOD_HAT_FIELD_DEPTH - PMOD_ROW_SPACING / 2,
-                   pin1_y=PMOD_HAT_JB_Y + PMOD_PIN_SPAN / 2,
+                   pin1_x=PMOD_HAT_FIELD_DEPTH + PMOD_ROW_SPACING / 2,
+                   pin1_y=PMOD_HAT_JB_Y - PMOD_PIN_SPAN / 2,
                    columns=PMOD_COLUMNS, rows=PMOD_ROWS),
         PmodHeader(key="jc", label="JC", designator="JC", edge="bottom",
                    cx=PMOD_HAT_JC_X, cy=PMOD_HAT_FIELD_DEPTH,
-                   pin1_x=PMOD_HAT_JC_X - PMOD_PIN_SPAN / 2,
-                   pin1_y=PMOD_HAT_FIELD_DEPTH - PMOD_ROW_SPACING / 2,
+                   pin1_x=PMOD_HAT_JC_X + PMOD_PIN_SPAN / 2,
+                   pin1_y=PMOD_HAT_FIELD_DEPTH + PMOD_ROW_SPACING / 2,
                    columns=PMOD_COLUMNS, rows=PMOD_ROWS),
     ),
     features=(
@@ -140,6 +169,12 @@ PMOD_HAT = BoardSpec(
                note="Measured from Digilent's official top view by "
                     "accessories/measure_pmod_hat.py. Digilent publish no "
                     "dimensioned drawing for this board."),
+        Source(label="Pmod pin 1",
+               ref="https://digilent.com/reference/_media/reference/add-ons/"
+                   "pmod-hat/171205ag_dual_brand_pmod-hat-adapter_rm.pdf",
+               note="The square pad, with a 1 printed beside it, in the top "
+                    "view above and in the photograph in Digilent's Pmod HAT "
+                    "Adapter Reference Manual, Rev. B."),
     ),
     notes=(
         # Which numbers to trust is the one thing this sheet has to say, and
@@ -212,6 +247,34 @@ def _check_hat_pins() -> None:
 
 
 _check_hat_pins()
+
+
+def _check_hat_pin1() -> None:
+    """Each port's pin 1 is the square pad Digilent's photographs show.
+
+    That is a corner of the 2x6 field, in the row further from the edge the
+    host faces than the field's centre (the row pins 7 to 12 are not in),
+    and at the end of the port PMOD_HAT_PIN1_END names, away from 3V3 and
+    GND.  Recorded the other way round, pin 1's figures were pin 12's.
+    """
+    # Which way is away from the edge, along the axis across the two rows.
+    inward = {"left": +1, "right": -1, "bottom": +1, "top": -1}
+    for p in PMOD_HAT.pmods:
+        edge, end = PMOD_HAT_PIN1_END[p.label]
+        if p.edge != edge:
+            raise SystemExit(f"Pmod HAT {p.label} faces {p.edge}, not {edge}")
+        across = edge in ("left", "right")
+        depth, centre = (p.pin1_x, p.cx) if across else (p.pin1_y, p.cy)
+        along, mid = (p.pin1_y, p.cy) if across else (p.pin1_x, p.cx)
+        if abs(depth - (centre + inward[edge] * PMOD_ROW_SPACING / 2)) > 1e-9:
+            raise SystemExit(f"Pmod HAT {p.label} pin 1 is not in the row "
+                             f"further from the {edge} edge")
+        if abs(along - (mid + end * PMOD_PIN_SPAN / 2)) > 1e-9:
+            raise SystemExit(f"Pmod HAT {p.label} pin 1 is not at the end "
+                             f"away from 3V3 and GND")
+
+
+_check_hat_pin1()
 
 # ---------------------------------------------------------------------------
 # PoE splitters
