@@ -4247,8 +4247,8 @@ keep 4.11 mm (Y) and 3.82 mm (X) of the 5.00 mm margin. The raising of the
 holder by 2.4 mm was the option declined.
 
 The figures are worked in `Holder.refocused_h1()` and
-`Holder.refocused_shortfall()` in `holder.py`, which the sheet's new HEIGHT
-KEPT note prints, and `tinytapeout/camera_holder/verify.py` works them again
+`Holder.refocused_shortfall()` in `holder.py`, which the sheet's new KEPT LOW
+note prints, and `tinytapeout/camera_holder/verify.py` works them again
 from the lens's focal length and angles and fails if they stop matching. It
 also finds the nearest board edge to the picture's: 4.11 (Y) as the note
 says, and 8.08 (X), more than the note's 3.82, because frame A is made 4:3

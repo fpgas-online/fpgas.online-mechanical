@@ -434,7 +434,7 @@ checker that measures the finished PDFs rather than trusting them.
       smaller margin"): the holder stays at 150.00. Refocused there the
       picture is 0.89 mm short of frame A each side along Y and 1.18 along
       X, the boards still in it with 3.82 mm (X) and 4.11 mm (Y) of the
-      5.00 mm margin. The sheet's HEIGHT KEPT note says so, from
+      5.00 mm margin. The sheet's KEPT LOW note says so, from
       `Holder.refocused_shortfall()`, and `verify.py` works the figures
       again and checks the boards are that far inside the picture
 - [x] `TT-MP-CAM120`'s FOR note named `RPICAM-OVER-PLATE` for its height,

@@ -126,8 +126,8 @@ The holders were built before that, and their heights are not changed with it:
   and 1.18 along X; the boards are still in it, with 3.82 mm (X) and 4.11 mm
   (Y) of the 5.00 mm margin left for the stand. Tim Ansell decided on
   7 October 2026 (question mech-1, "Accept the smaller margin") that the
-  holder stays at 150.00 and is not raised the 2.37; the sheet's HEIGHT
-  KEPT note says so, its figures come from `Holder.refocused_shortfall()`,
+  holder stays at 150.00 and is not raised the 2.37; the sheet's KEPT LOW
+  note says so, its figures come from `Holder.refocused_shortfall()`,
   and `verify.py` works them again.
 - **`TT-MP-CAM120`'s height came from the sheet's 120 column**, which is
   gone: the sheet no longer draws the 120 degree lens. The figure has not
