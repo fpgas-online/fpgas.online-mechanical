@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="166mm" height="354.1119mm" viewBox="0 0 166 354.1119">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="166mm" height="363.1654mm" viewBox="0 0 166 363.1654">
 <g transform="translate(-22 -139.4526)">
 <text x="24" y="144.9526" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
 <line x1="24" y1="146.3526" x2="125.5" y2="146.3526" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
@@ -28,10 +28,12 @@
 <text x="24" y="236.534" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
 <text x="30.5045" y="236.534" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">HEADROOM: a part standing on the board, anywhere in its</text>
 <text x="30.5045" y="241.0608" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">envelope stays in frame A&#x27;s picture, the lens refocused to F,</text>
-<text x="30.5045" y="245.5875" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">up to 13.6 mm above the board&#x27;s top face (DERIVED). If T is</text>
-<text x="30.5045" y="250.1143" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">more, raise the camera.</text>
+<text x="30.5045" y="245.5875" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">up to 13.6 mm above the board&#x27;s top face at the envelope&#x27;s</text>
+<text x="30.5045" y="250.1143" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">corner, the worst case; where J9 stands, up to 20.9</text>
+<text x="30.5045" y="254.641" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">(DERIVED). If T&#x27;s part stands higher than its figure, raise the</text>
+<text x="30.5045" y="259.1678" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">camera.</text>
 </g>
-<g transform="translate(-131.5 -19.7641)">
+<g transform="translate(-131.5 -10.7106)">
 <text x="133.5" y="144.9526" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
 <line x1="133.5" y1="146.3526" x2="235" y2="146.3526" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="133.5" y="151.0526" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
@@ -62,21 +64,21 @@
 <text x="140.0045" y="245.5875" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">tri-colour LD0-LD3 by package size. Either way both rows are</text>
 <text x="140.0045" y="250.1143" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">inside the frame, so the framing does not turn on it.</text>
 <text x="133.5" y="255.641" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">12.</text>
-<text x="140.0045" y="255.641" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S: the A7 drawing draws the four rubber feet 10.0 mm across</text>
-<text x="140.0045" y="260.1678" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">and gives no height, for them or for the board. Digilent&#x27;s 3D</text>
-<text x="140.0045" y="264.6945" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">model of the Arty Rev C, not the A7, has a 1.50 board on feet</text>
-<text x="140.0045" y="269.2213" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.70 tall, 5.20 in all, but its feet are 8.70 across, not the feet</text>
-<text x="140.0045" y="273.748" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">drawn, and it states no tolerance. Measure S on the A7, from</text>
-<text x="140.0045" y="278.2748" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">what it stands on to its top face.</text>
+<text x="140.0045" y="255.641" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">S: the A7 drawing has four corner circles, 10.0 mm across</text>
+<text x="140.0045" y="260.1678" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">scaled from its plot, taken as the rubber feet, and no height</text>
+<text x="140.0045" y="264.6945" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">for them or the board. Digilent&#x27;s 3D model of the Arty Rev C,</text>
+<text x="140.0045" y="269.2213" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">not the A7, has a 1.50 board on feet 3.70 tall, 5.20 in all, but</text>
+<text x="140.0045" y="273.748" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">its feet are 8.70 across and it states no tolerance. Measure S</text>
+<text x="140.0045" y="278.2748" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">on the A7, from what it stands on to its top face.</text>
 </g>
-<g transform="translate(-241 120.5374)">
+<g transform="translate(-241 129.5909)">
 <text x="243" y="152.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
 <line x1="243" y1="153.9" x2="405" y2="153.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="243" y="158.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">13.</text>
 <text x="249.5045" y="158.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">T: the A7 drawing gives no part a height. The Rev C model&#x27;s tallest part is the Ethernet jack J9&#x27;s</text>
-<text x="249.5045" y="163.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">shield, 14.80 above the board&#x27;s top face, and the A7 drawing puts J9 in the same place: over the</text>
-<text x="249.5045" y="167.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">headroom anywhere on the board, but where J9 stands a part stays in frame A&#x27;s picture up to 20.9</text>
-<text x="249.5045" y="172.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm. Measure T on the A7, from its top face to the top of its tallest part.</text>
+<text x="249.5045" y="163.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">shield, 14.80 above the board&#x27;s top face, and the A7 drawing puts J9 in the same place: more than</text>
+<text x="249.5045" y="167.6535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the 13.6 mm headroom at the envelope&#x27;s corner, less than the 20.9 where J9 stands. Measure T on</text>
+<text x="249.5045" y="172.1802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the A7, from its top face to the top of its tallest part, and which part.</text>
 <text x="243" y="178.707" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
 <line x1="243" y1="180.107" x2="405" y2="180.107" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
 <text x="243" y="184.807" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
