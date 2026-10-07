@@ -4058,3 +4058,69 @@ New colours: the captions' #444444 (dark #bcbcbc, 9.7:1) and the USB-C fill
 #f2e6d0 (dark #3a2c14, a tint). The Acorn's and the plate's pictures are
 byte for byte as they were.
 
+
+## RPICAM-OVER-PLATE to the lens face, 7 October 2026
+
+Tim asked on 3 October that the camera position sheets, for the Camera
+Module v1.3 with its stock 65 degree lens, show the lens's height above the
+mounting plate, the standoffs' base, with the whole board in view and in
+focus, and its height above the highest point on the board. On 4 October he
+had the Acorn's done first and the other camera diagrams in a pull request
+of their own. This is the plate's: the Tiny Tapeout plate is the priority,
+and the Arty waits.
+
+What changed on the sheet: one module, the v1.3, refocused; no 120 degree
+lens and no table of other modules' heights in focus. The heights are to
+the lens face, and per frame, since the plate keeps both of its frames:
+
+- F, the face above the demo board's top face: frame A 142.8, frame B
+  103.7. The higher of the framing height plus f, 139.2 + 3.60 and
+  100.1 + 3.60, and the v1.3's 60 mm close limit unscrewed. Framing
+  governs both, unlike on the Acorn, so the note about where the forum
+  measured its 6 cm from is left off: it only matters where the close limit
+  sets F.
+- H1 = S + F above the plate's face: 152.4 and 113.3.
+- H2 = F - T, the clearance: a formula, T to measure.
+
+S is the one term the Acorn did not have: it is in the repository already.
+The plate's standoff is 8 mm, its own choice, and each revision's board is
+1.56 to 1.60 from its KiCad stackup, so the board's top face is 9.56 to
+9.60 above the plate. The frames were already set from the higher, and so
+is F; S is 9.60 with +/-0.04 taking in the thinnest board, worked by
+`plate_stack_s()` from plate.py and boards.py rather than typed. Neither
+source states a fabrication tolerance, and the sheet's note says so rather
+than inventing one.
+
+T is not in the repository and not published: no board file gives a part a
+height, which the holder's README already said. So it is a `StackHeight`
+with no value, as the Acorn's are, and the sheet draws the highest point
+not to scale. What it can give is the headroom: with the lens refocused at
+F the cone's apex is the lens, so a part h above the board is covered
+(F - h) / F as wide, and anything in frame A's target stays in the picture
+up to 13.6 mm. The old sheet's 13.2 was the same at the pinhole height.
+
+The machinery was the Acorn's, with three things the plate needed. The
+words: "the card", "the LEDs" and "the assembly's highest point" were in
+camera_sheet.py, and are now `FaceHeights` fields the subject sets. Two
+frames: the notes and the heights table give each height per frame, and
+the second table is then the frames and their lens axes, since the
+elevations dimension frame A's only; with one frame the Acorn's crop table
+stays. The plate drawn to scale: its face is the stack's base, so no second
+line is drawn across it, and S at 1:2 is 4.8 mm, too short for "S 9.6"
+between its arrows, so the value goes below it. Every other camera sheet and
+both holders render byte for byte as before, VERSION masked.
+
+`verify_optics.py` checks the 120 over the plate's frame A still, though
+the sheet no longer draws it: `TT-MP-CAM120` is built there, and prints the
+height on its own sheet. `lenses_of()` adds the lens of every holder built
+over a subject.
+
+The holders were not changed. `TT-MP-CAM65`'s face, 150.00 above the plate,
+was set from the pinhole height for the lens as sold, 148.77, plus a
+millimetre for the print, rounded up. Refocused to F, as the sheet now
+says, the lens covers what a pinhole f lower does, and the face wants to be
+152.37: 2.37 higher, past the 1.00 allowance. At 150.00 a refocused lens's
+picture is 0.89 mm short of frame A on each side along Y, 1.18 along X, and
+the boards are still in it with 3.82 mm (X) and 4.11 mm (Y) of the
+5.00 mm margin. That is a
+change to the holder, its STEP files and its sheet, and TODO carries it.

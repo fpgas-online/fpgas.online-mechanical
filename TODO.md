@@ -310,8 +310,18 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] Tim Ansell's report of 3 October 2026 recorded on the sheet and in the
       README: the autofocus camera about 10 cm above the Acorn's LEDs, in
       focus, wanting a crop -- of 3.97, DERIVED, the LED column 386 pixels
-- [ ] The same rework for `RPICAM-OVER-ARTY`, `RPICAM-OVER-PLATE` and
-      `RPICAM-LENS`, in a pull request of their own
+- [x] The same rework for `RPICAM-OVER-PLATE` (7 October 2026): the v1.3
+      alone, refocused, H1 = S + F, H2 = F - T and F per frame -- frame A
+      152.4, 142.8 - T and 142.8, frame B 113.3, 103.7 - T and 103.7 --
+      with S the plate's own 9.60 +/-0.04; the 120 degree lens and the
+      other modules' in-focus table are off the sheet
+- [ ] The same rework for `RPICAM-OVER-ARTY` and `RPICAM-LENS`, when the
+      Arty's turn comes
+- [ ] MEASURE T on the plate: a demo board's top face to the top of its
+      tallest part, on each revision in use, and which part that is. Into
+      `plate_stack_t()` in `raspberry_pi_camera/optics.py`, with its
+      tolerance and source, and `RPICAM-OVER-PLATE` prints H2 as a figure.
+      Over 13.6 mm, frame A's headroom, the camera goes higher
 - [x] Z measured from the plane the frame's target lies in, not the subject's
       own top face: the demo boards' indicators are on a board standing on
       standoffs above the plate, and the Acorn is a card seated above a Pi
@@ -414,6 +424,17 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] A holder per lens: `TT-MP-CAM65` and `TT-MP-CAM120`, the lens face at
       150.00 and 83.00, sharing the beam and the carrier; `verify.py` makes
       every check of each and checks the two share those parts
+- [ ] Re-derive `TT-MP-CAM65` from `RPICAM-OVER-PLATE`'s H1 for frame A,
+      152.37 with the lens refocused to F, against its 150.00, which was
+      set from the lens as sold: 2.37 over its 1.00 mm print allowance.
+      Refocused at 150.00 the picture is 0.89 mm short of frame A each side
+      along Y and 1.18 along X, the boards still in it with 3.82 mm (X)
+      and 4.11 mm (Y) of the 5.00 mm margin. Its own pull request: the holder, its STEP files and
+      its sheet move together
+- [ ] `TT-MP-CAM120`'s FOR note names `RPICAM-OVER-PLATE` for its height,
+      which that sheet no longer draws: the height is `optics.place()` of
+      frame A and the 120 lens. Reword it when the holder is next
+      re-rendered
 - [ ] A 120 degree OV5647 on a board this carrier takes. `TT-MP-CAM120`
       carries a v1.3's board with the wide lens ASSUMED 5.20 mm proud of it,
       and has 1.00 mm to spare; a taller lens, any M12 fisheye, drops the
@@ -467,6 +488,9 @@ checker that measures the finished PDFs rather than trusting them.
       answered, drop them from `SHEET_PNG_ONLY` and commit the SVGs
 - [ ] The next sheets: give the renderer `docs_panels` and add the SVG to
       `DOCS_SHEETS`
+- [ ] `RPICAM-OVER-PLATE` could be offered to the docs: its renderer already
+      sets `docs_panels`, as the Acorn's does, so it wants only adding to
+      `DOCS_SHEETS` and its pictures looked at
 - [x] The views print at A4 width (180 mm) with the smallest text at
       2.71 mm: the notes beside the plan are a panel of their own, so the
       widest panel is the 164 mm heights table and legend

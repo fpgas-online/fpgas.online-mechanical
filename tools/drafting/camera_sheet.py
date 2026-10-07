@@ -42,13 +42,14 @@ which is the shape of the file that comes out -- so a subject has exactly as
 many rectangles as it has things worth framing, and the lens only decides how
 high above them the camera goes.  See :mod:`raspberry_pi_camera.optics`.
 
-One subject's sheet is for ONE module, and gives heights to its lens face
-instead: a subject that carries ``face`` -- the Acorn's -- draws the one
-lens at the height that both frames and focuses, dimensions that height
-above the plane, above what the stand is built on and above the tallest
-thing under the camera, and says which terms of those are still to be
-measured.  Everything that sheet does differently is behind
-``subject.face``, so the other sheets are drawn exactly as before.
+A subject's sheet may be for ONE module, and give heights to its lens face
+instead: a subject that carries ``face`` -- the Acorn's and the plate's --
+draws the one lens at the height that both frames and focuses frame A,
+dimensions that height above the plane, above what the stand is built on
+and above the tallest thing under the camera, gives the same per frame in
+its table, and says which terms of those are still to be measured.
+Everything those sheets do differently is behind ``subject.face``, so the
+other sheets are drawn exactly as before.
 """
 
 from __future__ import annotations
@@ -198,6 +199,25 @@ def _stack(subject: Subject, scale: float) -> dict[str, float]:
         "highest": (face.highest.value if face.highest.value is not None
                     else NTS_HIGHEST / scale),
     }
+
+
+def _base_drawn(subject: Subject) -> bool:
+    """Whether what the stand is built on is drawn under the plane already.
+
+    On the plate it is: the plate itself, to scale, with the boards on their
+    standoffs over it, and its face is the stack's base.  A line across the
+    view at the same height would only run on past the plate's ends.
+    """
+    base = subject.face.base.value
+    return base is not None and any(
+        what == "subject" and abs(top + base) < 1e-9
+        for what, top, _ in _below_plane(subject))
+
+
+def _stack_bottom(subject: Subject, scale: float) -> float:
+    """The lowest line an elevation draws on a lens-face sheet."""
+    return min([_stack(subject, scale)["base"]]
+               + [b for _, _, b in _below_plane(subject)])
 
 
 def _plan_bbox(subject: Subject) -> tuple[float, float, float, float]:
@@ -435,24 +455,78 @@ def _term(term) -> str:
     return f"{term.symbol} {term.value:.1f} +/-{term.tol:g}"
 
 
+def _per_frame(subject: Subject, key: str) -> str:
+    """One of a lens-face sheet's heights over every frame, for the notes:
+    "frame A 152.4, frame B 113.3", or the formula's right-hand side."""
+    return ", ".join(
+        f"frame {letter} "
+        + _face_text(subject, fr)[key].split(" ", 1)[1].removeprefix("= ")
+        for letter, fr in zip(FRAME_LETTERS, subject.frames()))
+
+
 def _text_face(subject: Subject) -> tuple[list[str], list[str]]:
     """The notes of a sheet that gives lens-face heights for one module.
 
     Computed or quoted from :mod:`raspberry_pi_camera.optics` and
-    ``accessories/parts.py``, like every other sheet's.
+    ``accessories/parts.py``, like every other sheet's.  With one frame,
+    as on the Acorn's, each height is that frame's; with two, as on the
+    plate's, the notes give each height for both, and the elevations draw
+    frame A's.
     """
     from raspberry_pi_camera import v1
     face = subject.face
-    fr = subject.frames()[0]
+    frames = subject.frames()
+    one = len(frames) == 1
+    fr = frames[0]
     lens = face.variant.lens
     f = face.face(fr)
     framing = optics.framed_in_focus(fr, lens)
     words = _face_text(subject)
     s, t = face.base, face.highest
     on_sensor, _ = lens.blur(f)
+    near = face.variant.near
     term = {k: "MEASURE, not published" if h.value is None
             else f"{h.value:.1f} +/-{h.tol:g}, {h.source}" for k, h in
             (("S", s), ("T", t))}
+    # The pupil's worst case is at the lowest face: the nearest frame.
+    lowest = min(face.face(x) for x in frames)
+    forum = (f'"{face.variant.quote}" (a Raspberry Pi forum user, 2013; '
+             f"{face.variant.basis}).")
+    if one:
+        f_note = (
+            f"{words['F']} is the higher of two heights: the one that just "
+            f"frames frame {FRAME_LETTERS[0]} with the lens focused there, "
+            f"{place(fr, lens).z:.1f} + f {lens.focal_length:.2f} = "
+            f"{framing:.1f} (DERIVED, thin lens), and the lens's close limit "
+            f"unscrewed, {near:g} mm: {forum}")
+    else:
+        f_note = (
+            "F is, per frame, the higher of two heights: the one that just "
+            "frames it with the lens focused there, "
+            + ", ".join(
+                f"frame {letter} {place(x, lens).z:.1f} + f "
+                f"{lens.focal_length:.2f} = "
+                f"{optics.framed_in_focus(x, lens):.1f}"
+                for letter, x in zip(FRAME_LETTERS, frames))
+            + f" (DERIVED, thin lens), and the lens's close limit unscrewed, "
+            f"{near:g} mm: {forum}")
+    if any(optics.framed_in_focus(x, lens) < near for x in frames):
+        # Only where the close limit is what sets F does it matter where
+        # the forum measured it from.
+        f_note += (" The forum does not say whether its \"about 6 cm\" is "
+                   "from the lens face; it is taken as from the face, note "
+                   "2's convention.")
+    else:
+        f_note += " The framing governs every frame."
+    if one:
+        h1 = f"{words['H1']}, where"
+        h2 = f"{words['H2']}, the clearance, where"
+    else:
+        h1 = (f"H1 = {s.symbol} + F, {_per_frame(subject, 'H1')}, where")
+        h2 = (f"H2 = F - {t.symbol}, the clearance, "
+              f"{_per_frame(subject, 'H2')}, where")
+    others = "".join(f", {face.face(x):.1f} for frame {letter}"
+                     for letter, x in zip(FRAME_LETTERS[1:], frames[1:]))
     notes = [
         "First angle; the end elevation is seen from the right. One camera: "
         f"a {lens.product}, stock {lens.short} deg lens, looking straight "
@@ -460,35 +534,49 @@ def _text_face(subject: Subject) -> tuple[list[str], list[str]]:
         "Heights are to the lens FACE. The entrance pupil the optics are "
         "worked to is ASSUMED behind it by at most the lens's "
         f"{v1.LENS_TOP_Z:.2f} mm, so the picture is up to "
-        f"{100 * v1.LENS_TOP_Z / (f - lens.focal_length):.1f}% larger, never "
-        "smaller, and the LEDs no nearer than the close limit.",
-        f"{words['F']} is the higher of two heights: the one that just "
-        f"frames frame {FRAME_LETTERS[0]} with the lens focused there, "
-        f"{place(fr, lens).z:.1f} + f {lens.focal_length:.2f} = "
-        f"{framing:.1f} (DERIVED, thin lens), and the lens's close limit "
-        f"unscrewed, {face.variant.near:g} mm: "
-        f'"{face.variant.quote}" (a Raspberry Pi forum user, 2013; '
-        f"{face.variant.basis}). The forum does not say whether its \"about "
-        "6 cm\" is from the lens face; it is taken as from the face, note 2's "
-        "convention.",
-        f"{words['H1']}, where {s.symbol} is {s.what}: {term['S']}.",
-        f"{words['H2']}, the clearance, where {t.symbol} is {t.what}: "
-        f"{term['T']}.",
-        f"REFOCUS THE LENS TO F, {f:.1f} mm from the lens face to the "
-        "LEDs. As sold it is set far -- "
+        f"{100 * v1.LENS_TOP_Z / (lowest - lens.focal_length):.1f}% larger, "
+        f"never smaller, and {face.target} no nearer than the close limit.",
+        f_note,
+        f"{h1} {s.symbol} is {s.what}: {term['S']}.",
+        f"{h2} {t.symbol} is {t.what}: {term['T']}.",
+    ]
+    for label, box in subject.standing:
+        notes.append(
+            f"HEADROOM: {label[0].lower()}{label[1:]} stays in frame "
+            f"{FRAME_LETTERS[0]}'s picture, the lens refocused to F, up to "
+            f"{face.headroom(fr, box):.1f} mm above {face.plane_short} "
+            f"(DERIVED). If {t.symbol} is more, raise the camera.")
+    notes += [
+        f"REFOCUS THE LENS TO F, {f:.1f} mm from the lens face to "
+        f"{face.target}"
+        + ("" if one else f" for frame {FRAME_LETTERS[0]}{others}")
+        + ". As sold it is set far -- "
         f'"{lens.near_quote}" (Raspberry Pi; infinity is their sign), '
-        '"from about 0.5m to infinity" (raspi.tv) -- and at F a point '
-        "spreads to "
+        '"from about 0.5m to infinity" (raspi.tv) -- and at '
+        + ("F" if one else f"frame {FRAME_LETTERS[0]}'s F")
+        + " a point spreads to "
         f"{on_sensor / optics.PIXEL_PITCH:.0f} px (DERIVED). raspi.tv adds "
         'a +2D lens in front, "focus at about 25cm", too far for F; a '
         'reader\'s comment there: "You CAN change the focus of the stock '
         'lens on the pi camera. It is tricky but can be done." Unscrew it '
-        "until the LEDs are sharp.",
-        f"Frame {FRAME_LETTERS[0]} is the sensor's own 4:3 round "
-        f"{fr.target.label} plus {optics.FRAME_MARGIN:.2f} mm all round. "
-        f"{fr.target.note} At F the picture is larger; the table gives the "
-        "crop.",
+        f"until {face.target} are sharp.",
     ]
+    if one:
+        notes.append(
+            f"Frame {FRAME_LETTERS[0]} is the sensor's own 4:3 round "
+            f"{fr.target.label} plus {optics.FRAME_MARGIN:.2f} mm all round. "
+            f"{fr.target.note} At F the picture is larger; the table gives "
+            "the crop.")
+    else:
+        notes.append(
+            "A frame is the sensor's own 4:3 round its target plus "
+            f"{optics.FRAME_MARGIN:.2f} mm all round, turned whichever way "
+            "needs the lower camera; the table gives which, and where the "
+            "lens axis goes over each.")
+        for letter, x in zip(FRAME_LETTERS, frames):
+            if x.target.note:
+                notes.append(f"Frame {letter}, {x.target.label}: "
+                             f"{x.target.note}")
     for ob in subject.observations:
         ox, oy = optics.picture(ob.lens, ob.distance)
         factor, per_mm = optics.crop(fr, ob.lens, ob.distance)
@@ -507,34 +595,50 @@ def _text_face(subject: Subject) -> tuple[list[str], list[str]]:
 def _tables_face(sheet: Sheet, subject: Subject) -> Rect:
     """The tables of a sheet that gives lens-face heights for one module.
 
-    The heights first, because they are what the sheet is for; then the
-    frame, with what the picture is at each height anyone has given.  No
-    lens table: the one lens's angles are in the legend, and the lens sheet
-    has the rest.
+    The heights first, because they are what the sheet is for, a column per
+    frame where there is more than one.  Then, with one frame, the frame
+    and what the picture is at each height anyone has given; with more,
+    the frames and where the lens axis goes over each, since the
+    elevations dimension frame A's alone.  No lens table: the one lens's
+    angles are in the legend, and the lens sheet has the rest.
 
     Returns the heights table's block.
     """
     face = subject.face
-    fr = subject.frames()[0]
+    frames = subject.frames()
+    fr = frames[0]
     lens = face.variant.lens
     f = face.face(fr)
-    words = _face_text(subject)
+    per = [_face_text(subject, x) for x in frames]
 
-    def rhs(key: str) -> str:
-        return words[key].split(" ", 1)[1].removeprefix("= ")
+    def rhs(key: str) -> list[str]:
+        return [w[key].split(" ", 1)[1].removeprefix("= ") for w in per]
 
     rows = [
-        ["H1", "the mounting plate's face, the standoffs' base", rhs("H1"),
-         _term(face.base)],
-        ["H2", "the assembly's highest point, as clearance", rhs("H2"),
-         _term(face.highest)],
-        ["F", "the card's top face, where the LEDs are", rhs("F"),
-         "DERIVED"],
+        ["H1", "the mounting plate's face, the standoffs' base"]
+        + rhs("H1") + [_term(face.base)],
+        ["H2", f"{face.highest_what}, as clearance"] + rhs("H2")
+        + [_term(face.highest)],
+        ["F", face.plane] + rhs("F") + ["DERIVED"],
     ]
-    title = "LENS FACE HEIGHTS, mm: THE LEDs IN VIEW AND IN FOCUS"
+    title = f"LENS FACE HEIGHTS, mm: {face.heading}"
     heights = sheet.column_block(sheet.table_height(title, len(rows)))
-    sheet.table(heights, title, ["", "THE LENS FACE ABOVE", "HEIGHT", "TERM"],
-                rows, ["middle", "start", "end", "start"])
+    cols = (["HEIGHT"] if len(frames) == 1
+            else [f"FRAME {FRAME_LETTERS[i]}" for i in range(len(frames))])
+    sheet.table(heights, title, ["", "THE LENS FACE ABOVE"] + cols + ["TERM"],
+                rows, ["middle", "start"] + ["end"] * len(frames) + ["start"])
+
+    if len(frames) > 1:
+        rows = [[FRAME_LETTERS[i], x.target.label,
+                 f"{x.width:.2f} x {x.height:.2f}", x.long_axis,
+                 f"{x.cx:.2f}", f"{x.cy:.2f}"]
+                for i, x in enumerate(frames)]
+        title = "FRAMES, AND WHERE THE LENS AXIS GOES, mm"
+        block = sheet.column_block(sheet.table_height(title, len(rows)))
+        sheet.table(block, title,
+                    ["", "FRAME", "RECTANGLE", "LONG", "AXIS X", "AXIS Y"],
+                    rows, ["middle", "start", "end", "middle", "end", "end"])
+        return heights
 
     column = max(fr.target.width, fr.target.height)
 
@@ -1008,6 +1112,8 @@ def _draw_elevation(sheet: Sheet, subject: Subject, v: View,
     # over it, each a line across the view.
     if subject.face:
         for key, h in _stack(subject, v.scale).items():
+            if key == "base" and _base_drawn(subject):
+                continue    # the plate's own face, drawn above
             _, wgt, colour, dash = STACK_LINES[key]
             c.line(*v.pt(span_lo, h), *v.pt(span_hi, h), w=wgt,
                    colour=colour, dash=dash)
@@ -1110,9 +1216,8 @@ def _dimension_front(sheet: Sheet, subject: Subject, v: View,
 
     Z is dimensioned here and not again on the end elevation: it is one
     height, seen twice.  The wide lens's, which is lower, is on the inner
-    lane.  On the mounting plate the plate face gets a second figure for
-    each, outside those, because the plate is what a stand is built on and
-    the plane Z is measured from is a board standing on it.
+    lane.  A sheet that gives lens-face heights chains them instead; see
+    ``_dimension_face``.
     """
     c = sheet.canvas
     f_lo, f_hi, t_lo, t_hi, cu, angle, which, size = _along(subject, "X")
@@ -1123,37 +1228,30 @@ def _dimension_front(sheet: Sheet, subject: Subject, v: View,
     order = sorted(LENSES.values(),
                    key=lambda ln: place(subject.frames()[0], ln).z)
     below = _below_plane(subject)
-    plate = subject.key == "tt-mounting-plate"
-    # Lens by lens, lowest first, each lens's figures side by side: an
-    # extension line from the higher lens then runs out past the lower
-    # lens's lanes, whose values sit at half the lower height, clear of it.
+    # Lens by lens, lowest first: an extension line from the higher lens
+    # then runs out past the lower lens's lane, whose value sits at half the
+    # lower height, clear of it.
     lane = 8.0
     for lens in order:
         z = place(subject.frames()[0], lens).z
         dims.linear(c, right, v.pt(cu, z), lane, horizontal=False,
                     text=f"Z {lens.short}: {z:.1f}")
         lane += style.DIM_STEP
-        if plate:
-            plate_top = below[-1][1]
-            dims.linear(c, v.pt(size, plate_top), v.pt(cu, z),
-                        lane + (v.x(v.model_x1) - v.x(size)),
-                        horizontal=False,
-                        text=f"{lens.short}, PLATE: {z - plate_top:.1f}")
-            lane += style.DIM_STEP
     # X of the lens, from the datum, under the lowest thing drawn.
     bottom = min([b for _, _, b in below] + [0.0])
     _lateral(c, v, lens_x, bottom, cu, "X")
 
 
-def _face_text(subject: Subject) -> dict[str, str]:
-    """What each of a lens-face sheet's heights is printed as.
+def _face_text(subject: Subject, fr=None) -> dict[str, str]:
+    """What each of a lens-face sheet's heights is printed as, over *fr*.
 
     F is a figure.  H1 and H2 are figures once their term is measured, and
     until then the formula, so the drawing never shows a height that
-    nobody has.  The dimensions and the table both print these.
+    nobody has.  The dimensions and the table both print these.  *fr* is
+    frame A unless given: the elevations draw frame A's.
     """
     face = subject.face
-    fr = subject.frames()[0]
+    fr = fr or subject.frames()[0]
     f = face.face(fr)
     s, t = face.base, face.highest
     h1, h2 = face.above_base(fr), face.clearance(fr)
@@ -1185,8 +1283,10 @@ def _dimension_face(c, subject: Subject, v: View, lens_x: float,
     plane, face = (rx, v.y(0.0)), v.pt(cu, f)
     base, highest = (rx, v.y(stack["base"])), (rx, v.y(stack["highest"]))
     lane = 8.0
+    # S below its span where it is too short for its value, as the plate's
+    # 9.6 is at 1:2: under the base nothing else stands in this lane.
     dims.linear(c, base, plane, lane, horizontal=False, text=words["S"],
-                extension=False)
+                extension=False, text_side="low")
     dims.linear(c, plane, face, lane, horizontal=False, text=words["F"])
     lane += style.DIM_STEP
     dims.linear(c, plane, highest, lane, horizontal=False, text=words["T"],
@@ -1199,7 +1299,8 @@ def _dimension_face(c, subject: Subject, v: View, lens_x: float,
            highest[1], w=style.W_THIN, colour=style.C_DIM)
     lane += style.DIM_STEP
     dims.linear(c, base, face, lane, horizontal=False, text=words["H1"])
-    _lateral(c, v, lens_x, stack["base"], cu, "X", face=True)
+    _lateral(c, v, lens_x, _stack_bottom(subject, v.scale), cu, "X",
+             face=True)
 
 
 def _dimension_end(sheet: Sheet, subject: Subject, v: View,
@@ -1210,7 +1311,7 @@ def _dimension_end(sheet: Sheet, subject: Subject, v: View,
     below = _below_plane(subject)
     bottom = min([b for _, _, b in below] + [0.0])
     if subject.face:
-        bottom = _stack(subject, v.scale)["base"]
+        bottom = _stack_bottom(subject, v.scale)
     _lateral(c, v, lens_y, bottom, cu, "Y", face=bool(subject.face))
 
 
@@ -1304,7 +1405,7 @@ def _layout(subject: Subject, scale: float, sp: float, area: Rect):
     front_w = (ex_hi - ex_lo) * s
     elev_h = (w_hi - w_lo) * s
     plan_w, plan_h = (px1 - px0) * sp, (py1 - py0) * sp
-    lanes = len(LENSES) * (2 if subject.key == "tt-mounting-plate" else 1)
+    lanes = len(LENSES)
     if subject.face:
         lanes = 3       # S and F, T and H2, H1
     width = LEFT + max(end_w, plan_w) + GAP + front_w + ELEV_OUTER \
@@ -1353,11 +1454,13 @@ def _legend(subject: Subject) -> list:
                        f"Frame {FRAME_LETTERS[i]}, the rectangle the picture "
                        "must cover"))
     if subject.face:
+        face = subject.face
         for key, term, what in (
-                ("base", subject.face.base,
-                 "The mounting plate's face, {} below the card"),
-                ("highest", subject.face.highest,
-                 "The assembly's highest point, {} above the card")):
+                ("base", face.base,
+                 "The mounting plate's face, {} below " + face.plane_short),
+                ("highest", face.highest,
+                 face.highest_what[0].upper() + face.highest_what[1:]
+                 + ", {} above " + face.plane_short)):
             legend.append((STACK_LINES[key], what.format(term.symbol)
                            + ("" if term.value is not None
                               else ": NOT TO SCALE, to measure")))

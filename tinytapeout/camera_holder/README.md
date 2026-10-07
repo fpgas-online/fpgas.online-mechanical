@@ -3,8 +3,10 @@
 A printed stand that bolts onto the [generic mounting
 plate](../mounting_plate/README.md) and holds a Raspberry Pi Camera Module
 v1.3, lens down, over whichever Tiny Tapeout demo board is on the plate --
-where [`RPICAM-OVER-PLATE`](../../raspberry_pi_camera/README.md) says the
-camera has to be for its lens to take in the whole board, of every revision.
+over [`RPICAM-OVER-PLATE`](../../raspberry_pi_camera/README.md)'s frame A,
+high enough for its lens, as sold, to take in the whole board, of every
+revision. That sheet now gives the lens face for the lens refocused, which
+is higher; [see below](#the-position-sheets-lens-face-since-7-october-2026).
 One per lens: `TT-MP-CAM65` for the stock 65 degree lens, and
 `TT-MP-CAM120`, about half as tall, for the 120 degree fisheye.
 
@@ -105,6 +107,34 @@ covers about 92 mm down the plate against the boards' 95.2, so their edges
 are cut off. YXF's M6 lens, 4.48 mm long, is the kind of lens it does fit.
 Before building it, measure the lens that will go in it; a carrier for the
 B006604 itself, or bosses cut to a measured lens, is in `TODO.md`.
+
+## The position sheet's lens face, since 7 October 2026
+
+`RPICAM-OVER-PLATE` now draws one module, the Camera Module v1.3 with its
+stock lens refocused, and gives heights to its lens face; see
+[the camera README](../../raspberry_pi_camera/README.md#the-plate-the-same-per-frame).
+The holders were built before that, and are not changed with it:
+
+- **`TT-MP-CAM65` is lower than the sheet's H1.** The holder sets its lens
+  face from the height that frames the boards with the lens as sold,
+  focused far: 139.17 over the board, so 148.77 over the plate, and 150.00
+  with the print allowance. With the lens refocused to F, as the sheet now
+  says to, it covers what a pinhole f lower does, so frame A wants the face
+  at 142.77 over the board: H1 152.37 over the plate, 2.37 above where the
+  holder puts it, which is more than its 1.00 mm allowance. Refocused at
+  150.00, the picture falls 0.89 mm short of frame A on each side along Y
+  and 1.18 along X; the boards are still in it, with 3.82 mm (X) and 4.11 mm
+  (Y) of the 5.00 mm margin left for the stand. Re-deriving the holder from the sheet's H1 is
+  in `TODO.md`.
+- **`TT-MP-CAM120`'s height came from the sheet's 120 column**, which is
+  gone: the sheet no longer draws the 120 degree lens. The figure has not
+  moved. It is `optics.place()` of the plate's frame A and `LENS_120` in
+  [`raspberry_pi_camera/optics.py`](../../raspberry_pi_camera/README.md),
+  72.40 over the board, which `holder.py` reads at import as it always did,
+  `TT-MP-CAM120`'s own FOR note prints, and `verify_optics.py` still checks
+  over frame A because this holder is built on it. Its note still names
+  `RPICAM-OVER-PLATE` as where the height is drawn; that wants changing when
+  the holder is next re-rendered, and is in `TODO.md`.
 
 ## Why it is shaped like this
 

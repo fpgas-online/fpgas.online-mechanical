@@ -23,19 +23,21 @@ From the data modules rather than from the drawings:
   a height set at the wrong plane covers less at the right one;
 * each variant's close limit read out of its own words, and the lowest
   height at which it both frames and focuses each frame, by the thin lens;
-* on the sheet that gives lens-face heights for one module, the Acorn's:
-  the face's height above the card worked again, the two heights that
-  need a measured term printed as formulae and never as figures while the
-  term is unmeasured, and the picture, the crop and the pixels across the
-  LED column at that height and at the height reported on the rig;
+* on the sheets that give lens-face heights for one module, the Acorn's
+  and the plate's: the face's height above the target's plane worked
+  again for every frame, the two heights that need a measured term printed
+  as formulae and never as figures while the term is unmeasured, and as
+  the sum when it is measured, how far a part may stand on the plate's
+  boards, and the picture, the crop and the pixels across the target at
+  that height and at the height reported on the rig;
 * the hyperfocal distance and depth of field of every lens, and every
   height against every lens's declared focus range, with how soft a fixed
   lens is there and how deep the field is once a motorised one has focused;
 * what the elevations draw and print: that the declared angle each one
   shows is the one lying along its axis, that it reaches the frame's edge
   from the lens, that the camera is turned the way that needs the lower
-  camera, the height above the plate face on the mounting plate sheet, and
-  the figures the notes derive.
+  camera, the plate's S from its standoff and its boards, and the figures
+  the notes derive.
 
 The focus check passes while reporting every fixed-focus height as out of
 range.  It has to: both fixed lenses are declared "1 m to infinity" and
@@ -258,12 +260,19 @@ def lenses_of(subject) -> list:
 
     Every lens, on a sheet that draws both; on a sheet for one module, that
     module's lens and the lens of anything observed on the rig, and no
-    other: a height nobody prints is not a height to check.
+    other: a height nobody prints is not a height to check.  Except the
+    lens of every camera holder built over the subject, whose height is
+    printed on the holder's own sheet: TT-MP-CAM120 is built over the
+    plate's frame A with the 120 degree lens, which the plate's sheet no
+    longer draws.
     """
     if subject.lens_keys is None:
         return list(optics.ALL_LENSES.values())
+    from tinytapeout.camera_holder import holder
     keys = set(subject.lens_keys) | {ob.lens.key
                                      for ob in subject.observations}
+    if holder.SUBJECT.key == subject.key:
+        keys |= {h.LENS.key for h in holder.VARIANTS.values()}
     return [ln for ln in optics.ALL_LENSES.values() if ln.key in keys]
 
 
@@ -823,32 +832,37 @@ def check_elevations() -> int:
             bad += not ok
             print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} inside {quote!r}, "
                   f"{cm * 10:.0f} mm: {', '.join(ins) or 'none'}")
-        # 7. The plate's second height: the plate face to the lens, which
-        #    is Z plus the standoff and the thickest board.
+        # 7. The plate's S, the plate face to the board's top face: the
+        #    standoff and the thickest board, with the thinnest inside its
+        #    tolerance, and the plane every frame is set from.
         if subject.key == "tt-mounting-plate":
             from tinytapeout.boards import BOARDS as TT
             from tinytapeout.mounting_plate.plate import (PLACEMENTS,
                                                           STANDOFF_HEIGHT)
-            thick = max(TT[r].outline.thickness for pl in PLACEMENTS.values()
-                        for r in pl["revisions"])
-            plane = STANDOFF_HEIGHT + thick
-            ok = abs(frame.target.plane_above_subject - plane) < 1e-9
+            thicks = [TT[r].outline.thickness for pl in PLACEMENTS.values()
+                      for r in pl["revisions"]]
+            plane = STANDOFF_HEIGHT + max(thicks)
+            s = subject.face.base
+            ok = (abs(frame.target.plane_above_subject - plane) < 1e-9
+                  and abs(s.value - plane) < 1e-9
+                  and s.value - s.tol <= STANDOFF_HEIGHT + min(thicks))
             bad += not ok
             print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} board face "
-                  f"{STANDOFF_HEIGHT:g} + {thick:.2f} = {plane:.2f} above the "
-                  f"plate, so the lens is {p.z + plane:.1f} above the plate "
-                  "face")
+                  f"{STANDOFF_HEIGHT:g} + {max(thicks):.2f} = {plane:.2f} "
+                  f"above the plate, {STANDOFF_HEIGHT + min(thicks):.2f} on "
+                  f"the thinnest board: S {s.value:.2f} +/-{s.tol:g}")
     print()
     return bad
 
 
 def check_face() -> int:
-    """The lens-face heights, on the sheet that gives them: the Acorn's.
+    """The lens-face heights, on the sheets that give them.
 
     Worked again from the declared angles, the focal length and the close
-    limit, not through ``FaceHeights``: the face above the card, the two
-    heights that each need a term nobody has measured, and what the picture
-    is there and at the distance reported on the rig.
+    limit, not through ``FaceHeights``: the face above the target's plane
+    for every frame, the two heights that each need a term, what the
+    picture is there and at the distance reported on the rig, and how far a
+    part may stand on what is under the camera and stay in the picture.
     """
     from raspberry_pi_camera import v1
     bad = 0
@@ -857,79 +871,127 @@ def check_face() -> int:
         face = subject.face
         if face is None:
             continue
-        frame = subject.frames()[0]
         lens = face.variant.lens
         f = lens.focal_length
         th = math.tan(math.radians(lens.fov_h / 2))
         tv = math.tan(math.radians(lens.fov_v / 2))
-        long_side = max(frame.width, frame.height)
-        short_side = min(frame.width, frame.height)
-        framing = max(long_side / (2 * th), short_side / (2 * tv)) + f
-        want = max(framing, face.variant.near)
+        for letter, frame in zip("AB", subject.frames()):
+            print(f"   --   {subject.key:<20} frame {letter}")
+            bad += _check_face_frame(subject, face, frame, lens, f, th, tv,
+                                     v1, observed=letter == "A")
+        # What stands on the plane, worked from the picture's edge: a thing
+        # h above the plane is nearer the lens, and covered (F - h) / F as
+        # wide.  Solved by bisection rather than by the formula.
+        frame = subject.frames()[0]
         got = face.face(frame)
-        ok = abs(want - got) < 1e-9 and face.variant.lens.key in \
-            subject.lens_keys
+        for label, box in subject.standing:
+            long_side = 2 * (got - f) * th
+            short_side = 2 * (got - f) * tv
+            cx_, cy_ = ((long_side, short_side) if frame.long_axis == "X"
+                        else (short_side, long_side))
+
+            def inside(h: float) -> bool:
+                k = (got - h) / got
+                x0, y0, x1, y1 = box
+                return (frame.cx - k * cx_ / 2 <= x0 + 1e-9
+                        and x1 <= frame.cx + k * cx_ / 2 + 1e-9
+                        and frame.cy - k * cy_ / 2 <= y0 + 1e-9
+                        and y1 <= frame.cy + k * cy_ / 2 + 1e-9)
+            lo, hi = 0.0, got
+            for _ in range(200):
+                mid = (lo + hi) / 2
+                lo, hi = (mid, hi) if inside(mid) else (lo, mid)
+            ok = abs(lo - face.headroom(frame, box)) < 1e-6 and lo > 0
+            bad += not ok
+            print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {label} stays in "
+                  f"frame A's picture up to {lo:.2f} mm, the lens at F")
+        # raspi.tv's +2D close-up lens focuses "at about 25cm": the sheet
+        # calls that too far for F, which it is only while every F is under
+        # it.
+        most = max(face.face(x) for x in subject.frames())
+        ok = most < 250.0
         bad += not ok
-        print(f"   {'ok  ' if ok else 'FAIL'} {subject.key:<20} F {got:.1f}: "
-              f"the higher of framing {framing:.1f} and the close limit "
-              f"{face.variant.near:g} ({face.variant.basis}, "
-              f"{face.variant.quote!r})")
-        # The face is set where the pupil is worked to be, and the pupil is
-        # behind it by at most the lens's height: further, never nearer.
-        most = (got + v1.LENS_TOP_Z - f) / (got - f) - 1
-        print(f"   --   {'':<20} the pupil up to {v1.LENS_TOP_Z:.2f} behind "
-              f"the face: the picture up to {100 * most:.1f}% larger")
-        # The two heights with a term to measure: a formula until it is.
-        for name, term, value, sum_ in (
-                ("H1", face.base, face.above_base(frame),
-                 lambda t: t + got),
-                ("H2", face.highest, face.clearance(frame),
-                 lambda t: got - t)):
-            if term.value is None:
-                ok = value is None
-                said = f"{term.symbol} is not measured, so no figure is given"
-            else:
-                ok = (value is not None
-                      and abs(value - sum_(term.value)) < 1e-9
-                      and term.tol is not None)
-                said = (f"{term.symbol} {term.value:.1f} +/-{term.tol:g} "
-                        f"gives {value:.1f}")
-            if name == "H2" and value is not None:
-                ok = ok and value > 0
-            bad += not ok
-            print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {name}: {said}")
-        # The picture focused at a distance z, by the thin lens: the sensor
-        # stands v = f z / (z - f) behind the lens, and covers z / v of its
-        # own size.
-        column = max(frame.target.width, frame.target.height)
-        views = [("F", got, lens)] + [
-            (f"reported by {ob.by}, {ob.on}, about", ob.distance, ob.lens)
-            for ob in subject.observations]
-        for what, z, ln in views:
-            fl = ln.focal_length
-            v_img = fl * z / (z - fl)
-            cover_long = optics.ARRAY_WIDTH * z / v_img
-            cover_short = optics.ARRAY_HEIGHT * z / v_img
-            factor = cover_long / long_side
-            px = column * optics.SENSOR_COLUMNS / cover_long
-            got_long, got_short = optics.picture(ln, z)
-            got_factor, per_mm = optics.crop(frame, ln, z)
-            # The array against the declared angles: FOV_CHECK's hundredth
-            # of a degree, which is a few hundredths of a millimetre here.
-            ok = (abs(cover_long - got_long) < 0.05
-                  and abs(cover_short - got_short) < 0.05
-                  and abs(factor - got_factor) < 0.005
-                  and abs(px - column * per_mm) < 0.5
-                  and cover_long >= long_side and cover_short >= short_side)
-            bad += not ok
-            print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {what} {z:.1f}: "
-                  f"covers {got_long:.1f} x {got_short:.1f}, frame A a crop "
-                  f"of x {got_factor:.2f}, the {column:.2f} mm LED column "
-                  f"{column * per_mm:.0f} px")
-        on_sensor, _ = lens.blur(got)
-        print(f"   --   {'':<20} as sold, set at {lens.focus_at / 1000:g} m, "
-              f"a point at F spreads {on_sensor / optics.PIXEL_PITCH:.0f} px")
+        print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} raspi.tv's +2D lens, "
+              f"about 250 mm, is further than every F, the highest "
+              f"{most:.1f}")
     print()
+    return bad
+
+
+def _check_face_frame(subject, face, frame, lens, f, th, tv, v1,
+                      observed: bool) -> int:
+    """One frame's lens-face heights; *observed* adds the rig's reports,
+    which are of frame A."""
+    bad = 0
+    long_side = max(frame.width, frame.height)
+    short_side = min(frame.width, frame.height)
+    framing = max(long_side / (2 * th), short_side / (2 * tv)) + f
+    want = max(framing, face.variant.near)
+    got = face.face(frame)
+    ok = abs(want - got) < 1e-9 and face.variant.lens.key in \
+        subject.lens_keys
+    bad += not ok
+    print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} F {got:.1f}: "
+          f"the higher of framing {framing:.1f} and the close limit "
+          f"{face.variant.near:g} ({face.variant.basis}, "
+          f"{face.variant.quote!r})")
+    # The face is set where the pupil is worked to be, and the pupil is
+    # behind it by at most the lens's height: further, never nearer.
+    most = (got + v1.LENS_TOP_Z - f) / (got - f) - 1
+    print(f"   --   {'':<20} the pupil up to {v1.LENS_TOP_Z:.2f} behind "
+          f"the face: the picture up to {100 * most:.1f}% larger")
+    # The two heights with a term to measure: a formula until it is.
+    for name, term, value, sum_ in (
+            ("H1", face.base, face.above_base(frame),
+             lambda t: t + got),
+            ("H2", face.highest, face.clearance(frame),
+             lambda t: got - t)):
+        if term.value is None:
+            ok = value is None
+            said = f"{term.symbol} is not measured, so no figure is given"
+        else:
+            ok = (value is not None
+                  and abs(value - sum_(term.value)) < 1e-9
+                  and term.tol is not None)
+            said = (f"{term.symbol} {term.value:.2f} +/-{term.tol:g} "
+                    f"gives {value:.1f}")
+        if name == "H2" and value is not None:
+            ok = ok and value > 0
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {name}: {said}")
+    # The picture focused at a distance z, by the thin lens: the sensor
+    # stands v = f z / (z - f) behind the lens, and covers z / v of its
+    # own size.
+    column = max(frame.target.width, frame.target.height)
+    views = [("F", got, lens)]
+    if observed:
+        views += [(f"reported by {ob.by}, {ob.on}, about", ob.distance,
+                   ob.lens) for ob in subject.observations]
+    for what, z, ln in views:
+        fl = ln.focal_length
+        v_img = fl * z / (z - fl)
+        cover_long = optics.ARRAY_WIDTH * z / v_img
+        cover_short = optics.ARRAY_HEIGHT * z / v_img
+        factor = cover_long / long_side
+        px = column * optics.SENSOR_COLUMNS / cover_long
+        got_long, got_short = optics.picture(ln, z)
+        got_factor, per_mm = optics.crop(frame, ln, z)
+        # The array against the declared angles: FOV_CHECK's hundredth
+        # of a degree, which is a few hundredths of a millimetre here.
+        ok = (abs(cover_long - got_long) < 0.05
+              and abs(cover_short - got_short) < 0.05
+              and abs(factor - got_factor) < 0.005
+              and abs(px - column * per_mm) < 0.5
+              and cover_long >= long_side - 1e-6
+              and cover_short >= short_side - 1e-6)
+        bad += not ok
+        print(f"   {'ok  ' if ok else 'FAIL'} {'':<20} {what} {z:.1f}: "
+              f"covers {got_long:.1f} x {got_short:.1f}, the frame a crop "
+              f"of x {got_factor:.2f}, the target's {column:.2f} mm "
+              f"{column * per_mm:.0f} px")
+    on_sensor, _ = lens.blur(got)
+    print(f"   --   {'':<20} as sold, set at {lens.focus_at / 1000:g} m, "
+          f"a point at F spreads {on_sensor / optics.PIXEL_PITCH:.0f} px")
     return bad
 
 
