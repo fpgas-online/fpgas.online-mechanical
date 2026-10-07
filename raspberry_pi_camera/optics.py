@@ -1688,6 +1688,11 @@ def _arty_subject() -> Subject:
                        highest_what="the highest point on the board",
                        target="the board and its LEDs",
                        heading="BOARD IN VIEW AND IN FOCUS")
+    # Where J9 stands, which is not the envelope's edge: how tall it may
+    # be and stay in frame A's picture, against the Rev C's figure.
+    j9 = next(f for f in spec.features if f.designator == "J9")
+    j9_room = face.headroom(frame_for(board),
+                            (j9.x0, j9.y0, j9.x1, j9.y1))
     src = (
         Source(label="Board geometry", ref="fpga/boards.py",
                note="Outline, Pmod hosts, connectors and LED rows; see "
@@ -1728,8 +1733,9 @@ def _arty_subject() -> Subject:
             "T: the A7 drawing gives no part a height. The Rev C model's "
             "tallest part is the Ethernet jack J9's shield, "
             f"{ARTY_REVC_TALLEST:.2f} above the board's top face, and the "
-            "A7 drawing puts J9 in the same place; were the A7's as "
-            "tall, it would be over the headroom. Measure T on the A7, "
+            "A7 drawing puts J9 in the same place: over the headroom "
+            "anywhere on the board, but where J9 stands a part stays in "
+            f"frame A's picture up to {j9_room:.1f} mm. Measure T on the A7, "
             "from its top face to the top of its tallest part.",
         ),
     )
