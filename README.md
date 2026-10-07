@@ -352,18 +352,27 @@ sheet's own layout cut into panels and stacked: on
 [`RPICAM-OVER-ACORN`](raspberry_pi_camera/output/docs/over-acorn-cle-215-plus-views-light.png)
 the two elevations, the plan, the notes beside the plan, the heights table
 and the legend, each a panel of its own so that the picture is narrow enough
-to print its smallest text at 2.5 mm or more across an A4 page.
+to print its smallest text at 2.5 mm or more across an A4 page. On
+[`TT-MP-PLATE`](tinytapeout/mounting_plate/output/docs/tt-generic-mounting-plate-views-light.png),
+for a builder fitting a demo board and not whoever cuts the plate, they are
+the plan, the legend, the table of which board revisions use each hole, and
+the notes (the standoffs and fasteners, and the sources), a column to a
+panel. Its whole-sheet pictures are PNG only: the whole-sheet SVG is over the
+commit-size hook's 400-line limit, so the docs link
+[the sheet's own PDF](tinytapeout/mounting_plate/output/tt-generic-mounting-plate.pdf)
+for the zoomable full drawing.
 
 The dark pictures' label masks are painted in Furo's page background,
 `#131416`, so they belong on the page background, not inside an admonition,
 a sidebar or a code block with another ground. The whole-sheet PNG is for
-linking; link the SVG for zoom.
+linking; link the SVG for zoom, or the PDF where there is no SVG.
 
 [`tools/docs_images.py`](tools/docs_images.py) writes them as part of
 `make diagrams` and says how to add a sheet;
 [`tools/docs_palette.py`](tools/docs_palette.py) is what each colour becomes
 in the dark, and why. `make check` holds the committed pictures against the
-committed sheet, byte for byte.
+committed sheet, byte for byte. Text in the dark pictures keeps 7:1 against
+the ground and 4.5:1 against the table fills.
 
 ## Regenerating
 
