@@ -76,6 +76,7 @@ from tools.layout import docs_dir_for, rel  # noqa: E402
 #: set ``docs_panels``.
 DOCS_SHEETS = (
     "raspberry_pi_camera/output/over-acorn-cle-215-plus.svg",
+    "tinytapeout/mounting_plate/output/tt-generic-mounting-plate.svg",
 )
 
 #: The views are stacked with this much paper between panels and round the

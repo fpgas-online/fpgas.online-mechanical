@@ -34,6 +34,15 @@ from .view import View
 PLATE_MARGIN_TOP = 12.0
 PLATE_MARGIN_BOTTOM = 40.0
 
+#: How far a docs panel reaches past a block's edge, in sheet millimetres: a
+#: block's rules are drawn on its edge and half of each stroke lies outside
+#: it.  The same figure as ``camera_sheet.DOCS_PAD``.
+DOCS_PAD = 1.0
+
+#: Where a leader's text starts past its tail, in sheet millimetres: the gap
+#: ``dims.leader`` leaves.
+LEADER_TEXT_GAP = 1.2
+
 BOARD_HOLE = "#a00000"
 PLATE_HOLE = "#006060"
 #: The USB-C outlines.  Distinct from both hole colours because it is neither
@@ -576,8 +585,9 @@ def render_plate(*, drawing_no: str, version: str,
                      f"{s.y0:.2f} / {s.y1:.2f}",
                      f"{s.width:.2f}", f"{s.length:.2f}",
                      s.label.replace(LABEL_SEP, ", ")])
-    block = sheet.column_block(sheet.table_height("BOARD MOUNTING HOLES", len(rows)))
-    sheet.table(block, "BOARD MOUNTING HOLES",
+    holes_block = sheet.column_block(
+        sheet.table_height("BOARD MOUNTING HOLES", len(rows)))
+    sheet.table(holes_block, "BOARD MOUNTING HOLES",
                 ["ID", "X mm", "Y mm", "DIA/WIDTH mm", "LENGTH mm", "USED BY"], rows,
                 ["start", "end", "end", "end", "end", "start"])
 
@@ -595,10 +605,62 @@ def render_plate(*, drawing_no: str, version: str,
             f"the plate sheet's annotation column cannot hold both the legend "
             f"and the notes' tail ({want:.0f} mm wanted, "
             f"{sheet.column_remaining:.0f} mm left); shorten the notes")
-    draw_legend(sheet, PLATE_LEGEND)
-    _place_notes_and_sources(sheet, notes, src, columns=band_cols, spill=spill)
+    legend = draw_legend(sheet, PLATE_LEGEND)
+    note_cols = _place_notes_and_sources(sheet, notes, src, columns=band_cols,
+                                         spill=spill)
 
     sheet.draw_title_block()
+
+    # What the docs show of this sheet, for a builder fitting a demo board to
+    # the plate -- how the board sits on it and what it stands on -- and not
+    # for whoever cuts the plate.  The sheet is one plan, so there is no
+    # elevation to take: the standoff height and the board stack are in the
+    # notes, and they are panels of their own because they are what a builder
+    # most needs and the drawing does not show.  From the layout just drawn,
+    # so it moves when the views do; tools/docs_images.py refuses a panel
+    # edge that cuts through anything drawn.
+    #
+    # The plan, where each board revision's holes and slots land, its Pmod
+    # hosts and its USB-C; then the legend, since the plan's colours (a board's
+    # holes, the plate's own fixings, a connector overhanging the edge) are
+    # what tell one outline from another; then the table of which board
+    # revisions use each hole, which is the plan's labels read back; then the
+    # notes, a column to a panel, which say what the boards stand on (M3 on 8
+    # mm standoffs), which side they mount on, and where the figures come
+    # from.  Left out: the table of the plate's own fixing holes, which the
+    # chassis fitter and the cutter need and the builder fitting a board does
+    # not (the plan shows the fixings and the legend says what they are), and
+    # the sheet's frame, which is furniture.  The plan's panel runs from its
+    # dimensions on the left to the radius callout's text on the right, and
+    # down to the lowest dimension line, each as far as this drew them.
+    # The height's value is set turned, centred half a font size and a gap
+    # left of its dimension line, and as tall as a capital is wide.
+    plan_left = (y_extent - 7.0 - style.DIM_TEXT_GAP
+                 - style.text_height(style.T_DIM) / 2 - style.T_DIM)
+    # The radius callout's text runs left from its elbow, back over the paper
+    # above the plate, when the elbow is left of the corner it points at (it
+    # is held inside the drawing area), and right of it otherwise.
+    corner_x = view.x(o.width - o.corner_radius * 0.3)
+    # The outline's corners are arcs, which the docs' cut check bounds by their
+    # radius past their end points.
+    plan_right = max(plate.x1 + view.d(o.corner_radius), corner_x)
+    if radius_elbow >= corner_x:
+        plan_right = max(plan_right, radius_elbow + dims.LEADER_TAIL
+                         + LEADER_TEXT_GAP + radius_w)
+    plan_bottom = plate.y - PLATE_MARGIN_BOTTOM
+    sheet.docs_panels = [
+        (Rect(plan_left - DOCS_PAD, plan_bottom,
+              plan_right + 2 * DOCS_PAD - plan_left,
+              plate.y1 + PLATE_MARGIN_TOP - plan_bottom),
+         "the plan: every board revision's holes, slots, Pmod hosts and "
+         "USB-C, dimensioned"),
+        (legend.inset(-DOCS_PAD),
+         "the legend, which says what each line and colour in the plan is"),
+        (holes_block.inset(-DOCS_PAD),
+         "which board revisions use each hole and slot"),
+    ] + [(col.inset(-DOCS_PAD),
+          "the notes: the standoffs and fasteners, and the sources")
+         for col in note_cols]
     return sheet
 
 
