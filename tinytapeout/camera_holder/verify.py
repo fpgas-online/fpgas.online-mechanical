@@ -221,8 +221,6 @@ def the_camera() -> None:
         pic_x = 2 * (z - f) * math.tan(math.radians(along_x / 2))
         pic_y = 2 * (z - f) * math.tan(math.radians(along_y / 2))
         short_x, short_y = (frame.width - pic_x) / 2, (frame.height - pic_y) / 2
-        left_x = optics.FRAME_MARGIN - short_x
-        left_y = optics.FRAME_MARGIN - short_y
         # H1 again: the height the lens refocused needs, plus f, over the
         # plane the position sheet sets it from.
         h1_here = plane_hi + z_need + f
@@ -235,21 +233,27 @@ def the_camera() -> None:
               "the shortfall the sheet's note prints is the picture's",
               f"{sx:.2f} (X) and {sy:.2f} (Y) printed, {short_x:.2f} and "
               f"{short_y:.2f} worked here")
-        # The margin left is the frame's own margin, less the shortfall; the
-        # boards themselves must be at least that far inside the picture.
-        by_axis = {a: min(
-            (min(e[0] - (ax - pic_x / 2), (ax + pic_x / 2) - e[2]) if a == "x"
-             else min(e[1] - (ay - pic_y / 2), (ay + pic_y / 2) - e[3]))
-            for pl in PLACEMENTS.values() for rev in pl["revisions"]
-            for e in [optics._envelope(TT[rev], pl["dx"], pl["dy"])])
-            for a in ("x", "y")}
-        check(by_axis["x"] >= left_x - EPS and by_axis["y"] >= left_y - EPS
-              and left_x > 0 and left_y > 0,
-              "the boards are in view with the margin the note says is left",
-              f"{left_x:.2f} (X) and {left_y:.2f} (Y) of the "
-              f"{optics.FRAME_MARGIN:.2f} margin left; the nearest board "
-              f"edge to the picture's is {by_axis['x']:.2f} (X) and "
-              f"{by_axis['y']:.2f} (Y), at the highest board plane")
+        # What the boards keep of the frame's own margin, worked from every
+        # revision's envelope at the highest board plane, and the margin
+        # the frame has round their union; the note prints exactly these,
+        # to the hundredth.
+        envs = [optics._envelope(TT[rev], pl["dx"], pl["dy"])
+                for pl in PLACEMENTS.values() for rev in pl["revisions"]]
+        ux0, uy0 = min(e[0] for e in envs), min(e[1] for e in envs)
+        ux1, uy1 = max(e[2] for e in envs), max(e[3] for e in envs)
+        here = ((min(ux0 - (ax - pic_x / 2), (ax + pic_x / 2) - ux1),
+                 min(ux0 - frame.x0, frame.x1 - ux1)),
+                (min(uy0 - (ay - pic_y / 2), (ay + pic_y / 2) - uy1),
+                 min(uy0 - frame.y0, frame.y1 - uy1)))
+        (kx, mx), (ky, my) = H.boards_keep()
+        printed = [f"{v:.2f}" for v in (kx, mx, ky, my)]
+        worked = [f"{v:.2f}" for v in (here[0][0], here[0][1],
+                                       here[1][0], here[1][1])]
+        check(printed == worked and kx > 0 and ky > 0,
+              "the boards are in view, with what the note says they keep",
+              f"printed {kx:.2f} of {mx:.2f} (X) and {ky:.2f} of {my:.2f} "
+              f"(Y); worked here {worked[0]} of {worked[1]} (X) and "
+              f"{worked[2]} of {worked[3]} (Y), at the highest board plane")
 
     # Nothing of the holder between the lens and any board.  The picture of
     # a revision's envelope is a pyramid from the lens; its section shrinks

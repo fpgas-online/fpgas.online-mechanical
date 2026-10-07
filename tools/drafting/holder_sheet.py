@@ -290,7 +290,8 @@ def _text(h: Holder):
         f'FOCUS: declared "{lens.near_quote}"; at {h.LENS_FACE - hi:.1f} '
         "the boards are OUT OF FOCUS, a point about "
         f"{on_sensor / optics.PIXEL_PITCH:.0f} pixels, {on_subject:.1f} mm "
-        f"on the board ({POSITION_SHEET}).",
+        "on the board"
+        + (f" ({POSITION_SHEET})." if h.DRAWN_ON_POSITION_SHEET else "."),
         f"MAKE the parts from the STEP files, tt-camera-holder-{h.KEY}-side-"
         "left and -right and the shared -beam and -carrier; this sheet is "
         f"the assembly. Holes: M4 {h.M4_CLEAR:.1f}, M3 {h.M3_CLEAR:.1f}, M2 "
@@ -311,14 +312,14 @@ def _text(h: Holder):
     h1 = h.refocused_h1()
     if h1 is not None and h.LENS_FACE < h1:
         sx, sy = h.refocused_shortfall()
+        (kx, mx), (ky, my) = h.boards_keep()
         notes.append(
             f"KEPT LOW: face {h.LENS_FACE:.2f}, {h1 - h.LENS_FACE:.2f} "
             f"under {POSITION_SHEET}'s H1 of {h1:.2f} for the lens "
             f"refocused. Refocused here the picture is {sx:.2f} (X) and "
-            f"{sy:.2f} (Y) short of frame A each side: the boards stay in "
-            f"view with {optics.FRAME_MARGIN - sx:.2f} (X) and "
-            f"{optics.FRAME_MARGIN - sy:.2f} (Y) of the "
-            f"{optics.FRAME_MARGIN:.2f} margin left. ACCEPTED, Tim Ansell, "
+            f"{sy:.2f} (Y) short of frame A each side: the boards keep "
+            f"{kx:.2f} of the frame's {mx:.2f} margin (X) and {ky:.2f} of "
+            f"{my:.2f} (Y). ACCEPTED, Tim Ansell, "
             "7 Oct 2026, rather than raise the holder.")
     src = [f"{s.label}: {s.ref} - {s.note}" for s in h.SOURCES]
     return notes, src
