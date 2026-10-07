@@ -513,6 +513,9 @@ def write_picture(svg_text: str, stem: str, out_dir: Path) -> str:
                          + "\n  ".join(bad))
     d = read(svg_text, stem)
     text = boxes(svg_text)
+    if not text:
+        raise SystemExit(f"{stem}: the picture has no text; a picture of no "
+                         "sheet without a label is a mistake")
     low = min(b[5] for b in text)
     printed = low * PRINT_WIDTH_MM / d.width
     problems = []
