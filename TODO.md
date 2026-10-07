@@ -464,7 +464,7 @@ checker that measures the finished PDFs rather than trusting them.
 - [ ] Check the derived socket footprint against a real board: it is the one
       figure here quoted at +/-1 mm rather than +/-0.2
 
-## Pictures for the docs site  -- DONE for RPICAM-OVER-ACORN, TT-MP-PLATE and TT-MP-FIT
+## Pictures for the docs site  -- DONE for RPICAM-OVER-ACORN, RPICAM-OVER-PLATE, TT-MP-PLATE and TT-MP-FIT
 - [x] `tools/docs_images.py`: each listed sheet's views and whole sheet,
       light and dark, transparent, SVG and PNG, under `output/docs/`
 - [x] `tools/docs_palette.py`: every colour's dark-ground value and its
@@ -488,9 +488,10 @@ checker that measures the finished PDFs rather than trusting them.
       answered, drop them from `SHEET_PNG_ONLY` and commit the SVGs
 - [ ] The next sheets: give the renderer `docs_panels` and add the SVG to
       `DOCS_SHEETS`
-- [ ] `RPICAM-OVER-PLATE` could be offered to the docs: its renderer already
-      sets `docs_panels`, as the Acorn's does, so it wants only adding to
-      `DOCS_SHEETS` and its pictures looked at
+- [x] `RPICAM-OVER-PLATE` pictured (7 October 2026): the elevations, plan,
+      first notes, heights and frames tables and legend as `-views-a`; the
+      notes that run on and the sources as `-views-b`. Whole-sheet pictures
+      PNG only
 - [x] The views print at A4 width (180 mm) with the smallest text at
       2.71 mm: the notes beside the plan are a panel of their own, so the
       widest panel is the 164 mm heights table and legend

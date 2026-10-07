@@ -367,6 +367,13 @@ board revision on the plate, two to a panel, and the legend) and `-views-b`
 (the placement and USB-C tables, and the notes), because the SVG of them all
 is over the same limit; its whole-sheet pictures are PNG only, linking
 [the sheet's PDF](tinytapeout/mounting_plate/output/tt-generic-mounting-plate-fitting-guide.pdf).
+On [`RPICAM-OVER-PLATE`](raspberry_pi_camera/output/docs/over-tt-mounting-plate-views-a-light.png),
+where the camera goes over the plate and how high, `-views-a` is the
+elevations with the lens-face dimension chain, the plan with frames A and B,
+the first notes, the heights and frames tables and the legend, and `-views-b`
+the notes that run on and the sources, so that neither is over two and a half
+A4 pages; its whole-sheet pictures are PNG only, linking
+[the sheet's PDF](raspberry_pi_camera/output/over-tt-mounting-plate.pdf).
 
 The dark pictures' label masks are painted in Furo's page background,
 `#131416`, so they belong on the page background, not inside an admonition,

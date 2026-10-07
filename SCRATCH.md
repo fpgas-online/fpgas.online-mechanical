@@ -4059,6 +4059,26 @@ New colours: the captions' #444444 (dark #bcbcbc, 9.7:1) and the USB-C fill
 byte for byte as they were.
 
 
+## Pictures for the docs: RPICAM-OVER-PLATE, 7 October 2026
+
+Panels, for a builder asking where the camera goes over the plate and how
+high: the elevations with the F, H1, H2, S, T chain, the plan with frames A
+and B, notes 1 and 2, the LENS FACE HEIGHTS table with the FRAMES table
+under it, the legend, then the notes that run on under the plan and in the
+annotation column with the sources. Where the renderer's panels needed
+changing, for the plate only (the Acorn's pictures are byte for byte as they
+were): the frames table is in the tables panel, the frames' letter rings
+count in how far the plan reaches (frame A's ring sat past the plan's edge
+and was cut), each notes column stops where its text does, and the
+elevations leave out the 20 mm of empty paper to their left, which took them
+from 184 mm to 165 mm, over the 180 mm that prints the smallest text at
+2.5 mm.
+
+`-views-a` is 166.7 mm wide, 2401 px, 1.41 A4 pages printed across 180 mm,
+279 lines; `-views-b` is 166.0 mm, 2405 px, 1.17 pages, 80 lines. One picture
+of them was 2.7 pages. The smallest text prints at 2.70 mm. The whole sheet
+is 423 lines, so PNG only, as the plate's. No new colours.
+
 ## RPICAM-OVER-PLATE to the lens face, 7 October 2026
 
 Tim asked on 3 October that the camera position sheets, for the Camera

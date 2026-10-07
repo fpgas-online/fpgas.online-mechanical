@@ -1342,6 +1342,13 @@ class Subject:
     #: hole in a board, and each subject's geometry came from a different
     #: source with a different claim.
     tolerance: str = ""
+    #: Whether the docs pictures take in all the notes, the columns the text
+    #: runs on into under the plan and in the annotation column, and not just
+    #: the first two beside the plan, and leave out the empty paper left of
+    #: the elevations.  The Acorn's are the two notes and the whole width; the
+    #: plate's lens-face notes are further on, and with its dimension chain
+    #: the elevations are wider than the tables without the trim.
+    docs_all_notes: bool = False
 
     def frames(self) -> tuple[Frame, ...]:
         return tuple(frame_for(t) for t in self.targets)
@@ -1527,6 +1534,7 @@ def _plate_subject() -> Subject:
         subject_field="TT Mounting Plate",
         lens_keys=(LENS_65.key,),
         face=face,
+        docs_all_notes=True,
         targets=(
             Target("boards", "Every board, any revision", ex0, ey0, ex1, ey1,
                    note="Every revision's assembled envelope -- outline, "
