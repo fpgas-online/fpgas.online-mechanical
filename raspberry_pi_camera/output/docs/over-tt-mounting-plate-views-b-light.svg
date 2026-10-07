@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="166mm" height="287.7374mm" viewBox="0 0 166 287.7374">
+<g transform="translate(-22 -175.6946)">
+<text x="24" y="181.1946" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<line x1="24" y1="182.5946" x2="125.5" y2="182.5946" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="24" y="187.2946" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="30.5045" y="187.2946" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">F is, per frame, the higher of two heights: the one that just</text>
+<text x="30.5045" y="191.8213" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">frames it with the lens focused there, frame A 139.2 + f 3.60</text>
+<text x="30.5045" y="196.3481" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">= 142.8, frame B 100.1 + f 3.60 = 103.7 (DERIVED, thin</text>
+<text x="30.5045" y="200.8748" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">lens), and the lens&#x27;s close limit unscrewed, 60 mm: &quot;About</text>
+<text x="30.5045" y="205.4016" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the closest you can get this way is about 6 cm.&quot; (a Raspberry</text>
+<text x="30.5045" y="209.9283" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Pi forum user, 2013; REPORTED). The framing governs every</text>
+<text x="30.5045" y="214.4551" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">frame.</text>
+<text x="24" y="219.9818" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="30.5045" y="219.9818" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">H1 = S + F, frame A 152.4, frame B 113.3, where S is the</text>
+<text x="30.5045" y="224.5086" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mounting plate&#x27;s face, the standoffs&#x27; base, to the demo</text>
+<text x="30.5045" y="229.0353" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">board&#x27;s top face: 9.6 +/-0.04, M3 x 8 mm standoffs</text>
+<text x="30.5045" y="233.5621" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">(TT-MP-PLATE) and a 1.56 to 1.60 mm board (each revision&#x27;s</text>
+<text x="30.5045" y="238.0888" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">KiCad file): 9.56 to 9.60, F set from the higher. Neither states</text>
+<text x="30.5045" y="242.6156" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">a fabrication tolerance.</text>
+<text x="24" y="248.1423" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">5.</text>
+<text x="30.5045" y="248.1423" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">H2 = F - T, the clearance, frame A 142.8 - T, frame B 103.7 -</text>
+<text x="30.5045" y="252.6691" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">T, where T is the demo board&#x27;s top face to the tallest part on</text>
+<text x="30.5045" y="257.1958" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">it, on whichever revision is fitted: MEASURE, not published.</text>
+<text x="24" y="262.7225" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">6.</text>
+<text x="30.5045" y="262.7225" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">HEADROOM: a part standing on a board, anywhere in its</text>
+<text x="30.5045" y="267.2493" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">envelope stays in frame A&#x27;s picture, the lens refocused to F,</text>
+<text x="30.5045" y="271.776" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">up to 13.6 mm above the board&#x27;s top face (DERIVED). If T is</text>
+<text x="30.5045" y="276.3028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">more, raise the camera.</text>
+</g>
+<g transform="translate(-131.5 -66.0596)">
+<text x="133.5" y="181.1946" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<line x1="133.5" y1="182.5946" x2="235" y2="182.5946" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="133.5" y="187.2946" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7.</text>
+<text x="140.0045" y="187.2946" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">REFOCUS THE LENS TO F, 142.8 mm from the lens face to</text>
+<text x="140.0045" y="191.8213" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the boards for frame A, 103.7 for frame B. As sold it is set far</text>
+<text x="140.0045" y="196.3481" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">-- &quot;Approx 1 m to infinity&quot; (Raspberry Pi; infinity is their sign),</text>
+<text x="140.0045" y="200.8748" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">&quot;from about 0.5m to infinity&quot; (raspi.tv) -- and at frame A&#x27;s F a</text>
+<text x="140.0045" y="205.4016" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">point spreads to 21 px (DERIVED). raspi.tv adds a +2D lens</text>
+<text x="140.0045" y="209.9283" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">in front, &quot;focus at about 25cm&quot;, too far for F; a reader&#x27;s</text>
+<text x="140.0045" y="214.4551" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">comment there: &quot;You CAN change the focus of the stock lens</text>
+<text x="140.0045" y="218.9818" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">on the pi camera. It is tricky but can be done.&quot; Unscrew it</text>
+<text x="140.0045" y="223.5086" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">until the boards are sharp.</text>
+<text x="133.5" y="229.0353" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">8.</text>
+<text x="140.0045" y="229.0353" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">A frame is the sensor&#x27;s own 4:3 round its target plus 5.00</text>
+<text x="140.0045" y="233.5621" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">mm all round, turned whichever way needs the lower</text>
+<text x="140.0045" y="238.0888" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">camera; the table gives which, and where the lens axis goes</text>
+<text x="140.0045" y="242.6156" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">over each.</text>
+<text x="133.5" y="248.1423" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">9.</text>
+<text x="140.0045" y="248.1423" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Frame A, Every board, any revision: Every revision&#x27;s</text>
+<text x="140.0045" y="252.6691" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">assembled envelope -- outline, connectors, Pmod bodies -- in</text>
+<text x="140.0045" y="257.1958" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">plate coordinates, in one: a camera fixed over the plate</text>
+<text x="140.0045" y="261.7225" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">serves them all.</text>
+<text x="133.5" y="267.2493" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">10.</text>
+<text x="140.0045" y="267.2493" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Frame B is the union of every LED and 7-segment over all</text>
+<text x="140.0045" y="271.776" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">five revision families. They are not clustered -- 90.91 x 62.79</text>
+<text x="140.0045" y="276.3028" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">of a 135 x 101 plate -- so frame B buys little over frame A.</text>
+</g>
+<g transform="translate(-241 54.27)">
+<text x="243" y="170.5" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">NOTES (continued)</text>
+<line x1="243" y1="171.9" x2="405" y2="171.9" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="243" y="176.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">11.</text>
+<text x="249.5045" y="176.6" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">T: no board file gives a part a height, and nobody publishes one for every revision. Measure it on the</text>
+<text x="249.5045" y="181.1267" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">boards in use, from the board&#x27;s top face to the top of its tallest part.</text>
+<text x="243" y="187.6535" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="4.8011" fill="#000000" text-anchor="start" font-weight="bold">SOURCES</text>
+<line x1="243" y1="189.0535" x2="405" y2="189.0535" stroke="#000000" stroke-width="0.4" stroke-linecap="round"/>
+<text x="243" y="193.7535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">1.</text>
+<text x="249.5045" y="193.7535" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Plate geometry: tinytapeout/mounting_plate/plate.py - Outline, placements and standoff; see</text>
+<text x="249.5045" y="198.2802" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">TT-MP-PLATE.</text>
+<text x="243" y="203.807" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">2.</text>
+<text x="249.5045" y="203.807" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Board and indicator positions: tinytapeout/boards.py - Outlines, connectors, Pmod bodies, LEDs and</text>
+<text x="249.5045" y="208.3337" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">7-segment displays, in plate coordinates, and each board&#x27;s thickness.</text>
+<text x="243" y="213.8605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">3.</text>
+<text x="249.5045" y="213.8605" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">raspi.tv, 25 May 2013: https://web.archive.org/web/20260212013652/https://raspi.tv/2013/</text>
+<text x="249.5045" y="218.3872" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">adapt-your-raspberry-pi-camera-for-close-up-use</text>
+<text x="243" y="223.914" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">4.</text>
+<text x="249.5045" y="223.914" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">Lens figures and focus: RPICAM-LENS - Every lens figure on this sheet, declared and derived, with</text>
+<text x="249.5045" y="228.4407" font-family="DejaVu Sans Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="3.4294" fill="#000000" text-anchor="start">the vendor pages it is quoted from.</text>
+</g>
+</svg>
