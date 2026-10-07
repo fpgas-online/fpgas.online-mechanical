@@ -27,16 +27,18 @@ test -d "$t" || git clone --quiet https://github.com/TinyTapeout/tt-demo-pcb "$t
 git -C "$t" cat-file -e 0277545^{commit} || git -C "$t" fetch --quiet origin
 git -C "$t" log -1 --format='tt-demo-pcb at %h, %ad: %s' --date=short 0277545
 
-get() {  # get <file> <url>
-  test -s "$1" || curl -sSfL -A "$UA" -o "$1" "$2"
+get() {  # get <file> <sha256> <url>
+  test -s "$1" || curl -sSfL -A "$UA" -o "$1" "$3"
+  printf '%s  %s\n' "$2" "$1" | sha256sum -c --quiet - \
+    || { echo "$1 is not the file captured: sha256 differs" >&2; exit 1; }
   printf '%-52s %9s bytes\n' "${1#tmp/src/}" "$(wc -c < "$1")"
 }
 
 wb=https://web.archive.org/web
 dg=https://digilent.com/reference
-get "$d/pmod-hat-adapter-rm.pdf" \
+get "$d/pmod-hat-adapter-rm.pdf" d8c856758688ced6a6ba471103c53ff4d35ae76241f8c476d870e9d9e3463340 \
     "$wb/20240705113115id_/$dg/_media/reference/add-ons/pmod-hat/171205ag_dual_brand_pmod-hat-adapter_rm.pdf"
-get "$d/reference-manual.html" \
+get "$d/reference-manual.html" da2b4d1459e0e6efb42a079508f6bfd20e09ec8473cab95a228adad5dc8897c8 \
     "$wb/20231001045824id_/$dg/add-ons/pmod-hat/reference-manual"
-get "$d/pmod-hat-adapter-top-1000.png" \
+get "$d/pmod-hat-adapter-top-1000.png" 5fb73d048ed0b5c8444f8b06cefb09723dbcb16d42483920f359b793c9b24c70 \
     "$wb/20250127035250id_/$dg/_media/reference/add-ons/pmod-hat/pmod-hat-adapter-top-1000.png"
