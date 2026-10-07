@@ -1321,10 +1321,10 @@ class Subject:
     #: over the Pi's own Ethernet and USB bodies, which are under the HAT.
     plan_callout: str = ""
     #: The lenses this sheet draws, by key, where it is not both of LENSES.
-    #: Only the Acorn's sets it: its sheet is for one module.
+    #: The Acorn's and the plate's set it: each sheet is for one module.
     lens_keys: tuple[str, ...] | None = None
     #: Where the lens FACE goes, on a sheet that gives lens-face heights for
-    #: one module instead of Z per lens.  Only the Acorn's.
+    #: one module instead of Z per lens: the Acorn's and the plate's.
     face: FaceHeights | None = None
     #: What has been seen on the deployed hardware, for the sheet to record
     #: beside what it derives.
@@ -1413,6 +1413,52 @@ def plate_boards_union() -> tuple[float, float, float, float]:
                    for pl in PLACEMENTS.values() for rev in pl["revisions"]])
 
 
+# --- The plate's stack -------------------------------------------------------
+#
+# The two heights the plate's lens face is given from, as the Acorn's are.
+# S, the plate's face to the demo board's top face, is a figure: the plate's
+# own standoff and each revision's own board thickness, both already in this
+# repository, so it is worked from them rather than typed in.  T, the board's
+# top face to the tallest part standing on it, is not: no board file gives a
+# part a height, and nobody publishes one for every revision, so it is to
+# measure, like the Acorn's.
+
+
+def plate_stack_s():
+    """S on the plate: its face, the standoffs' base, to the board's top face.
+
+    ``plate_board_plane``'s higher figure, which F is set from, with the
+    spread down to the thinnest board as its tolerance, rounded up to the
+    hundredth.  The standoff is the plate's choice and the boards' thickness
+    their KiCad files' stackup; neither states a fabrication tolerance, and
+    the source says so.
+    """
+    from accessories.parts import StackHeight
+    lo, hi = plate_board_plane()
+    st = plate_standoff()
+    return StackHeight(
+        "S", "the mounting plate's face, the standoffs' base, to the demo "
+             "board's top face",
+        value=hi, tol=math.ceil(round((hi - lo) * 100, 6)) / 100,
+        source=f"M3 x {st:g} mm standoffs ({PLATE_SHEET}) and a "
+               f"{lo - st:.2f} to {hi - st:.2f} mm board (each revision's "
+               f"KiCad file): {lo:.2f} to {hi:.2f}, F set from the higher. "
+               "Neither states a fabrication tolerance")
+
+
+def plate_stack_t():
+    """T on the plate: the board's top face to its tallest part.  MEASURE.
+
+    A function, as ``plate_stack_s`` is, so that asking this module about a
+    lens does not import the accessories.  A measured figure goes in here,
+    with its tolerance and who measured it, and the sheet then prints H2.
+    """
+    from accessories.parts import StackHeight
+    return StackHeight(
+        "T", "the demo board's top face to the tallest part on it, on "
+             "whichever revision is fitted")
+
+
 def _plate_subject() -> Subject:
     """The Tiny Tapeout generic mounting plate, with every revision on it.
 
@@ -1459,14 +1505,28 @@ def _plate_subject() -> Subject:
     plane = "the DEMO BOARD's top face, not the plate's"
     plane_note = (f"{STANDOFF_HEIGHT:g} mm standoffs and a {lo - STANDOFF_HEIGHT:.2f}"
                   f" to {hi - STANDOFF_HEIGHT:.2f} mm board put it {lo:.2f} to "
-                  f"{hi:.2f} above the plate face; Z is from the higher")
+                  f"{hi:.2f} above the plate face; F is from the higher")
     o = PLATE.outline
+    # One module, as on the Acorn's sheet: the v1.3 with its stock lens,
+    # unscrewed to focus, and the heights of its lens face.  The 120 degree
+    # lens is off this sheet; TT-MP-CAM120 is still built over frame A from
+    # LENS_120, and prints its own height.
+    variant = next(v for v in FOCUS_VARIANTS if v.key == ACORN_VARIANT)
+    face = FaceHeights(variant, plate_stack_s(), plate_stack_t(),
+                       plane="the demo board's top face, any revision",
+                       plane_short="the board's top face",
+                       highest_what="the highest point on the board",
+                       target="the boards",
+                       heading="BOARDS IN VIEW AND IN FOCUS")
     return Subject(
         key="tt-mounting-plate",
         title="Camera over the TT Mounting Plate",
-        subtitle="Camera Module OV5647, 65 and 120 degree lenses",
+        subtitle="Camera Module v1.3, stock 65 degree lens: lens face "
+                 "heights",
         spec=replace(PLATE, features=features),
         subject_field="TT Mounting Plate",
+        lens_keys=(LENS_65.key,),
+        face=face,
         targets=(
             Target("boards", "Every board, any revision", ex0, ey0, ex1, ey1,
                    note="Every revision's assembled envelope -- outline, "
@@ -1489,15 +1549,22 @@ def _plate_subject() -> Subject:
             Source(label="Board and indicator positions",
                    ref="tinytapeout/boards.py",
                    note="Outlines, connectors, Pmod bodies, LEDs and "
-                        "7-segment displays, in plate coordinates."),
+                        "7-segment displays, in plate coordinates, and "
+                        "each board's thickness."),
+            # Cited for where the lens is focused as sold, as on the
+            # Acorn's sheet; the forum's close limit is on the lens sheet.
+            replace(RASPI_TV, label="raspi.tv, 25 May 2013", note=""),
         ),
-        tolerance="plate +/-0.20, LEDs +/-0.10, Z DERIVED",
+        tolerance="plate +/-0.20, LEDs +/-0.10, heights DERIVED",
         notes=(
             "Frame B is the union of every LED and 7-segment over all five "
             "revision families. They are not clustered -- "
             f"{lx1 - lx0:.2f} x {ly1 - ly0:.2f} of a "
             f"{o.width:.0f} x {o.height:.0f} plate -- so frame B buys little "
             "over frame A.",
+            "T: no board file gives a part a height, and nobody publishes "
+            "one for every revision. Measure it on the boards in use, from "
+            "the board's top face to the top of its tallest part.",
         ),
     )
 

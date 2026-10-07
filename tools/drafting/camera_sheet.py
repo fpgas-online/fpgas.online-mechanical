@@ -1216,9 +1216,8 @@ def _dimension_front(sheet: Sheet, subject: Subject, v: View,
 
     Z is dimensioned here and not again on the end elevation: it is one
     height, seen twice.  The wide lens's, which is lower, is on the inner
-    lane.  On the mounting plate the plate face gets a second figure for
-    each, outside those, because the plate is what a stand is built on and
-    the plane Z is measured from is a board standing on it.
+    lane.  A sheet that gives lens-face heights chains them instead; see
+    ``_dimension_face``.
     """
     c = sheet.canvas
     f_lo, f_hi, t_lo, t_hi, cu, angle, which, size = _along(subject, "X")
@@ -1229,23 +1228,15 @@ def _dimension_front(sheet: Sheet, subject: Subject, v: View,
     order = sorted(LENSES.values(),
                    key=lambda ln: place(subject.frames()[0], ln).z)
     below = _below_plane(subject)
-    plate = subject.key == "tt-mounting-plate"
-    # Lens by lens, lowest first, each lens's figures side by side: an
-    # extension line from the higher lens then runs out past the lower
-    # lens's lanes, whose values sit at half the lower height, clear of it.
+    # Lens by lens, lowest first: an extension line from the higher lens
+    # then runs out past the lower lens's lane, whose value sits at half the
+    # lower height, clear of it.
     lane = 8.0
     for lens in order:
         z = place(subject.frames()[0], lens).z
         dims.linear(c, right, v.pt(cu, z), lane, horizontal=False,
                     text=f"Z {lens.short}: {z:.1f}")
         lane += style.DIM_STEP
-        if plate:
-            plate_top = below[-1][1]
-            dims.linear(c, v.pt(size, plate_top), v.pt(cu, z),
-                        lane + (v.x(v.model_x1) - v.x(size)),
-                        horizontal=False,
-                        text=f"{lens.short}, PLATE: {z - plate_top:.1f}")
-            lane += style.DIM_STEP
     # X of the lens, from the datum, under the lowest thing drawn.
     bottom = min([b for _, _, b in below] + [0.0])
     _lateral(c, v, lens_x, bottom, cu, "X")
@@ -1414,7 +1405,7 @@ def _layout(subject: Subject, scale: float, sp: float, area: Rect):
     front_w = (ex_hi - ex_lo) * s
     elev_h = (w_hi - w_lo) * s
     plan_w, plan_h = (px1 - px0) * sp, (py1 - py0) * sp
-    lanes = len(LENSES) * (2 if subject.key == "tt-mounting-plate" else 1)
+    lanes = len(LENSES)
     if subject.face:
         lanes = 3       # S and F, T and H2, H1
     width = LEFT + max(end_w, plan_w) + GAP + front_w + ELEV_OUTER \
