@@ -49,8 +49,9 @@ pictures against a fresh run over the committed SVG, the way
 ``check_pdfs.py`` holds the PDFs, so the pictures carry the VERSION stamp of
 the sheet they were made from and are committed with it.
 
-A sheet in ``SHEET_PNG_ONLY`` has its whole-sheet pictures as PNG only, and
-one in ``VIEW_GROUPS`` has its views as more than one picture.
+A sheet in ``SHEET_PNG_ONLY`` has its whole-sheet pictures as PNG only, one
+in ``VIEW_GROUPS`` has its views as more than one picture, and one in
+``EXTRA_VIEWS`` has further pictures of some of its panels, chosen by label.
 
 To add a sheet: give its renderer ``sheet.docs_panels``, add its SVG to
 ``DOCS_SHEETS``, run `make diagrams`, look at all four PNGs on their grounds,
@@ -144,6 +145,44 @@ def view_groups(stem: str) -> list[tuple[str, slice]]:
         end = None if count is None else start + count
         out.append((f"views-{name}", slice(start, end)))
         start = end
+    return out
+
+
+#: Extra pictures drawn from some of a sheet's ``docs_panels``, by SVG stem:
+#: each one's name and the labels of the panels it takes, stacked in the order
+#: given.  A picture is ``<stem>-<name>-<theme>``.  Labels are the text each
+#: panel is set with in the renderer, not positions, so a reordered layout
+#: keeps the picture and a renamed or missing panel stops the build.  Each
+#: label must match exactly one of the sheet's panels.  The fitting guide's
+#: ``v3``: the two version 3 boards on the plate and the legend, for the step
+#: of the fitting page that puts a version 3 demo board on the plate, where
+#: ``-views-a`` is too much of the page.
+EXTRA_VIEWS = {
+    "tt-generic-mounting-plate-fitting-guide": (
+        ("v3", ("DB ETR v3.2 and v3.3 on the plate", "the legend")),
+    ),
+}
+
+
+def extra_views(stem: str) -> dict[str, tuple[str, ...]]:
+    """The extra pictures of the sheet with SVG stem *stem*, by name, each
+    with the labels of the panels it is made from."""
+    return dict(EXTRA_VIEWS.get(stem, ()))
+
+
+def extra_panels(stem: str, name: str,
+                 panels: list[tuple[Rect, str]]) -> list[tuple[Rect, str]]:
+    """The panels of *panels* that extra picture *name* of *stem* takes, in
+    the order of its labels; a label not matching exactly one panel stops the
+    build."""
+    out = []
+    for label in extra_views(stem)[name]:
+        hits = [p for p in panels if p[1] == label]
+        if len(hits) != 1:
+            raise SystemExit(f"{stem}: extra picture {name!r} takes the "
+                             f"panel {label!r}, and {len(hits)} of the "
+                             "sheet's docs_panels have that label")
+        out.append(hits[0])
     return out
 
 
@@ -367,7 +406,8 @@ def to_png(svg: Path, dpi: int) -> Path:
 
 def outputs(svg: Path, out_dir: Path) -> dict[tuple[str, str], Path]:
     """Where each picture of *svg* goes: by (kind, theme), the SVG's path."""
-    kinds = [k for k, _ in view_groups(svg.stem)] + ["sheet"]
+    kinds = ([k for k, _ in view_groups(svg.stem)]
+             + list(extra_views(svg.stem)) + ["sheet"])
     return {(k, t): out_dir / f"{svg.stem}-{k}-{t}.svg"
             for k in kinds for t in THEMES}
 
@@ -402,8 +442,10 @@ def write(svg_text: str, svg: Path, panels: list[tuple[Rect, str]],
         if kind == "sheet":
             text, w = sheet_svg(d, theme), d.width
         else:
-            these = dict(view_groups(svg.stem))[kind]
-            panels_here = panels[these]
+            if kind in extra_views(svg.stem):
+                panels_here = extra_panels(svg.stem, kind, panels)
+            else:
+                panels_here = panels[dict(view_groups(svg.stem))[kind]]
             text, caps = views_svg(d, panels_here, furniture, theme, name)
             w = float(SVG_OPEN.search(text).group(1))
         path.write_text(text, encoding="utf-8")
@@ -414,7 +456,7 @@ def write(svg_text: str, svg: Path, panels: list[tuple[Rect, str]],
         if theme == "light":
             line = (f"{kind}: {w:.1f} mm wide at {dpi} dpi, "
                     f"{round(w / 25.4 * dpi)} px")
-            if kind.startswith("views"):
+            if kind != "sheet":
                 low = min(caps)
                 line += ("; panels " + ", ".join(f"{r.w:.0f}"
                                                  for r, _ in panels_here)
