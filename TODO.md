@@ -427,17 +427,19 @@ checker that measures the finished PDFs rather than trusting them.
 - [x] A holder per lens: `TT-MP-CAM65` and `TT-MP-CAM120`, the lens face at
       150.00 and 83.00, sharing the beam and the carrier; `verify.py` makes
       every check of each and checks the two share those parts
-- [ ] Re-derive `TT-MP-CAM65` from `RPICAM-OVER-PLATE`'s H1 for frame A,
+- [x] Re-derive `TT-MP-CAM65` from `RPICAM-OVER-PLATE`'s H1 for frame A,
       152.37 with the lens refocused to F, against its 150.00, which was
       set from the lens as sold: 2.37 over its 1.00 mm print allowance.
-      Refocused at 150.00 the picture is 0.89 mm short of frame A each side
-      along Y and 1.18 along X, the boards still in it with 3.82 mm (X)
-      and 4.11 mm (Y) of the 5.00 mm margin. Its own pull request: the holder, its STEP files and
-      its sheet move together
-- [ ] `TT-MP-CAM120`'s FOR note names `RPICAM-OVER-PLATE` for its height,
-      which that sheet no longer draws: the height is `optics.place()` of
-      frame A and the 120 lens. Reword it when the holder is next
-      re-rendered
+      Decided, Tim Ansell, 7 October 2026 (question mech-1, "Accept the
+      smaller margin"): the holder stays at 150.00. Refocused there the
+      picture is 0.89 mm short of frame A each side along Y and 1.18 along
+      X, the boards still in it with 3.82 mm (X) and 4.11 mm (Y) of the
+      5.00 mm margin. The sheet's HEIGHT KEPT note says so, from
+      `Holder.refocused_shortfall()`, and `verify.py` works the figures
+      again and checks the boards are that far inside the picture
+- [x] `TT-MP-CAM120`'s FOR note named `RPICAM-OVER-PLATE` for its height,
+      which that sheet no longer draws: it now says the height is worked on
+      the sheet, `optics.place()` of frame A and the 120 lens
 - [ ] A 120 degree OV5647 on a board this carrier takes. `TT-MP-CAM120`
       carries a v1.3's board with the wide lens ASSUMED 5.20 mm proud of it,
       and has 1.00 mm to spare; a taller lens, any M12 fisheye, drops the
