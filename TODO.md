@@ -443,18 +443,25 @@ checker that measures the finished PDFs rather than trusting them.
 - [ ] Check the derived socket footprint against a real board: it is the one
       figure here quoted at +/-1 mm rather than +/-0.2
 
-## Pictures for the docs site  -- DONE for RPICAM-OVER-ACORN
+## Pictures for the docs site  -- DONE for RPICAM-OVER-ACORN and TT-MP-PLATE
 - [x] `tools/docs_images.py`: each listed sheet's views and whole sheet,
       light and dark, transparent, SVG and PNG, under `output/docs/`
 - [x] `tools/docs_palette.py`: every colour's dark-ground value and its
-      reason, held to WCAG 4.5:1 for text and 3:1 for lines; an unmapped
+      reason, held to WCAG 7:1 for text on the dark ground (4.5:1 on its fills) and 3:1
+      for lines; an unmapped
       colour, an opacity or an unknown attribute stops the build
 - [x] `tools/check_docs_images.py`: the committed pictures are what the
       committed sheet makes
 - [x] `RPICAM-OVER-ACORN` pictured: its elevations and plan, heights table
       and legend
+- [x] `TT-MP-PLATE` pictured (7 October 2026): the plan, legend, hole
+      table and notes, for a builder fitting a board. Whole-sheet pictures
+      PNG only, `SHEET_PNG_ONLY`
+- [ ] The plate's whole-sheet SVG is over the commit-size hook's 400 lines:
+      question mech-01 to Tim is open. When answered, drop it from
+      `SHEET_PNG_ONLY` and commit the two SVGs
 - [ ] The next sheets: give the renderer `docs_panels` and add the SVG to
-      `DOCS_SHEETS`. The TT mounting plate sheet is next
+      `DOCS_SHEETS`
 - [x] The views print at A4 width (180 mm) with the smallest text at
       2.71 mm: the notes beside the plan are a panel of their own, so the
       widest panel is the 164 mm heights table and legend

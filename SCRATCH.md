@@ -4012,3 +4012,27 @@ and `check_docs_images.py` holds the committed ones against a fresh run
 over the committed SVG, as `check_pdfs.py` does the PDFs. This branch
 changed no sheet, so its pictures were made from main's SVG, not the
 restamped one a render leaves.
+
+## Pictures for the docs: TT-MP-PLATE, 7 October 2026
+
+The plate sheet is one plan, so there is no elevation or section to take;
+the 8 mm standoff and M3 are in its notes, and the notes are panels. For a
+builder fitting a board, not whoever cuts the plate: the plan (from its
+height dimension on the left to the corner arc and radius callout on the
+right), the legend, the BOARD MOUNTING HOLES table (which revision uses
+each hole), and the two note columns with the sources. The PLATE FIXING
+HOLES table is left out. 174, 164, 164, 104 and 104 mm wide, so the picture
+is 175.5 mm and the smallest text prints at 2.56 mm across 180 mm.
+
+New colours: the plate's teal #006060 and the USB-C brown #7a4a00. The docs
+session's standard went up to 7:1 for text on the dark ground and 4.5:1 on
+its fills: grey text #909090 became #a6a6a6 and red #ff7070 became #ff8080,
+which recolours the Acorn's dark pictures and nothing else. The light
+drawing's one text colour under 7:1 is #666666 at 5.74:1; not changed. Text
+filled with a colour the palette does not hold to the text floor is refused.
+
+The whole-sheet SVG of the plate is 489 lines, over the commit hook's 400, and
+the way round it (committing half a file first) was refused, so its
+whole-sheet pictures are PNG only and the docs link the PDF; question mech-01
+to Tim is open.
+
