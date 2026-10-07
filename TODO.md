@@ -428,8 +428,8 @@ checker that measures the finished PDFs rather than trusting them.
       152.37 with the lens refocused to F, against its 150.00, which was
       set from the lens as sold: 2.37 over its 1.00 mm print allowance.
       Refocused at 150.00 the picture is 0.89 mm short of frame A each side
-      along Y and 1.18 along X, the boards still in it with 4.11 of the
-      5.00 mm margin. Its own pull request: the holder, its STEP files and
+      along Y and 1.18 along X, the boards still in it with 3.82 mm (X)
+      and 4.11 mm (Y) of the 5.00 mm margin. Its own pull request: the holder, its STEP files and
       its sheet move together
 - [ ] `TT-MP-CAM120`'s FOR note names `RPICAM-OVER-PLATE` for its height,
       which that sheet no longer draws: the height is `optics.place()` of

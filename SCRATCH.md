@@ -4121,5 +4121,6 @@ millimetre for the print, rounded up. Refocused to F, as the sheet now
 says, the lens covers what a pinhole f lower does, and the face wants to be
 152.37: 2.37 higher, past the 1.00 allowance. At 150.00 a refocused lens's
 picture is 0.89 mm short of frame A on each side along Y, 1.18 along X, and
-the boards are still in it with 4.11 of the 5.00 mm margin. That is a
+the boards are still in it with 3.82 mm (X) and 4.11 mm (Y) of the
+5.00 mm margin. That is a
 change to the holder, its STEP files and its sheet, and TODO carries it.

@@ -736,8 +736,8 @@ What this means for the [holders](../tinytapeout/camera_holder/README.md):
 height for the lens as sold, 148.77; H1 for frame A, refocused, is 152.4,
 2.37 higher, which is more than the holder's 1.00 mm print allowance. At
 150.00 a lens refocused there covers 0.89 mm short of frame A on each side
-along Y and 1.18 along X, so the boards are still in the picture, with 4.11
-mm of the 5.00 margin left. The holder is unchanged here; `TODO.md` carries
+along Y and 1.18 along X, so the boards are still in the picture, with 3.82
+mm of the 5.00 margin left along X and 4.11 along Y. The holder is unchanged here; `TODO.md` carries
 it. `TT-MP-CAM120`'s 72.40 mm over the board, which was this sheet's 120
 column, is `place()` of frame A and the 120 lens in `optics.py`: the holder
 reads it from there, prints it in its own sheet's FOR note, and

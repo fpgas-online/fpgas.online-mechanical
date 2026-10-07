@@ -123,8 +123,8 @@ The holders were built before that, and are not changed with it:
   at 142.77 over the board: H1 152.37 over the plate, 2.37 above where the
   holder puts it, which is more than its 1.00 mm allowance. Refocused at
   150.00, the picture falls 0.89 mm short of frame A on each side along Y
-  and 1.18 along X; the boards are still in it, with 4.11 mm of the 5.00 mm
-  margin left for the stand. Re-deriving the holder from the sheet's H1 is
+  and 1.18 along X; the boards are still in it, with 3.82 mm (X) and 4.11 mm
+  (Y) of the 5.00 mm margin left for the stand. Re-deriving the holder from the sheet's H1 is
   in `TODO.md`.
 - **`TT-MP-CAM120`'s height came from the sheet's 120 column**, which is
   gone: the sheet no longer draws the 120 degree lens. The figure has not
