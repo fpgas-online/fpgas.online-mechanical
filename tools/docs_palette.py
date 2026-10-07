@@ -18,13 +18,19 @@ from dataclasses import dataclass
 #: built furo.css, not remembered.
 GROUND = {"light": "#ffffff", "dark": "#131416"}
 
-#: WCAG 2 contrast a colour must keep against the ground in both themes:
-#: 4.5:1 for anything that letters text, 3:1 for a colour only lines and
-#: arrowheads are drawn in.  A fill is not held to either -- it is a tint
-#: under text, and the text is held to 4.5:1 against it instead -- and a mask
-#: has to BE the ground.
+#: WCAG 2 contrast a colour must keep against the ground.  The docs site's
+#: standard (fo-docs, 7 October 2026) for what it draws in the dark theme is
+#: 7:1 for anything that letters text against the page ground, 4.5:1 for that
+#: text against the table fills it sits on, and 3:1 for a colour only lines
+#: and arrowheads are drawn in.  The light drawing is as drafted and is held
+#: to 4.5:1 only; ``light_text_below_7`` reports the colours of text it has
+#: that are short of the 7:1 the dark one is held to.  A fill is not held to
+#: either -- it is a tint under text -- and a mask has to BE the ground.
+#: A colour that is used for both text and lines is a text colour.
 TEXT, LINE, FILL, MASK = "text", "line", "fill", "mask"
 MIN_CONTRAST = {TEXT: 4.5, LINE: 3.0}
+MIN_TEXT_DARK_GROUND = 7.0
+MIN_TEXT_ON_FILL = 4.5
 
 
 @dataclass(frozen=True)
@@ -47,8 +53,10 @@ PALETTE = {
                     "outlines, notes, tables: the drawing itself. 15.5:1"),
     "#333333": Swap("#d6d6d6", TEXT,
                     "style.C_COMPONENT: 12.6:1, as it had on white"),
-    "#666666": Swap("#909090", TEXT,
-                    "zone and title block labels: 5.7:1, as on white"),
+    "#666666": Swap("#a6a6a6", TEXT,
+                    "zone and title block labels: 7.6:1, 6.1:1 on the "
+                    "darkest fill, and still two steps under the #d6d6d6 "
+                    "and #ebebeb of the drawing's own text"),
     "#7a7a7a": Swap("#7a7a7a", LINE,
                     "style.C_PHANTOM: unchanged, it is 4.3:1 on both"),
     "#888888": Swap("#6d6d6d", LINE,
@@ -57,12 +65,21 @@ PALETTE = {
     "#004c99": Swap("#5aa9ff", TEXT,
                     "style.C_DIM, dimensions and their values: the same "
                     "blue lightened, 7.5:1"),
-    "#a00000": Swap("#ff7070", TEXT,
+    "#a00000": Swap("#ff8080", TEXT,
                     "style.C_HIGHLIGHT, what the sheet is about: the same "
-                    "red lightened, 6.9:1"),
+                    "red lightened, 7.6:1, and still a red beside the "
+                    "amber, the teals and the blue"),
     "#005f5f": Swap("#45c8bd", TEXT,
                     "style.C_FRAME_A, frame A and the rays: the same teal "
                     "lightened, 9.0:1, and greener than the blue"),
+    "#006060": Swap("#45c8bd", TEXT,
+                    "the mounting plate's PLATE_HOLE, the plate fixings into "
+                    "the chassis: the teal of frame A, #005f5f, one unit of "
+                    "green and of blue off it, lightened to the same 9.0:1"),
+    "#7a4a00": Swap("#d9983a", TEXT,
+                    "style.C_FRAME_B, here the USB-C outlines: the same "
+                    "brown lightened to amber, 7.5:1 as on white, and apart "
+                    "from the red and the teal"),
     "#e6e6e6": Swap("#282828", FILL,
                     "style.C_FILL_TABLE_HEAD: a tint 1.25:1 off the ground, "
                     "as on white"),
@@ -119,6 +136,8 @@ def palette_problems() -> list[str]:
                 bad.append(f"{light}: {colour!r} is not #rrggbb")
                 continue
             need = MIN_CONTRAST.get(swap.role)
+            if swap.role == TEXT and theme == "dark":
+                need = MIN_TEXT_DARK_GROUND
             got = contrast(colour, GROUND[theme])
             if need and got < need:
                 bad.append(f"{light} ({swap.role}) is {got:.2f}:1 on the "
@@ -129,7 +148,7 @@ def palette_problems() -> list[str]:
                         continue
                     under = fill if theme == "light" else other.dark
                     got = contrast(colour, under)
-                    if got < MIN_CONTRAST[TEXT]:
+                    if got < MIN_TEXT_ON_FILL:
                         bad.append(f"{light} ({theme}: {colour}) is "
                                    f"{got:.2f}:1 on the fill {under}")
         if swap.role == MASK and (light != GROUND["light"]
@@ -137,6 +156,16 @@ def palette_problems() -> list[str]:
             bad.append(f"{light} is a mask and must be the ground in both "
                        "themes")
     return bad
+
+
+def light_text_below_7() -> dict[str, float]:
+    """The text colours the light drawing uses that are under 7:1 on white,
+    with their contrast: reported, not changed, since the light picture is the
+    drawing as drafted."""
+    return {light: round(contrast(light, GROUND["light"]), 2)
+            for light, swap in PALETTE.items()
+            if swap.role == TEXT
+            and contrast(light, GROUND["light"]) < MIN_TEXT_DARK_GROUND}
 
 
 # ---------------------------------------------------------------------------
@@ -213,6 +242,11 @@ def read(svg: str, name: str) -> Drawing:
             elif key == "transform" and not ROTATE.fullmatch(value):
                 problems.append(f"line {n}: transform {value!r} is not a "
                                 "rotation")
+        if tag == "text" and (el.attrib.get("fill") not in PALETTE
+                              or PALETTE[el.attrib["fill"]].role != TEXT):
+            problems.append(f"line {n}: text is filled "
+                            f"{el.attrib.get('fill')!r}, which PALETTE does "
+                            "not hold to the text contrast")
         elements.append(Element(line, tag, dict(el.attrib)))
     if problems:
         raise SystemExit(f"{name}: cannot picture this sheet for the docs:\n  "
