@@ -4144,3 +4144,21 @@ picture is 0.89 mm short of frame A on each side along Y, 1.18 along X, and
 the boards are still in it with 3.82 mm (X) and 4.11 mm (Y) of the
 5.00 mm margin. That is a
 change to the holder, its STEP files and its sheet, and TODO carries it.
+
+
+## Pictures for the docs: TT-MP-FIT's version 3 boards, 7 October 2026
+
+The fitting page's step for putting a demo board on the plate needs only
+the version 3 boards, and `-views-a` is too much of the page for that. So
+`EXTRA_VIEWS` in `tools/docs_images.py` names pictures drawn from chosen
+panels of a sheet, by the label each panel is set with, not by position:
+the fitting guide's `v3` is "DB ETR v3.2 and v3.3 on the plate" and "the
+legend", written as `-v3-light` and `-v3-dark`, SVG and PNG. A label that
+matches no panel, or two, stops the build. `outputs()` lists them, so
+`check_docs_images.py` expects exactly those files.
+
+166 mm wide, 2405 px, smallest text 2.71 mm printed across 180 mm, 159
+lines of SVG. Printed 180 mm wide it is 117 mm tall, 0.40 of an A4 page of
+297 mm; the legend panel is as wide as the page column and the two views
+are narrower than it, so it is over a third. Every other picture is byte for
+byte as it was.
